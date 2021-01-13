@@ -6,6 +6,7 @@ Not usable on Windows because of no way(?) to read the Dictionary.
 """
 
 import random
+import re
 import sys
 from string import digits, punctuation, ascii_letters, ascii_uppercase
 from pathlib import Path
@@ -21,19 +22,20 @@ def make_pass():
 
     engl_dict = Path('/usr/share/dict/words').read_text()
     word_list = engl_dict.split()
-    short_list = [word for word in word_list if 8 >= len(word) >= 3]
+    uniq_words = [word for word in word_list if re.search(r"'s", word) is None]
+    trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
     print('There are', len(word_list), 'words in the entire dictionary.')  # 102401
-    print('There are', len(short_list), 'words of 3 to 8 letters.')
+    print('There are', len(uniq_words), 'unique words, excluding possessives')
+    print('There are', len(trim_words), 'unique words of 3 to 8 letters.')
 
     symbols = "~!@#$%^&*_-+=[]"
     caps = ascii_uppercase
     string1 = ascii_letters + digits + punctuation
     string2 = ascii_letters + digits + symbols
 
-    # Remove possessive notation from words.
-    allwords = "".join(secure_random.choice(word_list).replace("'s", "") for
+    allwords = "".join(secure_random.choice(uniq_words) for
                        _ in range(num_words))
-    somewords = "".join(secure_random.choice(short_list).replace("'s", "") for
+    somewords = "".join(secure_random.choice(trim_words) for
                         _ in range(num_words))
     addsymbol = "".join(secure_random.choice(symbols) for _ in range(1))
     addCap = "".join(secure_random.choice(caps) for _ in range(1))
