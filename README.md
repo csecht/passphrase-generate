@@ -6,4 +6,4 @@ A problem with on-line password and passphrase generators is that they are on-li
 Suggestions for improvement are welcome, especially if it is possible to implement on Widows systems.
 
 ## pyPalindromes
-Just something fun. I was impressed with the slicing 'trick' to test for and generate palindromes.
+Just something fun. I like the magical way that slice can work to test for and generate palindromes.
