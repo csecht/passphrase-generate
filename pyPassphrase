@@ -20,8 +20,9 @@ def make_pass():
     """
     secure_random = random.SystemRandom()
 
-    engl_dict = Path('/usr/share/dict/words').read_text()
-    word_list = engl_dict.split()
+    english_dictionary = Path('/usr/share/dict/words').read_text()
+    word_list = english_dictionary.split()
+    # Need to remove words having the possessive form.
     uniq_words = [word for word in word_list if re.search(r"'s", word) is None]
     trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
     print('There are', len(word_list), 'words in the entire dictionary.')  # 102401
