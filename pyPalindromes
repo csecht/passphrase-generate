@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""
+Explore two types of pyPalindromes. Inspired by code from @python_genius.
+"""
+import sys
+
+
+def makepal():
+    """Test and generate different forms of pyPalindromes from input
+    """
+    myword = input("Enter a word or phrase to make into a palindrome: ")
+    # This does not repeat the last letter; last letter is common between them.
+    print('Here are the two types of pyPalindromes...')
+    print(myword[:-1]+myword[::-1])
+    # This does repeat last letter
+    print(myword + myword[::-1])
+
+    # True/False test of palindrome
+    print('Is entered phrase a palindrome?')
+    print(myword == myword[::-1])
+
+
+makepal()
+
+repeat = input("Generate and test more pyPalindromes? (y/n): ")
+while repeat in 'yY':
+    makepal()
+    repeat = input("Generate more? (y/n): ")
+if repeat not in 'ynYN' or repeat in "nN":
+    print('Bye...')
+    sys.exit(0)

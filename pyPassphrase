@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+"""
+Inspired by and based on code from @python_genius via Instagram.
+Not usable on Windows because of no way(?) to read the Dictionary.
+"""
+
+import random
+import sys
+from string import digits, punctuation, ascii_letters, ascii_uppercase
+from pathlib import Path
+# import string
+# caps = string.uppercase
+# small = string.lowercase
+
+
+def make_pass():
+    """Generate options for passwords and phrases in various forms.
+    """
+    secure_random = random.SystemRandom()
+
+    engl_dict = Path('/usr/share/dict/words').read_text()
+    word_list = engl_dict.split()
+    short_list = [word for word in word_list if 8 >= len(word) >= 3]
+    print('There are', len(word_list), 'words in the entire dictionary.')  # 102401
+    print('There are', len(short_list), 'words of 3 to 8 letters.')
+
+    symbols = "~!@#$%^&*_-+=[]"
+    caps = ascii_uppercase
+    string1 = ascii_letters + digits + punctuation
+    string2 = ascii_letters + digits + symbols
+
+    # Remove possessive notation from words.
+    allwords = "".join(secure_random.choice(word_list).replace("'s", "") for
+                       _ in range(num_words))
+    somewords = "".join(secure_random.choice(short_list).replace("'s", "") for
+                        _ in range(num_words))
+    addsymbol = "".join(secure_random.choice(symbols) for _ in range(1))
+    addCap = "".join(secure_random.choice(caps) for _ in range(1))
+    addnum = "".join(secure_random.choice(digits) for _ in range(1))
+
+    passphrase1 = allwords.lower() + addsymbol + addnum + addCap
+    passphrase2 = somewords.lower() + addsymbol + addnum + addCap
+    password1 = "".join(secure_random.choice(string1) for _ in range(num_char))
+    password2 = "".join(secure_random.choice(string2) for _ in range(num_char))
+
+    print('\nPassphrases:')
+    print(f"Any {num_words} words ({len(allwords)} characters):"
+          f"               {allwords}")
+    print(f"Same, lower case, plus valid characters:   {passphrase1}")
+    print(f"{num_words} words of 3 to 8 letters ({len(passphrase2)} "
+          f"characters): {passphrase2}")
+    print('\nPasswords:')
+    print(f"Any {num_char} characters:                 {password1}")
+    print(f"Less chance of invalid characters: {password2}")
+    print('================================================================\n')
+
+    repeat = input("Generate more choices? (y/n): ")
+    while repeat in 'yY':
+        make_pass()
+        repeat = input("Generate more? (y/n): ")
+    if repeat not in 'ynYN' or repeat in 'nN':
+        print('Bye...')
+        sys.exit(0)
+
+
+if __name__ == "__main__":
+    try:
+        num_words = int(input("Enter number of words for passphrase: "))
+        num_char = int(input("Enter character length for password: "))
+    except ValueError as err:
+        MSG = '*** Sorry, the entry needs to be an integer. Exiting.... ***'
+        print(f'\n{MSG}\nThe problem is: {err}')
+        sys.exit(1)
+    make_pass()
