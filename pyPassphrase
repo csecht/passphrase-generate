@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Inspired by and based on code from @python_genius via Instagram.
+Inspired by and based on code from @codehub.py via Instagram.
 Not usable on Windows because of no way(?) to read the Dictionary.
 """
 
@@ -26,7 +26,7 @@ def make_pass():
     uniq_words = [word for word in word_list if re.search(r"'s", word) is None]
     trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
     print('There are', len(word_list), 'words in the entire dictionary.')  # 102401
-    print('There are', len(uniq_words), 'unique words, excluding possessives')
+    print('There are', len(uniq_words), 'unique words (excludes possessives)')
     print('There are', len(trim_words), 'unique words of 3 to 8 letters.')
 
     symbols = "~!@#$%^&*_-+=[]"
