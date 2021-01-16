@@ -143,7 +143,7 @@ class Generator:
                                    padx=5, sticky=tk.EW)
 
         self.any_describe.configure(   text="Any words")
-        self.any_lc_describe.configure(text="Lower case, plus 3 characters")
+        self.any_lc_describe.configure(text="Lower case, plus 3 symbols")
         self.select_describe.configure(text="Words of 3 to 8 letters")
         self.any_describe.grid(   column=0, row=3, sticky=tk.E)
         self.any_lc_describe.grid(column=0, row=4, sticky=tk.E)
@@ -313,7 +313,7 @@ def word_info() -> None:
             f"possessive forms of nouns (English dictionary)\n"
             f"There are {len(trim_words)} unique words of 3 to 8 letters.\n"
             "Passphrases may include proper names found in the dictionary.\n"
-            f"The extra characters used in passphrases and those more likely "
+            f"The extra symbols used in passphrases and those more likely "
             f"usable in passwords are: {SYMBOLS}")
     infowin = tk.Toplevel()
     # infowin.minsize(750, 250)
