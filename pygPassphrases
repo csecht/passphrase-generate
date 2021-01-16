@@ -27,15 +27,15 @@ class Generator:
         """
         self.master = master
 
-        self.master_fg = 'LightCyan2'  # foreground for row labels
+        # main window background color, also used for some labels.
+        self.master_bg = 'SkyBlue4'
+        master.configure(bg=self.master_bg)
+        self.master_fg = 'LightCyan2'  # foreground for user entry labels
         self.frame_bg = 'grey40'  # background for data labels and frame
         self.frame_fg = 'grey90'
         self.pass_fg = 'brown4'
         self.pass_bg = 'khaki2'
         self.passstub_fg = 'grey60'
-        # window background color, also used for some labels.
-        self.master_bg = 'SkyBlue4'
-        master.configure(bg=self.master_bg)
 
         self.master.bind("<Escape>", lambda q: quitgui())
         self.master.bind("<Control-q>", lambda q: quitgui())
@@ -48,11 +48,11 @@ class Generator:
         self.generate_btn = tk.Button(self.master)
         self.quit_btn = tk.Button(self.master)
         self.result_frame = tk.Frame(self.master)
-        self.length_label = ttk.Label(self.result_frame)
-        self.passphrase_label = ttk.Label(self.result_frame)
-        self.any_describe = ttk.Label(self.result_frame)
-        self.any_lc_describe = ttk.Label(self.result_frame)
-        self.select_describe = ttk.Label(self.result_frame)
+        self.length_label = tk.Label(self.result_frame)
+        self.passphrase_label = tk.Label(self.result_frame)
+        self.any_describe = tk.Label(self.result_frame)
+        self.any_lc_describe = tk.Label(self.result_frame)
+        self.select_describe = tk.Label(self.result_frame)
         self.length_any = tk.IntVar()
         self.length_lc = tk.IntVar()
         self.length_select = tk.IntVar()
@@ -133,18 +133,23 @@ class Generator:
 
         # Passphrase results section:
         # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-style-layer.html
-        rstyle = ttk.Style()
-        rstyle.configure('TLabel', foreground=self.frame_fg,
-                         background=self.frame_bg)
-        self.length_label.configure(    text='Length')
-        self.passphrase_label.configure(text='Passphrases')
+        # This style statement for background of ttk.Labels does not work on MacOS
+        # rstyle = ttk.Style()
+        # rstyle.configure('TLabel', foreground=self.frame_fg, bg=self.frame_bg)
+        self.length_label.config(    text='Length',
+                                     fg=self.frame_fg, bg=self.frame_bg)
+        self.passphrase_label.config(text='Passphrases',
+                                     fg=self.frame_fg, bg=self.frame_bg)
         self.length_label.grid(column=1, row=2, padx=5, sticky=tk.EW)
         self.passphrase_label.grid(column=2, row=2, columnspan=2,
                                    padx=5, sticky=tk.EW)
 
-        self.any_describe.configure(   text="Any words")
-        self.any_lc_describe.configure(text="Lower case, plus 3 symbols")
-        self.select_describe.configure(text="Words of 3 to 8 letters")
+        self.any_describe.config(   text="Any words",
+                                    fg=self.frame_fg, bg=self.frame_bg)
+        self.any_lc_describe.config(text="Lower case, plus 3 symbols",
+                                    fg=self.frame_fg, bg=self.frame_bg)
+        self.select_describe.config(text="Words of 3 to 8 letters",
+                                    fg=self.frame_fg, bg=self.frame_bg)
         self.any_describe.grid(   column=0, row=3, sticky=tk.E)
         self.any_lc_describe.grid(column=0, row=4, sticky=tk.E)
         self.select_describe.grid(column=0, row=5, sticky=tk.E)
