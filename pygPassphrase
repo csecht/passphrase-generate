@@ -7,10 +7,18 @@ Not usable on Windows because of no way(?) to read the Dictionary.
 import os
 import random
 import re
-import tkinter as tk
-import tkinter.ttk as ttk
 from string import digits, punctuation, ascii_letters, ascii_uppercase
 from pathlib import Path
+
+try:
+    import tkinter as tk
+    # import tkinter.ttk as ttk
+    from tkinter.scrolledtext import ScrolledText
+    from tkinter import messagebox
+except (ImportError, ModuleNotFoundError) as error:
+    print('GUI requires tkinter, which is included with Python 3.7 and higher')
+    print('Install 3.7+ or re-install Python and include Tk/Tcl.')
+    print(f'See also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 PROGRAM_VER = '0.1.0'
 STUBRESULT = 'Result can be copied and pasted'
@@ -26,27 +34,25 @@ class Generator:
         """Window layout and default values are set up here.
         """
         self.master = master
-
-        # main window background color, also used for some labels.
-        self.master_bg = 'SkyBlue4'
-        master.configure(bg=self.master_bg)
-        self.master_fg = 'LightCyan2'  # foreground for user entry labels
-        self.frame_bg = 'grey40'  # background for data labels and frame
-        self.frame_fg = 'grey90'
-        self.pass_fg = 'brown4'
-        self.pass_bg = 'khaki2'
-        self.passstub_fg = 'grey60'
-
         self.master.bind("<Escape>", lambda q: quitgui())
         self.master.bind("<Control-q>", lambda q: quitgui())
 
+        # main window background color, also used for some labels.
+        self.master_bg = 'SkyBlue4'
+        self.master_fg = 'LightCyan2'  # foreground for user entry labels
+        self.frame_bg = 'grey40'  # background for data labels and frame
+        self.frame_fg = 'grey90'
+        self.passstub_fg = 'grey60'
+        self.pass_fg = 'brown4'
+        self.pass_bg = 'khaki2'
+
         # Variables used in window_setup(), in order of appearance:
-        self.numwords_label = tk.Label(self.master)
-        self.numwords_entry = tk.Entry(self.master)
-        self.numchars_label = tk.Label(self.master)
-        self.numchars_entry = tk.Entry(self.master)
-        self.generate_btn = tk.Button(self.master)
-        self.quit_btn = tk.Button(self.master)
+        self.numwords_label = tk.Label()
+        self.numwords_entry = tk.Entry()
+        self.numchars_label = tk.Label()
+        self.numchars_entry = tk.Entry()
+        self.generate_btn = tk.Button()
+        self.quit_btn = tk.Button()
         self.result_frame = tk.Frame(self.master)
         self.length_label = tk.Label(self.result_frame)
         self.passphrase_label = tk.Label(self.result_frame)
@@ -91,6 +97,7 @@ class Generator:
 
         :return: A pretty interactive window.
         """
+        self.master.configure(bg=self.master_bg)
 
         # creating a menu instance
         menu = tk.Menu(self.master)
@@ -119,12 +126,14 @@ class Generator:
         self.numchars_entry.insert(0, 12)
         self.generate_btn.config(text='Generate!', command=self.make_pass)
         self.quit_btn.config(text='Quit', command=quitgui)
-        self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0), sticky=tk.E)
+
+        self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0),
+                                 sticky=tk.E)
         self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
         self.numchars_label.grid(column=0, row=1, padx=5, pady=3, sticky=tk.E)
         self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
-        self.generate_btn.grid(  column=2, row=1)
-        self.quit_btn.grid(      column=3, row=1)
+        self.generate_btn.grid(  column=2, row=1, sticky=tk.W)
+        self.quit_btn.grid(      column=3, row=1, sticky=tk.W)
 
         # Set up frame for results:
         self.result_frame.config(borderwidth=3, relief='sunken',
@@ -140,9 +149,8 @@ class Generator:
                                      fg=self.frame_fg, bg=self.frame_bg)
         self.passphrase_label.config(text='Passphrases',
                                      fg=self.frame_fg, bg=self.frame_bg)
-        self.length_label.grid(column=1, row=2, padx=5, sticky=tk.EW)
-        self.passphrase_label.grid(column=2, row=2, columnspan=2,
-                                   padx=5, sticky=tk.EW)
+        self.length_label.grid(    column=1, row=2, padx=5, sticky=tk.EW)
+        self.passphrase_label.grid(column=2, row=2, padx=5, sticky=tk.W)
 
         self.any_describe.config(   text="Any words",
                                     fg=self.frame_fg, bg=self.frame_bg)
@@ -157,12 +165,12 @@ class Generator:
         self.length_any.set(0)
         self.length_lc.set(0)
         self.length_select.set(0)
-        self.length_any_label.config(   width=3,
-                                        textvariable=self.length_any)
-        self.length_lc_label.config(    width=3,
-                                        textvariable=self.length_lc)
-        self.length_select_label.config(width=3,
-                                        textvariable=self.length_select)
+        self.length_any_label.config(   textvariable=self.length_any,
+                                        width=3)
+        self.length_lc_label.config(    textvariable=self.length_lc,
+                                        width=3)
+        self.length_select_label.config(textvariable=self.length_select,
+                                        width=3)
         self.length_any_label.grid(   column=1, row=3)
         self.length_lc_label.grid(    column=1, row=4)
         self.length_select_label.grid(column=1, row=5)
@@ -177,11 +185,11 @@ class Generator:
         self.phrase_sel_display.config(width=50, font='TkFixedFont',
                                        fg=self.passstub_fg, bg=self.pass_bg)
         self.phrase_any_display.grid(column=2, row=3, columnspan=2,
-                                     padx=5, pady=3, sticky=tk.EW)
+                                     ipadx=5, padx=5, pady=3, sticky=tk.EW)
         self.phrase_lc_display.grid(column=2, row=4, columnspan=2,
-                                    padx=5, pady=3, sticky=tk.EW)
+                                    ipadx=5, padx=5, pady=3, sticky=tk.EW)
         self.phrase_sel_display.grid(column=2, row=5, columnspan=2,
-                                     padx=5, pady=3, sticky=tk.EW)
+                                     ipadx=5, padx=5, pady=3, sticky=tk.EW)
 
         # Password results section:
         self.pw_label.config(text='Passwords',
@@ -190,7 +198,7 @@ class Generator:
 
         self.pw_any_describe.config(text="Any characters",
                                     fg=self.frame_fg, bg=self.frame_bg)
-        self.pw_select_describe.config(text="Characters that are more likely usable",
+        self.pw_select_describe.config(text="More likely usable characters ",
                                        fg=self.frame_fg, bg=self.frame_bg)
         self.pw_any.set(STUBRESULT)
         self.pw_select.set(STUBRESULT)
@@ -198,14 +206,14 @@ class Generator:
                                    fg=self.passstub_fg, bg=self.pass_bg)
         self.pw_select_display.config(width=50, font='TkFixedFont',
                                       fg=self.passstub_fg, bg=self.pass_bg)
-        self.pw_any_describe.grid(   column=0, row=7, columnspan=2,
+        self.pw_any_describe.grid(   column=0, row=7,
                                      padx=5, sticky=tk.E)
-        self.pw_select_describe.grid(column=0, row=8, columnspan=2,
+        self.pw_select_describe.grid(column=0, row=8,
                                      padx=5, sticky=tk.E)
-        self.pw_any_display.grid(    column=2, row=7, columnspan=2,
-                                     padx=5, pady=(6, 3), sticky=tk.W)
-        self.pw_select_display.grid( column=2, row=8, columnspan=2,
-                                     padx=5, pady=(3, 6), sticky=tk.W)
+        self.pw_any_display.grid(    column=2, row=7, columnspan=2, ipadx=5,
+                                     padx=5, pady=(6, 3), sticky=tk.EW)
+        self.pw_select_display.grid( column=2, row=8, columnspan=2, ipadx=5,
+                                     padx=5, pady=(3, 6), sticky=tk.EW)
 
     def make_pass(self):
         """Generate various forms of passphrases and passwords.
@@ -238,9 +246,12 @@ class Generator:
         password2 = "".join(secure_random.choice(string2) for
                             _ in range(int(self.numchars_entry.get())))
 
-        # This display.config will adjust width of results entry widgets to the
-        #   longest string
+        # display.config width will adjust width of results entry widgets to
+        # the longest result string.
         self.phrase_any_display.config(width=len(passphrase1))
+        self.pw_any_display.config(width=len(password1))
+        self.pw_select_display.config(width=len(password2))
+
         self.phrase_any.set(allwords)
         self.phrase_lc.set(passphrase1)
         self.phrase_select.set(passphrase2)
@@ -265,7 +276,7 @@ def about() -> None:
     """
     # msg separators use em dashes.
     boilerplate = ("""
-pygPassphrase generates secure passphrases and passwords.
+pygPassphrase privately generates passphrases and passwords.
 Download the most recent version from: 
 https://github.com/csecht/general_utilities
 
