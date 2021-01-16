@@ -4,7 +4,7 @@
 Inspired by and based on code from @codehub.py via Instagram.
 Not usable on Windows because of no way(?) to read the Dictionary.
 """
-
+import os
 import random
 import re
 import sys
@@ -29,7 +29,7 @@ def make_pass():
     print('There are', len(uniq_words), 'unique words (excludes possessives)')
     print('There are', len(trim_words), 'unique words of 3 to 8 letters.')
 
-    symbols = "~!@#$%^&*_-+=[]"
+    symbols = "~!@#$%^&*_-"
     caps = ascii_uppercase
     string1 = ascii_letters + digits + punctuation
     string2 = ascii_letters + digits + symbols
@@ -68,6 +68,7 @@ def make_pass():
 
 
 if __name__ == "__main__":
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
     try:
         num_words = int(input("Enter number of words for passphrase: "))
         num_char = int(input("Enter character length for password: "))

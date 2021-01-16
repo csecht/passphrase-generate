@@ -1,0 +1,315 @@
+#!/usr/bin/env python3
+
+"""
+Inspired by and based on code from @codehub.py via Instagram.
+Not usable on Windows because of no way(?) to read the Dictionary.
+"""
+import os
+import random
+import re
+import sys
+import tkinter as tk
+import tkinter.ttk as ttk
+from string import digits, punctuation, ascii_letters, ascii_uppercase
+from pathlib import Path
+
+PROGRAM_VER = '0.1.0'
+STUBRESULT = 'Result can be copied and pasted'
+SYS_DICTIONARY = Path('/usr/share/dict/words').read_text()
+SYMBOLS = "~!@#$%^&*_-"
+
+
+class Generator:
+    """
+    Makes a GUI window for user to specify length of passwords and passphrases.
+    """
+    def __init__(self, master):
+        """Window layout and default values are set up here.
+        """
+        self.master = master
+
+        self.master_fg = 'LightCyan2'  # foreground for row labels
+        self.frame_bg = 'grey40'  # background for data labels and frame
+        self.frame_fg = 'grey90'
+        self.pass_fg = 'brown4'
+        self.pass_bg = 'khaki2'
+        self.passstub_fg = 'grey60'
+        # window background color, also used for some labels.
+        self.master_bg = 'SkyBlue4'
+        master.configure(bg=self.master_bg)
+
+        self.master.bind("<Escape>", lambda q: quitgui())
+        self.master.bind("<Control-q>", lambda q: quitgui())
+
+        # creating a menu instance
+        menu = tk.Menu(self.master)
+        self.master.config(menu=menu)
+
+        # Add pull-down menus
+        file = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="File", menu=file)
+        file.add_command(label="Quit", command=quitgui,
+                         accelerator="Ctrl+Q")
+
+        help_menu = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="Word info", command=word_info)
+        help_menu.add_command(label="About", command=about)
+
+        # Set up user entry and control:
+        self.numwords_label = tk.Label(master, text='Desired # words',
+                                       fg=self.master_fg, bg=self.master_bg)
+        self.numwords_entry = tk.Entry(master, width=2, takefocus=True)
+        self.numwords_entry.insert(0, '5')
+        self.numchars_label = tk.Label(master, text='Desired # characters',
+                                       fg=self.master_fg, bg=self.master_bg)
+        self.numchars_entry = tk.Entry(master, width=3)
+        self.numchars_entry.insert(0, 12)
+        self.generate_btn = tk.Button(master, text='Generate!',
+                                      command=self.make_pass)
+        self.quit_btn = tk.Button(master, text='Quit',
+                                  command=quitgui)
+        self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0), sticky=tk.E)
+        self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
+        self.numchars_label.grid(column=0, row=1, padx=5, pady=3, sticky=tk.E)
+        self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
+        self.generate_btn.grid(  column=2, row=1)
+        self.quit_btn.grid(      column=3, row=1)
+
+        # Set up frame for results:
+        self.result_frame = tk.Frame(master, borderwidth=3, relief='sunken',
+                                     background=self.frame_bg)
+        self.result_frame.grid(column=0, row=2, columnspan=4, padx=5, pady=5)
+
+        # Passphrase results section:
+        # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-style-layer.html
+        rstyle = ttk.Style()
+        rstyle.configure('TLabel', foreground=self.frame_fg,
+                         background=self.frame_bg)
+        self.length_label = ttk.Label(self.result_frame, text='Length')
+        self.passphrase_label = ttk.Label(self.result_frame,
+                                          text='Passphrases')
+        self.length_label.grid(column=1, row=2, padx=5, sticky=tk.EW)
+        self.passphrase_label.grid(column=2, row=2, columnspan=2,
+                                   padx=5, sticky=tk.EW)
+
+        self.any_describe = ttk.Label(self.result_frame,
+                                      text="Any words")
+        self.any_lc_describe = ttk.Label(self.result_frame,
+                                         text="Lower case, plus 3 characters")
+        self.select_describe = ttk.Label(self.result_frame,
+                                         text="Words of 3 to 8 letters")
+        self.any_describe.grid(   column=0, row=3, sticky=tk.E)
+        self.any_lc_describe.grid(column=0, row=4, sticky=tk.E)
+        self.select_describe.grid(column=0, row=5, sticky=tk.E)
+
+        self.length_any =    tk.StringVar(value=0)
+        self.length_lc =     tk.StringVar(value=0)
+        self.length_select = tk.StringVar(value=0)
+        self.length_any_label = tk.Label(self.result_frame, width=3,
+                                         textvariable=self.length_any)
+        self.length_lc_label = tk.Label(self.result_frame, width=3,
+                                        textvariable=self.length_lc)
+        self.length_select_label = tk.Label(self.result_frame, width=3,
+                                            textvariable=self.length_select)
+        self.length_any_label.grid(   column=1, row=3)
+        self.length_lc_label.grid(    column=1, row=4)
+        self.length_select_label.grid(column=1, row=5)
+
+        self.phrase_any =    tk.StringVar(value=STUBRESULT)
+        self.phrase_lc =     tk.StringVar(value=STUBRESULT)
+        self.phrase_select = tk.StringVar(value=STUBRESULT)
+        self.phrase_any_display = tk.Entry(self.result_frame, width=50,
+                                           textvariable=self.phrase_any,
+                                           font='TkFixedFont',
+                                           fg=self.passstub_fg, bg=self.pass_bg)
+        self.phrase_lc_display = tk.Entry(self.result_frame, width=50,
+                                          textvariable=self.phrase_lc,
+                                          font='TkFixedFont',
+                                          fg=self.passstub_fg, bg=self.pass_bg)
+        self.phrase_sel_display = tk.Entry(self.result_frame, width=50,
+                                           textvariable=self.phrase_select,
+                                           font='TkFixedFont',
+                                           fg=self.passstub_fg, bg=self.pass_bg)
+        self.phrase_any_display.grid(column=2, row=3, columnspan=2,
+                                     padx=5, pady=3, sticky=tk.EW)
+        self.phrase_lc_display.grid(column=2, row=4, columnspan=2,
+                                    padx=5, pady=3, sticky=tk.EW)
+        self.phrase_sel_display.grid(column=2, row=5, columnspan=2,
+                                     padx=5, pady=3, sticky=tk.EW)
+
+        # Password results section:
+        self.pw_label = tk.Label(self.result_frame, text='Passwords',
+                                 fg=self.frame_fg, bg=self.frame_bg)
+        self.pw_label.grid(column=2, row=6, sticky=tk.W)
+
+        self.pw_any_describe = tk.Label(self.result_frame,
+                                        text="Any characters",
+                                        fg=self.frame_fg, bg=self.frame_bg)
+        self.pw_select_describe = tk.Label(self.result_frame,
+                                           text="Characters that are more "
+                                                "likely usable",
+                                           fg=self.frame_fg, bg=self.frame_bg)
+        self.pw_any = tk.StringVar(value=STUBRESULT)
+        self.pw_select = tk.StringVar(value=STUBRESULT)
+        self.pw_any_display = tk.Entry(self.result_frame, width=50,
+                                       textvariable=self.pw_any,
+                                       font='TkFixedFont',
+                                       fg=self.passstub_fg, bg=self.pass_bg)
+        self.pw_select_display = tk.Entry(self.result_frame, width=50,
+                                          textvariable=self.pw_select,
+                                          font='TkFixedFont',
+                                          fg=self.passstub_fg, bg=self.pass_bg)
+        self.pw_any_describe.grid(   column=0, row=7, columnspan=2,
+                                     padx=5, sticky=tk.E)
+        self.pw_select_describe.grid(column=0, row=8, columnspan=2,
+                                     padx=5, sticky=tk.E)
+        self.pw_any_display.grid(    column=2, row=7, columnspan=2,
+                                     padx=5, pady=(6, 3), sticky=tk.W)
+        self.pw_select_display.grid( column=2, row=8, columnspan=2,
+                                     padx=5, pady=(3, 6), sticky=tk.W)
+
+        # Variables used in make_pass():
+        self.word_list = []
+        self.uniq_words = []
+        self.trim_words = []
+
+    def make_pass(self):
+        """Generate various forms of passphrases and passwords.
+        """
+
+        secure_random = random.SystemRandom()
+
+        # sys_dictionary = Path('/usr/share/dict/words').read_text()
+        self.word_list = SYS_DICTIONARY.split()
+        # Need to remove words having the possessive form.
+        self.uniq_words = [word for word in self.word_list if re.search(r"'s",word) is None]
+        self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
+
+        caps = ascii_uppercase
+        string1 = ascii_letters + digits + punctuation
+        string2 = ascii_letters + digits + SYMBOLS
+
+        allwords = "".join(secure_random.choice(self.uniq_words) for
+                           _ in range(int(self.numwords_entry.get())))
+        somewords = "".join(secure_random.choice(self.trim_words) for
+                            _ in range(int(self.numwords_entry.get())))
+        addsymbol = "".join(secure_random.choice(SYMBOLS) for _ in range(1))
+        addCap = "".join(secure_random.choice(caps) for _ in range(1))
+        addnum = "".join(secure_random.choice(digits) for _ in range(1))
+
+        passphrase1 = allwords.lower() + addsymbol + addnum + addCap
+        passphrase2 = somewords.lower() + addsymbol + addnum + addCap
+        password1 = "".join(secure_random.choice(string1) for
+                            _ in range(int(self.numchars_entry.get())))
+        password2 = "".join(secure_random.choice(string2) for
+                            _ in range(int(self.numchars_entry.get())))
+
+        # This display.config will adjust width of results entry widgets to the
+        #   longest string
+        self.phrase_any_display.config(width=len(passphrase1))
+        self.phrase_any.set(allwords)
+        self.phrase_lc.set(passphrase1)
+        self.phrase_select.set(passphrase2)
+        self.length_any.set(len(allwords))
+        self.length_lc.set(len(passphrase1))
+        self.length_select.set(len(passphrase2))
+        self.pw_any.set(password1)
+        self.pw_select.set(password2)
+        # Change font colors of the results from self.passstub_fg
+        self.phrase_any_display.config(fg=self.pass_fg)
+        self.phrase_lc_display.config(fg=self.pass_fg)
+        self.phrase_sel_display.config(fg=self.pass_fg)
+        self.pw_any_display.config(fg=self.pass_fg)
+        self.pw_select_display.config(fg=self.pass_fg)
+
+
+def about() -> None:
+    """
+    Basic information for count-tasks; called from GUI Help menu.
+
+    :return: Information window.
+    """
+    # msg separators use em dashes.
+    boilerplate = ("""
+pygPassphrase generates secure passphrases and passwords.
+Download the most recent version from: 
+https://github.com/csecht/general_utilities
+
+————————————————————————————————————————————————————————————————————
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.\n
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.\n
+You should have received a copy of the GNU General Public License
+along with this program. If not, see https://www.gnu.org/licenses/
+————————————————————————————————————————————————————————————————————\n
+            Author:     cecht
+            Copyright:  Copyright (C) 2021 C. Echt
+            Development Status: 4 - Beta
+            Version:    """)
+
+    num_lines = boilerplate.count('\n')
+    aboutwin = tk.Toplevel()
+    # aboutwin.minsize(570, 460)
+    aboutwin.title('About count-tasks')
+    colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
+              'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
+              'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
+              'DarkOrchid4']
+    bkg = random.choice(colour)
+    abouttxt = tk.Text(aboutwin, width=72, height=num_lines + 2,
+                       background=bkg, foreground='grey98',
+                       relief='groove', borderwidth=5, padx=5)
+    abouttxt.insert('1.0', boilerplate + PROGRAM_VER)
+    # Center text preceding the Author, etc. details.
+    abouttxt.tag_add('text1', '1.0', float(num_lines - 5))
+    abouttxt.tag_configure('text1', justify='center')
+    abouttxt.pack()
+
+
+def word_info() -> None:
+    """Provide information about number of words used to create passphrases
+    """
+    # This duplicates statements from make_pass(). So include as class method?
+    word_list = SYS_DICTIONARY.split()
+    uniq_words = [word for word in word_list if re.search(r"'s", word) is None]
+    trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
+    info = (f'In the system dictionary used to create passphrases:\n'
+            f"There are {len(word_list)} words in the entire dictionary.\n"
+            f"There are {len(uniq_words)} unique words (excludes "
+            f"possessive forms of nouns (English dictionary)\n"
+            f"There are {len(trim_words)} unique words of 3 to 8 letters.\n"
+            f"The extra characters used in passphrases and those more likely "
+            f"usable in passwords are: {SYMBOLS}")
+    infowin = tk.Toplevel()
+    # infowin.minsize(750, 250)
+    infowin.title('Information about words used')
+    infotxt = tk.Text(infowin, width=100, height=5,
+                      background='SkyBlue4', foreground='grey98',
+                      relief='groove', borderwidth=5, padx=5)
+    infotxt.insert('1.0', info)
+    # Center text preceding the Author, etc. details.
+    # infotxt.tag_add('text1', '1.0', float(num_lines - 5))
+    # infotxt.tag_configure('text1', justify='center')
+    infotxt.pack()
+
+
+def quitgui() -> None:
+    """Safe and informative exit from the program.
+    """
+    print('\n  *** User has quit pyPassphrase. Exiting...\n')
+    root.destroy()
+
+
+if __name__ == "__main__":
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    root = tk.Tk()
+    root.title("Passphrase Generator")
+    # root.resizable(False, False)
+    Generator(root)
+    root.mainloop()
