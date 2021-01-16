@@ -347,7 +347,7 @@ def word_info() -> None:
 def quitgui() -> None:
     """Safe and informative exit from the program.
     """
-    print('\n  *** User has quit pygPassphrase. Exiting...\n')
+    print(f'\n  *** User has quit {__file__}. Exiting...\n')
     root.destroy()
 
 
