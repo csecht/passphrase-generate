@@ -109,8 +109,7 @@ class Generator:
         # Add pull-down menus
         file = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=file)
-        file.add_command(label="Quit", command=quitgui,
-                         accelerator="Ctrl+Q")
+        file.add_command(label="Quit", command=quitgui, accelerator="Ctrl+Q")
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=help_menu)
@@ -119,9 +118,11 @@ class Generator:
 
         # Set up user entry and control:
         tk.Checkbutton(text='Use EFF word list ',
-                       variable=self.eff, fg=self.master_fg, bg=self.master_bg,
-                       selectcolor=self.frame_bg).grid(column=2, row=0,
-                                                       pady=5, sticky=tk.W)
+                       variable=self.eff,
+                       fg=self.master_fg, bg=self.master_bg,
+                       activebackground='grey80',
+                       selectcolor=self.frame_bg
+                       ).grid(column=2, row=0, pady=5, sticky=tk.W)
         self.numwords_label.config(text='Enter desired # words',
                                    fg=self.master_fg, bg=self.master_bg)
         self.numwords_entry.config(width=2)
