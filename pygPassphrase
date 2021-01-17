@@ -26,21 +26,25 @@ MY_OS = sys.platform[:3]
 # MY_OS = 'win' # TESTING
 USE_EFF = True
 
+effdict_path = Path('eff_large_wordlist.txt')
+sysdict_path = Path('/usr/share/dict/words')
 # Already evaluated presence of Windows eff file in if __name__, now need to
 #  evaluate whether both word lists are available to Linux and MacOS.
 if MY_OS == 'win':
     SYS_DICTIONARY = 'Null'
-    EFF_DICTIONARY = Path('eff_large_wordlist.txt').read_text()
+    EFF_DICTIONARY = Path(effdict_path).read_text()
 
 if MY_OS in 'lin, dar':
-    if os.path.isfile('/usr/share/dict/words'):
-        SYS_DICTIONARY = Path('/usr/share/dict/words').read_text()
-    else:
+    # if os.path.isfile('/usr/share/dict/words'):
+    if Path.is_file(sysdict_path):
+        SYS_DICTIONARY = Path(sysdict_path).read_text()
+    elif Path.is_file(sysdict_path) is False:
         print('The system dictionary cannot be found. The EFF word list will be used.')
 
-    if os.path.isfile('eff_large_wordlist.txt'):
-        EFF_DICTIONARY = Path('eff_large_wordlist.txt').read_text()
-    else:
+    # if os.path.isfile('eff_large_wordlist.txt'):
+    if Path.is_file(effdict_path):
+        EFF_DICTIONARY = Path(effdict_path).read_text()
+    elif Path.is_file(effdict_path) is False:
         USE_EFF = False
         print('The eff_large_wordlist.txt is not in the working directory.\n'
               'That file can be downloaded from:\n'
@@ -139,7 +143,7 @@ class Generator:
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="Word list info", command=word_info)
+        help_menu.add_command(label="Explanation", command=explain)
         help_menu.add_command(label="About", command=about)
 
         # Set up user entry and control:
@@ -153,17 +157,21 @@ class Generator:
         if USE_EFF is False:
             self.eff_chk.config(state='disabled')
 
-        self.numwords_label.config(text='Enter desired # words',
+        self.numwords_label.config(text='Enter # words for passphrase',
                                    fg=self.master_fg, bg=self.master_bg)
         self.numwords_entry.config(width=2)
         self.numwords_entry.insert(0, '5')
         self.numwords_entry.focus()
-        self.numchars_label.config(text='Enter desired # characters',
+        self.numchars_label.config(text='Enter # characters for password',
                                    fg=self.master_fg, bg=self.master_bg)
         self.numchars_entry.config(width=3)
-        self.numchars_entry.insert(0, 12)
-        self.generate_btn.config(text='Generate!', command=self.make_pass)
-        self.quit_btn.config(text='Quit', command=quitgui)
+        self.numchars_entry.insert(0, 0)
+        self.generate_btn.config(text='Generate!', command=self.make_pass,
+                                 activebackground='PaleGreen3',
+                                 fg='grey20', bg='grey80')
+        self.quit_btn.config(text='Quit', command=quitgui,
+                             activebackground='red3',
+                             fg='grey20', bg='grey80')
 
         # self.eff_chk.grid(column=2, row=0, pady=5, sticky=tk.W)
         self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0),
@@ -366,7 +374,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
     abouttxt.pack()
 
 
-def word_info() -> None:
+def explain() -> None:
     """Provide information about number of words used to create passphrases
     """
     # This duplicates statements from make_pass(). So include as class method?
@@ -376,25 +384,34 @@ def word_info() -> None:
     eff_list = EFF_DICTIONARY.split()
     eff_words = [word for word in eff_list if word.isalpha()]
 
-    info = (f'In the system dictionary used to create passphrases:\n'
-            f"   There are {len(word_list)} words in the entire dictionary.\n"
-            f"   There are {len(uniq_words)} unique words (excludes "
-            "possessive forms of nouns (English dictionary)\n"
-            f"   There are {len(trim_words)} unique words of 3 to 8 letters.\n"
-            "Passphrases may include proper names found in the dictionary.\n"
-            "The extra symbols added to passphrases and those more likely "
-            f"usable in passwords are: {SYMBOLS}\n\n"
-            f"The word list from Electronic Frontier Foundation (EFF), \n"
-            "https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, \n"
-            f"contains 7776 selected words, but only {len(eff_words)} are used here.\n"
-            "For more information on EFF's diceware word list selection, see:\n"
-            'https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases'
-            )
+    info = (
+        'A passphrase is a random string of words that can be more secure and \n'
+        'easier to remember than a shorter or complicated password.\n'
+        "For more information on passphrases, see EFF's discussion, for example,\n"
+        'of diceware and wordlist selection at:\n\n'
+        'https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases\n'
+        'This program has an option to use the EFF long wordlist.\n'
+        'Windows systems will always use the EFF wordlist without another option.\n\n'
+        f'In the system dictionary used to create general passphrases:\n'
+        f"    There are {len(word_list)} words in the entire dictionary.\n"
+        f"    There are {len(uniq_words)} unique words (excludes "
+        "possessive forms of nouns (English dictionary)\n"
+        f"    There are {len(trim_words)} unique words of 3 to 8 letters.\n"
+        "Passphrases may include proper names found in the dictionary.\n"
+        "The extra symbols added to passphrases and those more likely "
+        f"usable in passwords are:\n{SYMBOLS}\n\n"
+        'The word list from Electronic Frontier Foundation (EFF),\n'
+        'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, \n'
+        'does not contain proper names and its words are generally shorter and\n' 
+        'easier to spell. While that official list contains 7776 selected words,\n'
+        f'only {len(eff_words)} are used here.\n'
+        )
 
     infowin = tk.Toplevel()
     # infowin.minsize(750, 250)
-    infowin.title('Information about words used')
-    infotxt = tk.Text(infowin, width=100, height=15,
+    infowin.title('A little about passphrases')
+    num_lines = info.count('\n')
+    infotxt = tk.Text(infowin, width=90, height=num_lines+2,
                       background='SkyBlue4', foreground='grey98',
                       relief='groove', borderwidth=5, padx=5)
     infotxt.insert('1.0', info)
@@ -409,22 +426,22 @@ def quitgui() -> None:
     """
     print(f'\n  *** User has quit {__file__}. Exiting...\n')
     root.destroy()
+    sys.exit(0)
 
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    my_os = sys.platform[:3]
-    MSG = ('Cannot locate either system dictionary or EFF word list. \n'
+    MSG = ('Cannot locate either the system dictionary and EFF word list. \n'
            'At a minimum, the file eff_large_wordlist.txt should be in '
            'the working directory.\nThat file can be downloaded from:\n'
            'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt\n'
            'Exiting now...')
-    if my_os == 'lin' or my_os == 'dar':
+    if MY_OS in 'lin, dar':
         if not os.path.isfile('/usr/share/dict/words') and not os.path.isfile(
                 'eff_large_wordlist.txt'):
             print(MSG)
             sys.exit(1)
-    elif my_os == 'win' and not os.path.isfile('eff_large_wordlist.txt'):
+    elif MY_OS == 'win' and not os.path.isfile('eff_large_wordlist.txt'):
         print(MSG)
         sys.exit(1)
     root = tk.Tk()
