@@ -397,14 +397,16 @@ def explain() -> None:
         f"    There are {len(uniq_words)} unique words (excludes "
         "possessive forms of nouns (English dictionary)\n"
         f"    There are {len(trim_words)} unique words of 3 to 8 letters.\n"
-        "Passphrases may include proper names found in the dictionary.\n"
+        "Passphrases may include proper names and diacritics found in the "
+        "dictionary.\n"
         "The extra symbols added to passphrases and those more likely "
         f"usable in passwords are:\n{SYMBOLS}\n\n"
         'The word list from Electronic Frontier Foundation (EFF),\n'
-        'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, \n'
-        'does not contain proper names and its words are generally shorter and\n' 
-        'easier to spell. While that official list contains 7776 selected words,\n'
-        f'only {len(eff_words)} are used here.\n'
+        'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, '
+        'does not contain \nproper names or diacritics and its words are '
+        'generally shorter and easier to spell.\n'
+        'While that official list contains 7776 selected words, only '
+        f'{len(eff_words)} are used here,\nexcluding four hyphenated words.'
         )
 
     infowin = tk.Toplevel()
