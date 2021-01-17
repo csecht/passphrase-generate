@@ -23,6 +23,8 @@ PROGRAM_VER = '0.2.0'
 STUBRESULT = 'Result can be copied and pasted'
 SYMBOLS = "~!@#$%^&*_-"
 MY_OS = sys.platform[:3]
+# MY_OS = 'win' # TESTING
+USE_EFF = True
 
 # Already evaluated presence of Windows eff file in if __name__, now need to
 #  evaluate whether both word lists are available to Linux and MacOS.
@@ -39,11 +41,11 @@ if MY_OS in 'lin, dar':
     if os.path.isfile('eff_large_wordlist.txt'):
         EFF_DICTIONARY = Path('eff_large_wordlist.txt').read_text()
     else:
-        print('The eff_large_wordlist.txt is not in the working directory\n'
+        USE_EFF = False
+        print('The eff_large_wordlist.txt is not in the working directory.\n'
               'That file can be downloaded from:\n'
               'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt\n'
-              'For this session will use only the system dictionary.\n')
-# TODO: Set conditions for disabling and locking in values for eff Checkbutton.
+              'This session will use only the system dictionary.\n')
 
 
 class Generator:
@@ -67,7 +69,10 @@ class Generator:
         self.pass_bg = 'khaki2'
 
         # Variables used in window_setup(), in order of appearance:
-        self.eff = tk.BooleanVar()
+        #  Don't make an EFF checkbutton in Windows b/c EFF words are default.
+        if MY_OS in 'lin, dar':
+            self.eff = tk.BooleanVar()
+            self.eff_chk = tk.Checkbutton()
         self.numwords_label = tk.Label()
         self.numwords_entry = tk.Entry()
         self.numchars_label = tk.Label()
@@ -138,12 +143,16 @@ class Generator:
         help_menu.add_command(label="About", command=about)
 
         # Set up user entry and control:
-        tk.Checkbutton(text='Use EFF word list ',
-                       variable=self.eff,
-                       fg=self.master_fg, bg=self.master_bg,
-                       activebackground='grey80',
-                       selectcolor=self.frame_bg
-                       ).grid(column=2, row=0, pady=5, sticky=tk.W)
+        if MY_OS in 'lin, dar':
+            self.eff_chk.config(text='Use EFF word list ',
+                                variable=self.eff,
+                                fg=self.master_fg, bg=self.master_bg,
+                                activebackground='grey80',
+                                selectcolor=self.frame_bg)
+            self.eff_chk.grid(column=2, row=0, pady=5, sticky=tk.W)
+        if USE_EFF is False:
+            self.eff_chk.config(state='disabled')
+
         self.numwords_label.config(text='Enter desired # words',
                                    fg=self.master_fg, bg=self.master_bg)
         self.numwords_entry.config(width=2)
@@ -156,6 +165,7 @@ class Generator:
         self.generate_btn.config(text='Generate!', command=self.make_pass)
         self.quit_btn.config(text='Quit', command=quitgui)
 
+        # self.eff_chk.grid(column=2, row=0, pady=5, sticky=tk.W)
         self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0),
                                  sticky=tk.E)
         self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
@@ -272,7 +282,10 @@ class Generator:
         addCap = "".join(secure_random.choice(caps) for _ in range(1))
         addnum = "".join(secure_random.choice(digits) for _ in range(1))
 
-        if self.eff.get() is True:
+        if MY_OS in 'lin, dar' and self.eff.get() is True:
+            self.allwords = self.effwords
+            self.somewords = self.effwords
+        elif MY_OS == 'win':
             self.allwords = self.effwords
             self.somewords = self.effwords
 
