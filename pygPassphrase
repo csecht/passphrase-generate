@@ -7,6 +7,7 @@ Not usable on Windows because of no way(?) to read the Dictionary.
 import os
 import random
 import re
+import sys
 from string import digits, punctuation, ascii_letters, ascii_uppercase
 from pathlib import Path
 
@@ -18,11 +19,31 @@ except (ImportError, ModuleNotFoundError) as error:
     print('Install 3.7+ or re-install Python and include Tk/Tcl.')
     print(f'See also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.1.0'
+PROGRAM_VER = '0.2.0'
 STUBRESULT = 'Result can be copied and pasted'
-SYS_DICTIONARY = Path('/usr/share/dict/words').read_text()
-EFF_DICTIONARY = Path('eff_large_wordlist.txt').read_text()
 SYMBOLS = "~!@#$%^&*_-"
+MY_OS = sys.platform[:3]
+
+# Already evaluated presence of Windows eff file in if __name__, now need to
+#  evaluate whether both word lists are available to Linux and MacOS.
+if MY_OS == 'win':
+    SYS_DICTIONARY = 'Null'
+    EFF_DICTIONARY = Path('eff_large_wordlist.txt').read_text()
+
+if MY_OS in 'lin, dar':
+    if os.path.isfile('/usr/share/dict/words'):
+        SYS_DICTIONARY = Path('/usr/share/dict/words').read_text()
+    else:
+        print('The system dictionary cannot be found. The EFF word list will be used.')
+
+    if os.path.isfile('eff_large_wordlist.txt'):
+        EFF_DICTIONARY = Path('eff_large_wordlist.txt').read_text()
+    else:
+        print('The eff_large_wordlist.txt is not in the working directory\n'
+              'That file can be downloaded from:\n'
+              'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt\n'
+              'For this session will use only the system dictionary.\n')
+# TODO: Set conditions for disabling and locking in values for eff Checkbutton.
 
 
 class Generator:
@@ -379,6 +400,20 @@ def quitgui() -> None:
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    my_os = sys.platform[:3]
+    MSG = ('Cannot locate either system dictionary or EFF word list. \n'
+           'At a minimum, the file eff_large_wordlist.txt should be in '
+           'the working directory.\nThat file can be downloaded from:\n'
+           'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt\n'
+           'Exiting now...')
+    if my_os == 'lin' or my_os == 'dar':
+        if not os.path.isfile('/usr/share/dict/words') and not os.path.isfile(
+                'eff_large_wordlist.txt'):
+            print(MSG)
+            sys.exit(1)
+    elif my_os == 'win' and not os.path.isfile('eff_large_wordlist.txt'):
+        print(MSG)
+        sys.exit(1)
     root = tk.Tk()
     root.title("Passphrase Generator")
     # root.resizable(False, False)
