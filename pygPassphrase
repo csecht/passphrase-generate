@@ -122,7 +122,8 @@ class Generator:
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="Explanation", command=self.explain)
+        help_menu.add_command(label="What are passphrases?",
+                              command=self.explain)
         help_menu.add_command(label="About", command=about)
 
         # Set up user entry and control:
@@ -294,7 +295,7 @@ class Generator:
         self.eff_list = self.eff_wordlist.split()
 
     def make_pass(self) -> None:
-        """Generate various forms of passphrases and passwords (from button).
+        """Generate various forms of passphrases and passwords.
         """
 
         secure_random = random.SystemRandom()
@@ -321,7 +322,7 @@ class Generator:
 
         # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
         # 3rd, EFF is forced in linux, Mac, so disable eff checkbutton.
-        # TODO: Think of a better flow of logic and structure. Too confusing.
+        # There is probably a less confusing way to work these conditions.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             allwords = effwords
             somewords = effwords
@@ -369,7 +370,7 @@ class Generator:
         self.length_select.set(len(passphrase2))
         self.pw_any.set(password1)
         self.pw_select.set(password2)
-        # Change font colors of the results from self.passstub_fg
+        # Change font colors of results from the initial self.passstub_fg.
         self.phrase_any_display.config(fg=self.pass_fg)
         self.phrase_lc_display.config(fg=self.pass_fg)
         self.phrase_sel_display.config(fg=self.pass_fg)
@@ -394,35 +395,33 @@ class Generator:
             'easier to remember than a shorter or complicated password.\n'
             "For more information on passphrases, see EFF's discussion, "
             "for example,\n"
-            'of diceware and wordlist selection at:\n\n'
+            'of diceware and wordlist selection at:\n'
             'https://www.eff.org/deeplinks/2016/07/new-wordlists-random'
-            '-passphrases\n'
-            'This program has an option to use the EFF long wordlist.\n'
-            'Windows systems will always use the EFF wordlist without '
-            'another option.\n\n'
-            f'In the system dictionary used to create general passphrases:\n'
-            f"    There are {len(word_list)} words in the entire dictionary.\n"
-            f"    There are {len(uniq_words)} unique words (excludes "
-            "possessive forms of nouns (English dictionary)\n"
-            f"    There are {len(trim_words)} unique words of 3 to 8 "
-            f"letters.\n"
+            '-passphrases\n\n'
+            'This program has an option to use the EFF long wordlist, however,'
+            ' Windows\nsystems will use only that list.\n\n'
+            f'In the (non-Windows) system dictionary used for passphrases:\n'
+            f"    There are {len(word_list)} words in that dictionary.\n"
+            f"    There are {len(uniq_words)} unique words (excluding "
+            "possessive forms of nouns.\n"
+            f"    There are {len(trim_words)} unique words of 3 to 8 letters.\n"
             "Passphrases may include proper names and diacritics found in the "
             "dictionary.\n"
-            "The extra symbols added to passphrases and those more likely "
-            f"usable in passwords are:\n{SYMBOLS}\n\n"
+            "The symbols added to passphrases and those that are more likely\n"
+            f"usable in passwords are: {SYMBOLS}\n\n"
             'The word list from Electronic Frontier Foundation (EFF),\n'
             'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, '
             'does not contain \nproper names or diacritics and its words are '
             'generally shorter and easier to spell.\n'
             'While that official list contains 7776 selected words, only '
-            f'{len(eff_words)} are used here,\nexcluding four hyphenated '
+            f'{len(eff_words)} are used here by\nexcluding four hyphenated '
             f'words.')
 
         infowin = tk.Toplevel()
         # infowin.minsize(750, 250)
         infowin.title('A little about passphrases')
         num_lines = info.count('\n')
-        infotxt = tk.Text(infowin, width=90, height=num_lines + 2,
+        infotxt = tk.Text(infowin, width=85, height=num_lines + 2,
                           background='SkyBlue4', foreground='grey98',
                           relief='groove', borderwidth=5, padx=5)
         infotxt.insert('1.0', info)
