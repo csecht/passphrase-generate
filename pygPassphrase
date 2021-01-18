@@ -98,11 +98,11 @@ class Generator:
         self.system_list = []
 
         # Variables used in make_pass():
-        self.uniq_words = []
-        self.trim_words = []
-        self.allwords = None
-        self.somewords = None
-        self.effwords = None
+        # self.uniq_words = []
+        # self.trim_words = []
+        # self.allwords = None
+        # self.somewords = None
+        # self.effwords = None
 
         self.setup_window()
 
@@ -125,7 +125,7 @@ class Generator:
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="Explanation", command=explain)
+        help_menu.add_command(label="Explanation", command=self.explain)
         help_menu.add_command(label="About", command=about)
 
         # Set up user entry and control:
@@ -293,12 +293,12 @@ class Generator:
         string1 = ascii_letters + digits + punctuation
         string2 = ascii_letters + digits + SYMBOLS
 
-        self.allwords = "".join(secure_random.choice(uniq_words) for
-                                _ in range(int(self.numwords_entry.get())))
-        self.somewords = "".join(secure_random.choice(trim_words) for
-                                 _ in range(int(self.numwords_entry.get())))
-        self.effwords = "".join(secure_random.choice(eff_words) for
-                                _ in range(int(self.numwords_entry.get())))
+        allwords = "".join(secure_random.choice(uniq_words) for
+                           _ in range(int(self.numwords_entry.get())))
+        somewords = "".join(secure_random.choice(trim_words) for
+                            _ in range(int(self.numwords_entry.get())))
+        effwords = "".join(secure_random.choice(eff_words) for
+                           _ in range(int(self.numwords_entry.get())))
         addsymbol = "".join(secure_random.choice(SYMBOLS) for _ in range(1))
         addcaps = "".join(secure_random.choice(caps) for _ in range(1))
         addnum = "".join(secure_random.choice(digits) for _ in range(1))
@@ -308,16 +308,16 @@ class Generator:
         # TODO: Think of a better flow of logic and structure. Too confusing.
         # TODO: Also need to notify user (early on) when options are limited.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
-            self.allwords = self.effwords
-            self.somewords = self.effwords
+            allwords = effwords
+            somewords = effwords
         elif MY_OS == 'win' or self.system_words == 'Null':
-            self.allwords = self.effwords
-            self.somewords = self.effwords
+            allwords = effwords
+            somewords = effwords
             if MY_OS in 'lin, dar':
                 self.eff_chk.config(state='disabled')
 
-        passphrase1 = self.allwords.lower() + addsymbol + addnum + addcaps
-        passphrase2 = self.somewords.lower() + addsymbol + addnum + addcaps
+        passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
+        passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
         password1 = "".join(secure_random.choice(string1) for
                             _ in range(int(self.numchars_entry.get())))
         password2 = "".join(secure_random.choice(string2) for
@@ -329,10 +329,10 @@ class Generator:
         self.pw_any_display.config(width=len(password1))
         self.pw_select_display.config(width=len(password2))
 
-        self.phrase_any.set(self.allwords)
+        self.phrase_any.set(allwords)
         self.phrase_lc.set(passphrase1)
         self.phrase_select.set(passphrase2)
-        self.length_any.set(len(self.allwords))
+        self.length_any.set(len(allwords))
         self.length_lc.set(len(passphrase1))
         self.length_select.set(len(passphrase2))
         self.pw_any.set(password1)
@@ -343,6 +343,61 @@ class Generator:
         self.phrase_sel_display.config(fg=self.pass_fg)
         self.pw_any_display.config(fg=self.pass_fg)
         self.pw_select_display.config(fg=self.pass_fg)
+
+    def explain(self) -> None:
+        """Provide information about number of words used to create passphrases
+        """
+        # This duplicates statements from make_pass().  Would require
+        # separate method for these variables to consolidate?...
+        word_list = self.system_words.split()
+        uniq_words = [word for word in word_list if
+                      re.search(r"'s", word) is None]
+        trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
+        eff_list = self.eff_wordlist.split()
+        eff_words = [word for word in eff_list if word.isalpha()]
+
+        info = (
+            'A passphrase is a random string of words that can be more '
+            'secure and \n'
+            'easier to remember than a shorter or complicated password.\n'
+            "For more information on passphrases, see EFF's discussion, "
+            "for example,\n"
+            'of diceware and wordlist selection at:\n\n'
+            'https://www.eff.org/deeplinks/2016/07/new-wordlists-random'
+            '-passphrases\n'
+            'This program has an option to use the EFF long wordlist.\n'
+            'Windows systems will always use the EFF wordlist without '
+            'another option.\n\n'
+            f'In the system dictionary used to create general passphrases:\n'
+            f"    There are {len(word_list)} words in the entire dictionary.\n"
+            f"    There are {len(uniq_words)} unique words (excludes "
+            "possessive forms of nouns (English dictionary)\n"
+            f"    There are {len(trim_words)} unique words of 3 to 8 "
+            f"letters.\n"
+            "Passphrases may include proper names and diacritics found in the "
+            "dictionary.\n"
+            "The extra symbols added to passphrases and those more likely "
+            f"usable in passwords are:\n{SYMBOLS}\n\n"
+            'The word list from Electronic Frontier Foundation (EFF),\n'
+            'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, '
+            'does not contain \nproper names or diacritics and its words are '
+            'generally shorter and easier to spell.\n'
+            'While that official list contains 7776 selected words, only '
+            f'{len(eff_words)} are used here,\nexcluding four hyphenated '
+            f'words.')
+
+        infowin = tk.Toplevel()
+        # infowin.minsize(750, 250)
+        infowin.title('A little about passphrases')
+        num_lines = info.count('\n')
+        infotxt = tk.Text(infowin, width=90, height=num_lines + 2,
+                          background='SkyBlue4', foreground='grey98',
+                          relief='groove', borderwidth=5, padx=5)
+        infotxt.insert('1.0', info)
+        # Center text preceding the Author, etc. details.
+        # infotxt.tag_add('text1', '1.0', float(num_lines - 5))
+        # infotxt.tag_configure('text1', justify='center')
+        infotxt.pack()
 
 
 def about() -> None:
@@ -391,55 +446,6 @@ along with this program. If not, see https://www.gnu.org/licenses/
     abouttxt.tag_add('text1', '1.0', float(num_lines - 5))
     abouttxt.tag_configure('text1', justify='center')
     abouttxt.pack()
-
-
-def explain(self) -> None:
-    """Provide information about number of words used to create passphrases
-    """
-    # This duplicates statements from make_pass(). So include as class method?
-    word_list = self.system_words.split()
-    uniq_words = [word for word in word_list if re.search(r"'s", word) is None]
-    trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
-    eff_list = self.eff_wordlist.split()
-    eff_words = [word for word in eff_list if word.isalpha()]
-
-    info = (
-        'A passphrase is a random string of words that can be more secure and \n'
-        'easier to remember than a shorter or complicated password.\n'
-        "For more information on passphrases, see EFF's discussion, for example,\n"
-        'of diceware and wordlist selection at:\n\n'
-        'https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases\n'
-        'This program has an option to use the EFF long wordlist.\n'
-        'Windows systems will always use the EFF wordlist without another option.\n\n'
-        f'In the system dictionary used to create general passphrases:\n'
-        f"    There are {len(word_list)} words in the entire dictionary.\n"
-        f"    There are {len(uniq_words)} unique words (excludes "
-        "possessive forms of nouns (English dictionary)\n"
-        f"    There are {len(trim_words)} unique words of 3 to 8 letters.\n"
-        "Passphrases may include proper names and diacritics found in the "
-        "dictionary.\n"
-        "The extra symbols added to passphrases and those more likely "
-        f"usable in passwords are:\n{SYMBOLS}\n\n"
-        'The word list from Electronic Frontier Foundation (EFF),\n'
-        'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, '
-        'does not contain \nproper names or diacritics and its words are '
-        'generally shorter and easier to spell.\n'
-        'While that official list contains 7776 selected words, only '
-        f'{len(eff_words)} are used here,\nexcluding four hyphenated words.'
-        )
-
-    infowin = tk.Toplevel()
-    # infowin.minsize(750, 250)
-    infowin.title('A little about passphrases')
-    num_lines = info.count('\n')
-    infotxt = tk.Text(infowin, width=90, height=num_lines+2,
-                      background='SkyBlue4', foreground='grey98',
-                      relief='groove', borderwidth=5, padx=5)
-    infotxt.insert('1.0', info)
-    # Center text preceding the Author, etc. details.
-    # infotxt.tag_add('text1', '1.0', float(num_lines - 5))
-    # infotxt.tag_configure('text1', justify='center')
-    infotxt.pack()
 
 
 def quit_gui() -> None:
