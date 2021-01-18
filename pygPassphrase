@@ -26,8 +26,9 @@ MY_OS = sys.platform[:3]
 # MY_OS = 'win' # TESTING
 USE_EFF = True
 
+# TODO: Should make this a method and provide Messagebox notices.
+sysdict_path = Path('/pusr/share/dict/words')
 effdict_path = Path('eff_large_wordlist.txt')
-sysdict_path = Path('/usr/share/dict/words')
 # Already evaluated presence of Windows eff file in if __name__, now need to
 #  evaluate whether both word lists are available to Linux and MacOS.
 if MY_OS == 'win':
@@ -39,8 +40,11 @@ if MY_OS in 'lin, dar':
     if Path.is_file(sysdict_path):
         SYS_DICTIONARY = Path(sysdict_path).read_text()
     elif Path.is_file(sysdict_path) is False:
-        print('The system dictionary cannot be found. The EFF word list will be used.')
-
+        print('\n*** NOTICE: The system dictionary cannot be found;\n'
+              'EFF word list will be used.\n')
+        SYS_DICTIONARY = 'Null'
+        # ^^^ This sets a flag in make_pass() to bypass system dict.
+# TODO: Notify user that the eff check button does nothing.
     # if os.path.isfile('eff_large_wordlist.txt'):
     if Path.is_file(effdict_path):
         EFF_DICTIONARY = Path(effdict_path).read_text()
@@ -290,12 +294,18 @@ class Generator:
         addCap = "".join(secure_random.choice(caps) for _ in range(1))
         addnum = "".join(secure_random.choice(digits) for _ in range(1))
 
+        # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
+        # 3rd, EFF is forced in linux, Mac, so disable eff checkbutton.
+        # TODO: Think of a better flow of logic and structure. Too confusing.
+        # TODO: Also need to notify user (early on) when options are limited.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             self.allwords = self.effwords
             self.somewords = self.effwords
-        elif MY_OS == 'win':
+        elif MY_OS == 'win' or SYS_DICTIONARY == 'Null':
             self.allwords = self.effwords
             self.somewords = self.effwords
+            if MY_OS in 'lin, dar':
+                self.eff_chk.config(state='disabled')
 
         passphrase1 = self.allwords.lower() + addsymbol + addnum + addCap
         passphrase2 = self.somewords.lower() + addsymbol + addnum + addCap
