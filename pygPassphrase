@@ -272,11 +272,10 @@ class Generator:
             if Path.is_file(SYSWORDS_PATH):
                 self.system_words = Path(SYSWORDS_PATH).read_text()
             elif Path.is_file(SYSWORDS_PATH) is False:
-                notice = ('*** NOTICE: The system dictionary cannot be found; '
-                          'EFF word list will be used. ***')
+                notice = ('*** NOTICE: The system dictionary cannot be found.\n'
+                          'Using EFF word list ... ***')
                 self.system_words = 'Null'
                 self.eff_chk.config(state='disabled')
-                # ^^^ This sets a flag in make_pass() to bypass system dict.
                 print(notice)
                 messagebox.showinfo(title='File not found',
                                     detail=notice)
@@ -285,10 +284,10 @@ class Generator:
             elif Path.is_file(EFFWORDS_PATH) is False:
                 self.use_effwords = False  # Used in window_setup().
                 notice = (
-                    'The EFF large wordlist cannot be found.\n'
-                    'That file can is included with:\n'
+                    '*** EFF large wordlist cannot be found.\n'
+                    'That file is included with:\n'
                     'https://github.com/csecht/general_utilities\n'
-                    'Using the system dictionary...\n'
+                    'Using system dictionary... ***\n'
                 )
                 self.eff_chk.config(state='disabled')
                 print(notice)
