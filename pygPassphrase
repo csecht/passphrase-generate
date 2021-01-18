@@ -16,9 +16,9 @@ try:
     from tkinter import messagebox
     # import tkinter.ttk as ttk
 except (ImportError, ModuleNotFoundError) as error:
-    print('GUI requires tkinter, which is included with Python 3.7 and higher')
-    print('Install 3.7+ or re-install Python and include Tk/Tcl.')
-    print(f'See also: https://tkdocs.com/tutorial/install.html \n{error}')
+    print('GUI requires tkinter, which is included with Python 3.7 and higher'
+          '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
+          f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 PROGRAM_VER = '0.2.0'
 STUBRESULT = 'Result can be copied and pasted'
@@ -260,7 +260,7 @@ class Generator:
                     Path.is_file(EFFWORDS_PATH) is False:
                 print(fnf_msg)
                 sys.exit(1)
-        elif MY_OS == 'win' and Path(EFFWORDS_PATH) is False:
+        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
             print(fnf_msg)
             sys.exit(1)
 
@@ -326,7 +326,6 @@ class Generator:
         # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
         # 3rd, EFF is forced in linux, Mac, so disable eff checkbutton.
         # TODO: Think of a better flow of logic and structure. Too confusing.
-        # TODO: Also need to notify user (early on) when options are limited.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             allwords = effwords
             somewords = effwords
