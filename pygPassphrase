@@ -24,48 +24,20 @@ STUBRESULT = 'Result can be copied and pasted'
 SYMBOLS = "~!@#$%^&*_-"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win' # TESTING
-USE_EFF = True
-
-# TODO: Should make this a method and provide Messagebox notices.
-sysdict_path = Path('/pusr/share/dict/words')
-effdict_path = Path('eff_large_wordlist.txt')
-# Already evaluated presence of Windows eff file in if __name__, now need to
-#  evaluate whether both word lists are available to Linux and MacOS.
-if MY_OS == 'win':
-    SYS_DICTIONARY = 'Null'
-    EFF_DICTIONARY = Path(effdict_path).read_text()
-
-if MY_OS in 'lin, dar':
-    # if os.path.isfile('/usr/share/dict/words'):
-    if Path.is_file(sysdict_path):
-        SYS_DICTIONARY = Path(sysdict_path).read_text()
-    elif Path.is_file(sysdict_path) is False:
-        print('\n*** NOTICE: The system dictionary cannot be found;\n'
-              'EFF word list will be used.\n')
-        SYS_DICTIONARY = 'Null'
-        # ^^^ This sets a flag in make_pass() to bypass system dict.
-# TODO: Notify user that the eff check button does nothing.
-    # if os.path.isfile('eff_large_wordlist.txt'):
-    if Path.is_file(effdict_path):
-        EFF_DICTIONARY = Path(effdict_path).read_text()
-    elif Path.is_file(effdict_path) is False:
-        USE_EFF = False
-        print('The eff_large_wordlist.txt is not in the working directory.\n'
-              'That file can be downloaded from:\n'
-              'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt\n'
-              'This session will use only the system dictionary.\n')
+SYSWORDS_PATH = Path('/usr/share/dict/words')
+EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
 
 class Generator:
     """
-    Makes a GUI window for user to specify length of passwords and passphrases.
+    A GUI window for user to specify length of passphrases and passwords.
     """
     def __init__(self, master):
         """Window layout and default values are set up here.
         """
         self.master = master
-        self.master.bind("<Escape>", lambda q: quitgui())
-        self.master.bind("<Control-q>", lambda q: quitgui())
+        self.master.bind("<Escape>", lambda q: quit_gui())
+        self.master.bind("<Control-q>", lambda q: quit_gui())
 
         # main window background color, also used for some labels.
         self.master_bg = 'SkyBlue4'
@@ -76,7 +48,7 @@ class Generator:
         self.pass_fg = 'brown4'
         self.pass_bg = 'khaki2'
 
-        # Variables used in window_setup(), in order of appearance:
+        # Variables used in setup_window(), in order of appearance:
         #  Don't make an EFF checkbutton in Windows b/c EFF words are default.
         if MY_OS in 'lin, dar':
             self.eff = tk.BooleanVar()
@@ -118,17 +90,23 @@ class Generator:
         self.pw_select_display = tk.Entry(self.result_frame,
                                           textvariable=self.pw_select)
 
+        # Variables used in get_words():
+        self.use_effwords = True
+        self.system_words = None
+        self.eff_wordlist = None
+        self.eff_list = []
+        self.system_list = []
+
         # Variables used in make_pass():
-        self.word_list = []
         self.uniq_words = []
         self.trim_words = []
         self.allwords = None
         self.somewords = None
         self.effwords = None
 
-        self.window_setup()
+        self.setup_window()
 
-    def window_setup(self):
+    def setup_window(self) -> None:
         """
         Layout the main window and assign initial values to labels.
 
@@ -143,7 +121,7 @@ class Generator:
         # Add pull-down menus
         file = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=file)
-        file.add_command(label="Quit", command=quitgui, accelerator="Ctrl+Q")
+        file.add_command(label="Quit", command=quit_gui, accelerator="Ctrl+Q")
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=help_menu)
@@ -158,7 +136,7 @@ class Generator:
                                 activebackground='grey80',
                                 selectcolor=self.frame_bg)
             self.eff_chk.grid(column=2, row=0, pady=5, sticky=tk.W)
-        if USE_EFF is False:
+        if self.use_effwords is False:
             self.eff_chk.config(state='disabled')
 
         self.numwords_label.config(text='Enter # words for passphrase',
@@ -173,7 +151,7 @@ class Generator:
         self.generate_btn.config(text='Generate!', command=self.make_pass,
                                  activebackground='PaleGreen3',
                                  fg='grey20', bg='grey80')
-        self.quit_btn.config(text='Quit', command=quitgui,
+        self.quit_btn.config(text='Quit', command=quit_gui,
                              activebackground='red3',
                              fg='grey20', bg='grey80')
 
@@ -266,32 +244,63 @@ class Generator:
         self.pw_select_display.grid( column=2, row=8, columnspan=2, ipadx=5,
                                      padx=5, pady=(3, 6), sticky=tk.EW)
 
-    def make_pass(self):
-        """Generate various forms of passphrases and passwords.
+    def get_words(self) -> None:
+        """
+        Check which word files are available; populate lists for make_pass().
+        """
+        # Already evaluated presence of Windows eff file in if __name__,
+        # now need to evaluate whether both word lists are available to
+        # Linux and MacOS.
+        if MY_OS == 'win':
+            self.system_words = 'Null'
+            self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
+
+        if MY_OS in 'lin, dar':
+            if Path.is_file(SYSWORDS_PATH):
+                self.system_words = Path(SYSWORDS_PATH).read_text()
+            elif Path.is_file(SYSWORDS_PATH) is False:
+                print('\n*** NOTICE: The system dictionary cannot be found;\n'
+                      'EFF word list will be used.\n')
+                self.system_words = 'Null'
+                # ^^^ This sets a flag in make_pass() to bypass system dict.
+            # TODO: Notify user that the eff check button does nothing.
+            if Path.is_file(EFFWORDS_PATH):
+                self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
+            elif Path.is_file(EFFWORDS_PATH) is False:
+                self.use_effwords = False
+                print(
+                    'The eff_large_wordlist.txt is not in the working directory.\n'
+                    'That file can be downloaded from:\n'
+                    'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt\n'
+                    'This session will use only the system dictionary.\n'
+                )
+        self.system_list = self.system_words.split()
+        self.eff_list = self.eff_wordlist.split()
+
+    def make_pass(self) -> None:
+        """Generate various forms of passphrases and passwords (from button).
         """
 
         secure_random = random.SystemRandom()
 
-        # sys_dictionary = Path('/usr/share/dict/words').read_text()
-        word_list = SYS_DICTIONARY.split()
         # Need to remove words having the possessive form.
-        uniq_words = [word for word in word_list if re.search(r"'s",word) is None]
+        uniq_words = \
+            [word for word in self.system_list if re.search(r"'s", word) is None]
         trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
-        eff_list = EFF_DICTIONARY.split()
-        eff_words = [word for word in eff_list if word.isalpha()]
+        eff_words = [word for word in self.eff_list if word.isalpha()]
 
         caps = ascii_uppercase
         string1 = ascii_letters + digits + punctuation
         string2 = ascii_letters + digits + SYMBOLS
 
         self.allwords = "".join(secure_random.choice(uniq_words) for
-                           _ in range(int(self.numwords_entry.get())))
+                                _ in range(int(self.numwords_entry.get())))
         self.somewords = "".join(secure_random.choice(trim_words) for
-                            _ in range(int(self.numwords_entry.get())))
+                                 _ in range(int(self.numwords_entry.get())))
         self.effwords = "".join(secure_random.choice(eff_words) for
-                           _ in range(int(self.numwords_entry.get())))
+                                _ in range(int(self.numwords_entry.get())))
         addsymbol = "".join(secure_random.choice(SYMBOLS) for _ in range(1))
-        addCap = "".join(secure_random.choice(caps) for _ in range(1))
+        addcaps = "".join(secure_random.choice(caps) for _ in range(1))
         addnum = "".join(secure_random.choice(digits) for _ in range(1))
 
         # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
@@ -301,14 +310,14 @@ class Generator:
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             self.allwords = self.effwords
             self.somewords = self.effwords
-        elif MY_OS == 'win' or SYS_DICTIONARY == 'Null':
+        elif MY_OS == 'win' or self.system_words == 'Null':
             self.allwords = self.effwords
             self.somewords = self.effwords
             if MY_OS in 'lin, dar':
                 self.eff_chk.config(state='disabled')
 
-        passphrase1 = self.allwords.lower() + addsymbol + addnum + addCap
-        passphrase2 = self.somewords.lower() + addsymbol + addnum + addCap
+        passphrase1 = self.allwords.lower() + addsymbol + addnum + addcaps
+        passphrase2 = self.somewords.lower() + addsymbol + addnum + addcaps
         password1 = "".join(secure_random.choice(string1) for
                             _ in range(int(self.numchars_entry.get())))
         password2 = "".join(secure_random.choice(string2) for
@@ -384,14 +393,14 @@ along with this program. If not, see https://www.gnu.org/licenses/
     abouttxt.pack()
 
 
-def explain() -> None:
+def explain(self) -> None:
     """Provide information about number of words used to create passphrases
     """
     # This duplicates statements from make_pass(). So include as class method?
-    word_list = SYS_DICTIONARY.split()
+    word_list = self.system_words.split()
     uniq_words = [word for word in word_list if re.search(r"'s", word) is None]
     trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
-    eff_list = EFF_DICTIONARY.split()
+    eff_list = self.eff_wordlist.split()
     eff_words = [word for word in eff_list if word.isalpha()]
 
     info = (
@@ -433,7 +442,7 @@ def explain() -> None:
     infotxt.pack()
 
 
-def quitgui() -> None:
+def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
     print(f'\n  *** User has quit {__file__}. Exiting...\n')
@@ -459,5 +468,5 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.title("Passphrase Generator")
     # root.resizable(False, False)
-    Generator(root)
+    Generator(root).get_words()
     root.mainloop()
