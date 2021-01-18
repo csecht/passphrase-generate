@@ -39,6 +39,7 @@ class Generator:
         self.master = master
         self.master.bind("<Escape>", lambda q: quit_gui())
         self.master.bind("<Control-q>", lambda q: quit_gui())
+        self.master.bind("<Control-g>", lambda q: self.make_pass())
 
         # main window background color, also used for some labels.
         self.master_bg = 'SkyBlue4'
@@ -95,15 +96,8 @@ class Generator:
         self.use_effwords = True
         self.system_words = 'None'
         self.eff_wordlist = 'None'
-        self.eff_list = []
-        self.system_list = []
-
-        # Variables used in make_pass():
-        # self.uniq_words = []
-        # self.trim_words = []
-        # self.allwords = None
-        # self.somewords = None
-        # self.effwords = None
+        self.eff_list = ['None']
+        self.system_list = ['None']
 
         self.setup_window()
 
@@ -122,6 +116,8 @@ class Generator:
         # Add pull-down menus
         file = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=file)
+        file.add_command(label="Generate", command=self.make_pass,
+                         accelerator="Ctrl+G")
         file.add_command(label="Quit", command=quit_gui, accelerator="Ctrl+Q")
 
         help_menu = tk.Menu(menu, tearoff=0)
@@ -150,10 +146,11 @@ class Generator:
         self.numchars_entry.config(width=3)
         self.numchars_entry.insert(0, 0)
         self.generate_btn.config(text='Generate!', command=self.make_pass,
-                                 activebackground='PaleGreen3',
+                                 # activebackground='PaleGreen3',
+                                 activebackground=self.master_fg,
                                  fg='grey20', bg='grey80')
         self.quit_btn.config(text='Quit', command=quit_gui,
-                             activebackground='red3',
+                             activebackground='orange',
                              fg='grey20', bg='grey80')
 
         # self.eff_chk.grid(column=2, row=0, pady=5, sticky=tk.W)
@@ -346,6 +343,23 @@ class Generator:
         self.phrase_any_display.config(width=len(passphrase1))
         self.pw_any_display.config(width=len(password1))
         self.pw_select_display.config(width=len(password2))
+        # Need to lower font size of long pass* length in attempt to keep
+        # window on screen, then reset to default font size when pass*
+        # length is shortened.
+        if len(passphrase1) > 50:
+            self.phrase_any_display.config(font=('TkFixedFont', 8))
+            self.phrase_lc_display.config(font=('TkFixedFont', 8))
+            self.phrase_sel_display.config(font=('TkFixedFont', 8))
+        elif len(passphrase1) <= 50:
+            self.phrase_any_display.config(font='TkFixedFont')
+            self.phrase_lc_display.config(font='TkFixedFont')
+            self.phrase_sel_display.config(font='TkFixedFont')
+        if len(password1) > 50:
+            self.pw_any_display.config(font=('TkFixedFont', 8))
+            self.pw_select_display.config(font=('TkFixedFont', 8))
+        elif len(password1) <= 50:
+            self.pw_any_display.config(font='TkFixedFont')
+            self.pw_select_display.config(font='TkFixedFont')
 
         self.phrase_any.set(allwords)
         self.phrase_lc.set(passphrase1)
