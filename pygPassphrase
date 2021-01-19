@@ -159,7 +159,11 @@ class Generator:
         style.map("Q.TButton",
                   foreground=[('active', 'red')],
                   background=[('pressed', self.frame_bg),
-                              ('active', self.pass_bg)])
+                              ('active', self.pass_bg)],
+                    highlightcolor=[('focus', 'green')])
+                    #                 ('!focus', 'red')],
+                    # relief=[('pressed', 'groove'),
+                    #         ('!pressed', 'ridge')])
 
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
@@ -192,11 +196,11 @@ class Generator:
         self.length_label.grid(    column=1, row=2, padx=5, sticky=tk.EW)
         self.passphrase_label.grid(column=2, row=2, padx=5, sticky=tk.W)
 
-        self.any_describe.config(   text="Any words",
+        self.any_describe.config(text="Any words from dictionary",
+                                 fg=self.frame_fg, bg=self.frame_bg)
+        self.any_lc_describe.config(text="... lower case + 3 characters",
                                     fg=self.frame_fg, bg=self.frame_bg)
-        self.any_lc_describe.config(text="Lower case, plus 3 symbols",
-                                    fg=self.frame_fg, bg=self.frame_bg)
-        self.select_describe.config(text="Words of 3 to 8 letters",
+        self.select_describe.config(text="... or words of 3 to 8 letters",
                                     fg=self.frame_fg, bg=self.frame_bg)
         self.any_describe.grid(   column=0, row=3, sticky=tk.E)
         self.any_lc_describe.grid(column=0, row=4, sticky=tk.E)
@@ -309,6 +313,22 @@ class Generator:
     def make_pass(self) -> None:
         """Generate various forms of passphrases and passwords.
         """
+        # Need different passphrase descriptions for sys dict and EEF list.
+        # Initial label texts are for sys. dict. and are set in window_setup().
+        if self.eff.get() is False:
+            self.any_describe.config(   text="Any words from dictionary",
+                                        fg=self.frame_fg, bg=self.frame_bg)
+            self.any_lc_describe.config(text="... lower case + 3 characters",
+                                        fg=self.frame_fg, bg=self.frame_bg)
+            self.select_describe.config(text="... or words of 3 to 8 letters",
+                                        fg=self.frame_fg, bg=self.frame_bg)
+        elif self.eff.get() is True:
+            self.any_describe.config(   text="Any words from EFF wordlist",
+                                        fg=self.frame_fg, bg=self.frame_bg)
+            self.any_lc_describe.config(text="...plus 3 characters",
+                                        fg=self.frame_fg, bg=self.frame_bg)
+            self.select_describe.config(text=" ",
+                                        fg=self.frame_fg, bg=self.frame_bg)
 
         secure_random = random.SystemRandom()
 
@@ -376,14 +396,25 @@ class Generator:
         self.pw_any_display.config(width=len(password1))
         self.pw_select_display.config(width=len(password2))
 
-        self.phrase_any.set(allwords)
-        self.phrase_lc.set(passphrase1)
-        self.phrase_select.set(passphrase2)
-        self.length_any.set(len(allwords))
-        self.length_lc.set(len(passphrase1))
-        self.length_select.set(len(passphrase2))
-        self.pw_any.set(password1)
-        self.pw_select.set(password2)
+        if self.eff.get() is False:
+            self.phrase_any.set(allwords)
+            self.phrase_lc.set(passphrase1)
+            self.phrase_select.set(passphrase2)
+            self.length_any.set(len(allwords))
+            self.length_lc.set(len(passphrase1))
+            self.length_select.set(len(passphrase2))
+            self.pw_any.set(password1)
+            self.pw_select.set(password2)
+        elif self.eff.get() is True:
+            self.phrase_any.set(allwords)
+            self.phrase_lc.set(passphrase1)
+            self.phrase_select.set('')
+            self.length_any.set(len(allwords))
+            self.length_lc.set(len(passphrase1))
+            self.length_select.set('')
+            self.pw_any.set(password1)
+            self.pw_select.set(password2)
+
         # Change font colors of results from the initial self.passstub_fg.
         self.phrase_any_display.config(fg=self.pass_fg)
         self.phrase_lc_display.config(fg=self.pass_fg)
