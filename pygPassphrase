@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 """
-Inspired by and based on code from @codehub.py via Instagram.
-Not usable on Windows because of no way(?) to read the Dictionary.
+A utility to create random passphrases and passwords.
+Inspired by code from @codehub.py via Instagram.
 """
 import os
 import random
@@ -20,7 +20,7 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.2.1'
+PROGRAM_VER = '0.2.2'
 STUBRESULT = 'Result can be copied and pasted'
 SYMBOLS = "~!@#$%^&*_-"
 MY_OS = sys.platform[:3]
@@ -107,17 +107,16 @@ class Generator:
 
     def setup_window(self) -> None:
         """
-        Layout the main window and assign initial values to labels.
+        Layout the main window and assign starting values to labels.
 
-        :return: A pretty interactive window.
+        :return: A nice looking interactive graphic.
         """
         self.master.configure(bg=self.master_bg)
 
-        # creating a menu instance
+        # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
         self.master.config(menu=menu)
 
-        # Add pull-down menus
         file = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=file)
         file.add_command(label="Generate", command=self.make_pass,
@@ -138,6 +137,7 @@ class Generator:
                                 activebackground='grey80',
                                 selectcolor=self.frame_bg)
             self.eff_chk.grid(column=2, row=0, pady=5, sticky=tk.W)
+
         if self.use_effwords is False:
             self.eff_chk.config(state='disabled')
 
@@ -161,16 +161,12 @@ class Generator:
                   background=[('pressed', self.frame_bg),
                               ('active', self.pass_bg)],
                   highlightcolor=[('focus', 'green')])
-                    #                 ('!focus', 'red')],
-                    # relief=[('pressed', 'groove'),
-                    #         ('!pressed', 'ridge')])
-
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
         self.quit_btn.configure(style="Q.TButton", text='Quit',
                                 command=quit_gui)
 
-        # self.eff_chk.grid(column=2, row=0, pady=5, sticky=tk.W)
+
         self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0),
                                  sticky=tk.E)
         self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
@@ -185,10 +181,6 @@ class Generator:
         self.result_frame.grid(column=0, row=2, columnspan=4, padx=5, pady=5)
 
         # Passphrase results section:
-        # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-style-layer.html
-        # This style statement for background of ttk.Labels does not work on MacOS
-        # rstyle = ttk.Style()
-        # rstyle.configure('TLabel', foreground=self.frame_fg, bg=self.frame_bg)
         self.length_label.config(    text='Length',
                                      fg=self.frame_fg, bg=self.frame_bg)
         self.passphrase_label.config(text='Passphrases',
@@ -197,7 +189,7 @@ class Generator:
         self.passphrase_label.grid(column=2, row=2, padx=5, sticky=tk.W)
 
 # TODO: Consider a more readable way to group these variable categories.
-        # Set up OS-specific variables.
+        # Set up OS-specific statements.
         if MY_OS in 'lin, dar':
             self.any_describe.config(text="Any words from dictionary",
                                      fg=self.frame_fg, bg=self.frame_bg)
@@ -225,7 +217,7 @@ class Generator:
             self.select_describe.config(text=" ",
                                         fg=self.frame_fg, bg=self.frame_bg)
 
-        # Variables common to all OS.
+        # Statements ommon to all OS.
         self.select_describe.grid(column=0, row=5, sticky=tk.E)
         self.any_describe.grid(   column=0, row=3, sticky=tk.E)
         self.any_lc_describe.grid(column=0, row=4, sticky=tk.E)
@@ -257,16 +249,17 @@ class Generator:
                                     fg=self.frame_fg, bg=self.frame_bg)
         self.pw_select_describe.config(text="More likely usable characters ",
                                        fg=self.frame_fg, bg=self.frame_bg)
+        self.pw_select_describe.grid(column=0, row=8,
+                                     padx=5, sticky=tk.E)
+        self.pw_any_describe.grid(   column=0, row=7,
+                                     padx=5, sticky=tk.E)
+
         self.pw_any.set(STUBRESULT)
         self.pw_select.set(STUBRESULT)
         self.pw_any_display.config(width=50, font='TkFixedFont',
                                    fg=self.passstub_fg, bg=self.pass_bg)
         self.pw_select_display.config(width=50, font='TkFixedFont',
                                       fg=self.passstub_fg, bg=self.pass_bg)
-        self.pw_any_describe.grid(   column=0, row=7,
-                                     padx=5, sticky=tk.E)
-        self.pw_select_describe.grid(column=0, row=8,
-                                     padx=5, sticky=tk.E)
         self.pw_any_display.grid(    column=2, row=7, columnspan=2, ipadx=5,
                                      padx=5, pady=(6, 3), sticky=tk.EW)
         self.pw_select_display.grid( column=2, row=8, columnspan=2, ipadx=5,
@@ -276,6 +269,7 @@ class Generator:
         """
         Check which word files are available; populate lists for make_pass().
         """
+        # Need to first confirm that required files are present.     
         fnf_msg = (
             '\n*** Cannot locate either the system dictionary or EFF wordlist\n'
             'At a minimum, the file eff_large_wordlist.txt should be in '
@@ -291,8 +285,8 @@ class Generator:
             print(fnf_msg)
             sys.exit(1)
 
+        # Need to populate lists with words to randomize in make_pass().
         if MY_OS == 'win':
-            # self.system_words = 'Null'  # Necessary for .split(), below.
             self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
 
         if MY_OS in 'lin, dar':
@@ -329,6 +323,7 @@ class Generator:
         """
         # Need different passphrase descriptions for sys dict and EEF list.
         # Initial label texts are for sys. dict. and are set in window_setup().
+        # These label descriptors written each time "Generate" command is run.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.any_describe.config(   text="Any words from dictionary",
