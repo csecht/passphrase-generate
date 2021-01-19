@@ -61,8 +61,8 @@ class Generator:
         self.numchars_entry = tk.Entry()
 
         # There are problems of tk.Button text showing up on MacOS, so ttk
-        self.generate_btn = ttk.Button()
-        self.quit_btn = ttk.Button()
+        self.generate_btn = ttk.Button(self.master)
+        self.quit_btn = ttk.Button(self.master)
 
         self.result_frame = tk.Frame(self.master)
 
@@ -160,7 +160,7 @@ class Generator:
                   foreground=[('active', 'red')],
                   background=[('pressed', self.frame_bg),
                               ('active', self.pass_bg)],
-                    highlightcolor=[('focus', 'green')])
+                  highlightcolor=[('focus', 'green')])
                     #                 ('!focus', 'red')],
                     # relief=[('pressed', 'groove'),
                     #         ('!pressed', 'ridge')])
@@ -203,7 +203,7 @@ class Generator:
                                      fg=self.frame_fg, bg=self.frame_bg)
             self.any_lc_describe.config(text="... lower case + 3 characters",
                                         fg=self.frame_fg, bg=self.frame_bg)
-            self.select_describe.config(text="... or words of 3 to 8 letters",
+            self.select_describe.config(text="... words of 3 to 8 letters",
                                         fg=self.frame_fg, bg=self.frame_bg)
 
             self.length_select.set(0)
@@ -232,10 +232,8 @@ class Generator:
 
         self.length_any.set(0)
         self.length_lc.set(0)
-        self.length_any_label.config(textvariable=self.length_any,
-                                     width=3)
-        self.length_lc_label.config( textvariable=self.length_lc,
-                                     width=3)
+        self.length_any_label.config(textvariable=self.length_any, width=3)
+        self.length_lc_label.config( textvariable=self.length_lc,  width=3)
         self.length_any_label.grid(column=1, row=3)
         self.length_lc_label.grid( column=1, row=4)
 
@@ -247,8 +245,8 @@ class Generator:
                                       fg=self.passstub_fg, bg=self.pass_bg)
         self.phrase_any_display.grid(column=2, row=3, columnspan=2,
                                      ipadx=5, padx=5, pady=3, sticky=tk.EW)
-        self.phrase_lc_display.grid(column=2, row=4, columnspan=2,
-                                    ipadx=5, padx=5, pady=3, sticky=tk.EW)
+        self.phrase_lc_display.grid( column=2, row=4, columnspan=2,
+                                     ipadx=5, padx=5, pady=3, sticky=tk.EW)
 
         # Password results section:
         self.pw_label.config(text='Passwords',
@@ -337,7 +335,7 @@ class Generator:
                                             fg=self.frame_fg, bg=self.frame_bg)
                 self.any_lc_describe.config(text="... lower case + 3 characters",
                                             fg=self.frame_fg, bg=self.frame_bg)
-                self.select_describe.config(text="... or words of 3 to 8 letters",
+                self.select_describe.config(text="... words of 3 to 8 letters",
                                             fg=self.frame_fg, bg=self.frame_bg)
             elif self.eff.get() is True:
                 self.any_describe.config(   text="Any words from EFF wordlist",
@@ -563,6 +561,5 @@ if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     root = tk.Tk()
     root.title("Passphrase Generator")
-    # root.minsize(1000, 300)
     Generator(root).get_words()
     root.mainloop()
