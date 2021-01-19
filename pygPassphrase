@@ -196,6 +196,8 @@ class Generator:
         self.length_label.grid(    column=1, row=2, padx=5, sticky=tk.EW)
         self.passphrase_label.grid(column=2, row=2, padx=5, sticky=tk.W)
 
+# TODO: Consider a more readable way to group these variable categories.
+        # Set up OS-specific variables.
         if MY_OS in 'lin, dar':
             self.any_describe.config(text="Any words from dictionary",
                                      fg=self.frame_fg, bg=self.frame_bg)
@@ -203,6 +205,18 @@ class Generator:
                                         fg=self.frame_fg, bg=self.frame_bg)
             self.select_describe.config(text="... or words of 3 to 8 letters",
                                         fg=self.frame_fg, bg=self.frame_bg)
+
+            self.length_select.set(0)
+            self.length_select_label.config(textvariable=self.length_select,
+                                            width=3)
+            self.length_select_label.grid(column=1, row=5)
+
+            self.phrase_select.set(STUBRESULT)
+            self.phrase_sel_display.config(width=50, font='TkFixedFont',
+                                           fg=self.passstub_fg,
+                                           bg=self.pass_bg)
+            self.phrase_sel_display.grid(column=2, row=5, columnspan=2,
+                                         ipadx=5, padx=5, pady=3, sticky=tk.EW)
         elif MY_OS == 'win':
             self.any_describe.config(   text="Any words from EFF wordlist",
                                         fg=self.frame_fg, bg=self.frame_bg)
@@ -211,38 +225,30 @@ class Generator:
             self.select_describe.config(text=" ",
                                         fg=self.frame_fg, bg=self.frame_bg)
 
+        # Variables common to all OS.
+        self.select_describe.grid(column=0, row=5, sticky=tk.E)
         self.any_describe.grid(   column=0, row=3, sticky=tk.E)
         self.any_lc_describe.grid(column=0, row=4, sticky=tk.E)
-        self.select_describe.grid(column=0, row=5, sticky=tk.E)
 
         self.length_any.set(0)
         self.length_lc.set(0)
-        self.length_select.set(0)
-        self.length_any_label.config(   textvariable=self.length_any,
-                                        width=3)
-        self.length_lc_label.config(    textvariable=self.length_lc,
-                                        width=3)
-        self.length_select_label.config(textvariable=self.length_select,
-                                        width=3)
-        self.length_any_label.grid(   column=1, row=3)
-        self.length_lc_label.grid(    column=1, row=4)
-        self.length_select_label.grid(column=1, row=5)
+        self.length_any_label.config(textvariable=self.length_any,
+                                     width=3)
+        self.length_lc_label.config( textvariable=self.length_lc,
+                                     width=3)
+        self.length_any_label.grid(column=1, row=3)
+        self.length_lc_label.grid( column=1, row=4)
 
         self.phrase_any.set(STUBRESULT)
         self.phrase_lc.set(STUBRESULT)
-        self.phrase_select.set(STUBRESULT)
         self.phrase_any_display.config(width=50, font='TkFixedFont',
                                        fg=self.passstub_fg, bg=self.pass_bg)
         self.phrase_lc_display.config(width=50, font='TkFixedFont',
                                       fg=self.passstub_fg, bg=self.pass_bg)
-        self.phrase_sel_display.config(width=50, font='TkFixedFont',
-                                       fg=self.passstub_fg, bg=self.pass_bg)
         self.phrase_any_display.grid(column=2, row=3, columnspan=2,
                                      ipadx=5, padx=5, pady=3, sticky=tk.EW)
         self.phrase_lc_display.grid(column=2, row=4, columnspan=2,
                                     ipadx=5, padx=5, pady=3, sticky=tk.EW)
-        self.phrase_sel_display.grid(column=2, row=5, columnspan=2,
-                                     ipadx=5, padx=5, pady=3, sticky=tk.EW)
 
         # Password results section:
         self.pw_label.config(text='Passwords',
@@ -288,7 +294,7 @@ class Generator:
             sys.exit(1)
 
         if MY_OS == 'win':
-            self.system_words = 'Null'
+            # self.system_words = 'Null'  # Necessary for .split(), below.
             self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
 
         if MY_OS in 'lin, dar':
@@ -316,7 +322,8 @@ class Generator:
                 print(notice)
                 messagebox.showinfo(title='File not found',
                                     detail=notice)
-        self.system_list = self.system_words.split()
+            self.system_list = self.system_words.split()
+
         self.eff_list = self.eff_wordlist.split()
 
     def make_pass(self) -> None:
@@ -454,45 +461,45 @@ class Generator:
         eff_list = self.eff_wordlist.split()
         eff_words = [word for word in eff_list if word.isalpha()]
 
+        # The formatting of this is a pain.  There must be a better way.
         info = (
-            'A passphrase is a random string of words that can be more '
-            'secure and \n'
-            'easier to remember than a shorter or complicated password.\n'
-            "For more information on passphrases, see EFF's discussion, "
-            "for example,\n"
-            'of diceware and wordlist selection at:\n'
-            'https://www.eff.org/deeplinks/2016/07/new-wordlists-random'
-            '-passphrases\n\n'
-            'This program has an option to use the EFF long wordlist, however,'
-            ' Windows\nsystems will use only that list.\n\n'
-            f'In the (non-Windows) system dictionary used for passphrases:\n'
-            f"    There are {len(word_list)} words in that dictionary.\n"
-            f"    There are {len(uniq_words)} unique words (excluding "
-            "possessive forms of nouns.\n"
-            f"    There are {len(trim_words)} unique words of 3 to 8 letters.\n"
-            "Passphrases may include proper names and diacritics found in the "
-            "dictionary.\n"
-            "The symbols added to passphrases and those that are more likely\n"
-            f"usable in passwords are: {SYMBOLS}\n\n"
-            'The word list from Electronic Frontier Foundation (EFF),\n'
-            'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, '
-            'does not contain \nproper names or diacritics and its words are '
-            'generally shorter and easier to spell.\n'
-            'While that official list contains 7776 selected words, only '
-            f'{len(eff_words)} are used here by\nexcluding four hyphenated '
-            f'words.')
+"""A passphrase is a random string of words that can be more secure and
+easier to remember than a shorter or complicated password.
+For more information on passphrases, see, for example, a discussion of
+diceware and wordlist selection at the Electronic Frontier Foundation:
+https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
+
+pygPassphrase users have an option to use the EFF long wordlist. Windows 
+systems, however, will use only that list.
+
+The (non-Windows) system dictionary on this computer provides:
+"""
+f"    {len(word_list)} words of any length, of which\n"
+f"    {len(uniq_words)} are unique (not possessive forms of nouns and \n"
+f"    {len(trim_words)} unique words of 3 to 8 letters."
+"""
+Only the unique and size-limited word subsets are used.
+
+Passphrases may include proper names and diacritics found in the dictionary.
+There is a choice for three added characters to accommodate password
+requirements of some sites and applications: one upper case letter, one number,
+"""
+f'and one symbol ({SYMBOLS})\n\n'
+"""The word list from Electronic Frontier Foundation (EFF),
+https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not contain
+proper names or diacritics and its words are generally shorter and easier to spell.
+"""
+f'Although the EFF list contains 7776 selected words, only {len(eff_words)} are\n'
+'used here by excluding four hyphenated words.\n'
+)
 
         infowin = tk.Toplevel()
-        # infowin.minsize(750, 250)
         infowin.title('A little about passphrases')
         num_lines = info.count('\n')
         infotxt = tk.Text(infowin, width=85, height=num_lines + 2,
                           background='SkyBlue4', foreground='grey98',
                           relief='groove', borderwidth=5, padx=5)
         infotxt.insert('1.0', info)
-        # Center text preceding the Author, etc. details.
-        # infotxt.tag_add('text1', '1.0', float(num_lines - 5))
-        # infotxt.tag_configure('text1', justify='center')
         infotxt.pack()
 
 
