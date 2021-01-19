@@ -153,13 +153,14 @@ class Generator:
 
         style = ttk.Style()
         style.map("G.TButton",
-                  foreground=[('active', 'blue')],
+                  foreground=[('active', self.pass_fg)],
                   background=[('pressed', self.frame_bg),
-                              ('active', self.master_fg)])
+                              ('active', self.pass_bg)])
         style.map("Q.TButton",
-                  # foreground=[('active', 'black')],
+                  foreground=[('active', 'red')],
                   background=[('pressed', self.frame_bg),
-                              ('active', 'orange')])
+                              ('active', self.pass_bg)])
+
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
         self.quit_btn.configure(style="Q.TButton", text='Quit',
@@ -350,11 +351,6 @@ class Generator:
         password2 = "".join(secure_random.choice(string2) for
                             _ in range(int(self.numchars_entry.get())))
 
-        # display.config width will adjust width of results entry widgets to
-        # the longest result string.
-        self.phrase_any_display.config(width=len(passphrase1))
-        self.pw_any_display.config(width=len(password1))
-        self.pw_select_display.config(width=len(password2))
         # Need to lower font size of long pass* length in attempt to keep
         # window on screen, then reset to default font size when pass*
         # length is shortened. On Mac Retina monitors, fonts can be very small.
@@ -372,6 +368,13 @@ class Generator:
         elif len(password1) <= 75:
             self.pw_any_display.config(font='TkFixedFont')
             self.pw_select_display.config(font='TkFixedFont')
+
+        # display.config width will adjust width of results entry
+        # widgets to longest result string. Does not work well with font size
+        # decrease.
+        self.phrase_any_display.config(width=len(passphrase1))
+        self.pw_any_display.config(width=len(password1))
+        self.pw_select_display.config(width=len(password2))
 
         self.phrase_any.set(allwords)
         self.phrase_lc.set(passphrase1)
