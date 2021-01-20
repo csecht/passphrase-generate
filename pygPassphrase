@@ -518,7 +518,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
     num_lines = boilerplate.count('\n')
     aboutwin = tk.Toplevel()
-    # aboutwin.minsize(570, 460)
+    # aboutwin.minsize(600, 460)
     aboutwin.title('About count-tasks')
     colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
               'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',

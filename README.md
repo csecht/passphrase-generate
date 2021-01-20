@@ -16,9 +16,5 @@ On Linux or Mac, the eff wordlist file also needs to be in the working directory
 
 The tkinter graphics module of Python is required, which is included in Python 3.7 and later. Earlier versions will require a separate installation of Tk/Tcl.
 
-Known issues:
-Currently there is an issue of the eff_large_wordlist.txt file path not recognized on some MacOS versions. Also, the button labels "Generate" and "Quit" may not show up on some MacOS.
-
-
 ### pyPalindromes
 Just something fun. I like the magical way that slice can work to test for and generate palindromes.
