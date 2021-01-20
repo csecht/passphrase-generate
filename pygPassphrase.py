@@ -455,7 +455,7 @@ For more information on passphrases, see, for example, a discussion of
 diceware and wordlist selection at the Electronic Frontier Foundation:
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
 
-pygPassphrase users have an option to use the EFF long wordlist. Windows 
+pygPassphrase.py users have an option to use the EFF long wordlist. Windows 
 users, however, will use only that list.
 
 The (non-Windows) system dictionary on this computer provides:
@@ -498,7 +498,7 @@ def about() -> None:
     """
     # msg separators use em dashes.
     boilerplate = ("""
-pygPassphrase privately generates passphrases and passwords.
+pygPassphrase.py privately generates passphrases and passwords.
 Download the most recent version from: 
 https://github.com/csecht/general_utilities
 

@@ -8,9 +8,9 @@ Recent Python packages can be downloaded from https://www.python.org/downloads/.
 A potential problem with on-line password and passphrase generators is that they are on-line. Here is a generator that can be run locally and privately. The different strings generated are intended to comply with a range of websites and application password/passphrase requirements. 
 Suggestions for improvement are welcome, especially any ideas to implement on Windows.
 
-### pygPassphrase
-A GUI implementation of pyPassphrase. Runs on Windows, Linux and MacOS. 
-For Windows, the file eff_large_wordlist.txt, which is included with this distribution, must be in the working folder. Launching the program by double-clicking on the folder icon requires that a .py extension be added to the program file.
+### pygPassphrase.py
+A GUI implementation of pyPassphrase.py. Runs on Windows, Linux and MacOS. 
+For Windows, the file eff_large_wordlist.txt, which is included with this distribution, must be in the working folder. Launching the program by double-clicking on the folder icon may require add .py to your PATH list.
 
 On Linux or Mac, the EFF wordlist file also needs to be in the working directory, but its use for generating passphrases is optional. 
 
