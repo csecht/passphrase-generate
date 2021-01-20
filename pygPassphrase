@@ -98,7 +98,7 @@ class Generator:
 
         # Variables used in get_words():
         self.use_effwords = True
-        self.system_words = 'None'
+        self.system_words = 'Null'
         self.eff_wordlist = 'None'
         self.eff_list = ['None']
         self.system_list = ['None']
@@ -343,6 +343,7 @@ class Generator:
         secure_random = random.SystemRandom()
 
         # Need to remove words having the possessive form (English dictionary).
+        # Remove hyphenated words (~4) from EFF wordlist.
         uniq_words = \
             [word for word in self.system_list if re.search(r"'s", word) is None]
         trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
@@ -381,7 +382,7 @@ class Generator:
         password2 = "".join(secure_random.choice(string2) for
                             _ in range(int(self.numchars_entry.get())))
 
-        # Need to lower font size of long pass* length in attempt to keep
+        # Need to reduce font size of long pass* length in attempt to keep
         # window on screen, then reset to default font size when pass*
         # length is shortened. On Mac Retina monitors, fonts can be very small.
         if len(passphrase1) > 75:
@@ -400,7 +401,8 @@ class Generator:
             self.pw_select_display.config(font='TkFixedFont')
 
         # display.config will adjust width of results entry widgets
-        # to longest result string, but not perfectly so.
+        # to THE longest result string, but not perfectly so when font sizes
+        # change.
         self.phrase_any_display.config(width=len(passphrase1))
         self.pw_any_display.config(width=len(password1))
         self.pw_select_display.config(width=len(password2))
@@ -434,7 +436,7 @@ class Generator:
         self.pw_select_display.config(fg=self.pass_fg)
 
     def explain(self) -> None:
-        """Provide information about number of words used to create passphrases
+        """Provide information about words used to create passphrases.
         """
         # This duplicates statements from make_pass().  Would require
         # separate method for these variables to consolidate?...
@@ -454,7 +456,7 @@ diceware and wordlist selection at the Electronic Frontier Foundation:
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
 
 pygPassphrase users have an option to use the EFF long wordlist. Windows 
-systems, however, will use only that list.
+users, however, will use only that list.
 
 The (non-Windows) system dictionary on this computer provides:
 """
@@ -462,23 +464,24 @@ f"    {len(word_list)} words of any length, of which\n"
 f"    {len(uniq_words)} are unique (not possessive forms of nouns and \n"
 f"    {len(trim_words)} unique words of 3 to 8 letters."
 """
-Only the unique and size-limited word subsets are used.
+Only the unique and size-limited word subsets are used here for passphrases.
 
 Passphrases may include proper names and diacritics found in the dictionary.
-There is a choice for three added characters to accommodate password
-requirements of some sites and applications: one upper case letter, one number,
+There is a choice for three added characters to accommodate password 
 """
-f'and one symbol ({SYMBOLS})\n\n'
-"""The word list from Electronic Frontier Foundation (EFF),
+f'requirements of some sites and applications: one symbol ({SYMBOLS}),' 
+"""
+one upper case letter, and one number.
+ 
+The word list from Electronic Frontier Foundation (EFF),
 https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not contain
-proper names or diacritics and its words are generally shorter and easier to spell.
-"""
-f'Although the EFF list contains 7776 selected words, only {len(eff_words)} are\n'
-'used here by excluding four hyphenated words.\n'
+proper names or diacritics. Its words are generally shorter and easier to 
+spell. Although the EFF list contains 7776 selected words, only"""
+f' {len(eff_words)} are used\nhere by excluding four hyphenated words.\n'
 )
 
         infowin = tk.Toplevel()
-        infowin.title('A little about passphrases')
+        infowin.title('A word about passphrases')
         num_lines = info.count('\n')
         infotxt = tk.Text(infowin, width=85, height=num_lines + 2,
                           background='SkyBlue4', foreground='grey98',
@@ -514,7 +517,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
             Author:     cecht
             Copyright:  Copyright (C) 2021 C. Echt
             Development Status: 4 - Beta
-            Version:    """)
+            Version:    """)  # The version number is appended here.
 
     num_lines = boilerplate.count('\n')
     aboutwin = tk.Toplevel()
