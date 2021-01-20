@@ -468,16 +468,16 @@ Only the unique and size-limited word subsets are used here for passphrases.
 
 Passphrases may include proper names and diacritics found in the dictionary.
 There is a choice for three added characters to accommodate password 
+requirements of some sites and applications: one symbol, one upper case 
+letter, and one number. The symbols used are from this set: """
+f'{SYMBOLS}\n'
 """
-f'requirements of some sites and applications: one symbol ({SYMBOLS}),' 
-"""
-one upper case letter, and one number.
- 
 The word list from Electronic Frontier Foundation (EFF),
 https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not contain
 proper names or diacritics. Its words are generally shorter and easier to 
-spell. Although the EFF list contains 7776 selected words, only"""
-f' {len(eff_words)} are used\nhere by excluding four hyphenated words.\n'
+spell. Although the EFF list contains 7776 selected words, only 7772 are used 
+here by excluding four hyphenated words.
+"""
 )
 
         infowin = tk.Toplevel()
