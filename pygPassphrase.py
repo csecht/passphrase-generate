@@ -322,7 +322,8 @@ class Generator:
         """Generate various forms of passphrases and passwords.
         """
         # Need different passphrase descriptions for sys dict and EEF list.
-        # Initial label texts are for sys. dict. and are set in window_setup().
+        # Initial label texts are for sys. dict. and are set in
+        # window_setup(), but are modified here if EFF option is used.
         # OS label descriptors are written each time "Generate" command is run.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
@@ -332,6 +333,11 @@ class Generator:
                                             fg=self.frame_fg, bg=self.frame_bg)
                 self.select_describe.config(text="... words of 3 to 8 letters",
                                             fg=self.frame_fg, bg=self.frame_bg)
+                # Show widgets (in case they were removed by EFF True option).
+                self.length_select_label.grid(column=1, row=5)
+                self.phrase_sel_display.grid(column=2, row=5, columnspan=2,
+                                             ipadx=5, padx=5, pady=3,
+                                             sticky=tk.EW)
             elif self.eff.get() is True:
                 self.any_describe.config(   text="Any words from EFF wordlist",
                                             fg=self.frame_fg, bg=self.frame_bg)
@@ -339,6 +345,9 @@ class Generator:
                                             fg=self.frame_fg, bg=self.frame_bg)
                 self.select_describe.config(text=" ",
                                             fg=self.frame_fg, bg=self.frame_bg)
+                # Hide widgets when EFF option is True.
+                self.length_select_label.grid_remove()
+                self.phrase_sel_display.grid_remove()
 
         secure_random = random.SystemRandom()
 
@@ -416,6 +425,8 @@ class Generator:
             elif self.eff.get() is True:
                 self.phrase_select.set('')
                 self.length_select.set('')
+
+
         elif MY_OS == 'win':
             self.phrase_select.set('')
             self.length_select.set('')
