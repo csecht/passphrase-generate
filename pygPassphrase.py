@@ -111,6 +111,7 @@ class Generator:
 
         :return: A nice looking interactive graphic.
         """
+        self.master.minsize(800, 300)
         self.master.configure(bg=self.master_bg)
 
         # Create menu instance and add pull-down menus
@@ -269,7 +270,7 @@ class Generator:
         """
         Check which word files are available; populate lists for make_pass().
         """
-        # Need to first confirm that required files are present.     
+        # Need to first confirm that required files are present.
         fnf_msg = (
             '\n*** Cannot locate either the system dictionary or EFF wordlist\n'
             'At a minimum, the file eff_large_wordlist.txt should be in '
@@ -393,27 +394,29 @@ class Generator:
         # Need to reduce font size of long pass* length in attempt to keep
         # window on screen, then reset to default font size when pass*
         # length is shortened. On Mac Retina monitors, fonts can be very small.
+        # Adjust width of results entry widgets to THE longest result string.
+        # B/c 'width' is character, not pixel, units, length is not perfect
+        #   when font sizes change.
         if len(passphrase1) > 75:
-            self.phrase_any_display.config(font=('TkFixedFont', 8))
+            self.phrase_any_display.config(font=('TkFixedFont', 8),
+                                           width=len(passphrase1))
             self.phrase_lc_display.config(font=('TkFixedFont', 8))
             self.phrase_sel_display.config(font=('TkFixedFont', 8))
         elif len(passphrase1) <= 75:
-            self.phrase_any_display.config(font='TkFixedFont')
+            self.phrase_any_display.config(font='TkFixedFont',
+                                           width=len(passphrase1))
             self.phrase_lc_display.config(font='TkFixedFont')
             self.phrase_sel_display.config(font='TkFixedFont')
         if len(password1) > 75:
-            self.pw_any_display.config(font=('TkFixedFont', 8))
-            self.pw_select_display.config(font=('TkFixedFont', 8))
+            self.pw_any_display.config(font=('TkFixedFont', 8),
+                                       width=len(password1))
+            self.pw_select_display.config(font=('TkFixedFont', 8),
+                                          width=len(password2))
         elif len(password1) <= 75:
-            self.pw_any_display.config(font='TkFixedFont')
-            self.pw_select_display.config(font='TkFixedFont')
-
-        # display.config will adjust width of results entry widgets
-        # to THE longest result string, but not perfectly so when font sizes
-        # change.
-        self.phrase_any_display.config(width=len(passphrase1))
-        self.pw_any_display.config(width=len(password1))
-        self.pw_select_display.config(width=len(password2))
+            self.pw_any_display.config(font='TkFixedFont',
+                                       width=len(password1))
+            self.pw_select_display.config(font='TkFixedFont',
+                                          width=len(password2))
 
         # No need to set sys dictionary variables or provide eff checkbutton
         # condition for Windows.
