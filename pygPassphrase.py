@@ -173,7 +173,7 @@ class Generator:
         self.numchars_label.grid(column=0, row=1, padx=5, pady=3, sticky=tk.E)
         self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
         self.generate_btn.grid(  column=2, row=1, sticky=tk.W)
-        self.quit_btn.grid(      column=3, row=1, sticky=tk.W)
+        self.quit_btn.grid(      column=0, row=10, padx=5, pady=(2,5), sticky=tk.W)
 
         # Set up frame for results:
         self.result_frame.config(borderwidth=3, relief='sunken',
