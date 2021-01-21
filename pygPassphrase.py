@@ -455,8 +455,6 @@ class Generator:
         uniq_words = [word for word in word_list if
                       re.search(r"'s", word) is None]
         trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
-        eff_list = self.eff_wordlist.split()
-        eff_words = [word for word in eff_list if word.isalpha()]
 
         # The formatting of this is a pain.  There must be a better way.
         info = (
