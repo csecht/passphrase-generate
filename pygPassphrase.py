@@ -334,10 +334,9 @@ class Generator:
                 self.select_describe.config(text="... words of 3 to 8 letters",
                                             fg=self.frame_fg, bg=self.frame_bg)
                 # Show widgets (in case they were removed by EFF True option).
-                self.length_select_label.grid(column=1, row=5)
-                self.phrase_sel_display.grid(column=2, row=5, columnspan=2,
-                                             ipadx=5, padx=5, pady=3,
-                                             sticky=tk.EW)
+                self.length_select_label.grid()
+                self.phrase_sel_display.grid()
+
             elif self.eff.get() is True:
                 self.any_describe.config(   text="Any words from EFF wordlist",
                                             fg=self.frame_fg, bg=self.frame_bg)
@@ -425,7 +424,6 @@ class Generator:
             elif self.eff.get() is True:
                 self.phrase_select.set('')
                 self.length_select.set('')
-
 
         elif MY_OS == 'win':
             self.phrase_select.set('')
