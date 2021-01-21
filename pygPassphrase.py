@@ -111,8 +111,13 @@ class Generator:
 
         :return: A nice looking interactive graphic.
         """
-        self.master.minsize(800, 300)
+        self.master.minsize(800, 340)
         self.master.configure(bg=self.master_bg)
+
+        # Set up frame for results:
+        self.result_frame.config(borderwidth=3, relief='sunken',
+                                 background=self.frame_bg)
+        self.result_frame.grid(column=0, row=2, columnspan=4, padx=5, pady=5)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -141,7 +146,9 @@ class Generator:
 
         if self.use_effwords is False:
             self.eff_chk.config(state='disabled')
-
+        # TODO: adjust griding so these don't move with changing col2 width.
+        # OR Freeze Frame size so no geometries change. Widgets in col0 in rows
+        #  BELOW the frame stay anchored E, but not in col1.
         self.numwords_label.config(text='Enter # words for passphrase',
                                    fg=self.master_fg, bg=self.master_bg)
         self.numwords_entry.config(width=2)
@@ -165,7 +172,7 @@ class Generator:
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
         self.quit_btn.configure(style="Q.TButton", text='Quit',
-                                command=quit_gui)
+                                command=quit_gui, width=5)
 
         self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0),
                                  sticky=tk.E)
@@ -173,12 +180,8 @@ class Generator:
         self.numchars_label.grid(column=0, row=1, padx=5, pady=3, sticky=tk.E)
         self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
         self.generate_btn.grid(  column=2, row=1, sticky=tk.W)
-        self.quit_btn.grid(      column=0, row=10, padx=5, pady=(2,5), sticky=tk.W)
-
-        # Set up frame for results:
-        self.result_frame.config(borderwidth=3, relief='sunken',
-                                 background=self.frame_bg)
-        self.result_frame.grid(column=0, row=2, columnspan=4, padx=5, pady=5)
+        self.quit_btn.grid(      column=0, row=9, padx=5, pady=(2, 5),
+                                 sticky=tk.W)
 
         # Passphrase results section: ########################################
         self.length_label.config(    text='Length',
