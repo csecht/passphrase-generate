@@ -41,8 +41,7 @@ class Generator:
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.make_pass())
 
-        # main window background color, also used for some labels.
-        self.master_bg = 'SkyBlue4'
+        self.master_bg = 'SkyBlue4'  # also used for some labels.
         self.master_fg = 'LightCyan2'  # foreground for user entry labels
         self.frame_bg = 'grey40'  # background for data labels and frame
         self.frame_fg = 'grey90'
@@ -50,7 +49,7 @@ class Generator:
         self.pass_fg = 'brown4'
         self.pass_bg = 'khaki2'
 
-        # Variables used in setup_window(), in order of appearance:
+        # Variables used in setup_window(), in general order of appearance:
         #  Don't make an EFF checkbutton in Windows b/c EFF words are default.
         if MY_OS in 'lin, dar':
             self.eff = tk.BooleanVar()
@@ -120,8 +119,7 @@ class Generator:
         """
         # TODO: Consider a more readable way to organize variable groups.
 
-        self.master.minsize(720, 350)
-        # self.master.maxsize(1050, 340)
+        self.master.minsize(720, 410)
         self.master.config(bg=self.master_bg)
 
         self.result_frame.config(borderwidth=3, relief='sunken',
@@ -143,7 +141,7 @@ class Generator:
                               command=self.explain)
         help_menu.add_command(label="About", command=about)
 
-        # Set up user entry and control:
+        # Set up user entry and control widgets:
         if MY_OS in 'lin, dar':
             self.eff_chk.config(text='Use EFF word list ',
                                 variable=self.eff,
@@ -195,6 +193,7 @@ class Generator:
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=self.pass_bg, bg=self.master_bg)
 
+        # Passphrase results section:
         # Set up OS-specific widgets.
         if MY_OS in 'lin, dar':
             self.any_describe.config(text="Any words from dictionary",
@@ -218,7 +217,7 @@ class Generator:
             self.select_describe.config(text=" ",
                                         fg=self.master_fg, bg=self.master_bg)
 
-        # Statements used by all OS.
+        # Passphrase widgets used by all OS.
         self.length_any.set(0)
         self.length_lc.set(0)
         self.length_pw_any.set(0)
@@ -294,10 +293,6 @@ class Generator:
         self.pw_any_describe.grid(   column=0, row=9, sticky=tk.E)
         self.pw_select_describe.grid(column=0, row=10,
                                      sticky=tk.E)
-        # if self.eff_chk is True:
-        #     self.pw_any_describe.grid(column=0, row=8, padx=5, sticky=tk.E)
-        #     self.pw_select_describe.grid(column=0, row=9, padx=5, sticky=tk.E)
-
         self.length_pw_any_l.grid(   column=1, row=10, pady=(6, 3))
         self.length_pw_select_l.grid(column=1, row=11, pady=(3, 6))
         self.pw_any_display.grid(    column=2, row=10, columnspan=2, ipadx=5,
