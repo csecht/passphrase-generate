@@ -138,7 +138,7 @@ class Generator:
                               command=self.explain)
         help_menu.add_command(label="About", command=about)
 
-        # Set up user entry and control widgets:
+        # Configure and initial set of user entry and control widgets:
         if MY_OS in 'lin, dar':
             self.eff_chk.config(text='Use EFF word list ',
                                 variable=self.eff,
@@ -160,7 +160,7 @@ class Generator:
         self.numchars_entry.insert(0, 0)
 
         # Explicit styles are needed for buttons to show properly on MacOS.
-        #  ... even then, background colors won't be recognized.
+        #  ... even then, background and pressed colors won't be recognized.
         style = ttk.Style()
         style.map("G.TButton",
                   foreground=[('active', self.pass_fg)],
@@ -176,7 +176,7 @@ class Generator:
         self.quit_btn.configure(style="Q.TButton", text='Quit',
                                 command=quit_gui, width=5)
 
-        # Separators for top and bottom of results section
+        # Separators for top and bottom of results section.
         # For colored separators, use ttk.Frame instead of ttk.Separator.
         style_sep = ttk.Style(self.master)
         style_sep.configure('TFrame', background=self.master_bg)
@@ -276,6 +276,8 @@ class Generator:
                                      ipadx=5, padx=5, pady=3, sticky=tk.EW)
         self.phrase_lc_display.grid( column=2, row=6, columnspan=1,
                                      ipadx=5, padx=5, pady=3, sticky=tk.EW)
+
+        # Don't show 'dictionary' widgets on Windows, and move Generate button.
         if MY_OS in 'lin, dar':
             self.eff_chk.grid(            column=0, row=2, padx=5, pady=5,
                                           sticky=tk.W)
@@ -357,6 +359,7 @@ class Generator:
     def make_pass(self) -> None:
         """Generate various forms of passphrases and passwords.
         """
+        # TODO: Add option to exclude pass* with a chosen character or letter.
         # Need different passphrase descriptions for sys dict and EEF list.
         # Initial label texts are for sys. dict. and are set in
         # window_setup(), but are modified here if EFF option is used.
