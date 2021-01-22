@@ -52,8 +52,8 @@ class Generator:
         # Variables used in setup_window(), in general order of appearance:
         #  Don't make an EFF checkbutton in Windows b/c EFF words are default.
         if MY_OS in 'lin, dar':
-            self.eff = tk.BooleanVar()
-            self.eff_chk = tk.Checkbutton()
+            self.eff =        tk.BooleanVar()
+            self.eff_chk =    tk.Checkbutton()
         self.numwords_label = tk.Label()
         self.numwords_entry = tk.Entry()
         self.numchars_label = tk.Label()
@@ -65,40 +65,38 @@ class Generator:
 
         self.result_frame = tk.Frame()
 
-        self.length_header = tk.Label()
+        self.length_header =    tk.Label()
         self.passphrase_header = tk.Label()
-        self.any_describe = tk.Label()
-        self.any_lc_describe = tk.Label()
-        self.select_describe = tk.Label()
-        self.length_any = tk.IntVar()
-        self.length_lc = tk.IntVar()
-        self.length_select = tk.IntVar()
-        self.length_pw_any = tk.IntVar()
+        self.any_describe =     tk.Label()
+        self.any_lc_describe =  tk.Label()
+        self.select_describe =  tk.Label()
+        self.length_any =       tk.IntVar()
+        self.length_lc =        tk.IntVar()
+        self.length_select =    tk.IntVar()
+        self.length_pw_any =    tk.IntVar()
         self.length_pw_select = tk.IntVar()
         self.length_any_label = tk.Label(self.result_frame)
-        self.length_lc_label = tk.Label(self.result_frame)
+        self.length_lc_label =  tk.Label(self.result_frame)
         self.length_select_label = tk.Label(self.result_frame)
-        self.length_pw_any_l = tk.Label(self.result_frame)
+        self.length_pw_any_l =  tk.Label(self.result_frame)
         self.length_pw_select_l = tk.Label(self.result_frame)
-        self.phrase_any = tk.StringVar()
-        self.phrase_lc = tk.StringVar()
-        self.phrase_select = tk.StringVar()
+        self.phrase_any =       tk.StringVar()
+        self.phrase_lc =        tk.StringVar()
+        self.phrase_select =    tk.StringVar()
         self.phrase_any_display = tk.Entry(self.result_frame,
                                            textvariable=self.phrase_any)
         self.phrase_lc_display = tk.Entry(self.result_frame,
                                           textvariable=self.phrase_lc)
         self.phrase_sel_display = tk.Entry(self.result_frame,
                                            textvariable=self.phrase_select)
-        self.pw_header = tk.Label()
-        # self.pw_any_describe = tk.Label(self.result_frame)
-        # self.pw_select_describe = tk.Label(self.result_frame)
-        self.pw_any_describe = tk.Label()
+        self.pw_header =        tk.Label()
+        self.pw_any_describe =  tk.Label()
         self.pw_select_describe = tk.Label()
 
-        self.pw_any = tk.StringVar()
-        self.pw_select = tk.StringVar()
-        self.pw_any_display = tk.Entry(self.result_frame,
-                                       textvariable=self.pw_any,)
+        self.pw_any =           tk.StringVar()
+        self.pw_select =        tk.StringVar()
+        self.pw_any_display =   tk.Entry(self.result_frame,
+                                         textvariable=self.pw_any,)
         self.pw_select_display = tk.Entry(self.result_frame,
                                           textvariable=self.pw_select)
 
@@ -117,7 +115,6 @@ class Generator:
 
         :return: A nice looking interactive graphic.
         """
-        # TODO: Consider a more readable way to organize variable groups.
 
         self.master.minsize(720, 410)
         self.master.config(bg=self.master_bg)
@@ -162,6 +159,8 @@ class Generator:
         self.numchars_entry.config(width=3)
         self.numchars_entry.insert(0, 0)
 
+        # Explicit styles are needed for buttons to show properly on MacOS.
+        #  ... even then, background colors won't be recognized.
         style = ttk.Style()
         style.map("G.TButton",
                   foreground=[('active', self.pass_fg)],
@@ -243,16 +242,20 @@ class Generator:
                                        fg=self.master_fg, bg=self.master_bg)
         self.pw_any.set(STUBRESULT)
         self.pw_select.set(STUBRESULT)
-        self.pw_any_display.config(width=50, font='TkFixedFont',
+        self.pw_any_display.config(width=50, font='Courier',
                                    fg=self.passstub_fg, bg=self.pass_bg)
-        self.pw_select_display.config(width=50, font='TkFixedFont',
+        self.pw_select_display.config(width=50, font='Courier',
                                       fg=self.passstub_fg, bg=self.pass_bg)
 
-        # GRID all widgets: ##############
+        # GRID all widgets: ####################################
+        # TODO: Align row headers (describe) with result_frame rows.
         self.result_frame.grid(      column=1, row=5, columnspan=2, rowspan=6,
                                      padx=5, pady=5)
+        # Need a spacer row between passphrase and password sections
+        frame_xtrarow = tk.Label(self.result_frame, text="", bg=self.frame_bg)
+        frame_xtrarow.grid(row=8)
 
-        # Passphrase widget grid:
+        # Passphrase widgets grid:
         self.numwords_label.grid(    column=0, row=0, padx=5, pady=(5, 0), sticky=tk.E)
         self.numwords_entry.grid(    column=1, row=0, pady=(5, 0), sticky=tk.W)
         self.numchars_label.grid(    column=0, row=1, padx=5, pady=3,sticky=tk.E)
@@ -283,13 +286,8 @@ class Generator:
         elif MY_OS == 'win':
             self.generate_btn.grid(column=0, row=2, padx=5, pady=5,sticky=tk.W)
 
-        # Password widget grid:
+        # Password widgets grid:
         self.pw_header.grid(column=0, row=8, padx=5, sticky=tk.W)
-
-        # Need a spacer row between passphrase and password sections
-        frame_xtrarow = tk.Label(self.result_frame, text="", bg=self.frame_bg)
-        frame_xtrarow.grid(row=8)
-
         self.pw_any_describe.grid(   column=0, row=9, sticky=tk.E)
         self.pw_select_describe.grid(column=0, row=10,
                                      sticky=tk.E)
@@ -445,14 +443,14 @@ class Generator:
             self.phrase_lc_display.config(font='TkFixedFont')
             self.phrase_sel_display.config(font='TkFixedFont')
         if len(password1) > 75:
-            self.pw_any_display.config(font=('TkFixedFont', 8),
+            self.pw_any_display.config(font=('Courier', 8),
                                        width=len(password1))
-            self.pw_select_display.config(font=('TkFixedFont', 8),
+            self.pw_select_display.config(font=('Courier', 8),
                                           width=len(password2))
         elif len(password1) <= 75:
-            self.pw_any_display.config(font='TkFixedFont',
+            self.pw_any_display.config(font='Courier',
                                        width=len(password1))
-            self.pw_select_display.config(font='TkFixedFont',
+            self.pw_select_display.config(font='Courier',
                                           width=len(password2))
 
         # No need to set sys dictionary variables or provide eff checkbutton
