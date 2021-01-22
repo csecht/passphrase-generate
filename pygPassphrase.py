@@ -108,7 +108,7 @@ class Generator:
         self.eff_wordlist = 'None'
         self.eff_list = ['None']
         self.system_list = ['None']
-        self.bad_character = 'None'
+        self.unused = 'None'
 
         self.setup_window()
 
@@ -141,7 +141,7 @@ class Generator:
                               command=self.explain)
         help_menu.add_command(label="About", command=about)
 
-        # Configure and initial set of user entry and control widgets:
+        # Configure and set initial values of user entry and control widgets:
         if MY_OS in 'lin, dar':
             self.eff_chk.config(text='Use EFF word list ',
                                 variable=self.eff,
@@ -186,7 +186,7 @@ class Generator:
 
         # Separators for top and bottom of results section.
         # For colored separators, use ttk.Frame instead of ttk.Separator.
-        style_sep = ttk.Style(self.master)
+        style_sep = ttk.Style()
         style_sep.configure('TFrame', background=self.master_bg)
         sep1 = ttk.Frame(relief="raised", height=6)
         sep2 = ttk.Frame(relief="raised", height=6)
@@ -410,20 +410,20 @@ class Generator:
         string1 = ascii_letters + digits + punctuation
         string2 = ascii_letters + digits + SYMBOLS
 
-        self.bad_character = self.exclude_entry.get()
+        self.unused = self.exclude_entry.get()
         # TODO: Allow use of \ and . in exclude_entry
-        self.bad_character.replace(r"\\", "\\\\")  # No Good
+        self.unused.replace(r"\\", "\\\\")  # No Good;  .re.sub ?
 
-        if len(self.bad_character) != 0:
+        if len(self.unused) != 0:
             uniq_words = [word for word in uniq_words if re.search(
-                rf'{self.bad_character}', word) is None]
+                f'{self.unused}', word) is None]
             trim_words = [word for word in trim_words if re.search(
-                rf'{self.bad_character}', word) is None]
+                f'{self.unused}', word) is None]
             eff_words = [word for word in eff_words if re.search(
-                rf'{self.bad_character}', word) is None]
-            caps = caps.replace(self.bad_character, '')
-            string1 = string1.replace(self.bad_character, '')
-            string2 = string2.replace(self.bad_character, '')
+                f'{self.unused}', word) is None]
+            caps = caps.replace(self.unused, '')
+            string1 = string1.replace(self.unused, '')
+            string2 = string2.replace(self.unused, '')
 
         allwords = "".join(secure_random.choice(uniq_words) for
                            _ in range(int(self.numwords_entry.get())))
@@ -545,8 +545,9 @@ Passphrases may include proper names and diacritics found in the dictionary.
 There is a choice for three added characters to accommodate password 
 requirements of some sites and applications: one symbol, one upper case 
 letter, and one number. The symbols used are from this set: """
-f'{SYMBOLS}\n'
-"""
+f'{SYMBOLS}\nThere is an option to specify any character or string of characters\n'
+"""to exclude from your passphrase words or passwords.
+
 The word list from Electronic Frontier Foundation (EFF),
 https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not contain
 proper names or diacritics. Its words are generally shorter and easier to 
@@ -558,9 +559,9 @@ here by excluding four hyphenated words.
         infowin = tk.Toplevel()
         infowin.title('A word about passphrases')
         num_lines = info.count('\n')
-        infotxt = tk.Text(infowin, width=85, height=num_lines + 2,
+        infotxt = tk.Text(infowin, width=80, height=num_lines + 2,
                           background='SkyBlue4', foreground='grey98',
-                          relief='groove', borderwidth=5, padx=5)
+                          relief='groove', borderwidth=5, padx=10, pady=10)
         infotxt.insert('1.0', info)
         infotxt.pack()
 
