@@ -165,8 +165,6 @@ class Generator:
         self.exclude_label.config(text='Character(s) to exclude',
                                   fg=self.master_fg, bg=self.master_bg)
         self.exclude_entry.config(width=3)
-        # self.exclude_info.config(text="?", width=0, height=0, command=about)
-        # self.exclude_info.config()
 
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
@@ -178,12 +176,11 @@ class Generator:
         style.map("Q.TButton",
                   foreground=[('active', 'red')],
                   background=[('pressed', self.frame_bg),
-                              ('active', self.pass_bg)],
-                  highlightcolor=[('focus', 'green')])
+                              ('active', self.pass_bg)])
+        self.exclude_btn.configure(style="G.TButton", text="?", width=0,
+                                   command=exclude_msg)
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
-        self.exclude_btn.configure(style="G.TButton", text="?", width=1,
-                                   command=exclude_msg)
         self.quit_btn.configure(style="Q.TButton", text='Quit',
                                 command=quit_gui, width=5)
 
@@ -273,10 +270,8 @@ class Generator:
         self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
         self.exclude_label.grid( column=0, row=2, padx=5, sticky=tk.E)
         self.exclude_entry.grid( column=1, row=2, sticky=tk.W)
+        self.exclude_btn.grid(   column=0, row=2, padx=(20, 0), sticky=tk.W)
 
-        # self.exclude_info.grid(  column=2, row=2, sticky=tk.W)
-        # self.exclude_info.place(x=40, y=55, width=20, height=20)
-        self.exclude_btn.place(relx=0.05, rely=0.14, width=20, height=20)
         self.generate_btn.grid(      column=1, row=3, pady=(10, 5),
                                      sticky=tk.W)
 
