@@ -369,7 +369,6 @@ class Generator:
     def make_pass(self) -> None:
         """Generate various forms of passphrases and passwords.
         """
-        # TODO: Add option to exclude pass* with a chosen character or letter.
         # Need different passphrase descriptions for sys dict and EEF list.
         # Initial label texts are for sys. dict. and are set in
         # window_setup(), but are modified here if EFF option is used.
@@ -400,7 +399,7 @@ class Generator:
         secure_random = random.SystemRandom()
 
         # Need to remove words having the possessive form (English dictionary).
-        # Remove hyphenated words (~4) from EFF wordlist.
+        # Remove hyphenated words (~4) from EFF wordlist (are not alpha).
         uniq_words = \
             [word for word in self.system_list if re.search(r"'s", word) is None]
         trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
@@ -410,34 +409,32 @@ class Generator:
         string1 = ascii_letters + digits + punctuation
         string2 = ascii_letters + digits + SYMBOLS
 
+        # Filter out words and strings containing characters to be excluded.
         self.unused = self.exclude_entry.get()
-        # TODO: Allow use of \ and . in exclude_entry
-        self.unused.replace(r"\\", "\\\\")  # No Good;  .re.sub ?
-
         if len(self.unused) != 0:
-            uniq_words = [word for word in uniq_words if re.search(
-                f'{self.unused}', word) is None]
-            trim_words = [word for word in trim_words if re.search(
-                f'{self.unused}', word) is None]
-            eff_words = [word for word in eff_words if re.search(
-                f'{self.unused}', word) is None]
-            caps = caps.replace(self.unused, '')
-            string1 = string1.replace(self.unused, '')
-            string2 = string2.replace(self.unused, '')
+            uniq_words = [word for word in uniq_words if self.unused not in word]
+            trim_words = [word for word in trim_words if self.unused not in word]
+            eff_words = [word for word in eff_words if self.unused not in word]
+            caps = [letter for letter in caps if self.unused not in letter]
+            string1 = [char for char in string1 if self.unused not in char]
+            string2 = [char for char in string2 if self.unused not in char]
 
+        # Select user-specified number of words.
         allwords = "".join(secure_random.choice(uniq_words) for
                            _ in range(int(self.numwords_entry.get())))
         somewords = "".join(secure_random.choice(trim_words) for
                             _ in range(int(self.numwords_entry.get())))
         effwords = "".join(secure_random.choice(eff_words) for
                            _ in range(int(self.numwords_entry.get())))
+
+        # Select symbols to append, as a convenience; is not user-specified.
         addsymbol = "".join(secure_random.choice(SYMBOLS) for _ in range(1))
         addcaps = "".join(secure_random.choice(caps) for _ in range(1))
         addnum = "".join(secure_random.choice(digits) for _ in range(1))
 
         # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
-        # 3rd, if EFF is only choice in Linux/Mac, disable eff checkbutton.
-        # There is probably a less confusing way to work these conditions.
+        #   3rd, if EFF is only choice in Linux/Mac, disable eff checkbutton.
+        #   There is probably clearer way to work these conditions.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             allwords = effwords
             somewords = effwords
@@ -447,6 +444,7 @@ class Generator:
             if MY_OS in 'lin, dar':
                 self.eff_chk.config(state='disabled')
 
+        # Build the pass-strings.
         passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
         passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
         password1 = "".join(secure_random.choice(string1) for
@@ -454,12 +452,13 @@ class Generator:
         password2 = "".join(secure_random.choice(string2) for
                             _ in range(int(self.numchars_entry.get())))
 
-        # Need to reduce font size of long pass* length in attempt to keep
-        # window on screen, then reset to default font size when pass*
-        # length is shortened. On Mac Retina monitors, fonts can be very small.
+        # Need to reduce font size of long pass-string length to keep
+        # window on screen, then reset to default font size when pass-string
+        # length is shortened. On Retina & 4K monitors, fonts can be too small.
         # Adjust width of results entry widgets to THE longest result string.
-        # B/c 'width' is character, not pixel, units, length is not perfect
-        #   when font sizes change.
+        # B/c 'width' is character units, not pixels, length is not perfect
+        #   fit when font sizes change.
+        # TODO: Align headers and results. Row height varies with font type.
         if len(passphrase1) > 75:
             self.phrase_any_display.config(font=('TkFixedFont', 8),
                                            width=len(passphrase1))
@@ -470,6 +469,7 @@ class Generator:
                                            width=len(passphrase1))
             self.phrase_lc_display.config(font='TkFixedFont')
             self.phrase_sel_display.config(font='TkFixedFont')
+        # Use courier b/c TKFixedFont does not monospace symbol characters.
         if len(password1) > 75:
             self.pw_any_display.config(font=('Courier', 8),
                                        width=len(password1))
@@ -481,8 +481,9 @@ class Generator:
             self.pw_select_display.config(font='Courier',
                                           width=len(password2))
 
-        # No need to set sys dictionary variables or provide eff checkbutton
-        # condition for Windows.
+        # Set all pass-strings for display.
+        #   No need to set sys dictionary variables or provide eff checkbutton
+        #     condition for Windows.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.phrase_select.set(passphrase2)
