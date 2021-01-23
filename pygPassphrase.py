@@ -27,6 +27,8 @@ MY_OS = sys.platform[:3]
 # MY_OS = 'win' # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
+DISPLAY_FONT = 'Courier', 11
+SMALL_FONT = 'Courier', 9
 
 
 class Generator:
@@ -213,7 +215,7 @@ class Generator:
             self.length_select_label.config(textvariable=self.length_select,
                                             width=3)
             self.phrase_select.set(STUBRESULT)
-            self.phrase_sel_display.config(width=50, font='TkFixedFont',
+            self.phrase_sel_display.config(width=72, font=DISPLAY_FONT,
                                            fg=self.passstub_fg,
                                            bg=self.pass_bg)
         elif MY_OS == 'win':
@@ -235,9 +237,9 @@ class Generator:
         self.length_pw_select_l.config(textvariable=self.length_pw_select,width=3)
         self.phrase_any.set(STUBRESULT)
         self.phrase_lc.set(STUBRESULT)
-        self.phrase_any_display.config(width=50, font='TkFixedFont',
+        self.phrase_any_display.config(width=72, font=DISPLAY_FONT,
                                        fg=self.passstub_fg, bg=self.pass_bg)
-        self.phrase_lc_display.config(width=50, font='TkFixedFont',
+        self.phrase_lc_display.config(width=72, font=DISPLAY_FONT,
                                       fg=self.passstub_fg, bg=self.pass_bg)
 
         # Password results section:
@@ -250,9 +252,9 @@ class Generator:
                                        fg=self.master_fg, bg=self.master_bg)
         self.pw_any.set(STUBRESULT)
         self.pw_select.set(STUBRESULT)
-        self.pw_any_display.config(width=50, font='Courier',
+        self.pw_any_display.config(width=72, font=DISPLAY_FONT,
                                    fg=self.passstub_fg, bg=self.pass_bg)
-        self.pw_select_display.config(width=50, font='Courier',
+        self.pw_select_display.config(width=72, font=DISPLAY_FONT,
                                       fg=self.passstub_fg, bg=self.pass_bg)
 
         # GRID all widgets: ####################################
@@ -460,27 +462,26 @@ class Generator:
         # Adjust width of results entry widgets to THE longest result string.
         # B/c 'width' is character units, not pixels, length is not perfect
         #   fit when font sizes change.
-        # TODO: Align headers and results. Row height varies with font type.
-        if len(passphrase1) > 75:
-            self.phrase_any_display.config(font=('TkFixedFont', 8),
+        if len(passphrase1) > 72:
+            self.phrase_any_display.config(font=SMALL_FONT,
                                            width=len(passphrase1))
-            self.phrase_lc_display.config(font=('TkFixedFont', 8))
-            self.phrase_sel_display.config(font=('TkFixedFont', 8))
-        elif len(passphrase1) <= 75:
-            self.phrase_any_display.config(font='TkFixedFont',
+            self.phrase_lc_display.config(font=SMALL_FONT)
+            self.phrase_sel_display.config(font=SMALL_FONT)
+        elif len(passphrase1) <= 72:
+            self.phrase_any_display.config(font=DISPLAY_FONT,
                                            width=len(passphrase1))
-            self.phrase_lc_display.config(font='TkFixedFont')
-            self.phrase_sel_display.config(font='TkFixedFont')
+            self.phrase_lc_display.config(font=DISPLAY_FONT)
+            self.phrase_sel_display.config(font=DISPLAY_FONT)
         # Use courier b/c TKFixedFont does not monospace symbol characters.
-        if len(password1) > 75:
-            self.pw_any_display.config(font=('Courier', 8),
+        if len(password1) > 72:
+            self.pw_any_display.config(font=SMALL_FONT,
                                        width=len(password1))
-            self.pw_select_display.config(font=('Courier', 8),
+            self.pw_select_display.config(font=SMALL_FONT,
                                           width=len(password2))
-        elif len(password1) <= 75:
-            self.pw_any_display.config(font='Courier',
+        elif len(password1) <= 72:
+            self.pw_any_display.config(font=DISPLAY_FONT,
                                        width=len(password1))
-            self.pw_select_display.config(font='Courier',
+            self.pw_select_display.config(font=DISPLAY_FONT,
                                           width=len(password2))
 
         # Set all pass-strings for display.
