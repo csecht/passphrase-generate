@@ -568,13 +568,17 @@ here by excluding four hyphenated words.
         infotxt.insert('1.0', info)
         infotxt.pack()
 
+
 def exclude_msg() -> None:
+    """A pop-up explaining how to use excluded characters.
+    """
     msg = 'The character(s) you enter:'
     detail = ('Passphrases will not use words with it. Passwords will '
               'not include it. Multiple characters are treated as a '
               'unit. For example, "es" will exclude "trees", not "eye" '
               'and "says". Any keyboard symbol can be used.')
     messagebox.showinfo(title='What is excluded?', message=msg, detail=detail)
+
 
 def about() -> None:
     """
