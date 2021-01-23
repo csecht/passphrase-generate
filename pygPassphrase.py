@@ -63,6 +63,7 @@ class Generator:
         self.exclude_entry = tk.Entry()
 
         # There are problems of tk.Button text showing up on MacOS, so ttk
+        self.exclude_btn = ttk.Button()
         self.generate_btn = ttk.Button()
         self.quit_btn = ttk.Button()
 
@@ -161,11 +162,11 @@ class Generator:
                                    fg=self.master_fg, bg=self.master_bg)
         self.numchars_entry.config(width=3)
         self.numchars_entry.insert(0, 0)
-        self.exclude_label.config(text='Exclude from words or passwords',
+        self.exclude_label.config(text='Character(s) to exclude',
                                   fg=self.master_fg, bg=self.master_bg)
         self.exclude_entry.config(width=3)
-        # Do not use whitespace, which could be included with character string.
-        self.exclude_entry.insert(0, '')
+        # self.exclude_info.config(text="?", width=0, height=0, command=about)
+        # self.exclude_info.config()
 
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
@@ -181,6 +182,8 @@ class Generator:
                   highlightcolor=[('focus', 'green')])
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
+        self.exclude_btn.configure(style="G.TButton", text="?", width=1,
+                                   command=exclude_msg)
         self.quit_btn.configure(style="Q.TButton", text='Quit',
                                 command=quit_gui, width=5)
 
@@ -271,7 +274,11 @@ class Generator:
         self.exclude_label.grid( column=0, row=2, padx=5, sticky=tk.E)
         self.exclude_entry.grid( column=1, row=2, sticky=tk.W)
 
-        self.generate_btn.grid(      column=1, row=3, pady=5, sticky=tk.W)
+        # self.exclude_info.grid(  column=2, row=2, sticky=tk.W)
+        # self.exclude_info.place(x=40, y=55, width=20, height=20)
+        self.exclude_btn.place(relx=0.05, rely=0.14, width=20, height=20)
+        self.generate_btn.grid(      column=1, row=3, pady=(10, 5),
+                                     sticky=tk.W)
 
         self.length_header.grid(     column=1, row=5, padx=5, sticky=tk.W)
         self.passphrase_header.grid( column=0, row=5, padx=5, sticky=tk.W)
@@ -289,7 +296,7 @@ class Generator:
 
         # Don't show 'dictionary' widgets on Windows, and move Generate button.
         if MY_OS in 'lin, dar':
-            self.eff_chk.grid(            column=0, row=3, padx=5, pady=5,
+            self.eff_chk.grid(            column=0, row=3, padx=5, pady=(10,5),
                                           sticky=tk.W)
             self.select_describe.grid(    column=0, row=8, sticky=tk.E)
             self.length_select_label.grid(column=1, row=8)
@@ -566,6 +573,13 @@ here by excluding four hyphenated words.
         infotxt.insert('1.0', info)
         infotxt.pack()
 
+def exclude_msg() -> None:
+    msg = 'The character(s) you enter:'
+    detail = ('Passphrases will not use words with it. Passwords will '
+              'not include it. Multiple characters are treated as a '
+              'unit. For example, "es" will exclude "trees", not "eye" '
+              'and "says". Any keyboard symbol can be used.')
+    messagebox.showinfo(title='What is excluded?', message=msg, detail=detail)
 
 def about() -> None:
     """
