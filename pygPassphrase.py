@@ -126,7 +126,7 @@ class Generator:
         :return: A nice looking interactive graphic.
         """
 
-        self.master.minsize(720, 410)
+        self.master.minsize(835, 435)
         self.master.config(bg=self.master_bg)
 
         self.result_frame.config(borderwidth=3, relief='sunken',
@@ -322,7 +322,7 @@ class Generator:
                                      columnspan=4, sticky=tk.EW)
 
         self.quit_btn.grid(          column=0, row=13, pady=(6, 0), padx=5,
-                                     sticky=tk.SW)
+                                     sticky=tk.W)
 
     def get_words(self) -> None:
         """
@@ -464,23 +464,23 @@ class Generator:
         # Adjust width of results entry widgets to THE longest result string.
         # B/c 'width' is character units, not pixels, length is not perfect
         #   fit when font sizes change.
-        if len(passphrase1) > 72:
+        if len(passphrase1) > 60:
             self.phrase_any_display.config(font=self.small_font,
                                            width=len(passphrase1))
             self.phrase_lc_display.config(font=self.small_font)
             self.phrase_sel_display.config(font=self.small_font)
-        elif len(passphrase1) <= 72:
+        elif len(passphrase1) <= 60:
             self.phrase_any_display.config(font=self.display_font,
                                            width=len(passphrase1))
             self.phrase_lc_display.config(font=self.display_font)
             self.phrase_sel_display.config(font=self.display_font)
         # Use courier b/c TKFixedFont does not monospace symbol characters.
-        if len(password1) > 72:
+        if len(password1) > 60:
             self.pw_any_display.config(font=self.small_font,
                                        width=len(password1))
             self.pw_select_display.config(font=self.small_font,
                                           width=len(password2))
-        elif len(password1) <= 72:
+        elif len(password1) <= 60:
             self.pw_any_display.config(font=self.display_font,
                                        width=len(password1))
             self.pw_select_display.config(font=self.display_font,
@@ -612,7 +612,6 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
     num_lines = boilerplate.count('\n')
     aboutwin = tk.Toplevel()
-    # aboutwin.minsize(600, 460)
     aboutwin.title('About count-tasks')
     colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
               'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
