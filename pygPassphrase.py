@@ -20,8 +20,7 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.3.2'
-STUBRESULT = 'Result can be copied and pasted from keyboard.'
+PROGRAM_VER = '0.3.3'
 SYMBOLS = "~!@#$%^&*_-"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win' # TESTING
@@ -50,6 +49,8 @@ class Generator:
         self.pass_bg = 'khaki2'
         self.display_font = 'Courier', 11
         self.small_font = 'Courier', 9
+
+        self.stubresult = 'Result can be copied and pasted from keyboard.'
 
         # Variables used in setup_window(), in general order of appearance:
         #  Don't make an EFF checkbutton in Windows b/c EFF words are default.
@@ -214,7 +215,7 @@ class Generator:
             self.length_select.set(0)
             self.length_select_label.config(textvariable=self.length_select,
                                             width=3)
-            self.phrase_select.set(STUBRESULT)
+            self.phrase_select.set(self.stubresult)
             self.phrase_sel_display.config(width=60, font=self.display_font,
                                            fg=self.stubresult_fg,
                                            bg=self.pass_bg)
@@ -235,8 +236,8 @@ class Generator:
         self.length_lc_label.config(  textvariable=self.length_lc, width=3)
         self.length_pw_any_l.config(  textvariable=self.length_pw_any, width=3)
         self.length_pw_select_l.config(textvariable=self.length_pw_select, width=3)
-        self.phrase_any.set(STUBRESULT)
-        self.phrase_lc.set(STUBRESULT)
+        self.phrase_any.set(self.stubresult)
+        self.phrase_lc.set(self.stubresult)
         self.phrase_any_display.config(width=60, font=self.display_font,
                                        fg=self.stubresult_fg, bg=self.pass_bg)
         self.phrase_lc_display.config( width=60, font=self.display_font,
@@ -249,8 +250,8 @@ class Generator:
                                        fg=self.master_fg, bg=self.master_bg)
         self.pw_select_describe.config(text="More likely usable characters ",
                                        fg=self.master_fg, bg=self.master_bg)
-        self.pw_any.set(STUBRESULT)
-        self.pw_select.set(STUBRESULT)
+        self.pw_any.set(self.stubresult)
+        self.pw_select.set(self.stubresult)
         self.pw_any_display.config(   width=60, font=self.display_font,
                                       fg=self.stubresult_fg, bg=self.pass_bg)
         self.pw_select_display.config(width=60, font=self.display_font,
@@ -283,7 +284,7 @@ class Generator:
         self.phrase_any_display.grid(column=2, row=6, columnspan=1,
                                      ipadx=5, pady=(5, 3), padx=5, sticky=tk.EW)
         self.phrase_lc_display.grid( column=2, row=7, columnspan=1,
-                                     ipadx=5, pady=3, padx=5, sticky=tk.EW)
+                                     ipadx=5, pady=(5, 3), padx=5, sticky=tk.EW)
 
         # Don't show 'dictionary' widgets on Windows, and move Generate button.
         if MY_OS in 'lin, dar':
