@@ -53,10 +53,9 @@ class Generator:
         self.stubresult = 'Result can be copied and pasted from keyboard.'
 
         # Variables used in setup_window(), in general order of appearance:
-        #  Don't make an EFF checkbutton in Windows b/c EFF words are default.
-        if MY_OS in 'lin, dar':
-            self.eff =        tk.BooleanVar()
-            self.eff_chk =    tk.Checkbutton()
+        # EFF checkbutton is not used in Windows b/c EFF words are default.
+        self.eff =        tk.BooleanVar()
+        self.eff_chk =    tk.Checkbutton()
 
         self.numwords_label = tk.Label()
         self.numwords_entry = tk.Entry()
@@ -257,18 +256,18 @@ class Generator:
         self.pw_select_display.config(width=60, font=self.display_font,
                                       fg=self.stubresult_fg, bg=self.pass_bg)
 
-        # GRID all widgets: ####################################
-        self.result_frame.grid(  column=1, row=6, padx=5, columnspan=2,
-                                 rowspan=6)
-
+        # GRID all widgets: ################ sorted by row number ##########
         # Passphrase widgets grid:
-        self.numwords_label.grid(column=0, row=0, pady=(5, 0), padx=5, sticky=tk.E)
+        self.numwords_label.grid(column=0, row=0, pady=(5, 0), padx=5,
+                                 sticky=tk.E)
         self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
         self.numchars_label.grid(column=0, row=1, pady=3, padx=5, sticky=tk.E)
         self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
         self.exclude_label.grid( column=0, row=2, padx=5, sticky=tk.E)
         self.exclude_entry.grid( column=1, row=2, sticky=tk.W)
         self.exclude_btn.grid(   column=0, row=2, padx=(20, 0), sticky=tk.W)
+        self.eff_chk.grid(       column=0, row=3, pady=(10, 5), padx=5,
+                                 sticky=tk.W)
         self.generate_btn.grid(  column=1, row=3, pady=(10, 5), sticky=tk.W)
 
         self.separator1.grid(    column=0, row=4, pady=(2, 5), padx=5,
@@ -283,21 +282,25 @@ class Generator:
         self.length_any_label.grid(  column=1, row=6, pady=(5, 3), padx=(4, 0))
         self.length_lc_label.grid(   column=1, row=7, pady=(5, 3), padx=(4, 0))
 
+        self.result_frame.grid(      column=1, row=6, padx=5, columnspan=2,
+                                     rowspan=6)
+
         # Result _displays will maintain equal widths with sticky=tk.EW.
         self.phrase_any_display.grid(column=2, row=6, pady=(5, 3), padx=5,
                                      columnspan=1, ipadx=5, sticky=tk.EW)
         self.phrase_lc_display.grid( column=2, row=7, pady=(5, 3), padx=5,
                                      columnspan=1, ipadx=5, sticky=tk.EW)
 
-        # Don't show 'dictionary' widgets on Windows, and move Generate button.
-        if MY_OS in 'lin, dar':
-            self.eff_chk.grid(column=0, row=3, pady=(10, 5), padx=5, sticky=tk.W)
+        # Don't grid system dictionary or EFF widgets on Windows.
+        if MY_OS == 'win':
+            # self.generate_btn.grid(column=0, row=3, pady=5, padx=5,
+            #                        sticky=tk.E)
+            self.eff_chk.grid_remove()
+        elif MY_OS in 'lin, dar':
             self.select_describe.grid(    column=0, row=8, sticky=tk.E)
             self.length_select_label.grid(column=1, row=8, padx=(4, 0))
             self.phrase_sel_display.grid( column=2, row=8, pady=3, padx=5,
                                           columnspan=1, ipadx=5, sticky=tk.EW)
-        elif MY_OS == 'win':
-            self.generate_btn.grid(column=0, row=3, pady=5, padx=5, sticky=tk.W)
 
         # Need a spacer row between passphrase and password sections
         frame_xtrarow = tk.Label(self.result_frame, text=' ', bg=self.frame_bg)
