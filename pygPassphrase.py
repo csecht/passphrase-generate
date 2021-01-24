@@ -318,7 +318,7 @@ class Generator:
 
     def get_words(self) -> None:
         """
-        Check which word files are available; populate lists for make_pass().
+        Check which word files are available; populate lists.
         """
         # Need to first confirm that required files are present.
         fnf_msg = (
@@ -525,33 +525,31 @@ class Generator:
 """A passphrase is a random string of words that can be more secure and
 easier to remember than a shorter or complicated password.
 For more information on passphrases, see, for example, a discussion of
-diceware and wordlist selection at the Electronic Frontier Foundation:
+word lists and word selection at the Electronic Frontier Foundation:
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
 
-pygPassphrase_original.py users have an option to use the EFF long wordlist. 
- Windows users, however, will use only that list.
-
-The (non-Windows) system dictionary on this computer provides:
-"""
-f"    {len(word_list)} words of any length, of which\n"
-f"    {len(uniq_words)} are unique (not possessive forms of nouns and \n"
-f"    {len(trim_words)} unique words of 3 to 8 letters."
-"""
-Only the unique and size-limited word subsets are used here for passphrases.
-
-Passphrases may include proper names and diacritics found in the dictionary.
-There is a choice for three added characters to accommodate password 
-requirements of some sites and applications: one symbol, one upper case 
-letter, and one number. The symbols used are from this set: """
-f'{SYMBOLS}\nThere is an option to specify any character or string of characters\n'
-"""to exclude from your passphrase words or passwords.
-
-The word list from Electronic Frontier Foundation (EFF),
-https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not contain
+The word list from Electronic Frontier Foundation (EFF) used here,
+https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not use
 proper names or diacritics. Its words are generally shorter and easier to 
 spell. Although the EFF list contains 7776 selected words, only 7772 are used 
 here by excluding four hyphenated words.
+
+pygPassphrase.py users have an option to use the EFF long wordlist instead
+of the default system dictionary. Windows users, however, can use only
+the EFF list. If present on this computer, the system dictionary provides:
 """
+f"    {len(word_list)} words of any length, of which\n"
+f"    {len(uniq_words)} are unique (not possessive forms of nouns)\n"
+f"    {len(trim_words)} adn unique words of 3 to 8 letters."
+"""
+Only the unique and size-limited word subsets are used for passphrases if
+the EFF word list option is not selected. Passphrases built from the system
+dictionary may include proper names and diacritics. 
+To accommodate password requirements of some sites and applications, a 
+choice is provided that adds three characters : 1 symbol, 1 upper case letter,
+and 1 number. The symbols used are restricted to this set: """
+f'{SYMBOLS}\nThere is an option to exclude any character or string of '
+f'characters\nfrom your passphrase words and passwords.\n'
 )
 
         infowin = tk.Toplevel()
@@ -568,7 +566,7 @@ def exclude_msg() -> None:
     """A pop-up explaining how to use excluded characters.
     """
     msg = 'The character(s) you enter...'
-    detail = ('Will not appear in passphrase words, nor appear in '
+    detail = ('will not appear in passphrase words, nor appear in '
               'passwords. Multiple characters are treated as a '
               'unit. For example, "es" will exclude "trees", not "eye" '
               'and "says".')
@@ -583,7 +581,7 @@ def about() -> None:
     """
     # msg separators use em dashes.
     boilerplate = ("""
-pygPassphrase_original.py privately generates passphrases and passwords.
+pygPassphrase.py privately generates passphrases and passwords.
 Download the most recent version from: 
 https://github.com/csecht/general_utilities
 
