@@ -72,40 +72,42 @@ class Generator:
 
         self.result_frame = tk.Frame()
 
-        self.length_header =    tk.Label()
+        self.length_header =     tk.Label()
         self.passphrase_header = tk.Label()
-        self.any_describe =     tk.Label()
-        self.any_lc_describe =  tk.Label()
-        self.select_describe =  tk.Label()
-        self.length_any =       tk.IntVar()
-        self.length_lc =        tk.IntVar()
-        self.length_select =    tk.IntVar()
-        self.length_pw_any =    tk.IntVar()
-        self.length_pw_select = tk.IntVar()
-        self.length_any_label = tk.Label(self.result_frame)
-        self.length_lc_label =  tk.Label(self.result_frame)
+        self.any_describe =      tk.Label()
+        self.any_lc_describe =   tk.Label()
+        self.select_describe =   tk.Label()
+        self.length_any =        tk.IntVar()
+        self.length_lc =         tk.IntVar()
+        self.length_select =     tk.IntVar()
+        self.length_pw_any =     tk.IntVar()
+        self.length_pw_select =  tk.IntVar()
+        self.length_any_label =  tk.Label(self.result_frame)
+        self.length_lc_label =   tk.Label(self.result_frame)
         self.length_select_label = tk.Label(self.result_frame)
-        self.length_pw_any_l =  tk.Label(self.result_frame)
+        self.length_pw_any_l =   tk.Label(self.result_frame)
         self.length_pw_select_l = tk.Label(self.result_frame)
-        self.phrase_any =       tk.StringVar()
-        self.phrase_lc =        tk.StringVar()
-        self.phrase_select =    tk.StringVar()
+        self.phrase_any =        tk.StringVar()
+        self.phrase_lc =         tk.StringVar()
+        self.phrase_select =     tk.StringVar()
+        # Results are displayed in Entry() instead of Text() b/c
+        # textvariable is easier to code than .insert(). Otherwise, identical.
         self.phrase_any_display = tk.Entry(self.result_frame,
                                            textvariable=self.phrase_any)
-        self.phrase_lc_display = tk.Entry(self.result_frame,
-                                          textvariable=self.phrase_lc)
+        self.phrase_lc_display =  tk.Entry(self.result_frame,
+                                           textvariable=self.phrase_lc)
         self.phrase_sel_display = tk.Entry(self.result_frame,
                                            textvariable=self.phrase_select)
-        self.pw_header =        tk.Label()
-        self.pw_any_describe =  tk.Label()
+        self.pw_header =          tk.Label()
+        self.pw_any_describe =    tk.Label()
         self.pw_select_describe = tk.Label()
 
-        self.pw_any =           tk.StringVar()
-        self.pw_select =        tk.StringVar()
-        self.pw_any_display =   tk.Entry(self.result_frame,
-                                         textvariable=self.pw_any,)
-        self.pw_select_display = tk.Entry(self.result_frame,
-                                          textvariable=self.pw_select)
+        self.pw_any =             tk.StringVar()
+        self.pw_select =          tk.StringVar()
+        self.pw_any_display =     tk.Entry(self.result_frame,
+                                           textvariable=self.pw_any,)
+        self.pw_select_display =  tk.Entry(self.result_frame,
+                                           textvariable=self.pw_select)
         # Variables used in get_words():
         self.use_effwords = True
         self.system_words = 'Null'
@@ -196,7 +198,7 @@ class Generator:
         sep1.grid(column=0, row=4, columnspan=4,
                   padx=5, pady=(2, 5), sticky=tk.EW)
         sep2.grid(column=0, row=12, columnspan=4,
-                  padx=5, pady=(6, 6), sticky=tk.EW)
+                  padx=5, pady=(6, 0), sticky=tk.EW)
 
         self.length_header.config(text='Length', width=5,
                                   fg=self.master_fg, bg=self.master_bg)
@@ -258,8 +260,8 @@ class Generator:
                                       fg=self.stubresult_fg, bg=self.pass_bg)
 
         # GRID all widgets: ####################################
-        self.result_frame.grid(column=1, row=6, columnspan=2, rowspan=6,
-                               padx=5)
+        self.result_frame.grid(  column=1, row=6, padx=5, columnspan=2,
+                                 rowspan=6)
 
         # Passphrase widgets grid:
         self.numwords_label.grid(column=0, row=0, pady=(5, 0), padx=5, sticky=tk.E)
@@ -280,7 +282,7 @@ class Generator:
         self.length_any_label.grid(  column=1, row=6, pady=(5, 3), padx=(4, 0))
         self.length_lc_label.grid(   column=1, row=7, pady=(5, 3), padx=(4, 0))
 
-        # Result displays maintain equal widths with sticky=tk.EW.
+        # Result _displays will maintain equal widths with sticky=tk.EW.
         self.phrase_any_display.grid(column=2, row=6, columnspan=1,
                                      ipadx=5, pady=(5, 3), padx=5, sticky=tk.EW)
         self.phrase_lc_display.grid( column=2, row=7, columnspan=1,
@@ -310,10 +312,10 @@ class Generator:
         self.length_pw_select_l.grid(column=1, row=11, pady=6, padx=(4, 0))
         self.pw_any_display.grid(    column=2, row=10, pady=(6, 3), padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
-        self.pw_select_display.grid( column=2, row=11, pady=6, padx=5, ipadx=5,
-                                     columnspan=2, sticky=tk.EW)
+        self.pw_select_display.grid( column=2, row=11, pady=6, padx=5,
+                                     columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.quit_btn.grid(          column=0, row=13, pady=(2, 5), padx=5,
+        self.quit_btn.grid(          column=0, row=13, pady=(6, 0), padx=5,
                                      sticky=tk.SW)
 
     def get_words(self) -> None:
