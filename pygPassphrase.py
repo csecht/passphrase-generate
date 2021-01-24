@@ -283,15 +283,14 @@ class Generator:
         self.length_lc_label.grid(   column=1, row=7, pady=(5, 3), padx=(4, 0))
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
-        self.phrase_any_display.grid(column=2, row=6, columnspan=1,
-                                     ipadx=5, pady=(5, 3), padx=5, sticky=tk.EW)
-        self.phrase_lc_display.grid( column=2, row=7, columnspan=1,
-                                     ipadx=5, pady=(5, 3), padx=5, sticky=tk.EW)
+        self.phrase_any_display.grid(column=2, row=6, pady=(5, 3), padx=5,
+                                     columnspan=1, ipadx=5, sticky=tk.EW)
+        self.phrase_lc_display.grid( column=2, row=7, pady=(5, 3), padx=5,
+                                     columnspan=1, ipadx=5, sticky=tk.EW)
 
         # Don't show 'dictionary' widgets on Windows, and move Generate button.
         if MY_OS in 'lin, dar':
-            self.eff_chk.grid(            column=0, row=3, pady=(10, 5), padx=5,
-                                          sticky=tk.W)
+            self.eff_chk.grid(column=0, row=3, pady=(10, 5), padx=5, sticky=tk.W)
             self.select_describe.grid(    column=0, row=8, sticky=tk.E)
             self.length_select_label.grid(column=1, row=8, padx=(4, 0))
             self.phrase_sel_display.grid( column=2, row=8, pady=3, padx=5,
