@@ -20,8 +20,8 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.3.1'
-STUBRESULT = 'Result can be copied and pasted'
+PROGRAM_VER = '0.3.2'
+STUBRESULT = 'Result can be copied and pasted from keyboard.'
 SYMBOLS = "~!@#$%^&*_-"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win' # TESTING
@@ -33,7 +33,7 @@ SMALL_FONT = 'Courier', 9
 
 class Generator:
     """
-    A GUI window for user to specify length of passphrases and passwords.
+    A GUI window to specify length of passphrases and passwords.
     """
     def __init__(self, master):
         """Window layout and default values are set up here.
@@ -47,7 +47,7 @@ class Generator:
         self.master_fg = 'LightCyan2'  # foreground for user entry labels
         self.frame_bg = 'grey40'  # background for data labels and frame
         self.frame_fg = 'grey90'
-        self.passstub_fg = 'grey60'
+        self.stubresult_fg = 'grey60'
         self.pass_fg = 'brown4'
         self.pass_bg = 'khaki2'
 
@@ -205,8 +205,8 @@ class Generator:
         # Passphrase results section:
         # Set up OS-specific widgets.
         if MY_OS in 'lin, dar':
-            self.any_describe.config(text="Any words from dictionary",
-                                     fg=self.master_fg, bg=self.master_bg)
+            self.any_describe.config(   text="Any words from dictionary",
+                                        fg=self.master_fg, bg=self.master_bg)
             self.any_lc_describe.config(text="... lower case + 3 characters",
                                         fg=self.master_fg, bg=self.master_bg)
             self.select_describe.config(text="... words of 3 to 8 letters",
@@ -215,8 +215,8 @@ class Generator:
             self.length_select_label.config(textvariable=self.length_select,
                                             width=3)
             self.phrase_select.set(STUBRESULT)
-            self.phrase_sel_display.config(width=72, font=DISPLAY_FONT,
-                                           fg=self.passstub_fg,
+            self.phrase_sel_display.config(width=60, font=DISPLAY_FONT,
+                                           fg=self.stubresult_fg,
                                            bg=self.pass_bg)
         elif MY_OS == 'win':
             self.any_describe.config(   text="Any words from EFF wordlist",
@@ -232,89 +232,87 @@ class Generator:
         self.length_pw_any.set(0)
         self.length_pw_select.set(0)
         self.length_any_label.config( textvariable=self.length_any, width=3)
-        self.length_lc_label.config(  textvariable=self.length_lc,  width=3)
+        self.length_lc_label.config(  textvariable=self.length_lc, width=3)
         self.length_pw_any_l.config(  textvariable=self.length_pw_any, width=3)
-        self.length_pw_select_l.config(textvariable=self.length_pw_select,width=3)
+        self.length_pw_select_l.config(textvariable=self.length_pw_select, width=3)
         self.phrase_any.set(STUBRESULT)
         self.phrase_lc.set(STUBRESULT)
-        self.phrase_any_display.config(width=72, font=DISPLAY_FONT,
-                                       fg=self.passstub_fg, bg=self.pass_bg)
-        self.phrase_lc_display.config(width=72, font=DISPLAY_FONT,
-                                      fg=self.passstub_fg, bg=self.pass_bg)
+        self.phrase_any_display.config(width=60, font=DISPLAY_FONT,
+                                       fg=self.stubresult_fg, bg=self.pass_bg)
+        self.phrase_lc_display.config( width=60, font=DISPLAY_FONT,
+                                       fg=self.stubresult_fg, bg=self.pass_bg)
 
         # Password results section:
-        self.pw_header.config(text='Passwords', font=('default', 12),
-                              fg=self.pass_bg, bg=self.master_bg)
-
-        self.pw_any_describe.config(text="Any characters",
-                                    fg=self.master_fg, bg=self.master_bg)
+        self.pw_header.config(         text='Passwords', font=('default', 12),
+                                       fg=self.pass_bg, bg=self.master_bg)
+        self.pw_any_describe.config(   text="Any characters",
+                                       fg=self.master_fg, bg=self.master_bg)
         self.pw_select_describe.config(text="More likely usable characters ",
                                        fg=self.master_fg, bg=self.master_bg)
         self.pw_any.set(STUBRESULT)
         self.pw_select.set(STUBRESULT)
-        self.pw_any_display.config(width=72, font=DISPLAY_FONT,
-                                   fg=self.passstub_fg, bg=self.pass_bg)
-        self.pw_select_display.config(width=72, font=DISPLAY_FONT,
-                                      fg=self.passstub_fg, bg=self.pass_bg)
+        self.pw_any_display.config(   width=60, font=DISPLAY_FONT,
+                                      fg=self.stubresult_fg, bg=self.pass_bg)
+        self.pw_select_display.config(width=60, font=DISPLAY_FONT,
+                                      fg=self.stubresult_fg, bg=self.pass_bg)
 
         # GRID all widgets: ####################################
-        # TODO: Align row headers (describe) with result_frame rows.
-        self.result_frame.grid(      column=1, row=6, columnspan=2, rowspan=6,
-                                     padx=5, pady=5)
-        # Need a spacer row between passphrase and password sections
-        frame_xtrarow = tk.Label(self.result_frame, text="", bg=self.frame_bg)
-        frame_xtrarow.grid(row=9)
+        # TODO: Align row headers (describe) with result_frame rows: PADY=...
+        self.result_frame.grid(column=1, row=6, columnspan=2, rowspan=6,
+                               padx=5)
 
         # Passphrase widgets grid:
-        self.numwords_label.grid(column=0, row=0, padx=5, pady=(5, 0), sticky=tk.E)
+        self.numwords_label.grid(column=0, row=0, pady=(5, 0), padx=5, sticky=tk.E)
         self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
-        self.numchars_label.grid(column=0, row=1, padx=5, pady=3, sticky=tk.E)
+        self.numchars_label.grid(column=0, row=1, pady=3, padx=5, sticky=tk.E)
         self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
         self.exclude_label.grid( column=0, row=2, padx=5, sticky=tk.E)
         self.exclude_entry.grid( column=1, row=2, sticky=tk.W)
         self.exclude_btn.grid(   column=0, row=2, padx=(20, 0), sticky=tk.W)
+        self.generate_btn.grid(  column=1, row=3, pady=(10, 5), sticky=tk.W)
 
-        self.generate_btn.grid(      column=1, row=3, pady=(10, 5),
-                                     sticky=tk.W)
-
-        self.length_header.grid(     column=1, row=5, padx=5, sticky=tk.W)
         self.passphrase_header.grid( column=0, row=5, padx=5, sticky=tk.W)
+        self.length_header.grid(     column=1, row=5, padx=5, sticky=tk.W)
 
-        self.any_describe.grid(      column=0, row=6, sticky=tk.E)
-        self.any_lc_describe.grid(   column=0, row=7, sticky=tk.E)
+        self.any_describe.grid(      column=0, row=6, pady=(8, 0), sticky=tk.E)
+        self.any_lc_describe.grid(   column=0, row=7, pady=(5, 3), sticky=tk.E)
 
-        self.length_any_label.grid(  column=1, row=6)
-        self.length_lc_label.grid(   column=1, row=7)
+        self.length_any_label.grid(  column=1, row=6, pady=(5, 3), padx=(4, 0))
+        self.length_lc_label.grid(   column=1, row=7, pady=(5, 3), padx=(4, 0))
 
         self.phrase_any_display.grid(column=2, row=6, columnspan=1,
-                                     ipadx=5, padx=5, pady=3, sticky=tk.EW)
+                                     ipadx=5, pady=(5, 3), padx=5, sticky=tk.EW)
         self.phrase_lc_display.grid( column=2, row=7, columnspan=1,
-                                     ipadx=5, padx=5, pady=3, sticky=tk.EW)
+                                     ipadx=5, pady=3, padx=5, sticky=tk.EW)
 
         # Don't show 'dictionary' widgets on Windows, and move Generate button.
         if MY_OS in 'lin, dar':
-            self.eff_chk.grid(            column=0, row=3, padx=5, pady=(10,5),
+            self.eff_chk.grid(            column=0, row=3, pady=(10, 5), padx=5,
                                           sticky=tk.W)
             self.select_describe.grid(    column=0, row=8, sticky=tk.E)
-            self.length_select_label.grid(column=1, row=8)
-            self.phrase_sel_display.grid( column=2, row=8, columnspan=1,
-                                          ipadx=5, padx=5, pady=3, sticky=tk.EW)
+            self.length_select_label.grid(column=1, row=8, padx=(4, 0))
+            self.phrase_sel_display.grid( column=2, row=8, pady=3, padx=5,
+                                          columnspan=1, ipadx=5, sticky=tk.EW)
         elif MY_OS == 'win':
-            self.generate_btn.grid(column=0, row=3, padx=5, pady=5,sticky=tk.W)
+            self.generate_btn.grid(column=0, row=3, pady=5, padx=5, sticky=tk.W)
+
+        # Need a spacer row between passphrase and password sections
+        frame_xtrarow = tk.Label(self.result_frame, text=' ', bg=self.frame_bg)
+        frame_xtrarow.grid(          column=1, row=9, pady=(6, 0), sticky=tk.EW)
 
         # Password widgets grid:
-        self.pw_header.grid(         column=0, row=9, padx=5, sticky=tk.W)
-        self.pw_any_describe.grid(   column=0, row=10, sticky=tk.E)
-        self.pw_select_describe.grid(column=0, row=11,
-                                     sticky=tk.E)
-        self.length_pw_any_l.grid(   column=1, row=11, pady=(6, 3))
-        self.length_pw_select_l.grid(column=1, row=12, pady=(3, 6))
-        self.pw_any_display.grid(    column=2, row=11, columnspan=2, ipadx=5,
-                                     padx=5, pady=(6, 3), sticky=tk.EW)
-        self.pw_select_display.grid( column=2, row=12, columnspan=2, ipadx=5,
-                                     padx=5, pady=(3, 6), sticky=tk.EW)
+        self.pw_header.grid(         column=0, row=9, pady=(6, 0), padx=5,
+                                     sticky=tk.W)
+        self.pw_any_describe.grid(   column=0, row=10, pady=(0, 6), sticky=tk.E)
+        self.pw_select_describe.grid(column=0, row=11, pady=(0, 6), sticky=tk.E)
+        self.length_pw_any_l.grid(   column=1, row=10, pady=(6, 3), padx=(4, 0))
+        self.length_pw_select_l.grid(column=1, row=11, pady=6, padx=(4, 0))
+        self.pw_any_display.grid(    column=2, row=10, pady=(6, 3), padx=5,
+                                     columnspan=2, ipadx=5, sticky=tk.EW)
+        self.pw_select_display.grid( column=2, row=11, pady=6, padx=5, ipadx=5,
+                                     columnspan=2, sticky=tk.EW)
 
-        self.quit_btn.grid(          column=0, row=13, padx=5, pady=(2, 5),
+        self.quit_btn.grid(          column=0, row=13, pady=(2, 5), padx=5,
                                      sticky=tk.SW)
 
     def get_words(self) -> None:
@@ -385,10 +383,6 @@ class Generator:
                                             fg=self.master_fg, bg=self.master_bg)
                 self.select_describe.config(text="... words of 3 to 8 letters",
                                             fg=self.master_fg, bg=self.master_bg)
-                # Show widgets (in case they were removed by EFF True option).
-                self.length_select_label.grid()
-                self.phrase_sel_display.grid()
-
             elif self.eff.get() is True:
                 self.any_describe.config(   text="Any words from EFF wordlist",
                                             fg=self.master_fg, bg=self.master_bg)
@@ -396,9 +390,8 @@ class Generator:
                                             fg=self.master_fg, bg=self.master_bg)
                 self.select_describe.config(text=" ",
                                             fg=self.master_fg, bg=self.master_bg)
-                # Hide widgets when EFF option is True.
-                self.length_select_label.grid_remove()
-                self.phrase_sel_display.grid_remove()
+                self.length_select.set(' ')
+                self.phrase_select.set(' ')
 
         secure_random = random.SystemRandom()
 
@@ -492,12 +485,12 @@ class Generator:
                 self.phrase_select.set(passphrase2)
                 self.length_select.set(len(passphrase2))
             elif self.eff.get() is True:
-                self.phrase_select.set('')
-                self.length_select.set('')
+                self.phrase_select.set(' ')
+                self.length_select.set(' ')
 
         elif MY_OS == 'win':
-            self.phrase_select.set('')
-            self.length_select.set('')
+            self.phrase_select.set(' ')
+            self.length_select.set(' ')
 
         # Set statements common to all OS eff conditions:
         self.phrase_any.set(allwords)
@@ -573,12 +566,12 @@ here by excluding four hyphenated words.
 def exclude_msg() -> None:
     """A pop-up explaining how to use excluded characters.
     """
-    msg = 'The character(s) you enter:'
-    detail = ('Passphrases will not use words with it. Passwords will '
-              'not include it. Multiple characters are treated as a '
+    msg = 'The character(s) you enter...'
+    detail = ('Will not appear in passphrase words, nor appear in '
+              'passwords. Multiple characters are treated as a '
               'unit. For example, "es" will exclude "trees", not "eye" '
-              'and "says". Any keyboard symbol can be used.')
-    messagebox.showinfo(title='What is excluded?', message=msg, detail=detail)
+              'and "says".')
+    messagebox.showinfo(title='Excluded from what?', message=msg, detail=detail)
 
 
 def about() -> None:
