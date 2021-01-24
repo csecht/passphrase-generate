@@ -72,6 +72,8 @@ class Generator:
 
         self.result_frame = tk.Frame()
 
+        self.separator1 = ttk.Frame()
+        self.separator2 = ttk.Frame()
         self.length_header =     tk.Label()
         self.passphrase_header = tk.Label()
         self.any_describe =      tk.Label()
@@ -190,20 +192,16 @@ class Generator:
                                 command=quit_gui, width=5)
 
         # Separators for top and bottom of results section.
-        # For colored separators, use ttk.Frame instead of ttk.Separator.
+        # For colored separators, need ttk.Frame instead of ttk.Separator.
         style_sep = ttk.Style()
         style_sep.configure('TFrame', background=self.master_bg)
-        sep1 = ttk.Frame(relief="raised", height=6)
-        sep2 = ttk.Frame(relief="raised", height=6)
-        sep1.grid(column=0, row=4, columnspan=4,
-                  padx=5, pady=(2, 5), sticky=tk.EW)
-        sep2.grid(column=0, row=12, columnspan=4,
-                  padx=5, pady=(6, 0), sticky=tk.EW)
+        self.separator1.configure(relief="raised", height=6)
+        self.separator2.configure(relief="raised", height=6)
 
-        self.length_header.config(text='Length', width=5,
-                                  fg=self.master_fg, bg=self.master_bg)
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=self.pass_bg, bg=self.master_bg)
+        self.length_header.config(    text='Length', width=5,
+                                      fg=self.master_fg, bg=self.master_bg)
 
         # Passphrase results section:
         # Set up OS-specific widgets.
@@ -273,6 +271,9 @@ class Generator:
         self.exclude_btn.grid(   column=0, row=2, padx=(20, 0), sticky=tk.W)
         self.generate_btn.grid(  column=1, row=3, pady=(10, 5), sticky=tk.W)
 
+        self.separator1.grid(    column=0, row=4, pady=(2, 5), padx=5,
+                                 columnspan=4, sticky=tk.EW)
+
         self.passphrase_header.grid( column=0, row=5, padx=5, sticky=tk.W)
         self.length_header.grid(     column=1, row=5, padx=5, sticky=tk.W)
 
@@ -313,6 +314,9 @@ class Generator:
                                      columnspan=2, ipadx=5, sticky=tk.EW)
         self.pw_select_display.grid( column=2, row=11, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
+
+        self.separator2.grid(        column=0, row=12, pady=(6, 0), padx=5,
+                                     columnspan=4, sticky=tk.EW)
 
         self.quit_btn.grid(          column=0, row=13, pady=(6, 0), padx=5,
                                      sticky=tk.SW)
