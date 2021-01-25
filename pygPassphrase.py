@@ -20,7 +20,7 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.3.4'
+PROGRAM_VER = '0.3.5'
 SYMBOLS = "~!@#$%^&*_-"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
@@ -47,6 +47,7 @@ class Generator:
         self.stubresult_fg = 'grey60'
         self.pass_fg = 'brown4'
         self.pass_bg = 'khaki2'
+        # Use courier b/c TKFixedFont does not monospace symbol characters.
         self.display_font = 'Courier', 11
         self.small_font = 'Courier', 9
 
@@ -402,8 +403,6 @@ class Generator:
                 self.length_select.set(' ')
                 self.phrase_select.set(' ')
 
-        secure_random = random.SystemRandom()
-
         # Need to remove words having the possessive form (English dictionary).
         # Remove hyphenated words (~4) from EFF wordlist (are not alpha).
         uniq_words = \
@@ -424,6 +423,8 @@ class Generator:
             caps = [letter for letter in caps if self.unused not in letter]
             string1 = [char for char in string1 if self.unused not in char]
             string2 = [char for char in string2 if self.unused not in char]
+
+        secure_random = random.SystemRandom()
 
         # Select user-specified number of words.
         allwords = "".join(secure_random.choice(uniq_words) for
@@ -474,7 +475,7 @@ class Generator:
                                            width=len(passphrase1))
             self.phrase_lc_display.config(font=self.display_font)
             self.phrase_sel_display.config(font=self.display_font)
-        # Use courier b/c TKFixedFont does not monospace symbol characters.
+
         if len(password1) > 60:
             self.pw_any_display.config(font=self.small_font,
                                        width=len(password1))
@@ -487,8 +488,8 @@ class Generator:
                                           width=len(password2))
 
         # Set all pass-strings for display.
-        #   No need to set sys dictionary variables or provide eff checkbutton
-        #     condition for Windows.
+        #   No need to set sys dictionary vars or provide eff checkbutton
+        #     condition for Windows b/c no system dictionary is available.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.phrase_select.set(passphrase2)
@@ -529,9 +530,9 @@ class Generator:
         # Need to redefine lists for the Windows system dictionary b/c it is
         # not accessible. The initial value of self.system_words is
         # 'None', which gives a list length of 1 when the length should be
-        # 0; but can't set the initial list value to null, ''.
+        # 0; but can't set the initial list value to null, [].
         if MY_OS == 'win':
-            word_num = unique = trimmed = ''
+            word_num = unique = trimmed = []
 
         # The formatting of this is a pain.  There must be a better way.
         info = (
