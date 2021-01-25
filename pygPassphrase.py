@@ -22,8 +22,8 @@ except (ImportError, ModuleNotFoundError) as error:
 
 PROGRAM_VER = '0.3.3'
 SYMBOLS = "~!@#$%^&*_-"
-MY_OS = sys.platform[:3]
-# MY_OS = 'win' # TESTING
+# MY_OS = sys.platform[:3]
+MY_OS = 'win' # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
@@ -521,12 +521,17 @@ class Generator:
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
         """
-        # This duplicates statements from make_pass().  Would require
-        # separate method for these variables to consolidate?...
-        word_list = self.system_words.split()
-        uniq_words = [word for word in word_list if
-                      re.search(r"'s", word) is None]
-        trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
+        # These variables are only valid for Linux and MacOS system dictionary.
+        word_num = self.system_words.split()
+        unique = [word for word in word_num if re.search(r"'s", word) is None]
+        trimmed = [word for word in unique if 8 >= len(word) >= 3]
+
+        # Need to redefine lists for the Windows system dictionary b/c it is
+        # not accessible. The initial value of self.system_words is
+        # 'None', which gives a list length of 1 when the length should be
+        # 0; but can't set the initial list value to null, ''.
+        if MY_OS == 'win':
+            word_num = unique = trimmed = ''
 
         # The formatting of this is a pain.  There must be a better way.
         info = (
@@ -544,11 +549,11 @@ here by excluding four hyphenated words.
 
 pygPassphrase.py users have an option to use the EFF long wordlist instead
 of the default system dictionary. Windows users, however, can use only
-the EFF list. If present on this computer, the system dictionary provides:
+the EFF list. Your system dictionary provides:
 """
-f"    {len(word_list)} words of any length, of which\n"
-f"    {len(uniq_words)} are unique (not possessive forms of nouns)\n"
-f"    {len(trim_words)} adn unique words of 3 to 8 letters."
+f"    {len(word_num)} words of any length, of which\n"
+f"    {len(unique)} are unique (not possessive forms of nouns) and \n"
+f"    {len(trimmed)} unique words of 3 to 8 letters."
 """
 Only the unique and size-limited word subsets are used for passphrases if
 the EFF word list option is not selected. Passphrases built from the system
