@@ -262,7 +262,7 @@ class Generator:
         self.numwords_label.grid(column=0, row=0, pady=(5, 0), padx=5,
                                  sticky=tk.E)
         self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
-        self.numchars_label.grid(column=0, row=1, pady=3, padx=5, sticky=tk.E)
+        self.numchars_label.grid(column=0, row=1, pady=5, padx=5, sticky=tk.E)
         self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
         self.exclude_label.grid( column=0, row=2, padx=5, sticky=tk.E)
         self.exclude_entry.grid( column=1, row=2, sticky=tk.W)
