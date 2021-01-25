@@ -18,7 +18,7 @@ On Linux or Mac, the EFF wordlist file also needs to be in the working directory
 The tkinter graphics module of Python is required, which is included in Python 3.7 and later. Earlier versions will require a separate installation of Tk/Tcl.
 
 #### pygPassphrase.app
-A standalone MacOS implementation of pygPassphrase.py. Created with py2app from https://pypi.org/project/py2app/
+A standalone MacOS implementation of pygPassphrase.py. After downloading, you will most likely need to go into System Preferences > Security & Privacy > General and allow the app to open because it is not from the Apple Store or an authorized Apple developer. Created with py2app obtained from https://pypi.org/project/py2app/
 
 ### pyPalindromes
 Just something fun. I like the magical way that slice can work to test for and generate palindromes.
