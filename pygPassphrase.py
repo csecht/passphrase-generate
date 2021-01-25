@@ -22,8 +22,8 @@ except (ImportError, ModuleNotFoundError) as error:
 
 PROGRAM_VER = '0.3.3'
 SYMBOLS = "~!@#$%^&*_-"
-# MY_OS = sys.platform[:3]
-MY_OS = 'win' # TESTING
+MY_OS = sys.platform[:3]
+# MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
