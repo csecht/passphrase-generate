@@ -84,7 +84,8 @@ class Generator:
         self.generate_btn = ttk.Button()
         self.quit_btn = ttk.Button()
 
-        self.result_frame = tk.Frame()
+        self.result_frame1 = tk.Frame()
+        self.result_frame2 = tk.Frame()
 
         self.separator1 = ttk.Frame()
         self.separator2 = ttk.Frame()
@@ -98,21 +99,21 @@ class Generator:
         self.length_select =     tk.IntVar()
         self.length_pw_any =     tk.IntVar()
         self.length_pw_select =  tk.IntVar()
-        self.length_any_label =  tk.Label(self.result_frame)
-        self.length_lc_label =   tk.Label(self.result_frame)
-        self.length_select_label = tk.Label(self.result_frame)
-        self.length_pw_any_l =   tk.Label(self.result_frame)
-        self.length_pw_select_l = tk.Label(self.result_frame)
+        self.length_any_label =  tk.Label(self.result_frame1)
+        self.length_lc_label =   tk.Label(self.result_frame1)
+        self.length_select_label = tk.Label(self.result_frame1)
+        self.length_pw_any_l =   tk.Label(self.result_frame1)
+        self.length_pw_select_l = tk.Label(self.result_frame1)
         self.phrase_any =        tk.StringVar()
         self.phrase_lc =         tk.StringVar()
         self.phrase_select =     tk.StringVar()
         # Results are displayed in Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
-        self.phrase_any_display = tk.Entry(self.result_frame,
+        self.phrase_any_display = tk.Entry(self.result_frame1,
                                            textvariable=self.phrase_any)
-        self.phrase_lc_display =  tk.Entry(self.result_frame,
+        self.phrase_lc_display =  tk.Entry(self.result_frame1,
                                            textvariable=self.phrase_lc)
-        self.phrase_sel_display = tk.Entry(self.result_frame,
+        self.phrase_sel_display = tk.Entry(self.result_frame1,
                                            textvariable=self.phrase_select)
         self.pw_header =          tk.Label()
         self.pw_any_describe =    tk.Label()
@@ -120,9 +121,9 @@ class Generator:
 
         self.pw_any =             tk.StringVar()
         self.pw_select =          tk.StringVar()
-        self.pw_any_display =     tk.Entry(self.result_frame,
-                                           textvariable=self.pw_any,)
-        self.pw_select_display =  tk.Entry(self.result_frame,
+        self.pw_any_display =     tk.Entry(self.result_frame1,
+                                           textvariable=self.pw_any, )
+        self.pw_select_display =  tk.Entry(self.result_frame1,
                                            textvariable=self.pw_select)
         # Variables used in get_words():
         self.use_effwords = True
@@ -144,8 +145,8 @@ class Generator:
         self.master.minsize(835, 435)
         self.master.config(bg=self.master_bg)
 
-        self.result_frame.config(borderwidth=3, relief='sunken',
-                                 background=self.frame_bg)
+        self.result_frame1.config(borderwidth=3, relief='sunken',
+                                  background=self.frame_bg)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -261,7 +262,7 @@ class Generator:
 
         self.pw_any_describe.config(   text="Any characters",
                                        fg=self.master_fg, bg=self.master_bg)
-        self.pw_select_describe.config(text="More likely usable characters ",
+        self.pw_select_describe.config(text="More likely usable characters",
                                        fg=self.master_fg, bg=self.master_bg)
         self.pw_any.set(self.stubresult)
         self.pw_select.set(self.stubresult)
@@ -276,33 +277,31 @@ class Generator:
 
         # GRID all widgets: ################ sorted by row number ##########
         # Passphrase widgets grid:
-        self.eff_chk.grid(       column=0, row=3, pady=(10, 5), padx=5,
+        self.eff_chk.grid(       column=0, row=0, pady=(10, 5), padx=5,
                                  sticky=tk.W)
-        self.generate_btn.grid(  column=1, row=3, pady=(10, 5), sticky=tk.W)
+        self.generate_btn.grid(  column=1, row=0, pady=(10, 5), sticky=tk.W)
 
-        self.separator1.grid(    column=0, row=4, pady=(2, 5), padx=5,
+        self.separator1.grid(    column=0, row=1, pady=(2, 5), padx=5,
                                  columnspan=4, sticky=tk.EW)
 
-        self.passphrase_header.grid( column=0, row=5, padx=5, sticky=tk.W)
-        self.length_header.grid(     column=1, row=6, padx=5, sticky=tk.W)
+        self.passphrase_header.grid( column=0, row=2, pady=(0, 6), padx=5,
+                                     sticky=tk.W)
+        self.length_header.grid(     column=1, row=3, padx=5, sticky=tk.W)
 
-        self.numwords_label.grid(column=0, row=6, padx=5, sticky=tk.W)
-        self.numwords_entry.grid(column=0, row=6, padx=(0, 100), sticky=tk.E)
+        self.numwords_label.grid(column=0, row=3, padx=5, sticky=tk.W)
+        self.numwords_entry.grid(column=0, row=3, padx=(0, 110), sticky=tk.E)
 
-
-        self.any_describe.grid(      column=0, row=7, pady=(8, 0), sticky=tk.E)
-        self.any_lc_describe.grid(   column=0, row=8, pady=(5, 3), sticky=tk.E)
-
-        self.length_any_label.grid(  column=1, row=7, pady=(5, 3), padx=(4, 0))
-        self.length_lc_label.grid(   column=1, row=8, pady=(5, 3), padx=(4, 0))
-
-        self.result_frame.grid(      column=1, row=7, padx=5, columnspan=2,
-                                     rowspan=7)
+        self.result_frame1.grid(column=1, row=4, padx=5, columnspan=2,
+                                rowspan=7)
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
-        self.phrase_any_display.grid(column=2, row=7, pady=(5, 3), padx=5,
+        self.any_describe.grid(      column=0, row=4, pady=(8, 0), sticky=tk.E)
+        self.length_any_label.grid(  column=1, row=4, pady=(5, 3), padx=(4, 0))
+        self.phrase_any_display.grid(column=2, row=4, pady=(5, 3), padx=5,
                                      columnspan=1, ipadx=5, sticky=tk.EW)
-        self.phrase_lc_display.grid( column=2, row=8, pady=(5, 3), padx=5,
+        self.any_lc_describe.grid(   column=0, row=5, pady=(5, 3), sticky=tk.E)
+        self.length_lc_label.grid(   column=1, row=5, pady=(5, 3), padx=(4, 0))
+        self.phrase_lc_display.grid( column=2, row=5, pady=(5, 3), padx=5,
                                      columnspan=1, ipadx=5, sticky=tk.EW)
 
         # Don't grid system dictionary or EFF widgets on Windows.
@@ -311,49 +310,49 @@ class Generator:
             #                        sticky=tk.E)
             self.eff_chk.grid_remove()
         elif MY_OS in 'lin, dar':
-            self.select_describe.grid(    column=0, row=9, sticky=tk.E)
-            self.length_select_label.grid(column=1, row=9, padx=(4, 0))
-            self.phrase_sel_display.grid( column=2, row=9, pady=3, padx=5,
+            self.select_describe.grid(    column=0, row=6, sticky=tk.E)
+            self.length_select_label.grid(column=1, row=6, padx=(4, 0))
+            self.phrase_sel_display.grid( column=2, row=6, pady=3, padx=5,
                                           columnspan=1, ipadx=5, sticky=tk.EW)
 
         # Need a spacer row between passphrase and password sections
-        frame_xtrarow = tk.Label(self.result_frame, text=' ', bg=self.frame_bg)
-        frame_xtrarow.grid(          column=1, row=10, pady=(6, 0),
+        frame_xtrarow = tk.Label(self.result_frame1, text=' ', bg=self.frame_bg)
+        frame_xtrarow.grid(          column=1, row=7, pady=(6, 0),
                                      sticky=tk.EW)
-        frame_xtrarow2 = tk.Label(self.result_frame, text=' ',bg=self.frame_bg)
-        frame_xtrarow2.grid(         column=1, row=11, pady=(6, 0),
+        frame_xtrarow2 = tk.Label(self.result_frame1, text=' ', bg=self.frame_bg)
+        frame_xtrarow2.grid(         column=1, row=8, pady=(6, 0),
                                      sticky=tk.EW)
 
         # Password widgets grid:
-        self.pw_header.grid(         column=0, row=10, pady=(6, 0), padx=5,
+        self.pw_header.grid(         column=0, row=7, pady=(12, 6), padx=5,
                                      sticky=tk.W)
-        self.numchars_label.grid(    column=0, row=11, padx=5, sticky=tk.W)
-        self.numchars_entry.grid(    column=0, row=11, padx=(0, 70),
+        self.numchars_label.grid(    column=0, row=8, padx=5, sticky=tk.W)
+        self.numchars_entry.grid(    column=0, row=8, padx=(0, 70),
                                      sticky=tk.E)
 
-        self.pw_any_describe.grid(   column=0, row=12, pady=(3, 3),
+        self.pw_any_describe.grid(   column=0, row=9, pady=(3, 3),
                                      sticky=tk.E)
-        self.pw_select_describe.grid(column=0, row=13, pady=(0, 6),
+        self.pw_select_describe.grid(column=0, row=10, pady=(0, 6), padx=(5, 0),
                                      sticky=tk.E)
-        self.length_pw_any_l.grid(   column=1, row=12, pady=(6, 3), padx=(4,
-                                                                          0))
-        self.length_pw_select_l.grid(column=1, row=13, pady=6, padx=(4, 0))
-        self.pw_any_display.grid(    column=2, row=12, pady=(6, 3), padx=5,
+        self.length_pw_any_l.grid(   column=1, row=9, pady=(6, 3), padx=(4, 0))
+        self.length_pw_select_l.grid(column=1, row=10, pady=3, padx=(4, 0))
+        self.pw_any_display.grid(    column=2, row=9, pady=(6, 3), padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
-        self.pw_select_display.grid( column=2, row=13, pady=6, padx=5,
+        self.pw_select_display.grid( column=2, row=10, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.exclude_label.grid(     column=0, row=14, pady=(30, 5), padx=5,
+        self.exclude_label.grid(     column=0, row=11, pady=(30, 5), padx=5,
                                      sticky=tk.W)
-        self.exclude_entry.grid(     column=0, row=14, pady=(30, 5),
+        self.exclude_entry.grid(     column=0, row=11, pady=(30, 5),
                                      sticky=tk.E)
-        self.exclude_btn.grid(       column=1, row=14, pady=(30, 5), padx=(20, 0),
+        self.exclude_btn.grid(       column=1, row=11, pady=(30, 5),
+                                     padx=(20, 0),
                                      sticky=tk.W)
 
-        self.separator2.grid(        column=0, row=15, pady=(6, 0), padx=5,
+        self.separator2.grid(        column=0, row=12, pady=(6, 0), padx=5,
                                      columnspan=4, sticky=tk.EW)
 
-        self.quit_btn.grid(          column=0, row=16, pady=(6, 0), padx=5,
+        self.quit_btn.grid(          column=0, row=13, pady=(6, 6), padx=5,
                                      sticky=tk.W)
 
     def get_words(self) -> None:
