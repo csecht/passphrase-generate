@@ -20,7 +20,7 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.3.5'
+PROGRAM_VER = '0.3.6'
 SYMBOLS = "~!@#$%^&*_-"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
@@ -160,19 +160,6 @@ class Generator:
         if self.use_effwords is False:
             self.eff_chk.config(state='disabled')
 
-        self.numwords_label.config(text='Enter # words for passphrase',
-                                   fg=self.master_fg, bg=self.master_bg)
-        self.numwords_entry.config(width=2)
-        self.numwords_entry.insert(0, '5')
-        self.numwords_entry.focus()
-        self.numchars_label.config(text='Enter # characters for password',
-                                   fg=self.master_fg, bg=self.master_bg)
-        self.numchars_entry.config(width=3)
-        self.numchars_entry.insert(0, 0)
-        self.exclude_label.config(text='Character(s) to exclude',
-                                  fg=self.master_fg, bg=self.master_bg)
-        self.exclude_entry.config(width=3)
-
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
         style = ttk.Style()
@@ -188,6 +175,8 @@ class Generator:
                                    command=exclude_msg)
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
+        self.generate_btn.focus()
+
         self.quit_btn.configure(style="Q.TButton", text='Quit',
                                 command=quit_gui, width=5)
 
@@ -228,6 +217,11 @@ class Generator:
                                         fg=self.master_fg, bg=self.master_bg)
 
         # Passphrase widgets used by all OS.
+        self.numwords_label.config(   text='# words',
+                                      fg=self.pass_bg, bg=self.master_bg)
+        self.numwords_entry.config(width=2)
+        self.numwords_entry.insert(0, '5')
+
         self.length_any.set(0)
         self.length_lc.set(0)
         self.length_pw_any.set(0)
@@ -246,6 +240,11 @@ class Generator:
         # Password results section:
         self.pw_header.config(         text='Passwords', font=('default', 12),
                                        fg=self.pass_bg, bg=self.master_bg)
+        self.numchars_label.config(    text='# characters',
+                                       fg=self.pass_bg, bg=self.master_bg)
+        self.numchars_entry.config(width=3)
+        self.numchars_entry.insert(0, 0)
+
         self.pw_any_describe.config(   text="Any characters",
                                        fg=self.master_fg, bg=self.master_bg)
         self.pw_select_describe.config(text="More likely usable characters ",
@@ -257,16 +256,12 @@ class Generator:
         self.pw_select_display.config(width=60, font=self.display_font,
                                       fg=self.stubresult_fg, bg=self.pass_bg)
 
+        self.exclude_label.config(text='Character(s) to exclude',
+                                  fg=self.pass_bg, bg=self.master_bg)
+        self.exclude_entry.config(width=3)
+
         # GRID all widgets: ################ sorted by row number ##########
         # Passphrase widgets grid:
-        self.numwords_label.grid(column=0, row=0, pady=(5, 0), padx=5,
-                                 sticky=tk.E)
-        self.numwords_entry.grid(column=1, row=0, pady=(5, 0), sticky=tk.W)
-        self.numchars_label.grid(column=0, row=1, pady=5, padx=5, sticky=tk.E)
-        self.numchars_entry.grid(column=1, row=1, sticky=tk.W)
-        self.exclude_label.grid( column=0, row=2, padx=5, sticky=tk.E)
-        self.exclude_entry.grid( column=1, row=2, sticky=tk.W)
-        self.exclude_btn.grid(   column=0, row=2, padx=(20, 0), sticky=tk.W)
         self.eff_chk.grid(       column=0, row=3, pady=(10, 5), padx=5,
                                  sticky=tk.W)
         self.generate_btn.grid(  column=1, row=3, pady=(10, 5), sticky=tk.W)
@@ -275,21 +270,25 @@ class Generator:
                                  columnspan=4, sticky=tk.EW)
 
         self.passphrase_header.grid( column=0, row=5, padx=5, sticky=tk.W)
-        self.length_header.grid(     column=1, row=5, padx=5, sticky=tk.W)
+        self.length_header.grid(     column=1, row=6, padx=5, sticky=tk.W)
 
-        self.any_describe.grid(      column=0, row=6, pady=(8, 0), sticky=tk.E)
-        self.any_lc_describe.grid(   column=0, row=7, pady=(5, 3), sticky=tk.E)
+        self.numwords_label.grid(column=0, row=6, padx=5, sticky=tk.W)
+        self.numwords_entry.grid(column=0, row=6, padx=(0, 100), sticky=tk.E)
 
-        self.length_any_label.grid(  column=1, row=6, pady=(5, 3), padx=(4, 0))
-        self.length_lc_label.grid(   column=1, row=7, pady=(5, 3), padx=(4, 0))
 
-        self.result_frame.grid(      column=1, row=6, padx=5, columnspan=2,
-                                     rowspan=6)
+        self.any_describe.grid(      column=0, row=7, pady=(8, 0), sticky=tk.E)
+        self.any_lc_describe.grid(   column=0, row=8, pady=(5, 3), sticky=tk.E)
+
+        self.length_any_label.grid(  column=1, row=7, pady=(5, 3), padx=(4, 0))
+        self.length_lc_label.grid(   column=1, row=8, pady=(5, 3), padx=(4, 0))
+
+        self.result_frame.grid(      column=1, row=7, padx=5, columnspan=2,
+                                     rowspan=7)
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
-        self.phrase_any_display.grid(column=2, row=6, pady=(5, 3), padx=5,
+        self.phrase_any_display.grid(column=2, row=7, pady=(5, 3), padx=5,
                                      columnspan=1, ipadx=5, sticky=tk.EW)
-        self.phrase_lc_display.grid( column=2, row=7, pady=(5, 3), padx=5,
+        self.phrase_lc_display.grid( column=2, row=8, pady=(5, 3), padx=5,
                                      columnspan=1, ipadx=5, sticky=tk.EW)
 
         # Don't grid system dictionary or EFF widgets on Windows.
@@ -298,31 +297,49 @@ class Generator:
             #                        sticky=tk.E)
             self.eff_chk.grid_remove()
         elif MY_OS in 'lin, dar':
-            self.select_describe.grid(    column=0, row=8, sticky=tk.E)
-            self.length_select_label.grid(column=1, row=8, padx=(4, 0))
-            self.phrase_sel_display.grid( column=2, row=8, pady=3, padx=5,
+            self.select_describe.grid(    column=0, row=9, sticky=tk.E)
+            self.length_select_label.grid(column=1, row=9, padx=(4, 0))
+            self.phrase_sel_display.grid( column=2, row=9, pady=3, padx=5,
                                           columnspan=1, ipadx=5, sticky=tk.EW)
 
         # Need a spacer row between passphrase and password sections
         frame_xtrarow = tk.Label(self.result_frame, text=' ', bg=self.frame_bg)
-        frame_xtrarow.grid(          column=1, row=9, pady=(6, 0), sticky=tk.EW)
+        frame_xtrarow.grid(          column=1, row=10, pady=(6, 0),
+                                     sticky=tk.EW)
+        frame_xtrarow2 = tk.Label(self.result_frame, text=' ',bg=self.frame_bg)
+        frame_xtrarow2.grid(         column=1, row=11, pady=(6, 0),
+                                     sticky=tk.EW)
 
         # Password widgets grid:
-        self.pw_header.grid(         column=0, row=9, pady=(6, 0), padx=5,
+        self.pw_header.grid(         column=0, row=10, pady=(6, 0), padx=5,
                                      sticky=tk.W)
-        self.pw_any_describe.grid(   column=0, row=10, pady=(0, 6), sticky=tk.E)
-        self.pw_select_describe.grid(column=0, row=11, pady=(0, 6), sticky=tk.E)
-        self.length_pw_any_l.grid(   column=1, row=10, pady=(6, 3), padx=(4, 0))
-        self.length_pw_select_l.grid(column=1, row=11, pady=6, padx=(4, 0))
-        self.pw_any_display.grid(    column=2, row=10, pady=(6, 3), padx=5,
+        self.numchars_label.grid(    column=0, row=11, padx=5, sticky=tk.W)
+        self.numchars_entry.grid(    column=0, row=11, padx=(0, 70),
+                                     sticky=tk.E)
+
+        self.pw_any_describe.grid(   column=0, row=12, pady=(3, 3),
+                                     sticky=tk.E)
+        self.pw_select_describe.grid(column=0, row=13, pady=(0, 6),
+                                     sticky=tk.E)
+        self.length_pw_any_l.grid(   column=1, row=12, pady=(6, 3), padx=(4,
+                                                                          0))
+        self.length_pw_select_l.grid(column=1, row=13, pady=6, padx=(4, 0))
+        self.pw_any_display.grid(    column=2, row=12, pady=(6, 3), padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
-        self.pw_select_display.grid( column=2, row=11, pady=6, padx=5,
+        self.pw_select_display.grid( column=2, row=13, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.separator2.grid(        column=0, row=12, pady=(6, 0), padx=5,
+        self.exclude_label.grid(     column=0, row=14, pady=(30, 5), padx=5,
+                                     sticky=tk.W)
+        self.exclude_entry.grid(     column=0, row=14, pady=(30, 5),
+                                     sticky=tk.E)
+        self.exclude_btn.grid(       column=1, row=14, pady=(30, 5), padx=(20, 0),
+                                     sticky=tk.W)
+
+        self.separator2.grid(        column=0, row=15, pady=(6, 0), padx=5,
                                      columnspan=4, sticky=tk.EW)
 
-        self.quit_btn.grid(          column=0, row=13, pady=(6, 0), padx=5,
+        self.quit_btn.grid(          column=0, row=16, pady=(6, 0), padx=5,
                                      sticky=tk.W)
 
     def get_words(self) -> None:
@@ -427,6 +444,10 @@ class Generator:
         secure_random = random.SystemRandom()
 
         # Select user-specified number of words.
+        # first, deal with user deleting value from entry widget.
+        if self.numwords_entry.get() == '':
+            self.numwords_entry.insert(0, '0')
+
         allwords = "".join(secure_random.choice(uniq_words) for
                            _ in range(int(self.numwords_entry.get())))
         somewords = "".join(secure_random.choice(trim_words) for
@@ -452,6 +473,10 @@ class Generator:
                 self.eff_chk.config(state='disabled')
 
         # Build the pass-strings.
+        # first, deal with user deleting value from entry widget.
+        if self.numchars_entry.get() == '':
+            self.numchars_entry.insert(0, '0')
+
         passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
         passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
         password1 = "".join(secure_random.choice(string1) for
