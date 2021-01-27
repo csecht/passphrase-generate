@@ -643,7 +643,7 @@ def quit_gui() -> None:
 
 
 if __name__ == "__main__":
-    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    # os.chdir(os.path.dirname(os.path.realpath(__file__)))
     root = tk.Tk()
     root.title("Passphrase Generator")
     Generator(root).get_words()
