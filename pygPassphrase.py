@@ -637,7 +637,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
-    print(f'\n  *** User has quit {__file__}. Exiting...\n')
+    print(f'\n  *** User has quit the program. Exiting...\n')
     root.destroy()
     sys.exit(0)
 
