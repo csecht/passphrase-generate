@@ -559,9 +559,10 @@ f"    {len(trimmed)} unique words of 3 to 8 letters."
 Only the unique and size-limited word subsets are used for passphrases if
 the EFF word list option is not selected. Passphrases built from the system
 dictionary may include proper names and diacritics. 
+
 To accommodate password requirements of some sites and applications, a 
-choice is provided that adds three characters : 1 symbol, 1 upper case letter,
-and 1 number. The symbols used are restricted to this set: """
+choice is provided that adds three characters : 1 symbol, 1 number, 
+and 1 upper case letter. The symbols used are restricted to this set: """
 f'{SYMBOLS}\nThere is an option to exclude any character or string of '
 f'characters\nfrom your passphrase words and passwords.\n'
 )
@@ -583,7 +584,8 @@ def exclude_msg() -> None:
     detail = ('will not appear in passphrase words, nor appear in '
               'passwords. Multiple characters are treated as a '
               'unit. For example, "es" will exclude "trees", not "eye" '
-              'and "says".')
+              'and "says". These characters are by default excluded from '
+              "the 'more likely usable' passwords: ~!@#$%^&*_-")
     messagebox.showinfo(title='Excluded from what?', message=msg, detail=detail)
 
 
