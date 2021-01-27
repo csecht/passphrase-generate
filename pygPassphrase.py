@@ -4,7 +4,7 @@
 A utility to create random passphrases and passwords.
 Inspired by code from @codehub.py via Instagram.
 
-    Copyright (C) 2021 C. Echt
+    Copyright (C) 2021 C.S. Echt
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
