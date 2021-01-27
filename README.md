@@ -1,28 +1,30 @@
 # general_utilities
-Simple Python scripts to make some things easier.
+Simple Python scripts and executables to make some things easier.
 Developed with Python 3.8, under Ubuntu 20.04, Windows 10, and MacOS 10.13.6 - 11.1
-You may need to download or update to Python 3.6 or later. 
+For running the command line versions you may need to download or update to Python 3.6 or later. 
 Recent Python packages can be downloaded from https://www.python.org/downloads/.
-
-### pyPassphrase
-A potential problem with on-line password and passphrase generators is that they are on-line. Here is a generator that can be run locally and privately. The different strings generated are intended to comply with a range of websites and application password/passphrase requirements. 
+---------------------------------
+## pyPassphrase
+A potential problem with an on-line password and passphrase generator it is on-line. Here is a command line generator that can be run locally and privately from a Terminal window. The different pass-strings generated are intended to comply with a range of websites and application password/passphrase requirements. 
 Suggestions for improvement are welcome, especially any ideas to access the system dictionary on Windows.
 
-### pygPassphrase.py
-A GUI implementation of pyPassphrase.py. Runs on Windows, Linux and MacOS from the Terminal as a command line Python script. The tkinter graphics module of Python is required, which is included in Python 3.7 and later. Earlier versions will require a separate installation of Tk/Tcl.
+### GUI Implementations of pyPassphrase
+#### pygPassphrase.py
+An interactive graphic window that has more options than the Terminal-only pyPassphrase version. On MacOS and Linux there is an option to create passphrases using the system dictionary, or the Electronic Frontier Foundation's long wordlist. On Windows, only the EFF word list is used (because I don't know how to access the Windows system dictionary.) The script is launched from a Terminal command line. A recent tkinter graphics module of Python is required, which is included in Python 3.7+; earlier versions will require installation of Tk/Tcl.
 
-For Windows, the file eff_large_wordlist.txt, which is included with this distribution, must be in the working folder. Launching the program by double-clicking on the folder icon may require add .py to your PATH list. Otherwise, launch from a Terminal window from the working folder using the command 
-```python3 ./pygPassphrase.py```. 
+For Windows, the file eff_large_wordlist.txt, which is included in this distribution, must be kept in the general_utilities-master folder. Launching the program by double-clicking on the folder icon may work if .py is in your PATH list. Otherwise, launch from a Terminal window from the working folder using the command ```python3 pygPassphrase.py``` or ```python pygPassphrase.py``` or ```py pygPassphrase.py```, depending on your system environment. 
 
-For Linux or Mac, the EFF wordlist file also needs to be in the working directory, but its use for generating passphrases is optional. Launch from a Terminal window within the working folder using the command 
-```python3 ./pygPassphrase.py``` or ```./pygPassphrase.py```
+For Linux or Mac, the EFF wordlist file also needs to be in the working directory, but its use for generating passphrases is optional. Launch the script from a Terminal window within the general_utilities-master folder using the command 
+```python3 ./pygPassphrase.py``` or ```./pygPassphrase.py```  On MacOS, the Python Launcher app, bundled with some Python installations, can be configured to run pygPassphrase.py by double-clicking on it.
 
+### Stand-alone versions ( -- no Python installation needed!)
+#### pygPassphrase.app - MacOS
+A MacOS implementation of pygPassphrase.py. After downloading the GitHub distribution package (from the Code download button), unzipping the file will generate the general_utilities-master folder. Inside that is zip file, pygPassphrase.app.zip. Unzip that (just double click and follow prompts) to install pygPassphrase.app, which can then be place where ever you like. The first time you double-click on it, however, you will most likely need to go into System Preferences > Security & Privacy > General and allow the app to open (because it was not downloaded from the Apple Store or a recognized Apple developer). Created with py2app from https://pypi.org/project/py2app/
 
-#### pygPassphrase.app
-A standalone MacOS implementation of pygPassphrase.py. Download, unzip, and doubleclick to open. Move the app to where ever you like to use. Before running, however, you will most likely need to go into System Preferences > Security & Privacy > General and allow the app to open because it is not from the Apple Store or a recognized Apple developer. Created with py2app obtained from https://pypi.org/project/py2app/
+#### pygPassphrase.exe - Windows
+A Windows implementation of pygPassphrase.py. After downloading the GitHub distribution package (from the Code download button), unzipping the file will generate the general_utilities-master folder. Inside that is zip file, pygPassphrase_win.zip. Unzipping that (just double click and follow prompts) will create a folder pygPassphrase_win, which is a distributable folder. Inside that is the pygPassphrase.exe executable. Double-click that to launch the program and follow the prompts to allow it to open. The folder can be placed anywhere, although you may want to run the program by creating an alias of pygPassphrase.exe and placing it in a convenient location. Created with pyinstaller from https://pypi.org/project/pyinstaller/
 
-#### pygPassphrase.exe
-A standalone Windows implementation of pygPassphrase.py is under development.
+-------------------------
 
-### pyPalindromes
+## pyPalindromes
 Just something fun. I like the magical way that slice can work to test for and generate palindromes.
