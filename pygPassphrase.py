@@ -4,7 +4,6 @@
 A utility to create random passphrases and passwords.
 Inspired by code from @codehub.py via Instagram.
 """
-import os
 import random
 import re
 import sys
@@ -664,7 +663,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
-    print(f'\n  *** User has quit the program. Exiting...\n')
+    print('\n  *** User has quit the program. Exiting...\n')
     root.destroy()
     sys.exit(0)
 
