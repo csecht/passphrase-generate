@@ -62,8 +62,8 @@ class Generator:
         self.pass_fg = 'brown4'
         self.pass_bg = 'khaki2'
         # Use courier b/c TKFixedFont does not monospace symbol characters.
-        self.display_font = 'Courier', 11
-        self.small_font = 'Courier', 9
+        self.display_font = 'Courier', 12
+        self.small_font = 'Courier', 10
 
         self.stubresult = 'Result can be copied and pasted from keyboard.'
 
@@ -266,7 +266,7 @@ class Generator:
         self.pw_select_display.config(width=60, font=self.display_font,
                                       fg=self.stubresult_fg, bg=self.pass_bg)
 
-        self.exclude_label.config(text='Character(s) to exclude',
+        self.exclude_label.config(text='Exclude character(s)',
                                   fg=self.pass_bg, bg=self.master_bg)
         self.exclude_entry.config(width=3)
 
@@ -300,8 +300,8 @@ class Generator:
             self.eff_chk.grid_remove()
         elif MY_OS in 'lin, dar':
             self.select_describe.grid(    column=0, row=4, sticky=tk.E)
-            self.length_select_label.grid(column=1, row=4, padx=(4, 0))
-            self.phrase_sel_display.grid( column=2, row=4, pady=3, padx=5,
+            self.length_select_label.grid(column=1, row=4, pady=3, padx=(4, 0))
+            self.phrase_sel_display.grid( column=2, row=4, pady=6, padx=5,
                                           ipadx=5, sticky=tk.EW)
 
         # Need to have padding and span so button is centered between
@@ -323,21 +323,21 @@ class Generator:
 
         self.pw_any_describe.grid(   column=0, row=7, pady=(6, 0),
                                      sticky=tk.E)
-        self.pw_select_describe.grid(column=0, row=8, pady=(0, 6), padx=(5, 0),
-                                     sticky=tk.E)
         self.length_pw_any_l.grid(   column=1, row=7, pady=(6, 3), padx=(4, 0))
-        self.length_pw_select_l.grid(column=1, row=8, pady=3, padx=(4, 0))
         self.pw_any_display.grid(    column=2, row=7, pady=(6, 3), padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
+        self.pw_select_describe.grid(column=0, row=8, pady=(0, 6), padx=(5, 0),
+                                     sticky=tk.E)
+        self.length_pw_select_l.grid(column=1, row=8, pady=3, padx=(4, 0))
         self.pw_select_display.grid( column=2, row=8, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.exclude_label.grid(     column=0, row=9, pady=(30, 5), padx=5,
-                                     sticky=tk.W)
-        self.exclude_entry.grid(     column=0, row=9, pady=(30, 5),
-                                     sticky=tk.E)
-        self.exclude_btn.grid(       column=1, row=9, pady=(30, 5),
-                                     padx=(15, 0), sticky=tk.W)
+        self.exclude_label.grid(     column=0, row=9, pady=(20, 5),
+                                     padx=5, sticky=tk.W)
+        self.exclude_entry.grid(     column=0, row=9, pady=(20, 5),
+                                     padx=(0, 10), sticky=tk.E)
+        self.exclude_btn.grid(       column=1, row=9, pady=(20, 5),
+                                     padx=5, sticky=tk.W)
 
     def get_words(self) -> None:
         """
