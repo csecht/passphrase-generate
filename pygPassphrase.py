@@ -274,7 +274,7 @@ class Generator:
         self.length_header.grid(     column=1, row=3, padx=5, sticky=tk.W)
 
         self.numwords_label.grid(column=0, row=3, padx=5, sticky=tk.W)
-        self.numwords_entry.grid(column=0, row=3, padx=(0, 110), sticky=tk.E)
+        self.numwords_entry.grid(column=0, row=3, padx=(5, 100), sticky=tk.E)
 
         self.result_frame1.grid(column=1, row=4, padx=(5, 10), columnspan=2,
                                 rowspan=3, sticky=tk.EW)
