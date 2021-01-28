@@ -616,7 +616,7 @@ def exclude_msg() -> None:
 
 def about() -> None:
     """
-    Basic information for count-tasks; called from GUI Help menu.
+    Basic information for the script; called from GUI Help menu.
 
     :return: Information window.
     """
