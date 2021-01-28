@@ -193,6 +193,9 @@ class Generator:
 
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=self.pass_bg, bg=self.master_bg)
+        if MY_OS == 'dar':
+            self.passphrase_header.config(font=('default', 16))
+
         self.length_header.config(    text='Length', width=5,
                                       fg=self.master_fg, bg=self.master_bg)
 
@@ -244,6 +247,9 @@ class Generator:
         # Password results section:
         self.pw_header.config(         text='Passwords', font=('default', 12),
                                        fg=self.pass_bg, bg=self.master_bg)
+        if MY_OS == 'dar':
+            self.pw_header.config(font=('default', 16))
+
         self.numchars_label.config(    text='# characters',
                                        fg=self.pass_bg, bg=self.master_bg)
         self.numchars_entry.config(width=3)
@@ -639,7 +645,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
     num_lines = boilerplate.count('\n')
     aboutwin = tk.Toplevel()
-    aboutwin.title('About count-tasks')
+    aboutwin.title('About pygPassphrase')
     colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
               'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
               'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
