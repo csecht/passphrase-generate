@@ -34,10 +34,10 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.3.6'
+PROGRAM_VER = '0.3.7'
 SYMBOLS = "~!@#$%^&*_-"
-# MY_OS = sys.platform[:3]
-MY_OS = 'win'  # TESTING
+MY_OS = sys.platform[:3]
+# MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
@@ -82,13 +82,10 @@ class Generator:
         # There are problems of tk.Button text showing up on MacOS, so ttk
         self.exclude_btn = ttk.Button()
         self.generate_btn = ttk.Button()
-        self.quit_btn = ttk.Button()
 
         self.result_frame1 = tk.Frame()
         self.result_frame2 = tk.Frame()
 
-        self.separator1 = ttk.Frame()
-        self.separator2 = ttk.Frame()
         self.length_header =     tk.Label()
         self.passphrase_header = tk.Label()
         self.any_describe =      tk.Label()
@@ -141,8 +138,13 @@ class Generator:
 
         :return: A nice looking interactive graphic.
         """
+        if MY_OS == 'win':
+            self.master.minsize(820, 360)
+            self.master.maxsize(1200, 360)
+        elif MY_OS in 'lin, dar':
+            self.master.minsize(820, 435)
+            self.master.maxsize(1200, 435)
 
-        self.master.minsize(835, 435)
         self.master.config(bg=self.master_bg)
 
         self.result_frame1.config(borderwidth=3, relief='sunken',
@@ -173,7 +175,6 @@ class Generator:
                                 fg=self.master_fg, bg=self.master_bg,
                                 activebackground='grey80',
                                 selectcolor=self.frame_bg)
-
         if self.use_effwords is False:
             self.eff_chk.config(state='disabled')
 
@@ -184,25 +185,11 @@ class Generator:
                   foreground=[('active', self.pass_fg)],
                   background=[('pressed', self.frame_bg),
                               ('active', self.pass_bg)])
-        style.map("Q.TButton",
-                  foreground=[('active', 'red')],
-                  background=[('pressed', self.frame_bg),
-                              ('active', self.pass_bg)])
         self.exclude_btn.configure(style="G.TButton", text="?", width=0,
                                    command=exclude_msg)
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
         self.generate_btn.focus()
-
-        self.quit_btn.configure(style="Q.TButton", text='Quit',
-                                command=quit_gui, width=5)
-
-        # Separators for top and bottom of results section.
-        # For colored separators, need ttk.Frame instead of ttk.Separator.
-        style_sep = ttk.Style()
-        style_sep.configure('TFrame', background=self.master_bg)
-        self.separator1.configure(relief="raised", height=6)
-        self.separator2.configure(relief="raised", height=6)
 
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=self.pass_bg, bg=self.master_bg)
@@ -281,41 +268,41 @@ class Generator:
         # Passphrase widgets grid:
         self.eff_chk.grid(       column=0, row=0, pady=(10, 5), padx=5,
                                  sticky=tk.W)
-        self.generate_btn.grid(  column=1, row=0, pady=(10, 5), sticky=tk.W)
 
-        self.separator1.grid(    column=0, row=1, pady=(2, 5), padx=5,
-                                 columnspan=4, sticky=tk.EW)
-
-        self.passphrase_header.grid( column=0, row=2, pady=(0, 6), padx=5,
+        self.passphrase_header.grid( column=0, row=2, pady=(6, 6), padx=5,
                                      sticky=tk.W)
         self.length_header.grid(     column=1, row=3, padx=5, sticky=tk.W)
 
         self.numwords_label.grid(column=0, row=3, padx=5, sticky=tk.W)
         self.numwords_entry.grid(column=0, row=3, padx=(0, 110), sticky=tk.E)
 
-        self.result_frame1.grid(column=1, row=4, padx=5, columnspan=2,
+        self.result_frame1.grid(column=1, row=4, padx=(5, 10), columnspan=2,
                                 rowspan=3, sticky=tk.EW)
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
         self.any_describe.grid(      column=0, row=4, pady=(6, 0), sticky=tk.E)
         self.length_any_label.grid(  column=1, row=4, pady=(5, 3), padx=(4, 0))
         self.phrase_any_display.grid(column=2, row=4, pady=(5, 3), padx=5,
-                                     columnspan=1, ipadx=5, sticky=tk.EW)
+                                     ipadx=5, sticky=tk.EW)
         self.any_lc_describe.grid(   column=0, row=5, pady=(3, 0), sticky=tk.E)
         self.length_lc_label.grid(   column=1, row=5, pady=(5, 3), padx=(4, 0))
         self.phrase_lc_display.grid( column=2, row=5, pady=(5, 3), padx=5,
-                                     columnspan=1, ipadx=5, sticky=tk.EW)
+                                     ipadx=5, sticky=tk.EW)
 
         # Don't grid system dictionary or EFF widgets on Windows.
         if MY_OS == 'win':
             self.eff_chk.grid_remove()
-            # self.generate_btn.grid(column=1, row=0, pady=10, padx=5,
-            #                        sticky=tk.W)
         elif MY_OS in 'lin, dar':
             self.select_describe.grid(    column=0, row=6, sticky=tk.E)
             self.length_select_label.grid(column=1, row=6, padx=(4, 0))
             self.phrase_sel_display.grid( column=2, row=6, pady=3, padx=5,
-                                          columnspan=1, ipadx=5, sticky=tk.EW)
+                                          ipadx=5, sticky=tk.EW)
+
+        # Need to have padding and span so button is centered between
+        # results frames.
+        self.generate_btn.grid(      column=2, row=7, pady=(10, 5),
+                                     padx=(0, 45), sticky=tk.W,
+                                     rowspan=2)
 
         # Password widgets grid:
         self.pw_header.grid(         column=0, row=7, pady=(12, 6), padx=5,
@@ -324,7 +311,8 @@ class Generator:
         self.numchars_entry.grid(    column=0, row=8, padx=(0, 70),
                                      sticky=tk.E)
 
-        self.result_frame2.grid(     column=1, row=9, padx=5, columnspan=2,
+        self.result_frame2.grid(     column=1, row=9, padx=(5, 10),
+                                     columnspan=2,
                                      rowspan=2, sticky=tk.EW)
 
         self.pw_any_describe.grid(   column=0, row=9, pady=(6, 0),
@@ -344,12 +332,6 @@ class Generator:
                                      sticky=tk.E)
         self.exclude_btn.grid(       column=1, row=11, pady=(30, 5),
                                      padx=(15, 0), sticky=tk.W)
-
-        self.separator2.grid(        column=0, row=12, pady=(6, 0), padx=5,
-                                     columnspan=4, sticky=tk.EW)
-
-        # self.quit_btn.grid(          column=0, row=13, pady=(6, 6), padx=5,
-        #                              sticky=tk.W)
 
     def get_words(self) -> None:
         """
@@ -589,9 +571,9 @@ pygPassphrase.py users have an option to use the EFF long wordlist instead
 of the default system dictionary. Windows users, however, can use only
 the EFF list. Your system dictionary provides:
 """
-f"    {len(word_num)} words of any length, of which\n"
-f"    {len(unique)} are unique (not possessive forms of nouns) and \n"
-f"    {len(trimmed)} unique words of 3 to 8 letters."
+f"    {len(word_num)} words of any length, of which...\n"
+f"    {len(unique)} are unique (not possessive forms of nouns) and... \n"
+f"    {len(trimmed)} of unique words have 3 to 8 letters."
 """
 Only the unique and size-limited word subsets are used for passphrases if
 the EFF word list option is not selected. Passphrases built from the system
@@ -599,8 +581,8 @@ dictionary may include proper names and diacritics.
 
 To accommodate password requirements of some sites and applications, a 
 choice is provided that adds three characters : 1 symbol, 1 number, 
-and 1 upper case letter. The symbols used are restricted to this set: """
-f'{SYMBOLS}\nThere is an option to exclude any character or string of '
+and 1 upper case letter. Symbols used are restricted to these: """
+f'{SYMBOLS}\n\nThere is an option to exclude any character or string of '
 f'characters\nfrom your passphrase words and passwords.\n'
 )
 
