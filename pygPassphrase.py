@@ -304,7 +304,7 @@ class Generator:
         #  of deletion of those widgets. (?)
         if MY_OS == 'win':
             self.eff_chk.grid_forget()
-            self.any_describe.grid(column=0, row=2, pady=(8, 5), sticky=tk.E)
+            self.any_describe.grid(column=0, row=2, pady=(6, 0), sticky=tk.E)
             self.select_describe.grid_forget()
             self.length_select_label.grid_forget()
             self.phrase_sel_display.grid_forget()
