@@ -36,8 +36,8 @@ except (ImportError, ModuleNotFoundError) as error:
 
 PROGRAM_VER = '0.3.7'
 SYMBOLS = "~!@#$%^&*_-"
-# MY_OS = sys.platform[:3]
-MY_OS = 'win'  # TESTING
+MY_OS = sys.platform[:3]
+# MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
@@ -275,7 +275,7 @@ class Generator:
         self.eff_chk.grid(           column=1, row=0, pady=(10, 5), padx=5,
                                      sticky=tk.W)
 
-        self.passphrase_header.grid( column=0, row=0, pady=(6, 6), padx=5,
+        self.passphrase_header.grid( column=0, row=0, pady=(10, 5), padx=5,
                                      sticky=tk.W)
         self.length_header.grid(     column=1, row=1, padx=5, sticky=tk.W)
 
@@ -287,7 +287,7 @@ class Generator:
                                 rowspan=3, sticky=tk.EW)
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
-        self.any_describe.grid(      column=0, row=2, pady=(3, 0), sticky=tk.E)
+        self.any_describe.grid(      column=0, row=2, pady=(5, 0), sticky=tk.E)
         self.length_any_label.grid(  column=1, row=2, pady=(5, 3), padx=(4, 0))
         self.phrase_any_display.grid(column=2, row=2, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
@@ -301,7 +301,7 @@ class Generator:
                                      sticky=tk.EW)
         # Don't grid system dictionary or EFF widgets on Windows.
         if MY_OS == 'win':
-            self.eff_chk.grid_forget()
+            self.eff_chk.grid_remove()
             self.select_describe.grid_forget()
             self.length_select_label.grid_forget()
             self.phrase_sel_display.grid_forget()
