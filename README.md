@@ -1,9 +1,14 @@
+# NOTICE: VIRUS?
+As of 29 January 2021, I was not able to download the zipped distribution onto my Windows 10 machine using Microsoft Edge because it detected a virus. I don't know whether it's real or a false positive, so proceed with caution. Downloads from 28 Jan and earlier did not have this issue.
+-------------
+
 # general_utilities
 Simple Python scripts and executables to make some things easier.
+
 Developed with Python 3.8, under Ubuntu 20.04, Windows 10, and MacOS 10.13.6 - 11.1
 For running the command line versions you may need to download or update to Python 3.6 or later. 
 Recent Python packages can be downloaded from https://www.python.org/downloads/.
----------------------------------
+
 ## pyPassphrase
 A potential problem with an on-line password and passphrase generator it is on-line. Here is a command line generator that can be run locally and privately from a Terminal window. The different pass-strings generated are intended to comply with a range of websites and application password/passphrase requirements. 
 Suggestions for improvement are welcome, especially any ideas to access the system dictionary on Windows.
