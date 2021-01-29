@@ -270,7 +270,7 @@ class Generator:
                                   fg=self.pass_bg, bg=self.master_bg)
         self.exclude_entry.config(width=3)
 
-        #### GRID all widgets: ############# sorted by row number #######
+        #### GRID all widgets: ############# sorted by row number #############
         # Passphrase widgets grid:
         self.eff_chk.grid(           column=1, row=0, pady=(10, 5), padx=5,
                                      sticky=tk.W)
@@ -283,8 +283,8 @@ class Generator:
         self.numwords_entry.grid(    column=0, row=1, padx=(5, 100),
                                      sticky=tk.E)
 
-        self.result_frame1.grid(column=1, row=2, padx=(5, 10), columnspan=2,
-                                rowspan=3, sticky=tk.EW)
+        self.result_frame1.grid(     column=1, row=2, padx=(5, 10),
+                                     columnspan=2, rowspan=3, sticky=tk.EW)
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
         self.any_describe.grid(      column=0, row=2, pady=(5, 0), sticky=tk.E)
@@ -299,14 +299,17 @@ class Generator:
         self.length_select_label.grid(column=1, row=4, pady=3, padx=(4, 0))
         self.phrase_sel_display.grid(column=2, row=4, pady=6, padx=5, ipadx=5,
                                      sticky=tk.EW)
-        # Don't grid system dictionary or EFF widgets on Windows.
+        # Don't show system dictionary or EFF widgets on Windows.
+        # Need to adjust padding to keep row headers aligned with results b/c
+        #  of deletion of those widgets. (?)
         if MY_OS == 'win':
-            self.eff_chk.grid_remove()
+            self.eff_chk.grid_forget()
+            self.any_describe.grid(column=0, row=2, pady=(8, 5), sticky=tk.E)
             self.select_describe.grid_forget()
             self.length_select_label.grid_forget()
             self.phrase_sel_display.grid_forget()
 
-        # Need to pad and span to center button between results frames.
+        # Need to pad and span to center the button between results frames.
         self.generate_btn.grid(      column=2, row=5, pady=(10, 5),
                                      padx=(0, 140), sticky=tk.W,
                                      rowspan=2)
@@ -360,7 +363,7 @@ class Generator:
             print(fnf_msg)
             sys.exit(1)
 
-        # Need to populate lists with words to randomize in make_pass().
+        # Need to populate lists with words to randomize with make_pass().
         if MY_OS == 'win':
             self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
 
@@ -610,8 +613,9 @@ def exclude_msg() -> None:
     detail = ('will not appear in passphrase words, nor appear in '
               'passwords. Multiple characters are treated as a '
               'unit. For example, "es" will exclude "trees", not "eye" '
-              'and "says". These characters are by default excluded from '
-              "the 'more likely usable' passwords: ~!@#$%^&*_-")
+              'and "says". Only these symbols are used for "plus 3 characters"'
+              f' and "More likely usable" passwords: {SYMBOLS}'
+              " (all other symbols and punctuation are excluded).")
     messagebox.showinfo(title='Excluded from what?', message=msg, detail=detail)
 
 
