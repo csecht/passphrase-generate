@@ -36,8 +36,8 @@ except (ImportError, ModuleNotFoundError) as error:
 
 PROGRAM_VER = '0.3.7'
 SYMBOLS = "~!@#$%^&*_-"
-MY_OS = sys.platform[:3]
-# MY_OS = 'win'  # TESTING
+# MY_OS = sys.platform[:3]
+MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
@@ -270,42 +270,43 @@ class Generator:
                                   fg=self.pass_bg, bg=self.master_bg)
         self.exclude_entry.config(width=3)
 
-        # GRID all widgets: ################ sorted by row number ##########
+        #### GRID all widgets: ############# sorted by row number #######
         # Passphrase widgets grid:
-        self.eff_chk.grid(       column=1, row=0, pady=(10, 5), padx=5,
-                                 sticky=tk.W)
+        self.eff_chk.grid(           column=1, row=0, pady=(10, 5), padx=5,
+                                     sticky=tk.W)
 
         self.passphrase_header.grid( column=0, row=0, pady=(6, 6), padx=5,
                                      sticky=tk.W)
         self.length_header.grid(     column=1, row=1, padx=5, sticky=tk.W)
 
-        self.numwords_label.grid(column=0, row=1, padx=5, sticky=tk.W)
-        self.numwords_entry.grid(column=0, row=1, padx=(5, 100), sticky=tk.E)
+        self.numwords_label.grid(    column=0, row=1, padx=5, sticky=tk.W)
+        self.numwords_entry.grid(    column=0, row=1, padx=(5, 100),
+                                     sticky=tk.E)
 
         self.result_frame1.grid(column=1, row=2, padx=(5, 10), columnspan=2,
                                 rowspan=3, sticky=tk.EW)
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
-        self.any_describe.grid(      column=0, row=2, pady=(6, 0), sticky=tk.E)
+        self.any_describe.grid(      column=0, row=2, pady=(3, 0), sticky=tk.E)
         self.length_any_label.grid(  column=1, row=2, pady=(5, 3), padx=(4, 0))
         self.phrase_any_display.grid(column=2, row=2, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
-        self.any_lc_describe.grid(   column=0, row=3, pady=(3, 0), sticky=tk.E)
+        self.any_lc_describe.grid(   column=0, row=3, pady=(0, 0), sticky=tk.E)
         self.length_lc_label.grid(   column=1, row=3, pady=(5, 3), padx=(4, 0))
         self.phrase_lc_display.grid( column=2, row=3, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
-
+        self.select_describe.grid(   column=0, row=4, pady=(0, 3), sticky=tk.E)
+        self.length_select_label.grid(column=1, row=4, pady=3, padx=(4, 0))
+        self.phrase_sel_display.grid(column=2, row=4, pady=6, padx=5, ipadx=5,
+                                     sticky=tk.EW)
         # Don't grid system dictionary or EFF widgets on Windows.
         if MY_OS == 'win':
-            self.eff_chk.grid_remove()
-        elif MY_OS in 'lin, dar':
-            self.select_describe.grid(    column=0, row=4, sticky=tk.E)
-            self.length_select_label.grid(column=1, row=4, pady=3, padx=(4, 0))
-            self.phrase_sel_display.grid( column=2, row=4, pady=6, padx=5,
-                                          ipadx=5, sticky=tk.EW)
+            self.eff_chk.grid_forget()
+            self.select_describe.grid_forget()
+            self.length_select_label.grid_forget()
+            self.phrase_sel_display.grid_forget()
 
-        # Need to have padding and span so button is centered between
-        # results frames.
+        # Need to pad and span to center button between results frames.
         self.generate_btn.grid(      column=2, row=5, pady=(10, 5),
                                      padx=(0, 140), sticky=tk.W,
                                      rowspan=2)
@@ -332,12 +333,12 @@ class Generator:
         self.pw_select_display.grid( column=2, row=8, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.exclude_label.grid(     column=0, row=9, pady=(20, 5),
-                                     padx=5, sticky=tk.W)
-        self.exclude_entry.grid(     column=0, row=9, pady=(20, 5),
-                                     padx=(0, 10), sticky=tk.E)
-        self.exclude_btn.grid(       column=1, row=9, pady=(20, 5),
-                                     padx=5, sticky=tk.W)
+        self.exclude_label.grid(     column=0, row=9, pady=(20, 5), padx=5,
+                                     sticky=tk.W)
+        self.exclude_entry.grid(     column=0, row=9, pady=(20, 5), padx=(0, 10),
+                                     sticky=tk.E)
+        self.exclude_btn.grid(       column=1, row=9, pady=(20, 5), padx=5,
+                                     sticky=tk.W)
 
     def get_words(self) -> None:
         """
