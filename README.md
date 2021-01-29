@@ -1,5 +1,5 @@
-# NOTICE: VIRUS?
-As of 29 January 2021, I was not able to download the zipped distribution onto my Windows 10 machine using Microsoft Edge because it detected a virus. I don't know whether it's real or a false positive, so proceed with caution. Downloads from 28 Jan and earlier did not have this issue.
+# NOTICE:
+As of 29 January 2021, I was not able to download the zipped distribution onto my Windows 10 machine using Microsoft Edge because it said it detected a virus. I had no problem downloading with Firefox browser, but you proceed with caution. Downloads from 28 Jan and earlier did not have this issue.
 -------------
 
 # general_utilities
