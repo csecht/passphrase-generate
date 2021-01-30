@@ -38,3 +38,6 @@ A **Windows** standalone of passphrase.py. Download an extract the GitHub distri
 ### Python script with Terminal only output
 The original Python script, `pypassphrase` (79 lines!), only produces passphrases and only runs in a Terminal window under Linux and MacOS. It uses only the system dictionary of those systems from which to randomly draw words. It does not work under Windows because of no access to that system's dictionary. To execute, you may need to download or update to Python 3.6 or later. Run the command line as outlined above for `passphrase.py`.
 
+##Development plans:
+- Implement Windows installer
+- Research different word list options
