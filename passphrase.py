@@ -630,7 +630,7 @@ def about() -> None:
     """
     # msg separators use em dashes.
     boilerplate = ("""
-passphrase.py and its standalones easily generate passphrases and passwords.
+passphrase.py and its standalones generate passphrases and passwords.
 Download the most recent version from: 
 https://github.com/csecht/passphrase-generate
 
