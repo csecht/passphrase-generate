@@ -249,7 +249,7 @@ class Generator:
         if MY_OS in 'lin, dar':
             self.any_describe.config(   text="Any words from dictionary",
                                         fg=self.master_fg, bg=self.master_bg)
-            self.any_lc_describe.config(text="add three & lower case",
+            self.any_lc_describe.config(text="...+3 characters & lower case",
                                         fg=self.master_fg, bg=self.master_bg)
             self.select_describe.config(text="...with words of 3 to 8 letters",
                                         fg=self.master_fg, bg=self.master_bg)
@@ -266,7 +266,7 @@ class Generator:
         elif MY_OS == 'win':
             self.any_describe.config(   text="Any words from EFF wordlist",
                                         fg=self.master_fg, bg=self.master_bg)
-            self.any_lc_describe.config(text="...plus 3 characters",
+            self.any_lc_describe.config(text="...add 3 characters",
                                         fg=self.master_fg, bg=self.master_bg)
             self.select_describe.config(text=" ",
                                         fg=self.master_fg, bg=self.master_bg)
@@ -452,14 +452,14 @@ class Generator:
             if self.eff.get() is False:
                 self.any_describe.config(   text="Any words from dictionary",
                                             fg=self.master_fg, bg=self.master_bg)
-                self.any_lc_describe.config(text="add three & lower case",
+                self.any_lc_describe.config(text="...+3 characters & lower case",
                                             fg=self.master_fg, bg=self.master_bg)
                 self.select_describe.config(text="...with words of 3 to 8 letters",
                                             fg=self.master_fg, bg=self.master_bg)
             elif self.eff.get() is True:
                 self.any_describe.config(   text="Any words from EFF wordlist",
                                             fg=self.master_fg, bg=self.master_bg)
-                self.any_lc_describe.config(text="...plus 3 characters",
+                self.any_lc_describe.config(text="...+3 characters",
                                             fg=self.master_fg, bg=self.master_bg)
                 self.select_describe.config(text=" ",
                                             fg=self.master_fg, bg=self.master_bg)
@@ -612,32 +612,6 @@ class Generator:
         self.h_digit = -log(1/len(digits), 2)
         self.h_add3 = int(self.h_symbol + self.h_cap + self.h_digit)  # H ~= 12
 
-        # Calculate information entropy, H = L * log N / log 2, where N is the
-        # number of possible symbols(words) and L is the number of symbols or
-        # words in the pass-string. The log can be any base, just needs to be
-        # same in numerator and denominator.
-        self.h_any.set(int(self.numwords * log(len(self.uniq_words)) / log(2)))
-        self.h_lc.set(self.h_any.get() + self.h_add3)
-        h_select = int(self.numwords * log(len(self.trim_words)) / log(2))
-        self.h_select.set(h_select + self.h_add3)
-        self.h_pw_any.set(int(self.numchars * log(len(self.string1)) / log(2)))
-        self.h_pw_select.set(int(self.numchars * log(len(self.string2)) / log(2)))
-
-        # Note that N is already corrected for excluded words in make_pass().
-        # Note that the label names for 'any' and 'lc' are recycled between
-        #  system dict and eff wordlist options. In retrospect, not smart.
-        if MY_OS in 'lin, dar' and self.eff.get() is True:
-            self.h_any.set(
-                int(self.numwords * log(len(self.eff_words)) / log(2)))
-            h_eff = int(self.numwords * log(len(self.eff_words)) / log(2))
-            self.h_lc.set(h_eff + self.h_add3)
-            self.h_select.set(' ')
-        elif MY_OS == 'win' or self.system_words == 'Null':
-            self.h_any.set(
-                int(self.numwords * log(len(self.eff_words)) / log(2)))
-            self.h_lc.set(self.h_lc.get() + self.h_add3)
-            self.h_select.set(' ')
-
         # Need to correct H for excluded characters in passwords (lower the N).
         # This accurately corrects H only when 1 char is excluded.
         # There are too many combinations of multi-char strings to easily code.
@@ -663,6 +637,32 @@ class Generator:
             if exclude in characters_some:
                 self.h_pw_select.set(
                     int(self.numchars * log(len(characters_some) - 1) / log(2)))
+
+        # Calculate information entropy, H = L * log N / log 2, where N is the
+        # number of possible symbols(words) and L is the number of symbols or
+        # words in the pass-string. The log can be any base, just needs to be
+        # same in numerator and denominator.
+        self.h_any.set(int(self.numwords * log(len(self.uniq_words)) / log(2)))
+        self.h_lc.set(self.h_any.get() + self.h_add3)
+        h_select = int(self.numwords * log(len(self.trim_words)) / log(2))
+        self.h_select.set(h_select + self.h_add3)
+        self.h_pw_any.set(int(self.numchars * log(len(self.string1)) / log(2)))
+        self.h_pw_select.set(int(self.numchars * log(len(self.string2)) / log(2)))
+
+        # Note that N is already corrected for excluded words in make_pass().
+        # Note that the label names for 'any' and 'lc' are recycled between
+        #  system dict and eff wordlist options. In retrospect, not smart.
+        if MY_OS in 'lin, dar' and self.eff.get() is True:
+            self.h_any.set(
+                int(self.numwords * log(len(self.eff_words)) / log(2)))
+            h_eff = int(self.numwords * log(len(self.eff_words)) / log(2))
+            self.h_lc.set(h_eff + self.h_add3)
+            self.h_select.set(' ')
+        elif MY_OS == 'win' or self.system_words == 'Null':
+            self.h_any.set(
+                int(self.numwords * log(len(self.eff_words)) / log(2)))
+            self.h_lc.set(self.h_lc.get() + self.h_add3)
+            self.h_select.set(' ')
 
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
@@ -739,7 +739,7 @@ def exclude_msg() -> None:
     detail = ('will not appear in passphrase words, nor appear in '
               'passwords. Multiple characters are treated as a '
               'unit. For example, "es" will exclude "trees", not "eye" '
-              'and "says". Only these symbols are used in "plus 3 characters"'
+              'and "says". Only these symbols are used in "+3 characters"'
               f' and "More likely usable" passwords: {SYMBOLS}'
               " (all other symbols and punctuation are excluded).")
     messagebox.showinfo(title='Excluded from what?', message=msg, detail=detail)
