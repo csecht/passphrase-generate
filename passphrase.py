@@ -22,6 +22,7 @@ Inspired by code from @codehub.py via Instagram.
 import random
 import re
 import sys
+from math import log
 from pathlib import Path
 from string import digits, punctuation, ascii_letters, ascii_uppercase
 
@@ -34,17 +35,33 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.3.8'
-SYMBOLS = "~!@#$%^&*_-"
+PROGRAM_VER = '0.4.0'
+SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
+# WIN_SYMBOLS ~!@#$%^&*_-+=`|\(){}[]:;"'<>,.?/
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
+# Need to confirm that required files are present.
+fnf_msg = ('\n*** Cannot locate either the system dictionary or EFF wordlist\n'
+           'At a minimum, the file eff_large_wordlist.txt should be in '
+           'the working directory.\nThat file can is included with:\n'
+           'https://github.com/csecht/general_utilities\n'
+           'Exiting now...')
+if MY_OS in 'lin, dar':
+    if Path.is_file(SYSWORDS_PATH) is False:
+        if Path.is_file(EFFWORDS_PATH) is False:
+            print(fnf_msg)
+            sys.exit(1)
+elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
+    print(fnf_msg)
+    sys.exit(1)
+
 
 class Generator:
     """
-    A GUI window to specify length of passphrases and passwords.
+    A GUI to specify lengths of reported passphrases and passwords.
     """
     def __init__(self, master):
         """Window layout and default values are set up here.
@@ -86,7 +103,7 @@ class Generator:
         self.result_frame1 = tk.Frame()
         self.result_frame2 = tk.Frame()
 
-        self.length_header =     tk.Label()
+        self.l_and_h_header =     tk.Label()
         self.passphrase_header = tk.Label()
         self.any_describe =      tk.Label()
         self.any_lc_describe =   tk.Label()
@@ -96,11 +113,21 @@ class Generator:
         self.length_select =     tk.IntVar()
         self.length_pw_any =     tk.IntVar()
         self.length_pw_select =  tk.IntVar()
+        self.h_any =             tk.IntVar()
+        self.h_lc =              tk.IntVar()
+        self.h_select =          tk.IntVar()
+        self.h_pw_any =          tk.IntVar()
+        self.h_pw_select =       tk.IntVar()
         self.length_any_label =  tk.Label(self.result_frame1)
         self.length_lc_label =   tk.Label(self.result_frame1)
         self.length_select_label = tk.Label(self.result_frame1)
         self.length_pw_any_l =   tk.Label(self.result_frame2)
         self.length_pw_select_l = tk.Label(self.result_frame2)
+        self.h_any_label =       tk.Label(self.result_frame1)
+        self.h_lc_label =        tk.Label(self.result_frame1)
+        self.h_select_label =    tk.Label(self.result_frame1)
+        self.h_pw_any_l =        tk.Label(self.result_frame2)
+        self.h_pw_select_l =     tk.Label(self.result_frame2)
         self.phrase_any =        tk.StringVar()
         self.phrase_lc =         tk.StringVar()
         self.phrase_select =     tk.StringVar()
@@ -122,14 +149,30 @@ class Generator:
                                            textvariable=self.pw_any, )
         self.pw_select_display =  tk.Entry(self.result_frame2,
                                            textvariable=self.pw_select)
-        # Variables used in get_words():
+        # First used in get_words():
         self.use_effwords = True
         self.system_words = 'Null'
         self.eff_wordlist = 'None'
         self.eff_list = ['None']
         self.system_list = ['None']
-        self.unused = 'None'
 
+        # First used in make_pass()
+        self.uniq_words = []
+        self.trim_words = []
+        self.eff_words = []
+        self.caps = []
+        self.string1 = []
+        self.string2 = []
+        self.numwords = 0
+        self.numchars = 0
+
+        # First used in set_entropy()
+        self.h_symbol = 0.0
+        self.h_cap = 0.0
+        self.h_digit = 0.0
+        self.h_add3 = 0
+
+        # Now put the widgets in the main window.
         self.setup_window()
 
     def setup_window(self) -> None:
@@ -139,11 +182,11 @@ class Generator:
         :return: A nice looking interactive graphic.
         """
         if MY_OS == 'win':
-            self.master.minsize(820, 360)
-            self.master.maxsize(1200, 360)
+            self.master.minsize(850, 360)
+            self.master.maxsize(1230, 360)
         elif MY_OS in 'lin, dar':
-            self.master.minsize(820, 390)
-            self.master.maxsize(1200, 390)
+            self.master.minsize(850, 390)
+            self.master.maxsize(1230, 390)
 
         self.master.config(bg=self.master_bg)
 
@@ -164,7 +207,7 @@ class Generator:
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="What are passphrases?",
+        help_menu.add_command(label="What's going on here?",
                               command=self.explain)
         help_menu.add_command(label="About", command=about)
 
@@ -196,21 +239,26 @@ class Generator:
         if MY_OS == 'dar':
             self.passphrase_header.config(font=('default', 16))
 
-        self.length_header.config(    text='Length', width=5,
-                                      fg=self.master_fg, bg=self.master_bg)
+        # This header spans two columns, but much easier to align with widgets
+        #  in the results frame if "pad" it with a 1-column string.
+        self.l_and_h_header.config(text=' L       H', width=10,
+                                   fg=self.master_fg, bg=self.master_bg)
 
         # Passphrase results section:
         # Set up OS-specific widgets.
         if MY_OS in 'lin, dar':
             self.any_describe.config(   text="Any words from dictionary",
                                         fg=self.master_fg, bg=self.master_bg)
-            self.any_lc_describe.config(text="... lower case + 3 characters",
+            self.any_lc_describe.config(text="add three & lower case",
                                         fg=self.master_fg, bg=self.master_bg)
-            self.select_describe.config(text="... words of 3 to 8 letters",
+            self.select_describe.config(text="...with words of 3 to 8 letters",
                                         fg=self.master_fg, bg=self.master_bg)
             self.length_select.set(0)
             self.length_select_label.config(textvariable=self.length_select,
                                             width=3)
+            self.h_select.set(0)
+            self.h_select_label.config(     textvariable=self.h_select,
+                                            width=4)
             self.phrase_select.set(self.stubresult)
             self.phrase_sel_display.config(width=60, font=self.display_font,
                                            fg=self.stubresult_fg,
@@ -237,6 +285,14 @@ class Generator:
         self.length_lc_label.config(  textvariable=self.length_lc, width=3)
         self.length_pw_any_l.config(  textvariable=self.length_pw_any, width=3)
         self.length_pw_select_l.config(textvariable=self.length_pw_select, width=3)
+        self.h_any.set(0)
+        self.h_lc.set(0)
+        self.h_pw_any.set(0)
+        self.h_pw_select.set(0)
+        self.h_any_label.config( textvariable=self.h_any, width=4)
+        self.h_lc_label.config(  textvariable=self.h_lc, width=4)
+        self.h_pw_any_l.config(  textvariable=self.h_pw_any, width=4)
+        self.h_pw_select_l.config(textvariable=self.h_pw_select, width=4)
         self.phrase_any.set(self.stubresult)
         self.phrase_lc.set(self.stubresult)
         self.phrase_any_display.config(width=60, font=self.display_font,
@@ -273,31 +329,35 @@ class Generator:
         #### GRID all widgets: ############# sorted by row number #############
         # Passphrase widgets grid:
         self.eff_chk.grid(           column=1, row=0, pady=(10, 5), padx=5,
-                                     sticky=tk.W)
+                                     columnspan=2, sticky=tk.W)
 
         self.passphrase_header.grid( column=0, row=0, pady=(10, 5), padx=5,
                                      sticky=tk.W)
-        self.length_header.grid(     column=1, row=1, padx=5, sticky=tk.W)
+        self.l_and_h_header.grid(column=1, row=1, padx=0, sticky=tk.W)
+        # self.h_header.grid(          column=2, row=1, padx=5, sticky=tk.W)
 
         self.numwords_label.grid(    column=0, row=1, padx=5, sticky=tk.W)
         self.numwords_entry.grid(    column=0, row=1, padx=(5, 100),
                                      sticky=tk.E)
 
         self.result_frame1.grid(     column=1, row=2, padx=(5, 10),
-                                     columnspan=2, rowspan=3, sticky=tk.EW)
+                                     columnspan=3, rowspan=3, sticky=tk.EW)
 
         # Result _displays will maintain equal widths with sticky=tk.EW.
         self.any_describe.grid(      column=0, row=2, pady=(5, 0), sticky=tk.E)
         self.length_any_label.grid(  column=1, row=2, pady=(5, 3), padx=(4, 0))
-        self.phrase_any_display.grid(column=2, row=2, pady=(5, 3), padx=5,
+        self.h_any_label.grid(       column=2, row=2, pady=(5, 3), padx=(4, 0))
+        self.phrase_any_display.grid(column=3, row=2, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
         self.any_lc_describe.grid(   column=0, row=3, pady=(0, 0), sticky=tk.E)
         self.length_lc_label.grid(   column=1, row=3, pady=(5, 3), padx=(4, 0))
-        self.phrase_lc_display.grid( column=2, row=3, pady=(5, 3), padx=5,
+        self.h_lc_label.grid(        column=2, row=3, pady=(5, 3), padx=(4, 0))
+        self.phrase_lc_display.grid( column=3, row=3, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
         self.select_describe.grid(   column=0, row=4, pady=(0, 3), sticky=tk.E)
         self.length_select_label.grid(column=1, row=4, pady=3, padx=(4, 0))
-        self.phrase_sel_display.grid(column=2, row=4, pady=6, padx=5, ipadx=5,
+        self.h_select_label.grid(    column=2, row=4, pady=3, padx=(4, 0))
+        self.phrase_sel_display.grid(column=3, row=4, pady=6, padx=5, ipadx=5,
                                      sticky=tk.EW)
         # Don't show system dictionary or EFF widgets on Windows.
         # Need to adjust padding to keep row headers aligned with results b/c
@@ -307,11 +367,12 @@ class Generator:
             self.any_describe.grid(column=0, row=2, pady=(6, 0), sticky=tk.E)
             self.select_describe.grid_forget()
             self.length_select_label.grid_forget()
+            self.h_select_label.grid_forget()
             self.phrase_sel_display.grid_forget()
 
         # Need to pad and span to center the button between results frames.
-        self.generate_btn.grid(      column=2, row=5, pady=(10, 5),
-                                     padx=(0, 140), sticky=tk.W,
+        self.generate_btn.grid(      column=3, row=5, pady=(10, 5),
+                                     padx=(0, 200), sticky=tk.W,
                                      rowspan=2)
 
         # Password widgets grid:
@@ -322,18 +383,19 @@ class Generator:
                                      sticky=tk.E)
 
         self.result_frame2.grid(     column=1, row=7, padx=(5, 10),
-                                     columnspan=2,
-                                     rowspan=2, sticky=tk.EW)
+                                     columnspan=3, rowspan=2, sticky=tk.EW)
 
         self.pw_any_describe.grid(   column=0, row=7, pady=(6, 0),
                                      sticky=tk.E)
         self.length_pw_any_l.grid(   column=1, row=7, pady=(6, 3), padx=(4, 0))
-        self.pw_any_display.grid(    column=2, row=7, pady=(6, 3), padx=5,
+        self.h_pw_any_l.grid(        column=2, row=7, pady=(6, 3), padx=(4, 0))
+        self.pw_any_display.grid(    column=3, row=7, pady=(6, 3), padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
         self.pw_select_describe.grid(column=0, row=8, pady=(0, 6), padx=(5, 0),
                                      sticky=tk.E)
         self.length_pw_select_l.grid(column=1, row=8, pady=3, padx=(4, 0))
-        self.pw_select_display.grid( column=2, row=8, pady=6, padx=5,
+        self.h_pw_select_l.grid(     column=2, row=8, pady=3, padx=(4, 0))
+        self.pw_select_display.grid( column=3, row=8, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
         self.exclude_label.grid(     column=0, row=9, pady=(20, 5), padx=5,
@@ -345,25 +407,8 @@ class Generator:
 
     def get_words(self) -> None:
         """
-        Check which word files are available; populate lists.
+        Populate lists with words to randomize with make_pass().
         """
-        # Need to first confirm that required files are present.
-        fnf_msg = (
-            '\n*** Cannot locate either the system dictionary or EFF wordlist\n'
-            'At a minimum, the file eff_large_wordlist.txt should be in '
-            'the working directory.\nThat file can is included with:\n'
-            'https://github.com/csecht/general_utilities\n'
-            'Exiting now...')
-        if MY_OS in 'lin, dar':
-            if Path.is_file(SYSWORDS_PATH) is False and \
-                    Path.is_file(EFFWORDS_PATH) is False:
-                print(fnf_msg)
-                sys.exit(1)
-        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
-            print(fnf_msg)
-            sys.exit(1)
-
-        # Need to populate lists with words to randomize with make_pass().
         if MY_OS == 'win':
             self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
 
@@ -397,7 +442,7 @@ class Generator:
         self.eff_list = self.eff_wordlist.split()
 
     def make_pass(self) -> None:
-        """Generate various forms of passphrases and passwords.
+        """Provide pass-string results each time Generate! is evoked.
         """
         # Need different passphrase descriptions for sys dict and EEF list.
         # Initial label texts are for sys. dict. and are set in
@@ -407,9 +452,9 @@ class Generator:
             if self.eff.get() is False:
                 self.any_describe.config(   text="Any words from dictionary",
                                             fg=self.master_fg, bg=self.master_bg)
-                self.any_lc_describe.config(text="... lower case + 3 characters",
+                self.any_lc_describe.config(text="add three & lower case",
                                             fg=self.master_fg, bg=self.master_bg)
-                self.select_describe.config(text="... words of 3 to 8 letters",
+                self.select_describe.config(text="...with words of 3 to 8 letters",
                                             fg=self.master_fg, bg=self.master_bg)
             elif self.eff.get() is True:
                 self.any_describe.config(   text="Any words from EFF wordlist",
@@ -436,40 +481,42 @@ class Generator:
 
         # Need to remove words having the possessive form (English dictionary).
         # Remove hyphenated words (~4) from EFF wordlist (are not alpha).
-        uniq_words = \
+        self.uniq_words = \
             [word for word in self.system_list if re.search(r"'s", word) is None]
-        trim_words = [word for word in uniq_words if 8 >= len(word) >= 3]
-        eff_words = [word for word in self.eff_list if word.isalpha()]
+        self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
+        self.eff_words = [word for word in self.eff_list if word.isalpha()]
 
-        caps = ascii_uppercase
-        string1 = ascii_letters + digits + punctuation
-        string2 = ascii_letters + digits + SYMBOLS
+        self.caps = ascii_uppercase
+        self.string1 = ascii_letters + digits + punctuation
+        self.string2 = ascii_letters + digits + SYMBOLS
 
         # Filter out words and strings containing characters to be excluded.
-        self.unused = self.exclude_entry.get()
-        if len(self.unused) != 0:
-            uniq_words = [word for word in uniq_words if self.unused not in word]
-            trim_words = [word for word in trim_words if self.unused not in word]
-            eff_words = [word for word in eff_words if self.unused not in word]
-            caps = [letter for letter in caps if self.unused not in letter]
-            string1 = [char for char in string1 if self.unused not in char]
-            string2 = [char for char in string2 if self.unused not in char]
+        unused = self.exclude_entry.get().strip()
+        if len(unused) != 0:
+            self.uniq_words = [word for word in self.uniq_words if unused not in word]
+            self.trim_words = [word for word in self.trim_words if unused not in word]
+            self.eff_words = [word for word in self.eff_words if unused not in word]
+            self.caps = [letter for letter in self.caps if unused not in letter]
+            self.string1 = [char for char in self.string1 if unused not in char]
+            self.string2 = [char for char in self.string2 if unused not in char]
 
         # very_random = random.Random(time.time())  # Use epoch timestamp seed.
         # very_random = random.SystemRandom()   # Use current system's random.
         very_random = random.Random(random.random())
+        self.numwords = int(self.numwords_entry.get().strip())
+        self.numchars = int(self.numchars_entry.get().strip())
 
         # Select user-specified number of words.
-        allwords = "".join(very_random.choice(uniq_words) for
-                           _ in range(int(self.numwords_entry.get())))
-        somewords = "".join(very_random.choice(trim_words) for
-                            _ in range(int(self.numwords_entry.get())))
-        effwords = "".join(very_random.choice(eff_words) for
-                           _ in range(int(self.numwords_entry.get())))
+        allwords = "".join(very_random.choice(self.uniq_words) for
+                           _ in range(self.numwords))
+        somewords = "".join(very_random.choice(self.trim_words) for
+                            _ in range(self.numwords))
+        effwords = "".join(very_random.choice(self.eff_words) for
+                           _ in range(self.numwords))
 
         # Select symbols to append, as a convenience; is not user-specified.
         addsymbol = "".join(very_random.choice(SYMBOLS) for _ in range(1))
-        addcaps = "".join(very_random.choice(caps) for _ in range(1))
+        addcaps = "".join(very_random.choice(self.caps) for _ in range(1))
         addnum = "".join(very_random.choice(digits) for _ in range(1))
 
         # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
@@ -487,10 +534,10 @@ class Generator:
         # Build the pass-strings.
         passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
         passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
-        password1 = "".join(very_random.choice(string1) for
-                            _ in range(int(self.numchars_entry.get())))
-        password2 = "".join(very_random.choice(string2) for
-                            _ in range(int(self.numchars_entry.get())))
+        password1 = "".join(very_random.choice(self.string1) for
+                            _ in range(self.numchars))
+        password2 = "".join(very_random.choice(self.string2) for
+                            _ in range(self.numchars))
 
         # Need to reduce font size of long pass-string length to keep
         # window on screen, then reset to default font size when pass-string
@@ -550,6 +597,73 @@ class Generator:
         self.pw_any_display.config(fg=self.pass_fg)
         self.pw_select_display.config(fg=self.pass_fg)
 
+        # Finally, fill in H values for each pass-string.
+        self.set_entropy()
+
+    def set_entropy(self):
+        """Calculate and set values for information entropy, H.
+        """
+        # https://en.wikipedia.org/wiki/Password_strength
+        # We use only 1 character each from each set of symbols, numbers, caps.
+        #  so only need P for selecting one from a set to calc H.
+        # https://en.wikipedia.org/wiki/Entropy_(information_theory)
+        self.h_symbol =  -log(1/len(SYMBOLS), 2)
+        self.h_cap = -log(1/len(self.caps), 2)
+        self.h_digit = -log(1/len(digits), 2)
+        self.h_add3 = int(self.h_symbol + self.h_cap + self.h_digit)  # H ~= 12
+
+        # Calculate information entropy, H = L * log N / log 2, where N is the
+        # number of possible symbols(words) and L is the number of symbols or
+        # words in the pass-string. The log can be any base, just needs to be
+        # same in numerator and denominator.
+        self.h_any.set(int(self.numwords * log(len(self.uniq_words)) / log(2)))
+        self.h_lc.set(self.h_any.get() + self.h_add3)
+        h_select = int(self.numwords * log(len(self.trim_words)) / log(2))
+        self.h_select.set(h_select + self.h_add3)
+        self.h_pw_any.set(int(self.numchars * log(len(self.string1)) / log(2)))
+        self.h_pw_select.set(int(self.numchars * log(len(self.string2)) / log(2)))
+
+        # Note that N is already corrected for excluded words in make_pass().
+        # Note that the label names for 'any' and 'lc' are recycled between
+        #  system dict and eff wordlist options. In retrospect, not smart.
+        if MY_OS in 'lin, dar' and self.eff.get() is True:
+            self.h_any.set(
+                int(self.numwords * log(len(self.eff_words)) / log(2)))
+            h_eff = int(self.numwords * log(len(self.eff_words)) / log(2))
+            self.h_lc.set(h_eff + self.h_add3)
+            self.h_select.set(' ')
+        elif MY_OS == 'win' or self.system_words == 'Null':
+            self.h_any.set(
+                int(self.numwords * log(len(self.eff_words)) / log(2)))
+            self.h_lc.set(self.h_lc.get() + self.h_add3)
+            self.h_select.set(' ')
+
+        # Need to correct H for excluded characters in passwords (lower the N).
+        # This accurately corrects H only when 1 char is excluded.
+        # There are too many combinations of multi-char strings to easily code.
+        # -1 is good approx. b/c of v. low P of existence of multi-char strings,
+        #   so 1 is the maximum likely reduction of N. (true?)
+        # Cannot use string1 and string2 from make_pass() b/c those lists
+        #  are shortened by the excluded character.
+        #  We need full sets of possible characters for N here.
+        characters_all = ascii_letters + digits + punctuation
+        characters_some = ascii_letters + digits + SYMBOLS
+        exclude = self.exclude_entry.get().strip()
+        if len(exclude) != 0:
+            if exclude in SYMBOLS:
+                self.h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
+            if exclude in self.caps:
+                self.h_cap = -log(1 / (len(self.caps) - 1), 2)
+            if exclude in digits:
+                self.h_digit = -log(1 / (len(digits) - 1), 2)
+            self.h_add3 = int(self.h_symbol + self.h_cap + self.h_digit)
+            if exclude in characters_all:
+                self.h_pw_any.set(
+                    int(self.numchars * log(len(characters_all) - 1) / log(2)))
+            if exclude in characters_some:
+                self.h_pw_select.set(
+                    int(self.numchars * log(len(characters_some) - 1) / log(2)))
+
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
         """
@@ -559,9 +673,9 @@ class Generator:
         trimmed = [word for word in unique if 8 >= len(word) >= 3]
 
         # Need to redefine lists for the Windows system dictionary b/c it is
-        # not accessible. The initial value of self.system_words is
-        # 'None', which gives a list length of 1 when the length should be
-        # 0; but can't set the initial list value to null, [].
+        # not accessible. The initial value of self.system_words from __init__
+        # is 'None', which gives a list length of 1 when the length should be
+        # 0; but can't set the __init__ value to null, [], b/c errors arise.
         if MY_OS == 'win':
             word_num = unique = trimmed = []
 
@@ -572,35 +686,44 @@ easier to remember than a shorter or complicated password.
 For more information on passphrases, see, for example, a discussion of
 word lists and word selection at the Electronic Frontier Foundation:
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases 
-See also: https://explainxkcd.com/wiki/index.php/936:_Password_Strength
 
-The word list from Electronic Frontier Foundation (EFF) used here,
+The word list from Electronic Frontier Foundation (EFF) that is used here,
 https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not use
-proper names or diacritics. Its words are generally shorter and easier to 
-spell. Although the EFF list contains 7776 selected words, only 7772 are used 
-here by excluding four hyphenated words.
+proper names or diacritics. Its words (English) are generally shorter and
+easier to spell. Although the EFF list contains 7776 selected words,
+only 7772 are used here by excluding hyphenated words.
 
-passphrase.py users have an option to use the EFF long wordlist instead
-of the default system dictionary. Windows users, however, can use only
-the EFF list. Your system dictionary provides:
+Users have an option to use the EFF wordlist instead of the default system
+dictionary. Windows users, however, by default use only the EFF list. 
+Your system dictionary provides:
 """
 f"    {len(word_num)} words of any length, of which...\n"
-f"    {len(unique)} are unique (not possessive forms of nouns) and... \n"
-f"    {len(trimmed)} of unique words have 3 to 8 letters."
+f"    {len(unique)} are unique (no possessive forms of nouns) and... \n"
+f"    {len(trimmed)} of unique words that have 3 to 8 letters."
 """
 Only the unique and size-limited word subsets are used for passphrases if
 the EFF word list option is not selected. Passphrases built from the system
 dictionary may include proper names and diacritics. 
 
-To accommodate password requirements of some sites and applications, a 
+To accommodate password policies of some web sites and applications, a 
 choice is provided that adds three characters : 1 symbol, 1 number, 
 and 1 upper case letter. Symbols used are restricted to these: """
-f'{SYMBOLS}\n\nThere is an option to exclude any character or string of '
-f'characters\nfrom your passphrase words and passwords.\n'
+f'{SYMBOLS}\n\n'
+"""There is an option to exclude any character or string of characters
+from your passphrase words and passwords (together called pass-strings).
+In the results box, L is the character length of each pass-string.
+
+H, as used here, is for comparing relative pass-string strengths. Higher
+is better. H is actually the information entropy (Shannon entropy) value
+and is equivalent to bits of entropy. For more information see: 
+https://explainxkcd.com/wiki/index.php/936:_Password_Strength 
+https://en.wikipedia.org/wiki/Password_strength
+https://en.wikipedia.org/wiki/Entropy_(information_theory)
+"""
 )
 
         infowin = tk.Toplevel()
-        infowin.title('A word about passphrases')
+        infowin.title('A word about words and characters')
         num_lines = info.count('\n')
         infotxt = tk.Text(infowin, width=80, height=num_lines + 2,
                           background='SkyBlue4', foreground='grey98',
@@ -630,7 +753,7 @@ def about() -> None:
     """
     # msg separators use em dashes.
     boilerplate = ("""
-passphrase.py and its standalones generate passphrases and passwords.
+passphrase.py and its stand-alones generate passphrases and passwords.
 Download the most recent version from: 
 https://github.com/csecht/passphrase-generate
 
