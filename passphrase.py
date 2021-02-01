@@ -707,11 +707,11 @@ dictionary may include proper names and diacritics.
 To accommodate password policies of some web sites and applications, a 
 choice is provided that adds three characters : 1 symbol, 1 number, 
 and 1 upper case letter. Symbols used are restricted to these: """
-f'{SYMBOLS}\n\n'
+f'\n{SYMBOLS}\n\n'
 """There is an option to exclude any character or string of characters
 from your passphrase words and passwords (together called pass-strings).
-In the results box, L is the character length of each pass-string.
 
+In the results box, L is the character length of each pass-string.
 H, as used here, is for comparing relative pass-string strengths. Higher
 is better. H is actually the information entropy (Shannon entropy) value
 and is equivalent to bits of entropy. For more information see: 
