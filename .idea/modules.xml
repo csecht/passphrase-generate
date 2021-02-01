@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/general_utilities.iml" filepath="$PROJECT_DIR$/.idea/general_utilities.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/passphrase-generate.iml" filepath="$PROJECT_DIR$/.idea/passphrase-generate.iml" />
     </modules>
   </component>
 </project>
