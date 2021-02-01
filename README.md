@@ -15,7 +15,7 @@ Developed with Python 3.8-3.9, under Ubuntu 20.04, Windows 10, and MacOS 10.13.6
 Running from the command line requires Python 3.6 or later, preferably 3.7 or later. A recent tkinter graphics module of Python is required, which is included in Python 3.7+; earlier versions will require installation of Tk/Tcl. Recent Python packages can be downloaded from https://www.python.org/downloads/.
 
 ## Usage
-To get started, download the repository package by clicking on the Code download button and select the Download ZIP option, or use git commands if you are comfortable with that. Unzipping (extracting) the zip file will create a passphrases-master directory. What to do with individual files is outlined below.
+To get started, download the repository package by clicking on the Code download button and select the Download ZIP option, or use git commands if you are comfortable with that. Unzipping (extracting) the zip file will create a passphrases-master directory. Once the program is launched, click Generate! to make passphrases and passwords. Results can be copied with the standard keyboard command. Entry boxes control passphrase and password lengths of the user's choosing. Usage details and what to do with individual files on different operating systems are outlined below.
 
 ### GUI Implementations
 #### passphrase.py

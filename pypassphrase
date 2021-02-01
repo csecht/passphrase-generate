@@ -18,7 +18,8 @@ from pathlib import Path
 def make_pass():
     """Generate options for passwords and phrases in various forms.
     """
-    secure_random = random.SystemRandom()
+    # secure_random = random.SystemRandom()
+    secure_random = random.Random(random.random())
 
     english_dictionary = Path('/usr/share/dict/words').read_text()
     word_list = english_dictionary.split()
