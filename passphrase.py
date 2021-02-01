@@ -655,13 +655,12 @@ class Generator:
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             self.h_any.set(
                 int(self.numwords * log(len(self.eff_words)) / log(2)))
-            h_eff = int(self.numwords * log(len(self.eff_words)) / log(2))
-            self.h_lc.set(h_eff + self.h_add3)
+            self.h_lc.set(self.h_any.get() + self.h_add3)
             self.h_select.set(' ')
         elif MY_OS == 'win' or self.system_words == 'Null':
             self.h_any.set(
                 int(self.numwords * log(len(self.eff_words)) / log(2)))
-            self.h_lc.set(self.h_lc.get() + self.h_add3)
+            self.h_lc.set(self.h_any.get() + self.h_add3)
             self.h_select.set(' ')
 
     def explain(self) -> None:
