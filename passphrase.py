@@ -683,35 +683,36 @@ class Generator:
 """A passphrase is a random string of words that can be more secure and
 easier to remember than a shorter or complicated password.
 For more information on passphrases, see, for example, a discussion of
-word lists and word selection at the Electronic Frontier Foundation:
+word lists and selection at the Electronic Frontier Foundation (EFF):
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases 
 
-The word list from Electronic Frontier Foundation (EFF) that is used here,
-https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt, does not use
-proper names or diacritics. Its words (English) are generally shorter and
-easier to spell. Although the EFF list contains 7776 selected words,
-only 7772 are used here by excluding hyphenated words.
-
-Users have an option to use the EFF wordlist instead of the default system
-dictionary. Windows users, however, by default use only the EFF list. 
-Your system dictionary provides:
+While MacOS and Linux users have an option to use an EFF wordlist, by 
+default the system dictionary is used. Windows users, however, by default
+can use only the EFF wordlist. Your system dictionary provides:
 """
 f"    {len(word_num)} words of any length, of which...\n"
 f"    {len(unique)} are unique (no possessive forms of nouns) and... \n"
 f"    {len(trimmed)} of unique words that have 3 to 8 letters."
 """
-Only the unique and size-limited word subsets are used for passphrases if
-the EFF word list option is not selected. Passphrases built from the system
-dictionary may include proper names and diacritics. 
+Only the unique and length-limited word subsets are used for passphrases
+if the EFF word list option is not selected. Passphrases built from the
+system dictionary may include proper names and diacritics.
+
+Proper names or diacritics are not in EFF large word list used here,
+https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt. Its words 
+(English) are generally shorter and easier to remember than those from a
+system dictionary. Although the EFF list contains 7776 selected words,
+only 7772 are used here because hyphenated word are excluded.
 
 To accommodate password policies of some web sites and applications, a 
 choice is provided that adds three characters : 1 symbol, 1 number, 
 and 1 upper case letter. Symbols used are restricted to these: """
-f'\n{SYMBOLS}\n\n'
-"""There is an option to exclude any character or string of characters
+f'\n{SYMBOLS}\n'
+"""
+There is an option to exclude any character or string of characters
 from your passphrase words and passwords (together called pass-strings).
 
-In the results box, L is the character length of each pass-string.
+In the results boxes, L is the character length of each pass-string.
 H, as used here, is for comparing relative pass-string strengths. Higher
 is better; each increase of 1 doubles the relative strength. H is 
 actually the information entropy (Shannon entropy) value and is 
