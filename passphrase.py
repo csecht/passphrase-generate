@@ -491,7 +491,7 @@ class Generator:
         self.string2 = ascii_letters + digits + SYMBOLS
 
         # Filter out words and strings containing characters to be excluded.
-        unused = self.exclude_entry.get().strip()
+        unused = self.exclude_entry.get().strip(' ')
         if len(unused) != 0:
             self.uniq_words = [word for word in self.uniq_words if unused not in word]
             self.trim_words = [word for word in self.trim_words if unused not in word]
@@ -503,8 +503,8 @@ class Generator:
         # very_random = random.Random(time.time())  # Use epoch timestamp seed.
         # very_random = random.SystemRandom()   # Use current system's random.
         very_random = random.Random(random.random())
-        self.numwords = int(self.numwords_entry.get().strip())
-        self.numchars = int(self.numchars_entry.get().strip())
+        self.numwords = int(self.numwords_entry.get().strip(' '))
+        self.numchars = int(self.numchars_entry.get().strip(' '))
 
         # Select user-specified number of words.
         allwords = "".join(very_random.choice(self.uniq_words) for
@@ -622,7 +622,7 @@ class Generator:
         #  We need full sets of possible characters for N here.
         characters_all = ascii_letters + digits + punctuation
         characters_some = ascii_letters + digits + SYMBOLS
-        exclude = self.exclude_entry.get().strip()
+        exclude = self.exclude_entry.get().strip(' ')
         if len(exclude) != 0:
             if exclude in SYMBOLS:
                 self.h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
