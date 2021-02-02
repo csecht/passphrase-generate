@@ -87,7 +87,7 @@ class Generator:
         # Variables used in setup_window(), in general order of appearance:
         # EFF checkbutton is not used in Windows b/c EFF words are default.
         self.eff =        tk.BooleanVar()
-        self.eff_chk =    tk.Checkbutton()
+        self.eff_checkbtn =    tk.Checkbutton()
 
         self.numwords_label = tk.Label()
         self.numwords_entry = tk.Entry()
@@ -214,13 +214,13 @@ class Generator:
 
         # Configure and set initial values of user entry and control widgets:
         if MY_OS in 'lin, dar':
-            self.eff_chk.config(text='Use EFF word list ',
-                                variable=self.eff,
-                                fg=self.master_fg, bg=self.master_bg,
-                                activebackground='grey80',
-                                selectcolor=self.frame_bg)
+            self.eff_checkbtn.config(text='Use EFF word list ',
+                                     variable=self.eff,
+                                     fg=self.master_fg, bg=self.master_bg,
+                                     activebackground='grey80',
+                                     selectcolor=self.frame_bg)
         if self.use_effwords is False:
-            self.eff_chk.config(state='disabled')
+            self.eff_checkbtn.config(state='disabled')
 
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=self.pass_bg, bg=self.master_bg)
@@ -329,7 +329,7 @@ class Generator:
 
         #### GRID all widgets: ############# sorted by row number #############
         # Passphrase widgets grid:
-        self.eff_chk.grid(           column=1, row=0, pady=(10, 5), padx=5,
+        self.eff_checkbtn.grid(      column=1, row=0, pady=(10, 5), padx=5,
                                      columnspan=2, sticky=tk.W)
 
         self.passphrase_header.grid( column=0, row=0, pady=(10, 5), padx=5,
@@ -363,7 +363,7 @@ class Generator:
         # Need to adjust padding to keep row headers aligned with results b/c
         #  of deletion of those widgets. (?)
         if MY_OS == 'win':
-            self.eff_chk.grid_forget()
+            self.eff_checkbtn.grid_forget()
             self.any_describe.grid(column=0, row=2, pady=(6, 0), sticky=tk.E)
             self.select_describe.grid_forget()
             self.length_some_label.grid_forget()
@@ -419,7 +419,7 @@ class Generator:
                 notice = ('*** NOTICE: The system dictionary cannot be found.\n'
                           'Using EFF word list ... ***')
                 self.system_words = 'Null'
-                self.eff_chk.config(state='disabled')
+                self.eff_checkbtn.config(state='disabled')
                 print(notice)
                 messagebox.showinfo(title='File not found',
                                     detail=notice)
@@ -433,7 +433,7 @@ class Generator:
                     'https://github.com/csecht/general_utilities\n'
                     'Using system dictionary... ***\n'
                 )
-                self.eff_chk.config(state='disabled')
+                self.eff_checkbtn.config(state='disabled')
                 print(notice)
                 messagebox.showinfo(title='File not found',
                                     detail=notice)
@@ -529,7 +529,7 @@ class Generator:
             allwords = effwords
             somewords = effwords
             if MY_OS in 'lin, dar':
-                self.eff_chk.config(state='disabled')
+                self.eff_checkbtn.config(state='disabled')
 
         # Build the pass-strings.
         passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
