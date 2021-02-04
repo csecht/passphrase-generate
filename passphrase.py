@@ -20,7 +20,6 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 import random
-# import re
 import sys
 from math import log
 from pathlib import Path
@@ -37,7 +36,6 @@ except (ImportError, ModuleNotFoundError) as error:
 
 PROGRAM_VER = '0.4.0'
 SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
-# WIN_SYMBOLS ~!@#$%^&*_-+=`|\(){}[]:;"'<>,.?/
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
@@ -643,7 +641,7 @@ class Generator:
         # same in numerator and denominator.
         self.h_any.set(int(self.numwords * log(len(self.uniq_words)) / log(2)))
         self.h_lc.set(self.h_any.get() + self.h_add3)
-        h_some= int(self.numwords * log(len(self.trim_words)) / log(2))
+        h_some = int(self.numwords * log(len(self.trim_words)) / log(2))
         self.h_some.set(h_some + self.h_add3)
         self.h_pw_any.set(int(self.numchars * log(len(self.string1)) / log(2)))
         self.h_pw_some.set(int(self.numchars * log(len(self.string2)) / log(2)))
