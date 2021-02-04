@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 import random
-import re
+# import re
 import sys
 from math import log
 from pathlib import Path
@@ -479,10 +479,9 @@ class Generator:
             self.numchars_entry.delete(0, 'end')
             self.numchars_entry.insert(0, '0')
 
-        # Need to remove words having the possessive form (English dictionary).
-        # Remove hyphenated words (~4) from EFF wordlist (are not alpha).
-        self.uniq_words = \
-            [word for word in self.system_list if re.search(r"'s", word) is None]
+        # Need to remove words having the possessive form ('s, English).
+        # Remove hyphenated words (4) from EFF wordlist (are not alpha).
+        self.uniq_words = [word for word in self.system_list if word.isalpha()]
         self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
         self.eff_words = [word for word in self.eff_list if word.isalpha()]
 
@@ -668,7 +667,7 @@ class Generator:
         """
         # These variables are only valid for Linux and MacOS system dictionary.
         word_num = self.system_words.split()
-        unique = [word for word in word_num if re.search(r"'s", word) is None]
+        unique = [word for word in self.system_list if word.isalpha()]
         trimmed = [word for word in unique if 8 >= len(word) >= 3]
 
         # Need to redefine lists for the Windows system dictionary b/c it is
