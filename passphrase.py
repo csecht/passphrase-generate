@@ -45,20 +45,23 @@ MY_OS = sys.platform[:3]
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
-# Need to confirm that required files are present.
-fnf_msg = ('\n*** Cannot locate either the system dictionary or EFF wordlist\n'
-           'At a minimum, the file eff_large_wordlist.txt should be in '
-           'the master directory.\nThat file can is included with:\n'
-           f'{PROJ_URL}\n'
-           'Exiting now...')
-if MY_OS in 'lin, dar':
-    if Path.is_file(SYSWORDS_PATH) is False:
-        if Path.is_file(EFFWORDS_PATH) is False:
-            print(fnf_msg)
-            sys.exit(1)
-elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
-    print(fnf_msg)
-    sys.exit(1)
+
+def file_check() -> None:
+    """Confirm that required files are present, exit if not.
+    """
+    fnf_msg = ('\n*** Cannot locate either the system dictionary or EFF wordlist\n'
+               'At a minimum, the file eff_large_wordlist.txt should be in '
+               'the master directory.\nThat file can is included with:\n'
+               f'{PROJ_URL}\n'
+               'Exiting now...')
+    if MY_OS in 'lin, dar':
+        if Path.is_file(SYSWORDS_PATH) is False:
+            if Path.is_file(EFFWORDS_PATH) is False:
+                print(fnf_msg)
+                sys.exit(1)
+    elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
+        print(fnf_msg)
+        sys.exit(1)
 
 
 class Generator:
@@ -802,7 +805,7 @@ def quit_gui() -> None:
 
 
 if __name__ == "__main__":
-    # os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    file_check()
     root = tk.Tk()
     root.title("Passphrase Generator")
     Generator(root).get_words()
