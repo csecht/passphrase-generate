@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.1'
+__version__ = '0.4.2'
 
 import random
 import sys
@@ -64,30 +64,17 @@ def file_check() -> None:
         sys.exit(1)
 
 
-class Generator:
+class PassGenerator:
     """
     A GUI to specify lengths of reported passphrases and passwords.
     """
     def __init__(self, master):
-        """Window layout and default values are set up here.
+        """Window widgets and default values are set up here.
         """
         self.master = master
         self.master.bind("<Escape>", lambda q: quit_gui())
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.make_pass())
-
-        self.master_bg = 'SkyBlue4'  # also used for some labels.
-        self.master_fg = 'LightCyan2'  # foreground for user entry labels
-        self.frame_bg = 'grey40'  # background for data labels and frame
-        self.frame_fg = 'grey90'
-        self.stubresult_fg = 'grey60'
-        self.pass_fg = 'brown4'
-        self.pass_bg = 'khaki2'
-        # Use courier b/c TKFixedFont does not monospace symbol characters.
-        self.display_font = 'Courier', 12
-        self.small_font = 'Courier', 10
-
-        self.stubresult = 'Result can be copied and pasted from keyboard.'
 
         # Variables used in setup_window(), in general order of appearance:
         # EFF checkbutton is not used in Windows b/c EFF words are default.
@@ -175,7 +162,7 @@ class Generator:
 
     def setup_window(self) -> None:
         """
-        Layout the main window and assign starting values to labels.
+        Configure and layout (grid) the main window.
 
         :return: A nice looking interactive graphic.
         """
@@ -186,13 +173,24 @@ class Generator:
             self.master.minsize(850, 390)
             self.master.maxsize(1230, 390)
 
-        # Widget configurations are generally listed as top to bottom of window.
-        self.master.config(bg=self.master_bg)
+        # Use Courier b/c TKFixedFont does not monospace symbol characters.
+        #  also used in config_results().
+        self.display_font = 'Courier', 12
+
+        master_bg = 'SkyBlue4'  # also used for some labels.
+        master_fg = 'LightCyan2'  # foreground for user entry labels
+        frame_bg = 'grey40'  # background for data labels and frame
+        stubresult_fg = 'grey60'
+        pass_bg = 'khaki2'
+        self.pass_fg = 'brown4'  # also used in config_results()
+
+        # Widget configurations are generally listed top to bottom of window.
+        self.master.config(bg=master_bg)
 
         self.result_frame1.config(borderwidth=3, relief='sunken',
-                                  background=self.frame_bg)
+                                  background=frame_bg)
         self.result_frame2.config(borderwidth=3, relief='sunken',
-                                  background=self.frame_bg)
+                                  background=frame_bg)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -211,55 +209,57 @@ class Generator:
         help_menu.add_command(label="About", command=about)
 
         # Configure and set initial values of user entry and control widgets:
+        stubresult = 'Result can be copied and pasted from keyboard.'
+
         if MY_OS in 'lin, dar':
             self.eff_checkbtn.config(text='Use EFF word list ',
                                      variable=self.eff,
-                                     fg=self.master_fg, bg=self.master_bg,
+                                     fg=master_fg, bg=master_bg,
                                      activebackground='grey80',
-                                     selectcolor=self.frame_bg)
+                                     selectcolor=frame_bg)
         if self.use_effwords is False:
             self.eff_checkbtn.config(state='disabled')
 
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
-                                      fg=self.pass_bg, bg=self.master_bg)
+                                      fg=pass_bg, bg=master_bg)
         if MY_OS == 'dar':
             self.passphrase_header.config(font=('default', 16))
 
         # This header spans two columns, but much easier to align with grid
         #  in the results frame if "pad" it across columns with spaces.
         self.l_and_h_header.config(text=' L       H', width=10,
-                                   fg=self.master_fg, bg=self.master_bg)
+                                   fg=master_fg, bg=master_bg)
 
         # Passphrase results section:
         # Set up OS-specific widgets.
         if MY_OS in 'lin, dar':
             self.any_describe.config(   text="Any words from dictionary",
-                                        fg=self.master_fg, bg=self.master_bg)
+                                        fg=master_fg, bg=master_bg)
             self.any_lc_describe.config(text="...+3 characters & lower case",
-                                        fg=self.master_fg, bg=self.master_bg)
+                                        fg=master_fg, bg=master_bg)
             self.select_describe.config(text="...with words of 3 to 8 letters",
-                                        fg=self.master_fg, bg=self.master_bg)
+                                        fg=master_fg, bg=master_bg)
             self.length_some.set(0)
             self.length_some_label.config(textvariable=self.length_some,
                                           width=3)
             self.h_some.set(0)
             self.h_some_label.config(     textvariable=self.h_some,
                                           width=4)
-            self.phrase_some.set(self.stubresult)
+            self.phrase_some.set(stubresult)
             self.phrase_some_display.config(width=60, font=self.display_font,
-                                            fg=self.stubresult_fg,
-                                            bg=self.pass_bg)
+                                            fg=stubresult_fg,
+                                            bg=pass_bg)
         elif MY_OS == 'win':
             self.any_describe.config(   text="Any words from EFF wordlist",
-                                        fg=self.master_fg, bg=self.master_bg)
+                                        fg=master_fg, bg=master_bg)
             self.any_lc_describe.config(text="...add 3 characters",
-                                        fg=self.master_fg, bg=self.master_bg)
+                                        fg=master_fg, bg=master_bg)
             self.select_describe.config(text=" ",
-                                        fg=self.master_fg, bg=self.master_bg)
+                                        fg=master_fg, bg=master_bg)
 
         # Passphrase widgets used by all OS.
         self.numwords_label.config(text='# words',
-                                   fg=self.pass_bg, bg=self.master_bg)
+                                   fg=pass_bg, bg=master_bg)
         self.numwords_entry.config(width=2)
         self.numwords_entry.insert(0, '5')
 
@@ -279,20 +279,20 @@ class Generator:
         self.h_lc_label.config( textvariable=self.h_lc, width=4)
         self.h_pw_any_l.config( textvariable=self.h_pw_any, width=4)
         self.h_pw_some_l.config(textvariable=self.h_pw_some, width=4)
-        self.phrase_any.set(self.stubresult)
-        self.phrase_lc.set(self.stubresult)
+        self.phrase_any.set(stubresult)
+        self.phrase_lc.set(stubresult)
         self.phrase_any_display.config(width=60, font=self.display_font,
-                                       fg=self.stubresult_fg, bg=self.pass_bg)
+                                       fg=stubresult_fg, bg=pass_bg)
         self.phrase_lc_display.config( width=60, font=self.display_font,
-                                       fg=self.stubresult_fg, bg=self.pass_bg)
+                                       fg=stubresult_fg, bg=pass_bg)
 
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
         style = ttk.Style()
         style.map("G.TButton",
                   foreground=[('active', self.pass_fg)],
-                  background=[('pressed', self.frame_bg),
-                              ('active', self.pass_bg)])
+                  background=[('pressed', frame_bg),
+                              ('active', pass_bg)])
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.make_pass)
         self.generate_btn.focus()
@@ -300,30 +300,30 @@ class Generator:
                                    command=exclude_msg)
 
         # Password results section:
-        self.pw_header.config(         text='Passwords', font=('default', 12),
-                                       fg=self.pass_bg, bg=self.master_bg)
+        self.pw_header.config(       text='Passwords', font=('default', 12),
+                                     fg=pass_bg, bg=master_bg)
         if MY_OS == 'dar':
             self.pw_header.config(font=('default', 16))
 
-        self.numchars_label.config(    text='# characters',
-                                       fg=self.pass_bg, bg=self.master_bg)
-        self.numchars_entry.config(    width=3)
+        self.numchars_label.config(  text='# characters',
+                                     fg=pass_bg, bg=master_bg)
+        self.numchars_entry.config(  width=3)
         self.numchars_entry.insert(0, 0)
 
-        self.pw_any_describe.config(   text="Any characters",
-                                       fg=self.master_fg, bg=self.master_bg)
-        self.pw_some_describe.config(  text="More likely usable characters",
-                                       fg=self.master_fg, bg=self.master_bg)
-        self.pw_any.set(self.stubresult)
-        self.pw_some.set(self.stubresult)
-        self.pw_any_display.config(   width=60, font=self.display_font,
-                                      fg=self.stubresult_fg, bg=self.pass_bg)
-        self.pw_some_display.config(  width=60, font=self.display_font,
-                                      fg=self.stubresult_fg, bg=self.pass_bg)
+        self.pw_any_describe.config( text="Any characters",
+                                     fg=master_fg, bg=master_bg)
+        self.pw_some_describe.config(text="More likely usable characters",
+                                     fg=master_fg, bg=master_bg)
+        self.pw_any.set(stubresult)
+        self.pw_some.set(stubresult)
+        self.pw_any_display.config(  width=60, font=self.display_font,
+                                     fg=stubresult_fg, bg=pass_bg)
+        self.pw_some_display.config( width=60, font=self.display_font,
+                                     fg=stubresult_fg, bg=pass_bg)
 
-        self.exclude_label.config(    text='Exclude character(s)',
-                                      fg=self.pass_bg, bg=self.master_bg)
-        self.exclude_entry.config(    width=3)
+        self.exclude_label.config(   text='Exclude character(s)',
+                                     fg=pass_bg, bg=master_bg)
+        self.exclude_entry.config(   width=3)
 
         #### GRID all widgets: ############# sorted by row number #############
         # Passphrase widgets grid:
@@ -455,19 +455,13 @@ class Generator:
         #  b/c clickbutton options may require them to change.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
-                self.any_describe.config(   text="Any words from dictionary",
-                                            fg=self.master_fg, bg=self.master_bg)
-                self.any_lc_describe.config(text="...+3 characters & lower case",
-                                            fg=self.master_fg, bg=self.master_bg)
-                self.select_describe.config(text="...with words of 3 to 8 letters",
-                                            fg=self.master_fg, bg=self.master_bg)
+                self.any_describe.config(   text="Any words from dictionary")
+                self.any_lc_describe.config(text="...+3 characters & lower case")
+                self.select_describe.config(text="...with words of 3 to 8 letters")
             elif self.eff.get() is True:
-                self.any_describe.config(   text="Any words from EFF wordlist",
-                                            fg=self.master_fg, bg=self.master_bg)
-                self.any_lc_describe.config(text="...+3 characters",
-                                            fg=self.master_fg, bg=self.master_bg)
-                self.select_describe.config(text=" ",
-                                            fg=self.master_fg, bg=self.master_bg)
+                self.any_describe.config(   text="Any words from EFF wordlist")
+                self.any_lc_describe.config(text="...+3 characters")
+                self.select_describe.config(text=" ")
                 self.length_some.set(' ')
                 self.phrase_some.set(' ')
 
@@ -573,15 +567,14 @@ class Generator:
         Configure fonts and display widths in results frames.
         :return: None
         """
-
         # Change font colors of results from the initial self.passstub_fg.
         # This is only needed for first call to make_pass(). Make conditional
-        #   with a counter in make_pass or is it okay to 'reconfig' each call.
-        self.phrase_any_display.config(fg=self.pass_fg)
-        self.phrase_lc_display.config(fg=self.pass_fg)
+        #   with a counter in make_pass or is it okay to 'reconfig' each call?
+        self.phrase_any_display.config( fg=self.pass_fg)
+        self.phrase_lc_display.config(  fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
-        self.pw_any_display.config(fg=self.pass_fg)
-        self.pw_some_display.config(fg=self.pass_fg)
+        self.pw_any_display.config(     fg=self.pass_fg)
+        self.pw_some_display.config(    fg=self.pass_fg)
 
         # Need to reduce font size of long pass-string length to keep
         # window on screen, then reset to default font size when pass-string
@@ -589,25 +582,26 @@ class Generator:
         # Adjust width of results entry widgets to THE longest result string.
         # B/c 'width' is character units, not pixels, length is not perfect
         #   fit when font sizes change.
+        small_font = 'Courier', 10
         if len(self.passphrase1) > 60:
-            self.phrase_any_display.config(font=self.small_font,
-                                           width=len(self.passphrase1))
-            self.phrase_lc_display.config(font=self.small_font)
-            self.phrase_some_display.config(font=self.small_font)
+            self.phrase_any_display.config( font=small_font,
+                                            width=len(self.passphrase1))
+            self.phrase_lc_display.config(  font=small_font)
+            self.phrase_some_display.config(font=small_font)
         elif len(self.passphrase1) <= 60:
-            self.phrase_any_display.config(font=self.display_font,
-                                           width=len(self.passphrase1))
-            self.phrase_lc_display.config(font=self.display_font)
+            self.phrase_any_display.config( font=self.display_font,
+                                            width=len(self.passphrase1))
+            self.phrase_lc_display.config(  font=self.display_font)
             self.phrase_some_display.config(font=self.display_font)
 
         if len(self.password1) > 60:
-            self.pw_any_display.config(font=self.small_font,
-                                       width=len(self.password1))
-            self.pw_some_display.config(font=self.small_font,
-                                        width=len(self.password2))
+            self.pw_any_display.config(     font=small_font,
+                                            width=len(self.password1))
+            self.pw_some_display.config(    font=small_font,
+                                            width=len(self.password2))
         elif len(self.password1) <= 60:
-            self.pw_any_display.config(font=self.display_font, width=60)
-            self.pw_some_display.config(font=self.display_font, width=60)
+            self.pw_any_display.config(     font=self.display_font, width=60)
+            self.pw_some_display.config(    font=self.display_font, width=60)
 
     def set_entropy(self, numwords: int, numchars: int, excl_char: str) -> None:
         """Calculate and set values for information entropy, H.
@@ -823,5 +817,5 @@ if __name__ == "__main__":
     file_check()
     root = tk.Tk()
     root.title("Passphrase Generator")
-    Generator(root).get_words()
+    PassGenerator(root).get_words()
     root.mainloop()
