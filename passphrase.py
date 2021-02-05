@@ -34,7 +34,7 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.4.0'
+PROGRAM_VER = '0.4.1'
 SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
