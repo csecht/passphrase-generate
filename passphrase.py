@@ -620,7 +620,7 @@ class Generator:
         #  so only need P for selecting one from a set to calc H.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
         h_symbol =  -log(1/len(SYMBOLS), 2)
-        h_cap = -log(1/len(ascii_uppercase), 2)
+        h_cap = -log(1/len(caps), 2)
         h_digit = -log(1/len(digits), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 12
 
