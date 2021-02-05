@@ -50,8 +50,8 @@ def file_check() -> None:
     """Confirm that required files are present, exit if not.
     """
     fnf_msg = ('\n*** Cannot locate either the system dictionary or EFF wordlist\n'
-               'At a minimum, the file eff_large_wordlist.txt should be in '
-               'the master directory.\nThat file can is included with:\n'
+               f'At a minimum, the file {EFFWORDS_PATH} should be in '
+               'the master directory.\nThat file is in the repository:\n'
                f'{PROJ_URL}\n'
                'Exiting now...')
     if MY_OS in 'lin, dar':
