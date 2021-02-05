@@ -405,7 +405,7 @@ class Generator:
 
     def get_words(self) -> None:
         """
-        Populate lists with words to randomize with make_pass().
+        Populate lists with words to randomize in make_pass().
         """
         if MY_OS == 'win':
             self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
@@ -488,7 +488,7 @@ class Generator:
         self.string2 = ascii_letters + digits + SYMBOLS
 
         # Filter out words and strings containing characters to be excluded.
-        unused = self.exclude_entry.get().strip(' ')
+        unused = str(self.exclude_entry.get().strip(' '))
         if len(unused) != 0:
             self.uniq_words = [word for word in self.uniq_words if unused not in word]
             self.trim_words = [word for word in self.trim_words if unused not in word]
@@ -518,7 +518,7 @@ class Generator:
 
         # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
         #   3rd, if EFF is only choice in Linux/Mac, disable eff checkbutton.
-        #   There is probably clearer way to work these conditions.
+        #   There is probably a clearer way to work these conditions.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             allwords = effwords
             somewords = effwords
@@ -538,7 +538,7 @@ class Generator:
 
         # Need to reduce font size of long pass-string length to keep
         # window on screen, then reset to default font size when pass-string
-        # length is shortened. On Retina & 4K monitors, fonts can be too small.
+        # length is shortened. On MacOS, fonts can be too small.
         # Adjust width of results entry widgets to THE longest result string.
         # B/c 'width' is character units, not pixels, length is not perfect
         #   fit when font sizes change.
@@ -595,10 +595,14 @@ class Generator:
         self.pw_some_display.config(fg=self.pass_fg)
 
         # Finally, fill in H values for each pass-string.
-        self.set_entropy()
+        self.set_entropy(unused, self.string1, self.string2)
 
-    def set_entropy(self):
+    def set_entropy(self, excl_char: str, all_char: list, some_char: list) -> None:
         """Calculate and set values for information entropy, H.
+
+        :param excl_char: The user-defined character(s) to be excluded.
+        :param all_char: All usable password characters, from import string.
+        :param some_char: all_char but with customized SYMBOLS.
         """
         # https://en.wikipedia.org/wiki/Password_strength
         # We use only 1 character each from each set of symbols, numbers, caps.
@@ -617,27 +621,24 @@ class Generator:
         # Cannot use string1 and string2 from make_pass() b/c those lists
         #  are shortened by the excluded character.
         #  We need full sets of possible characters for N here.
-        characters_all = ascii_letters + digits + punctuation
-        characters_some = ascii_letters + digits + SYMBOLS
-        exclude = self.exclude_entry.get().strip(' ')
-        if len(exclude) != 0:
-            if exclude in SYMBOLS:
+        if len(excl_char) != 0:
+            if excl_char in SYMBOLS:
                 self.h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
-            if exclude in self.caps:
+            if excl_char in self.caps:
                 self.h_cap = -log(1 / (len(self.caps) - 1), 2)
-            if exclude in digits:
+            if excl_char in digits:
                 self.h_digit = -log(1 / (len(digits) - 1), 2)
             self.h_add3 = int(self.h_symbol + self.h_cap + self.h_digit)
-            if exclude in characters_all:
+            if excl_char in all_char:
                 self.h_pw_any.set(
-                    int(self.numchars * log(len(characters_all) - 1) / log(2)))
-            if exclude in characters_some:
+                    int(self.numchars * log(len(all_char) - 1) / log(2)))
+            if excl_char in some_char:
                 self.h_pw_some.set(
-                    int(self.numchars * log(len(characters_some) - 1) / log(2)))
+                    int(self.numchars * log(len(some_char) - 1) / log(2)))
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
-        # number of possible symbols(words) and L is the number of symbols or
-        # words in the pass-string. The log can be any base, just needs to be
+        # number of possible characters or words and L is the number of characters
+        # or words in the pass-string. Log can be any base, but needs to be the
         # same in numerator and denominator.
         self.h_any.set(int(self.numwords * log(len(self.uniq_words)) / log(2)))
         self.h_lc.set(self.h_any.get() + self.h_add3)
@@ -646,9 +647,9 @@ class Generator:
         self.h_pw_any.set(int(self.numchars * log(len(self.string1)) / log(2)))
         self.h_pw_some.set(int(self.numchars * log(len(self.string2)) / log(2)))
 
-        # Note that N is already corrected for excluded words in make_pass().
+        # Note that N is already corrected for excluded words from make_pass().
         # Note that the label names for 'any' and 'lc' are recycled between
-        #  system dict and eff wordlist options. In retrospect, not smart.
+        #  system dict and eff wordlist options; in retrospect, not smart.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             self.h_any.set(
                 int(self.numwords * log(len(self.eff_words)) / log(2)))
@@ -723,9 +724,9 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
         num_lines = info.count('\n')
-        infotxt = tk.Text(infowin, width=80, height=num_lines + 2,
-                          background='SkyBlue4', foreground='grey98',
-                          relief='groove', borderwidth=5, padx=10, pady=10)
+        infotxt = tk.Text(infowin, width=75, height=num_lines + 1,
+                          background='dark slate grey', foreground='grey94',
+                          relief='groove', borderwidth=10, padx=20, pady=10)
         infotxt.insert('1.0', info)
         infotxt.pack()
 
