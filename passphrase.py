@@ -38,6 +38,7 @@ except (ImportError, ModuleNotFoundError) as error:
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 # PROGRAM_VER = '0.4.1'
+PROJ_URL = 'https://github.com/csecht/passphrase-generate'
 SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
@@ -48,7 +49,7 @@ EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 fnf_msg = ('\n*** Cannot locate either the system dictionary or EFF wordlist\n'
            'At a minimum, the file eff_large_wordlist.txt should be in '
            'the master directory.\nThat file can is included with:\n'
-           'https://github.com/csecht/passphrase-generate\n'
+           f'{PROJ_URL}\n'
            'Exiting now...')
 if MY_OS in 'lin, dar':
     if Path.is_file(SYSWORDS_PATH) is False:
@@ -431,7 +432,7 @@ class Generator:
                 notice = (
                     '*** EFF large wordlist cannot be found.\n'
                     'That file is included with:\n'
-                    'https://github.com/csecht/passphrase-generate\n'
+                    f'{PROJ_URL}\n'
                     'Using system dictionary... ***\n'
                 )
                 self.eff_checkbtn.config(state='disabled')
@@ -756,9 +757,10 @@ def about() -> None:
     # msg separators use em dashes.
     boilerplate = ("""
 passphrase.py and its stand-alones generate passphrases and passwords.
-Download the most recent version from: 
-https://github.com/csecht/passphrase-generate
-
+Download the most recent version from:
+""" 
+f'{PROJ_URL}'
+"""
 ————————————————————————————————————————————————————————————————————
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
