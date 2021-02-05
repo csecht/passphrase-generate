@@ -19,6 +19,9 @@ Inspired by code from @codehub.py via Instagram.
     You should have received a copy of the GNU General Public License
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
+
+__version__ = '0.4.1'
+
 import random
 import sys
 from math import log
@@ -34,7 +37,7 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROGRAM_VER = '0.4.1'
+# PROGRAM_VER = '0.4.1'
 SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
@@ -44,8 +47,8 @@ EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 # Need to confirm that required files are present.
 fnf_msg = ('\n*** Cannot locate either the system dictionary or EFF wordlist\n'
            'At a minimum, the file eff_large_wordlist.txt should be in '
-           'the working directory.\nThat file can is included with:\n'
-           'https://github.com/csecht/general_utilities\n'
+           'the master directory.\nThat file can is included with:\n'
+           'https://github.com/csecht/passphrase-generate\n'
            'Exiting now...')
 if MY_OS in 'lin, dar':
     if Path.is_file(SYSWORDS_PATH) is False:
@@ -428,7 +431,7 @@ class Generator:
                 notice = (
                     '*** EFF large wordlist cannot be found.\n'
                     'That file is included with:\n'
-                    'https://github.com/csecht/general_utilities\n'
+                    'https://github.com/csecht/passphrase-generate\n'
                     'Using system dictionary... ***\n'
                 )
                 self.eff_checkbtn.config(state='disabled')
@@ -784,7 +787,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
     abouttxt = tk.Text(aboutwin, width=72, height=num_lines + 2,
                        background=bkg, foreground='grey98',
                        relief='groove', borderwidth=5, padx=5)
-    abouttxt.insert('1.0', boilerplate + PROGRAM_VER)
+    abouttxt.insert('1.0', boilerplate + __version__)
     # Center text preceding the Author, etc. details.
     abouttxt.tag_add('text1', '1.0', float(num_lines - 5))
     abouttxt.tag_configure('text1', justify='center')
