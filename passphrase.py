@@ -160,6 +160,10 @@ class Generator:
         self.eff_wordlist = 'None'
         self.eff_list = ['None']
         self.system_list = ['None']
+        self.passphrase1 = ''
+        self.passphrase2 = ''
+        self.password1 = ''
+        self.password2 = ''
 
         # First used in make_pass()
         self.uniq_words = []
@@ -435,13 +439,20 @@ class Generator:
 
         self.eff_list = self.eff_wordlist.split()
 
+        # Need to remove words having the possessive form ('s, English).
+        # Remove hyphenated words (4) from EFF wordlist (are not alpha).
+        self.uniq_words = [word for word in self.system_list if word.isalpha()]
+        self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
+        self.eff_words = [word for word in self.eff_list if word.isalpha()]
+
     def make_pass(self) -> None:
         """Provide pass-string results each time Generate! is evoked.
         """
         # Need different passphrase descriptions for sys dict and EEF list.
         # Initial label texts are for sys. dict. and are set in
         # window_setup(), but are modified here if EFF option is used.
-        # OS label descriptors are written each time "Generate" command is run.
+        # OS label descriptors are written each time "Generate" command is run
+        #  b/c clickbutton options may require them to change.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.any_describe.config(   text="Any words from dictionary",
@@ -472,12 +483,6 @@ class Generator:
         elif self.numchars_entry.get().isdigit() is False:
             self.numchars_entry.delete(0, 'end')
             self.numchars_entry.insert(0, '0')
-
-        # Need to remove words having the possessive form ('s, English).
-        # Remove hyphenated words (4) from EFF wordlist (are not alpha).
-        self.uniq_words = [word for word in self.system_list if word.isalpha()]
-        self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
-        self.eff_words = [word for word in self.eff_list if word.isalpha()]
 
         caps = ascii_uppercase
         all_char = ascii_letters + digits + punctuation
@@ -525,46 +530,20 @@ class Generator:
                 self.eff_checkbtn.config(state='disabled')
 
         # Build the pass-strings.
-        passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
-        passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
-        password1 = "".join(very_random.choice(all_char) for
-                            _ in range(numchars))
-        password2 = "".join(very_random.choice(some_char) for
-                            _ in range(numchars))
-
-        # Need to reduce font size of long pass-string length to keep
-        # window on screen, then reset to default font size when pass-string
-        # length is shortened. On MacOS, fonts can be too small.
-        # Adjust width of results entry widgets to THE longest result string.
-        # B/c 'width' is character units, not pixels, length is not perfect
-        #   fit when font sizes change.
-        if len(passphrase1) > 60:
-            self.phrase_any_display.config(font=self.small_font,
-                                           width=len(passphrase1))
-            self.phrase_lc_display.config(font=self.small_font)
-            self.phrase_some_display.config(font=self.small_font)
-        elif len(passphrase1) <= 60:
-            self.phrase_any_display.config(font=self.display_font,
-                                           width=len(passphrase1))
-            self.phrase_lc_display.config(font=self.display_font)
-            self.phrase_some_display.config(font=self.display_font)
-
-        if len(password1) > 60:
-            self.pw_any_display.config(font=self.small_font,
-                                       width=len(password1))
-            self.pw_some_display.config(font=self.small_font,
-                                        width=len(password2))
-        elif len(password1) <= 60:
-            self.pw_any_display.config(font=self.display_font, width=60)
-            self.pw_some_display.config(font=self.display_font, width=60)
+        self.passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
+        self.passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
+        self.password1 = "".join(very_random.choice(all_char) for
+                                 _ in range(numchars))
+        self.password2 = "".join(very_random.choice(some_char) for
+                                 _ in range(numchars))
 
         # Set all pass-strings for display.
         #   No need to set sys dictionary vars or provide eff checkbutton
         #     condition for Windows b/c no system dictionary is available.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
-                self.phrase_some.set(passphrase2)
-                self.length_some.set(len(passphrase2))
+                self.phrase_some.set(self.passphrase2)
+                self.length_some.set(len(self.passphrase2))
             elif self.eff.get() is True:
                 self.phrase_some.set(' ')
                 self.length_some.set(' ')
@@ -575,24 +554,60 @@ class Generator:
 
         # Set statements common to all OS eff conditions:
         self.phrase_any.set(allwords)
-        self.phrase_lc.set(passphrase1)
+        self.phrase_lc.set(self.passphrase1)
         self.length_any.set(len(allwords))
-        self.length_lc.set(len(passphrase1))
-        self.length_pw_any.set(len(password1))
-        self.length_pw_some.set(len(password2))
-        self.pw_any.set(password1)
-        self.pw_some.set(password2)
+        self.length_lc.set(len(self.passphrase1))
+        self.length_pw_any.set(len(self.password1))
+        self.length_pw_some.set(len(self.password2))
+        self.pw_any.set(self.password1)
+        self.pw_some.set(self.password2)
+
+        self.config_results()
+
+        # Finally, fill in H values for each pass-string.
+        # The character lists here may have some characters excluded.
+        self.set_entropy(numwords, numchars, unused)
+
+    def config_results(self) -> None:
+        """
+        Configure fonts and display widths in results frames.
+        :return: None
+        """
 
         # Change font colors of results from the initial self.passstub_fg.
+        # This is only needed for first call to make_pass(). Make conditional
+        #   with a counter in make_pass or is it okay to 'reconfig' each call.
         self.phrase_any_display.config(fg=self.pass_fg)
         self.phrase_lc_display.config(fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
         self.pw_any_display.config(fg=self.pass_fg)
         self.pw_some_display.config(fg=self.pass_fg)
 
-        # Finally, fill in H values for each pass-string.
-        # The character lists here may have some characters excluded.
-        self.set_entropy(numwords, numchars, unused)
+        # Need to reduce font size of long pass-string length to keep
+        # window on screen, then reset to default font size when pass-string
+        # length is shortened. On MacOS, fonts can be too small.
+        # Adjust width of results entry widgets to THE longest result string.
+        # B/c 'width' is character units, not pixels, length is not perfect
+        #   fit when font sizes change.
+        if len(self.passphrase1) > 60:
+            self.phrase_any_display.config(font=self.small_font,
+                                           width=len(self.passphrase1))
+            self.phrase_lc_display.config(font=self.small_font)
+            self.phrase_some_display.config(font=self.small_font)
+        elif len(self.passphrase1) <= 60:
+            self.phrase_any_display.config(font=self.display_font,
+                                           width=len(self.passphrase1))
+            self.phrase_lc_display.config(font=self.display_font)
+            self.phrase_some_display.config(font=self.display_font)
+
+        if len(self.password1) > 60:
+            self.pw_any_display.config(font=self.small_font,
+                                       width=len(self.password1))
+            self.pw_some_display.config(font=self.small_font,
+                                        width=len(self.password2))
+        elif len(self.password1) <= 60:
+            self.pw_any_display.config(font=self.display_font, width=60)
+            self.pw_some_display.config(font=self.display_font, width=60)
 
     def set_entropy(self, numwords: int, numchars: int, excl_char: str) -> None:
         """Calculate and set values for information entropy, H.
