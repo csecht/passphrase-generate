@@ -447,7 +447,8 @@ class PassGenerator:
 
         self.eff_list = self.eff_wordlist.split()
 
-        # Need to remove words having the possessive form ('s, English).
+        # Need to remove words having the possessive form ('s, English)...
+        #  ...not relevant for Windows system.
         # Remove hyphenated words (4) from EFF wordlist (are not alpha).
         self.uniq_words = [word for word in self.system_list if word.isalpha()]
         self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
@@ -491,10 +492,12 @@ class PassGenerator:
         some_char = ascii_letters + digits + SYMBOLS
 
         # Filter out words and strings containing characters to be excluded.
-        unused = str(self.exclude_entry.get().strip(' '))
+        unused = str(self.exclude_entry.get().strip())
+
         if len(unused) != 0:
-            self.uniq_words = [word for word in self.uniq_words if unused not in word]
-            self.trim_words = [word for word in self.trim_words if unused not in word]
+            if MY_OS in 'lin, dar':
+                self.uniq_words = [word for word in self.uniq_words if unused not in word]
+                self.trim_words = [word for word in self.trim_words if unused not in word]
             self.eff_words = [word for word in self.eff_words if unused not in word]
             caps = [letter for letter in caps if unused not in letter]
             all_char = [char for char in all_char if unused not in char]
@@ -503,8 +506,8 @@ class PassGenerator:
         # very_random = random.Random(time.time())  # Use epoch timestamp seed.
         # very_random = random.SystemRandom()   # Use current system's random.
         very_random = random.Random(random.random())
-        numwords = int(self.numwords_entry.get().strip(' '))
-        numchars = int(self.numchars_entry.get().strip(' '))
+        numwords = int(self.numwords_entry.get().strip())
+        numchars = int(self.numchars_entry.get().strip())
 
         # Select user-specified number of words.
         allwords = "".join(very_random.choice(self.uniq_words) for
