@@ -163,8 +163,8 @@ class Generator:
         self.trim_words = []
         self.eff_words = []
         self.caps = []
-        self.string1 = []
-        self.string2 = []
+        self.all_char = []
+        self.some_char = []
         self.numwords = 0
         self.numchars = 0
 
@@ -488,8 +488,8 @@ class Generator:
         self.eff_words = [word for word in self.eff_list if word.isalpha()]
 
         self.caps = ascii_uppercase
-        self.string1 = ascii_letters + digits + punctuation
-        self.string2 = ascii_letters + digits + SYMBOLS
+        self.all_char = ascii_letters + digits + punctuation
+        self.some_char = ascii_letters + digits + SYMBOLS
 
         # Filter out words and strings containing characters to be excluded.
         unused = str(self.exclude_entry.get().strip(' '))
@@ -498,8 +498,8 @@ class Generator:
             self.trim_words = [word for word in self.trim_words if unused not in word]
             self.eff_words = [word for word in self.eff_words if unused not in word]
             self.caps = [letter for letter in self.caps if unused not in letter]
-            self.string1 = [char for char in self.string1 if unused not in char]
-            self.string2 = [char for char in self.string2 if unused not in char]
+            self.all_char = [char for char in self.all_char if unused not in char]
+            self.some_char = [char for char in self.some_char if unused not in char]
 
         # very_random = random.Random(time.time())  # Use epoch timestamp seed.
         # very_random = random.SystemRandom()   # Use current system's random.
@@ -535,9 +535,9 @@ class Generator:
         # Build the pass-strings.
         passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
         passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
-        password1 = "".join(very_random.choice(self.string1) for
+        password1 = "".join(very_random.choice(self.all_char) for
                             _ in range(self.numchars))
-        password2 = "".join(very_random.choice(self.string2) for
+        password2 = "".join(very_random.choice(self.some_char) for
                             _ in range(self.numchars))
 
         # Need to reduce font size of long pass-string length to keep
@@ -599,12 +599,16 @@ class Generator:
         self.pw_some_display.config(fg=self.pass_fg)
 
         # Finally, fill in H values for each pass-string.
-        self.set_entropy(unused, self.string1, self.string2)
+        self.set_entropy(self.numwords, self.numchars,
+                         unused, self.all_char, self.some_char)
 
-    def set_entropy(self, excl_char: str, all_char: list, some_char: list) -> None:
+    def set_entropy(self, numwords: int, numchars: int,
+                    excl_char: str, all_char: list, some_char: list) -> None:
         """Calculate and set values for information entropy, H.
 
-        :param excl_char: The user-defined character(s) to be excluded.
+        :param numwords: User-defined number of passphrase words.
+        :param numchars: User-defined number of password characters.
+        :param excl_char: User-defined character(s) to be excluded.
         :param all_char: All usable password characters, from import string.
         :param some_char: all_char but with customized SYMBOLS.
         """
@@ -612,10 +616,10 @@ class Generator:
         # We use only 1 character each from each set of symbols, numbers, caps.
         #  so only need P for selecting one from a set to calc H.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
-        self.h_symbol =  -log(1/len(SYMBOLS), 2)
-        self.h_cap = -log(1/len(self.caps), 2)
-        self.h_digit = -log(1/len(digits), 2)
-        self.h_add3 = int(self.h_symbol + self.h_cap + self.h_digit)  # H ~= 12
+        h_symbol =  -log(1/len(SYMBOLS), 2)
+        h_cap = -log(1/len(self.caps), 2)
+        h_digit = -log(1/len(digits), 2)
+        h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 12
 
         # Need to correct H for excluded characters in passwords (lower the N).
         # This accurately corrects H only when 1 char is excluded.
@@ -627,42 +631,42 @@ class Generator:
         #  We need full sets of possible characters for N here.
         if len(excl_char) != 0:
             if excl_char in SYMBOLS:
-                self.h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
+                h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
             if excl_char in self.caps:
-                self.h_cap = -log(1 / (len(self.caps) - 1), 2)
+                h_cap = -log(1 / (len(self.caps) - 1), 2)
             if excl_char in digits:
-                self.h_digit = -log(1 / (len(digits) - 1), 2)
-            self.h_add3 = int(self.h_symbol + self.h_cap + self.h_digit)
+                h_digit = -log(1 / (len(digits) - 1), 2)
+            h_add3 = int(h_symbol + h_cap + h_digit)
             if excl_char in all_char:
                 self.h_pw_any.set(
-                    int(self.numchars * log(len(all_char) - 1) / log(2)))
+                    int(numchars * log(len(all_char) - 1) / log(2)))
             if excl_char in some_char:
                 self.h_pw_some.set(
-                    int(self.numchars * log(len(some_char) - 1) / log(2)))
+                    int(numchars * log(len(some_char) - 1) / log(2)))
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
         # number of possible characters or words and L is the number of characters
         # or words in the pass-string. Log can be any base, but needs to be the
         # same in numerator and denominator.
-        self.h_any.set(int(self.numwords * log(len(self.uniq_words)) / log(2)))
-        self.h_lc.set(self.h_any.get() + self.h_add3)
-        h_some = int(self.numwords * log(len(self.trim_words)) / log(2))
-        self.h_some.set(h_some + self.h_add3)
-        self.h_pw_any.set(int(self.numchars * log(len(self.string1)) / log(2)))
-        self.h_pw_some.set(int(self.numchars * log(len(self.string2)) / log(2)))
+        self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
+        self.h_lc.set(self.h_any.get() + h_add3)
+        h_some = int(numwords * log(len(self.trim_words)) / log(2))
+        self.h_some.set(h_some + h_add3)
+        self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
+        self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
 
         # Note that N is already corrected for excluded words from make_pass().
         # Note that the label names for 'any' and 'lc' are recycled between
         #  system dict and eff wordlist options; in retrospect, not smart.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             self.h_any.set(
-                int(self.numwords * log(len(self.eff_words)) / log(2)))
-            self.h_lc.set(self.h_any.get() + self.h_add3)
+                int(numwords * log(len(self.eff_words)) / log(2)))
+            self.h_lc.set(self.h_any.get() + h_add3)
             self.h_some.set(' ')
         elif MY_OS == 'win' or self.system_words == 'Null':
             self.h_any.set(
-                int(self.numwords * log(len(self.eff_words)) / log(2)))
-            self.h_lc.set(self.h_any.get() + self.h_add3)
+                int(numwords * log(len(self.eff_words)) / log(2)))
+            self.h_lc.set(self.h_any.get() + h_add3)
             self.h_some.set(' ')
 
     def explain(self) -> None:
