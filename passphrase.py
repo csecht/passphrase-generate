@@ -162,17 +162,6 @@ class Generator:
         self.uniq_words = []
         self.trim_words = []
         self.eff_words = []
-        self.caps = []
-        self.all_char = []
-        self.some_char = []
-        self.numwords = 0
-        self.numchars = 0
-
-        # Used in set_entropy()
-        self.h_symbol = 0.0
-        self.h_cap = 0.0
-        self.h_digit = 0.0
-        self.h_add3 = 0
 
         # Now put the widgets in the main window.
         self.setup_window()
@@ -487,9 +476,9 @@ class Generator:
         self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
         self.eff_words = [word for word in self.eff_list if word.isalpha()]
 
-        self.caps = ascii_uppercase
-        self.all_char = ascii_letters + digits + punctuation
-        self.some_char = ascii_letters + digits + SYMBOLS
+        caps = ascii_uppercase
+        all_char = ascii_letters + digits + punctuation
+        some_char = ascii_letters + digits + SYMBOLS
 
         # Filter out words and strings containing characters to be excluded.
         unused = str(self.exclude_entry.get().strip(' '))
@@ -497,27 +486,27 @@ class Generator:
             self.uniq_words = [word for word in self.uniq_words if unused not in word]
             self.trim_words = [word for word in self.trim_words if unused not in word]
             self.eff_words = [word for word in self.eff_words if unused not in word]
-            self.caps = [letter for letter in self.caps if unused not in letter]
-            self.all_char = [char for char in self.all_char if unused not in char]
-            self.some_char = [char for char in self.some_char if unused not in char]
+            caps = [letter for letter in caps if unused not in letter]
+            all_char = [char for char in all_char if unused not in char]
+            some_char = [char for char in some_char if unused not in char]
 
         # very_random = random.Random(time.time())  # Use epoch timestamp seed.
         # very_random = random.SystemRandom()   # Use current system's random.
         very_random = random.Random(random.random())
-        self.numwords = int(self.numwords_entry.get().strip(' '))
-        self.numchars = int(self.numchars_entry.get().strip(' '))
+        numwords = int(self.numwords_entry.get().strip(' '))
+        numchars = int(self.numchars_entry.get().strip(' '))
 
         # Select user-specified number of words.
         allwords = "".join(very_random.choice(self.uniq_words) for
-                           _ in range(self.numwords))
+                           _ in range(numwords))
         somewords = "".join(very_random.choice(self.trim_words) for
-                            _ in range(self.numwords))
+                            _ in range(numwords))
         effwords = "".join(very_random.choice(self.eff_words) for
-                           _ in range(self.numwords))
+                           _ in range(numwords))
 
         # Select symbols to append, as a convenience; is not user-specified.
         addsymbol = "".join(very_random.choice(SYMBOLS) for _ in range(1))
-        addcaps = "".join(very_random.choice(self.caps) for _ in range(1))
+        addcaps = "".join(very_random.choice(caps) for _ in range(1))
         addnum = "".join(very_random.choice(digits) for _ in range(1))
 
         # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
@@ -535,10 +524,10 @@ class Generator:
         # Build the pass-strings.
         passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
         passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
-        password1 = "".join(very_random.choice(self.all_char) for
-                            _ in range(self.numchars))
-        password2 = "".join(very_random.choice(self.some_char) for
-                            _ in range(self.numchars))
+        password1 = "".join(very_random.choice(all_char) for
+                            _ in range(numchars))
+        password2 = "".join(very_random.choice(some_char) for
+                            _ in range(numchars))
 
         # Need to reduce font size of long pass-string length to keep
         # window on screen, then reset to default font size when pass-string
@@ -600,7 +589,7 @@ class Generator:
 
         # Finally, fill in H values for each pass-string.
         # The character lists here may have some characters excluded.
-        self.set_entropy(self.numwords, self.numchars, unused)
+        self.set_entropy(numwords, numchars, unused)
 
     def set_entropy(self, numwords: int, numchars: int, excl_char: str) -> None:
         """Calculate and set values for information entropy, H.
@@ -651,6 +640,7 @@ class Generator:
         # number of possible characters or words and L is the number of characters
         # or words in the pass-string. Log can be any base, but needs to be the
         # same in numerator and denominator.
+        # Note that N is already corrected for excluded words from make_pass().
         self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
         self.h_lc.set(self.h_any.get() + h_add3)
         h_some = int(numwords * log(len(self.trim_words)) / log(2))
