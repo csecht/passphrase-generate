@@ -76,7 +76,7 @@ class PassGenerator:
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.make_pass())
 
-        # Variables used in setup_window(), in general order of appearance:
+        # Variables used in config_window(), in general order of appearance:
         # EFF checkbutton is not used in Windows b/c EFF words are default.
         self.eff =          tk.BooleanVar()
         self.eff_checkbtn = tk.Checkbutton()
@@ -158,13 +158,13 @@ class PassGenerator:
         self.eff_words = []
 
         # Now put the widgets in the main window.
-        self.setup_window()
+        self.config_window()
 
-    def setup_window(self) -> None:
+    def config_window(self) -> None:
         """
-        Configure and layout (grid) the main window.
+        Configure all tkinter widgets.
 
-        :return: A nice looking interactive graphic.
+        :return: An understandable window framework.
         """
         if MY_OS == 'win':
             self.master.minsize(850, 360)
@@ -325,7 +325,15 @@ class PassGenerator:
                                      fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(   width=3)
 
-        #### GRID all widgets: ############# sorted by row number #############
+        self.grid_window()
+
+    def grid_window(self) -> None:
+        """
+        Layout all widgets on a tkinter grid.
+
+        :return: A nice looking interactive window.
+        """
+        # ############# sorted by row number #############
         # Passphrase widgets grid:
         self.eff_checkbtn.grid(      column=1, row=0, pady=(10, 5), padx=5,
                                      columnspan=2, sticky=tk.W)
