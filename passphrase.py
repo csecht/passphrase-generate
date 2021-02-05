@@ -599,25 +599,28 @@ class Generator:
         self.pw_some_display.config(fg=self.pass_fg)
 
         # Finally, fill in H values for each pass-string.
-        self.set_entropy(self.numwords, self.numchars,
-                         unused, self.all_char, self.some_char)
+        # The character lists here may have some characters excluded.
+        self.set_entropy(self.numwords, self.numchars, unused)
 
-    def set_entropy(self, numwords: int, numchars: int,
-                    excl_char: str, all_char: list, some_char: list) -> None:
+    def set_entropy(self, numwords: int, numchars: int, excl_char: str) -> None:
         """Calculate and set values for information entropy, H.
 
         :param numwords: User-defined number of passphrase words.
         :param numchars: User-defined number of password characters.
         :param excl_char: User-defined character(s) to be excluded.
-        :param all_char: All usable password characters, from import string.
-        :param some_char: all_char but with customized SYMBOLS.
         """
+
+        # Redefine string lists here b/c make_pass() may have excluded some.
+        caps = ascii_uppercase
+        all_char = ascii_letters + digits + punctuation
+        some_char = ascii_letters + digits + SYMBOLS
+
         # https://en.wikipedia.org/wiki/Password_strength
         # We use only 1 character each from each set of symbols, numbers, caps.
         #  so only need P for selecting one from a set to calc H.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
         h_symbol =  -log(1/len(SYMBOLS), 2)
-        h_cap = -log(1/len(self.caps), 2)
+        h_cap = -log(1/len(ascii_uppercase), 2)
         h_digit = -log(1/len(digits), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 12
 
@@ -632,8 +635,8 @@ class Generator:
         if len(excl_char) != 0:
             if excl_char in SYMBOLS:
                 h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
-            if excl_char in self.caps:
-                h_cap = -log(1 / (len(self.caps) - 1), 2)
+            if excl_char in caps:
+                h_cap = -log(1 / (len(caps) - 1), 2)
             if excl_char in digits:
                 h_digit = -log(1 / (len(digits) - 1), 2)
             h_add3 = int(h_symbol + h_cap + h_digit)
