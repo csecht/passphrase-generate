@@ -87,51 +87,51 @@ class Generator:
 
         # Variables used in setup_window(), in general order of appearance:
         # EFF checkbutton is not used in Windows b/c EFF words are default.
-        self.eff =        tk.BooleanVar()
-        self.eff_checkbtn =    tk.Checkbutton()
+        self.eff =          tk.BooleanVar()
+        self.eff_checkbtn = tk.Checkbutton()
 
         self.numwords_label = tk.Label()
         self.numwords_entry = tk.Entry()
         self.numchars_label = tk.Label()
         self.numchars_entry = tk.Entry()
-        self.exclude_label = tk.Label()
-        self.exclude_entry = tk.Entry()
+        self.exclude_label =  tk.Label()
+        self.exclude_entry =  tk.Entry()
 
         # There are problems of tk.Button text showing up on MacOS, so ttk
-        self.exclude_btn = ttk.Button()
+        self.exclude_btn =  ttk.Button()
         self.generate_btn = ttk.Button()
 
         self.result_frame1 = tk.Frame()
         self.result_frame2 = tk.Frame()
 
-        self.l_and_h_header =     tk.Label()
+        self.l_and_h_header =    tk.Label()
         self.passphrase_header = tk.Label()
         self.any_describe =      tk.Label()
         self.any_lc_describe =   tk.Label()
         self.select_describe =   tk.Label()
         self.length_any =        tk.IntVar()
         self.length_lc =         tk.IntVar()
-        self.length_some =     tk.IntVar()
+        self.length_some =       tk.IntVar()
         self.length_pw_any =     tk.IntVar()
-        self.length_pw_some =  tk.IntVar()
+        self.length_pw_some =    tk.IntVar()
         self.h_any =             tk.IntVar()
         self.h_lc =              tk.IntVar()
-        self.h_some =          tk.IntVar()
+        self.h_some =            tk.IntVar()
         self.h_pw_any =          tk.IntVar()
-        self.h_pw_some =       tk.IntVar()
+        self.h_pw_some =         tk.IntVar()
         self.length_any_label =  tk.Label(self.result_frame1)
         self.length_lc_label =   tk.Label(self.result_frame1)
         self.length_some_label = tk.Label(self.result_frame1)
         self.length_pw_any_l =   tk.Label(self.result_frame2)
-        self.length_pw_some_l = tk.Label(self.result_frame2)
+        self.length_pw_some_l =  tk.Label(self.result_frame2)
         self.h_any_label =       tk.Label(self.result_frame1)
         self.h_lc_label =        tk.Label(self.result_frame1)
-        self.h_some_label =    tk.Label(self.result_frame1)
+        self.h_some_label =      tk.Label(self.result_frame1)
         self.h_pw_any_l =        tk.Label(self.result_frame2)
-        self.h_pw_some_l =     tk.Label(self.result_frame2)
+        self.h_pw_some_l =       tk.Label(self.result_frame2)
         self.phrase_any =        tk.StringVar()
         self.phrase_lc =         tk.StringVar()
-        self.phrase_some =     tk.StringVar()
+        self.phrase_some =       tk.StringVar()
         # Results are displayed in Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
         self.phrase_any_display = tk.Entry(self.result_frame1,
@@ -142,14 +142,14 @@ class Generator:
                                             textvariable=self.phrase_some)
         self.pw_header =          tk.Label()
         self.pw_any_describe =    tk.Label()
-        self.pw_some_describe = tk.Label()
+        self.pw_some_describe =   tk.Label()
 
         self.pw_any =             tk.StringVar()
-        self.pw_some =          tk.StringVar()
+        self.pw_some =            tk.StringVar()
         self.pw_any_display =     tk.Entry(self.result_frame2,
                                            textvariable=self.pw_any, )
-        self.pw_some_display =  tk.Entry(self.result_frame2,
-                                         textvariable=self.pw_some)
+        self.pw_some_display =    tk.Entry(self.result_frame2,
+                                           textvariable=self.pw_some)
         # First used in get_words():
         self.use_effwords = True
         self.system_words = 'Null'
@@ -167,7 +167,7 @@ class Generator:
         self.numwords = 0
         self.numchars = 0
 
-        # First used in set_entropy()
+        # Used in set_entropy()
         self.h_symbol = 0.0
         self.h_cap = 0.0
         self.h_digit = 0.0
