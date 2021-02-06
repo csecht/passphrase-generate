@@ -401,7 +401,7 @@ class PassGenerator:
         """
         # Need to check for presence of system dictionary and EFF list.
         # If both missing, then notify and exit.
-        self.check_files()
+        check_files()
 
         # If pass the check, then at least one file exists, so proceed to
         #   populate word list(s).
@@ -649,27 +649,6 @@ class PassGenerator:
             self.pw_any_display.config(     font=self.display_font, width=60)
             self.pw_some_display.config(    font=self.display_font, width=60)
 
-    def check_files(self) -> None:
-        """Confirm whether required files are present, exit if not.
-
-        :return: A graceful exit.
-        """
-        fnf_msg = (
-            f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} \n'
-            f'At a minimum, the file {EFFWORDS_PATH} should be in '
-            'the master directory.\nThat file is in the repository:\n'
-            f'{PROJ_URL}\n...Will exit program now...')
-        if MY_OS in 'lin, dar':
-            if Path.is_file(SYSWORDS_PATH) is False:
-                if Path.is_file(EFFWORDS_PATH) is False:
-                    print(fnf_msg)
-                    messagebox.showinfo(title='Files not found', detail=fnf_msg)
-                    quit_gui()
-        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
-            print(fnf_msg)
-            messagebox.showinfo(title='Files not found', detail=fnf_msg)
-            quit_gui()
-
     def config_nosyswords(self) -> None:
         """
         Warn that the Linux/MacOX system dictionary cannot be found.
@@ -828,6 +807,28 @@ along with this program. If not, see https://www.gnu.org/licenses/
     abouttxt.tag_add('text1', '1.0', float(num_lines - 5))
     abouttxt.tag_configure('text1', justify='center')
     abouttxt.pack()
+
+
+def check_files() -> None:
+    """Confirm whether required files are present, exit if not.
+
+    :return: A graceful exit.
+    """
+    fnf_msg = (
+        f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} \n'
+        f'At a minimum, the file {EFFWORDS_PATH} should be in '
+        'the master directory.\nThat file is in the repository:\n'
+        f'{PROJ_URL}\n...Will exit program now...')
+    if MY_OS in 'lin, dar':
+        if Path.is_file(SYSWORDS_PATH) is False:
+            if Path.is_file(EFFWORDS_PATH) is False:
+                print(fnf_msg)
+                messagebox.showinfo(title='Files not found', detail=fnf_msg)
+                quit_gui()
+    elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
+        print(fnf_msg)
+        messagebox.showinfo(title='Files not found', detail=fnf_msg)
+        quit_gui()
 
 
 def quit_gui() -> None:
