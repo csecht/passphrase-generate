@@ -50,12 +50,9 @@ class PassGenerator:
     A GUI to specify lengths of reported passphrases and passwords.
     """
     def __init__(self, master):
-        """Window widgets and default values are set up here.
+        """Window widgets and default some variables are set up here.
         """
         self.master = master
-        self.master.bind("<Escape>", lambda q: quit_gui())
-        self.master.bind("<Control-q>", lambda q: quit_gui())
-        self.master.bind("<Control-g>", lambda q: self.set_passstrings())
 
         # Variables used in config_window(), in general order of appearance:
         # EFF checkbutton is not used in Windows b/c EFF words are default.
@@ -144,8 +141,7 @@ class PassGenerator:
         self.config_window()
 
     def config_window(self) -> None:
-        """
-        Configure all tkinter widgets.
+        """Configure all tkinter widgets.
 
         :return: Easy to understand window labels and data.
         """
@@ -156,23 +152,20 @@ class PassGenerator:
             self.master.minsize(850, 390)
             self.master.maxsize(1230, 390)
 
-        # Use Courier b/c TKFixedFont does not monospace symbol characters.
-        self.display_font = 'Courier', 12  # also used in config_results().
-
         master_bg = 'SkyBlue4'  # also used for some labels.
         master_fg = 'LightCyan2'
         frame_bg = 'grey40'  # background for data labels and frame
         stubresult_fg = 'grey60'  # used only for initial window
         pass_bg = 'khaki2'
         self.pass_fg = 'brown4'  # also used in config_results()
+        # Use Courier b/c TKFixedFont does not monospace symbol characters.
+        self.display_font = 'Courier', 12  # also used in config_results().
 
         # Widget configurations are generally listed top to bottom of window.
+        self.master.bind("<Escape>", lambda q: quit_gui())
+        self.master.bind("<Control-q>", lambda q: quit_gui())
+        self.master.bind("<Control-g>", lambda q: self.set_passstrings())
         self.master.config(bg=master_bg)
-
-        self.result_frame1.config(borderwidth=3, relief='sunken',
-                                  background=frame_bg)
-        self.result_frame2.config(borderwidth=3, relief='sunken',
-                                  background=frame_bg)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -211,6 +204,11 @@ class PassGenerator:
         #  in the results frame if "pad" it across columns with spaces.
         self.l_and_h_header.config(text=' L       H', width=10,
                                    fg=master_fg, bg=master_bg)
+
+        self.result_frame1.config(borderwidth=3, relief='sunken',
+                                  background=frame_bg)
+        self.result_frame2.config(borderwidth=3, relief='sunken',
+                                  background=frame_bg)
 
         # Passphrase results section:
         # Set up OS-specific widgets.
@@ -553,48 +551,6 @@ class PassGenerator:
         # The character lists here may have some characters excluded.
         self.set_entropy(numwords, numchars, unused)
 
-    def config_results(self) -> None:
-        """
-        Configure fonts and display widths in results frames.
-
-        :return: A more readable display of results.
-        """
-        # Change font colors of results from the initial self.passstub_fg.
-        # This is only needed for first call to set_passstrings(). Make conditional
-        #   with a counter in set_passstrings or is it okay to 'reconfig' each call?
-        self.phrase_any_display.config( fg=self.pass_fg)
-        self.phrase_lc_display.config(  fg=self.pass_fg)
-        self.phrase_some_display.config(fg=self.pass_fg)
-        self.pw_any_display.config(     fg=self.pass_fg)
-        self.pw_some_display.config(    fg=self.pass_fg)
-
-        # Need to reduce font size of long pass-string length to keep
-        # window on screen, then reset to default font size when pass-string
-        # length is shortened. On MacOS, fonts can be too small.
-        # Adjust width of results entry widgets to THE longest result string.
-        # B/c 'width' is character units, not pixels, length is not perfect
-        #   fit when font sizes change.
-        small_font = 'Courier', 10
-        if len(self.passphrase1) > 60:
-            self.phrase_any_display.config( font=small_font,
-                                            width=len(self.passphrase1))
-            self.phrase_lc_display.config(  font=small_font)
-            self.phrase_some_display.config(font=small_font)
-        elif len(self.passphrase1) <= 60:
-            self.phrase_any_display.config( font=self.display_font,
-                                            width=len(self.passphrase1))
-            self.phrase_lc_display.config(  font=self.display_font)
-            self.phrase_some_display.config(font=self.display_font)
-
-        if len(self.password1) > 60:
-            self.pw_any_display.config(     font=small_font,
-                                            width=len(self.password1))
-            self.pw_some_display.config(    font=small_font,
-                                            width=len(self.password2))
-        elif len(self.password1) <= 60:
-            self.pw_any_display.config(     font=self.display_font, width=60)
-            self.pw_some_display.config(    font=self.display_font, width=60)
-
     def set_entropy(self, numwords: int, numchars: int, excl_char: str) -> None:
         """Calculate and set values for information entropy, H.
 
@@ -664,6 +620,50 @@ class PassGenerator:
                 int(numwords * log(len(self.eff_words)) / log(2)))
             self.h_lc.set(self.h_any.get() + h_add3)
             self.h_some.set(' ')
+
+    def config_results(self) -> None:
+        """
+        Configure fonts and display widths in results frames.
+
+        :return: A more readable display of results.
+        """
+        # Change font colors of results from the initial self.passstub_fg.
+        # This is only needed for first call to set_passstrings(). Make
+        # conditional
+        #   with a counter in set_passstrings or is it okay to 'reconfig'
+        #   each call?
+        self.phrase_any_display.config(fg=self.pass_fg)
+        self.phrase_lc_display.config(fg=self.pass_fg)
+        self.phrase_some_display.config(fg=self.pass_fg)
+        self.pw_any_display.config(fg=self.pass_fg)
+        self.pw_some_display.config(fg=self.pass_fg)
+
+        # Need to reduce font size of long pass-string length to keep
+        # window on screen, then reset to default font size when pass-string
+        # length is shortened. On MacOS, fonts can be too small.
+        # Adjust width of results entry widgets to THE longest result string.
+        # B/c 'width' is character units, not pixels, length is not perfect
+        #   fit when font sizes change.
+        small_font = 'Courier', 10
+        if len(self.passphrase1) > 60:
+            self.phrase_any_display.config(font=small_font,
+                                           width=len(self.passphrase1))
+            self.phrase_lc_display.config(font=small_font)
+            self.phrase_some_display.config(font=small_font)
+        elif len(self.passphrase1) <= 60:
+            self.phrase_any_display.config(font=self.display_font,
+                                           width=len(self.passphrase1))
+            self.phrase_lc_display.config(font=self.display_font)
+            self.phrase_some_display.config(font=self.display_font)
+
+        if len(self.password1) > 60:
+            self.pw_any_display.config(font=small_font,
+                                       width=len(self.password1))
+            self.pw_some_display.config(font=small_font,
+                                        width=len(self.password2))
+        elif len(self.password1) <= 60:
+            self.pw_any_display.config(font=self.display_font, width=60)
+            self.pw_some_display.config(font=self.display_font, width=60)
 
     def check_files(self) -> None:
         """Confirm whether required files are present, exit if not.
