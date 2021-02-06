@@ -629,13 +629,13 @@ class PassGenerator:
         """
         # Change font colors of results from the initial self.passstub_fg.
         # This is only needed for first call to set_passstrings().
-        #  Make it conditional with a counter in set_passstrings
+        #  Make it conditional with a counter in set_passstrings()
         #  or is it okay to .config() on each subsequent call?
-        self.phrase_any_display.config(fg=self.pass_fg)
-        self.phrase_lc_display.config(fg=self.pass_fg)
+        self.phrase_any_display.config( fg=self.pass_fg)
+        self.phrase_lc_display.config(  fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
-        self.pw_any_display.config(fg=self.pass_fg)
-        self.pw_some_display.config(fg=self.pass_fg)
+        self.pw_any_display.config(     fg=self.pass_fg)
+        self.pw_some_display.config(    fg=self.pass_fg)
 
         # Need to reduce font size of long pass-string length to keep
         # window on screen, then reset to default font size when pass-string
