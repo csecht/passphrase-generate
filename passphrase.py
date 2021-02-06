@@ -43,6 +43,9 @@ MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
+VERY_RANDOM = random.Random(random.random())
+# VERY_RANDOM = random.Random(time.time())  # Use epoch timestamp seed.
+# VERY_RANDOM = random.SystemRandom()   # Use current system's random.
 
 
 class PassGenerator:
@@ -445,19 +448,6 @@ class PassGenerator:
                 self.length_some.set(' ')
                 self.phrase_some.set(' ')
 
-        # Need to correct invalid user entries.
-        if self.numwords_entry.get() == '':
-            self.numwords_entry.insert(0, '0')
-        elif self.numwords_entry.get().isdigit() is False:
-            self.numwords_entry.delete(0, 'end')
-            self.numwords_entry.insert(0, '0')
-
-        if self.numchars_entry.get() == '':
-            self.numchars_entry.insert(0, '0')
-        elif self.numchars_entry.get().isdigit() is False:
-            self.numchars_entry.delete(0, 'end')
-            self.numchars_entry.insert(0, '0')
-
         # Filter out words and strings containing characters to be excluded.
         unused = str(self.exclude_entry.get().strip())
         caps = ascii_uppercase
@@ -476,21 +466,29 @@ class PassGenerator:
             all_char = [char for char in all_char if unused not in char]
             some_char = [char for char in some_char if unused not in char]
 
-        # very_random = random.Random(time.time())  # Use epoch timestamp seed.
-        # very_random = random.SystemRandom()   # Use current system's random.
-        very_random = random.Random(random.random())
+        # Need to correct invalid user entries.
+        if self.numwords_entry.get() == '':
+            self.numwords_entry.insert(0, '0')
+        elif self.numwords_entry.get().isdigit() is False:
+            self.numwords_entry.delete(0, 'end')
+            self.numwords_entry.insert(0, '0')
         numwords = int(self.numwords_entry.get().strip())
+        if self.numchars_entry.get() == '':
+            self.numchars_entry.insert(0, '0')
+        elif self.numchars_entry.get().isdigit() is False:
+            self.numchars_entry.delete(0, 'end')
+            self.numchars_entry.insert(0, '0')
         numchars = int(self.numchars_entry.get().strip())
 
         # Randomly select user-specified number of words.
         if MY_OS in 'lin, dar' and self.system_list:
-            self.allwords = "".join(very_random.choice(self.uniq_words) for
+            self.allwords = "".join(VERY_RANDOM.choice(self.uniq_words) for
                                     _ in range(numwords))
-            self.somewords = "".join(very_random.choice(self.trim_words) for
+            self.somewords = "".join(VERY_RANDOM.choice(self.trim_words) for
                                      _ in range(numwords))
         # Windows only uses EFF, Linux/MacOS uses it as an option.
         if Path.is_file(EFFWORDS_PATH):
-            self.effwords = "".join(very_random.choice(self.eff_words) for
+            self.effwords = "".join(VERY_RANDOM.choice(self.eff_words) for
                                     _ in range(numwords))
 
         # 1st condition evaluates whether eff checkbutton state is on,
@@ -506,16 +504,16 @@ class PassGenerator:
                 self.eff_checkbtn.config(state='disabled')
 
         # Randomly select symbols to append; number is not user-specified.
-        addsymbol = "".join(very_random.choice(SYMBOLS) for _ in range(1))
-        addcaps = "".join(very_random.choice(caps) for _ in range(1))
-        addnum = "".join(very_random.choice(digits) for _ in range(1))
+        addsymbol = "".join(VERY_RANDOM.choice(SYMBOLS) for _ in range(1))
+        addcaps = "".join(VERY_RANDOM.choice(caps) for _ in range(1))
+        addnum = "".join(VERY_RANDOM.choice(digits) for _ in range(1))
 
         # Build the pass-strings.
         self.passphrase1 = self.allwords.lower() + addsymbol + addnum + addcaps
         self.passphrase2 = self.somewords.lower() + addsymbol + addnum + addcaps
-        self.password1 = "".join(very_random.choice(all_char) for
+        self.password1 = "".join(VERY_RANDOM.choice(all_char) for
                                  _ in range(numchars))
-        self.password2 = "".join(very_random.choice(some_char) for
+        self.password2 = "".join(VERY_RANDOM.choice(some_char) for
                                  _ in range(numchars))
 
         # Set all pass-strings for display as results.
