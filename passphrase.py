@@ -41,7 +41,7 @@ PROJ_URL = 'https://github.com/csecht/passphrase-generate'
 SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
 # MY_OS = sys.platform[:3]
 MY_OS = 'win'  # TESTING
-SYSWORDS_PATH = Path('/usr/share/dict/words')
+SYSWORDS_PATH = Path('/usr/share/dict/wordsXXX')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
 # TODO: This only does Terminal stdout, no good for MacOS (or Win) standalone.
@@ -503,7 +503,7 @@ class PassGenerator:
         unused = str(self.exclude_entry.get().strip())
 
         if len(unused) != 0:
-            if MY_OS in 'lin, dar':
+            if MY_OS in 'lin, dar' and self.system_list:
                 self.uniq_words = [
                     word for word in self.uniq_words if unused not in word]
                 self.trim_words = [
@@ -522,15 +522,11 @@ class PassGenerator:
         numchars = int(self.numchars_entry.get().strip())
 
         # Select user-specified number of words.
-        if MY_OS in 'lin, dar':
+        if MY_OS in 'lin, dar' and self.system_list:
             allwords = "".join(very_random.choice(self.uniq_words) for
                                _ in range(numwords))
             somewords = "".join(very_random.choice(self.trim_words) for
                                 _ in range(numwords))
-        elif MY_OS == 'win':
-            # Need to define uniq and trim b/c used in set_entropy().
-            self.uniq_words = self.eff_words[:]
-            self.trim_words = self.eff_words[:]
 
         effwords = "".join(very_random.choice(self.eff_words) for
                            _ in range(numwords))
@@ -682,21 +678,20 @@ class PassGenerator:
         # or words in the pass-string. Log can be any base, but needs to be the
         # same in numerator and denominator.
         # Note that N is already corrected for excluded words from make_pass().
-        self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
-        self.h_lc.set(self.h_any.get() + h_add3)
-        h_some = int(numwords * log(len(self.trim_words)) / log(2))
-        self.h_some.set(h_some + h_add3)
-        self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
-        self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
-
-        # Note that N is already corrected for excluded words from make_pass().
         # Note that the label names for 'any' and 'lc' are recycled between
-        #  system dict and eff wordlist options; in retrospect, not smart.
-        if MY_OS in 'lin, dar' and self.eff.get() is True:
-            self.h_any.set(
-                int(numwords * log(len(self.eff_words)) / log(2)))
+        #  system dict and eff wordlist options; in retrospect, not too smart.
+        if MY_OS in 'lin, dar' and self.system_list:
+            self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
             self.h_lc.set(self.h_any.get() + h_add3)
-            self.h_some.set(' ')
+            h_some = int(numwords * log(len(self.trim_words)) / log(2))
+            self.h_some.set(h_some + h_add3)
+            self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
+            self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
+            if self.eff.get() is True:
+                self.h_any.set(
+                    int(numwords * log(len(self.eff_words)) / log(2)))
+                self.h_lc.set(self.h_any.get() + h_add3)
+                self.h_some.set(' ')
         elif MY_OS == 'win' or not self.system_list:
             self.h_any.set(
                 int(numwords * log(len(self.eff_words)) / log(2)))
@@ -706,14 +701,13 @@ class PassGenerator:
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
         """
-        # These variables are only valid for Linux and MacOS system dictionary.
-        word_num = self.system_list
-        unique = [word for word in self.system_list if word.isalpha()]
-        trimmed = [word for word in unique if 8 >= len(word) >= 3]
-
-        # Need to redefine lists for the Windows system dictionary b/c it is
+        if MY_OS in 'lin, dar':
+            word_num = self.system_list
+            unique = [word for word in self.system_list if word.isalpha()]
+            trimmed = [word for word in unique if 8 >= len(word) >= 3]
+        # Need to redefine lists for the Windows b/c system dictionary is
         # not accessible.
-        if MY_OS == 'win':
+        elif MY_OS == 'win':
             word_num = unique = trimmed = []
 
         # Formatting this is a pain.  There must be a better way.
