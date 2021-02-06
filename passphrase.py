@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.3'
+__version__ = '0.4.4'
 
 import random
 import sys
@@ -39,28 +39,10 @@ except (ImportError, ModuleNotFoundError) as error:
 
 PROJ_URL = 'https://github.com/csecht/passphrase-generate'
 SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
-# MY_OS = sys.platform[:3]
-MY_OS = 'win'  # TESTING
-SYSWORDS_PATH = Path('/usr/share/dict/wordsXXX')
+MY_OS = sys.platform[:3]
+# MY_OS = 'win'  # TESTING
+SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
-
-# TODO: This only does Terminal stdout, no good for MacOS (or Win) standalone.
-def file_check() -> None:
-    """Confirm that required files are present, exit if not.
-    """
-    fnf_msg = ('\n*** Cannot locate either the system dictionary or EFF wordlist\n'
-               f'At a minimum, the file {EFFWORDS_PATH} should be in '
-               'the master directory.\nThat file is in the repository:\n'
-               f'{PROJ_URL}\n'
-               'Exiting now...')
-    if MY_OS in 'lin, dar':
-        if Path.is_file(SYSWORDS_PATH) is False:
-            if Path.is_file(EFFWORDS_PATH) is False:
-                print(fnf_msg)
-                sys.exit(1)
-    elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
-        print(fnf_msg)
-        sys.exit(1)
 
 
 class PassGenerator:
@@ -152,8 +134,13 @@ class PassGenerator:
         self.uniq_words = []
         self.trim_words = []
         self.eff_words = []
+        self.allwords = ''
+        self.somewords = ''
+        self.effwords = ''
 
         # Now put the widgets in the main window.
+        self.display_font = ''  # also used in config_results().
+        self.pass_fg = ''  # also used in config_results().
         self.config_window()
 
     def config_window(self) -> None:
@@ -410,8 +397,11 @@ class PassGenerator:
         """
         Populate lists with words to randomize in make_pass().
         """
-        # Have already checked for absense of both sys dict and EFF list, so now
-        #   need to check if only one is present and read from that.
+        # Need to check for absence of both sys dict and EFF list or either.
+        # If False, then loop through the files-not-found message. The only exit
+        #   is by closing the main window from the system's close window button.
+        self.check_files()
+
         if MY_OS == 'win':
             self.eff_list = Path(EFFWORDS_PATH).read_text().split()
             self.eff_words = [word for word in self.eff_list if word.isalpha()]
@@ -444,7 +434,7 @@ class PassGenerator:
                 self.eff_words = [word for word in self.eff_list if
                                   word.isalpha()]
             elif Path.is_file(EFFWORDS_PATH) is False:
-                self.eff_words = 'na'  # Necessary?
+                # self.eff_words = 'na'  # Necessary?
                 notice = (
                     '*** EFF large wordlist cannot be found.\n'
                     'That file is included with:\n'
@@ -456,11 +446,10 @@ class PassGenerator:
                 messagebox.showinfo(title='File not found',
                                     detail=notice)
 
-        # Need to remove words having the possessive form ('s, English)...
-        #  ...not relevant for Windows system.
-        # Remove hyphenated words (4) from EFF wordlist (are not alpha).
-        self.uniq_words = [word for word in self.system_list if word.isalpha()]
-        self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
+            # Need to remove words having the possessive form ('s, English)
+            # Remove hyphenated words (4) from EFF wordlist (are not alpha).
+            self.uniq_words = [word for word in self.system_list if word.isalpha()]
+            self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
 
     def make_pass(self) -> None:
         """Provide pass-string results each time Generate! is evoked.
@@ -523,13 +512,14 @@ class PassGenerator:
 
         # Select user-specified number of words.
         if MY_OS in 'lin, dar' and self.system_list:
-            allwords = "".join(very_random.choice(self.uniq_words) for
-                               _ in range(numwords))
-            somewords = "".join(very_random.choice(self.trim_words) for
-                                _ in range(numwords))
+            self.allwords = "".join(very_random.choice(self.uniq_words) for
+                                    _ in range(numwords))
+            self.somewords = "".join(very_random.choice(self.trim_words) for
+                                     _ in range(numwords))
 
-        effwords = "".join(very_random.choice(self.eff_words) for
-                           _ in range(numwords))
+        if Path.is_file(EFFWORDS_PATH):
+            self.effwords = "".join(very_random.choice(self.eff_words) for
+                                    _ in range(numwords))
 
         # Select symbols to append, as a convenience; is not user-specified.
         addsymbol = "".join(very_random.choice(SYMBOLS) for _ in range(1))
@@ -540,17 +530,17 @@ class PassGenerator:
         #   3rd, if EFF is only choice in Linux/Mac, disable eff checkbutton.
         #   There is probably a clearer way to work these conditions.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
-            allwords = effwords
-            somewords = effwords
+            self.allwords = self.effwords
+            self.somewords = self.effwords
         elif MY_OS == 'win' or not self.system_list:
-            allwords = effwords
-            somewords = effwords
+            self.allwords = self.effwords
+            self.somewords = self.effwords
             if MY_OS in 'lin, dar':
                 self.eff_checkbtn.config(state='disabled')
 
         # Build the pass-strings.
-        self.passphrase1 = allwords.lower() + addsymbol + addnum + addcaps
-        self.passphrase2 = somewords.lower() + addsymbol + addnum + addcaps
+        self.passphrase1 = self.allwords.lower() + addsymbol + addnum + addcaps
+        self.passphrase2 = self.somewords.lower() + addsymbol + addnum + addcaps
         self.password1 = "".join(very_random.choice(all_char) for
                                  _ in range(numchars))
         self.password2 = "".join(very_random.choice(some_char) for
@@ -572,9 +562,9 @@ class PassGenerator:
             self.length_some.set(' ')
 
         # Set statements common to all OS eff conditions:
-        self.phrase_any.set(allwords)
+        self.phrase_any.set(self.allwords)
         self.phrase_lc.set(self.passphrase1)
-        self.length_any.set(len(allwords))
+        self.length_any.set(len(self.allwords))
         self.length_lc.set(len(self.passphrase1))
         self.length_pw_any.set(len(self.password1))
         self.length_pw_some.set(len(self.password2))
@@ -701,14 +691,10 @@ class PassGenerator:
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
         """
-        if MY_OS in 'lin, dar':
-            word_num = self.system_list
-            unique = [word for word in self.system_list if word.isalpha()]
-            trimmed = [word for word in unique if 8 >= len(word) >= 3]
-        # Need to redefine lists for the Windows b/c system dictionary is
-        # not accessible.
-        elif MY_OS == 'win':
-            word_num = unique = trimmed = []
+        # To count words in lists, need to redefine lists for the Windows
+        # b/c system dictionary is  not accessible.
+        if MY_OS == 'win':
+            self.system_list = self.uniq_words = self.trim_words = []
 
         # Formatting this is a pain.  There must be a better way.
         info = (
@@ -722,9 +708,9 @@ While MacOS and Linux users have an option to use an EFF wordlist, by
 default the system dictionary is used. Windows users, however, by default
 can use only the EFF wordlist. Your system dictionary provides:
 """
-f"    {len(word_num)} words of any length, of which...\n"
-f"    {len(unique)} are unique (no possessive forms of nouns) and... \n"
-f"    {len(trimmed)} of unique words that have 3 to 8 letters."
+f"    {len(self.system_list)} words of any length, of which...\n"
+f"    {len(self.uniq_words)} are unique (no possessive forms of nouns) and... \n"
+f"    {len(self.trim_words)} of unique words that have 3 to 8 letters."
 """
 Only the unique and length-limited word subsets are used for passphrases
 if the EFF word list option is not selected. Passphrases built from the
@@ -763,6 +749,28 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
                           relief='groove', borderwidth=10, padx=20, pady=10)
         infotxt.insert('1.0', info)
         infotxt.pack()
+
+    def check_files(self) -> None:
+        """Confirm whether required files are present.
+        """
+        fnf_msg = (
+            '\nHmmm. Cannot locate the system dictionary or EFF '
+            'wordlist\n'
+            f'At a minimum, the file {EFFWORDS_PATH} should be in '
+            'the master directory.\nThat file is in the repository:\n'
+            f'{PROJ_URL}\n...Will exit program now...')
+        if MY_OS in 'lin, dar':
+            if Path.is_file(SYSWORDS_PATH) is False:
+                if Path.is_file(EFFWORDS_PATH) is False:
+                    print(fnf_msg)
+                    messagebox.showinfo(title='Files not found', detail=fnf_msg)
+                    self.generate_btn.configure(command=self.check_files)
+                    quit_gui()
+        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
+            print(fnf_msg)
+            messagebox.showinfo(title='Files not found', detail=fnf_msg)
+            self.generate_btn.configure(command=self.check_files)
+            quit_gui()
 
 
 def exclude_msg() -> None:
@@ -835,7 +843,6 @@ def quit_gui() -> None:
 
 
 if __name__ == "__main__":
-    file_check()
     root = tk.Tk()
     root.title("Passphrase Generator")
     PassGenerator(root).get_words()
