@@ -55,7 +55,7 @@ class PassGenerator:
         self.master = master
         self.master.bind("<Escape>", lambda q: quit_gui())
         self.master.bind("<Control-q>", lambda q: quit_gui())
-        self.master.bind("<Control-g>", lambda q: self.make_pass())
+        self.master.bind("<Control-g>", lambda q: self.set_passstrings())
 
         # Variables used in config_window(), in general order of appearance:
         # EFF checkbutton is not used in Windows b/c EFF words are default.
@@ -130,7 +130,7 @@ class PassGenerator:
         self.password1 = ''
         self.password2 = ''
 
-        # First used in make_pass()
+        # First used in set_passstrings()
         self.uniq_words = []
         self.trim_words = []
         self.eff_words = []
@@ -180,7 +180,7 @@ class PassGenerator:
 
         file = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=file)
-        file.add_command(label="Generate", command=self.make_pass,
+        file.add_command(label="Generate", command=self.set_passstrings,
                          accelerator="Ctrl+G")
         file.add_command(label="Quit", command=quit_gui, accelerator="Ctrl+Q")
 
@@ -276,7 +276,7 @@ class PassGenerator:
                   background=[('pressed', frame_bg),
                               ('active', pass_bg)])
         self.generate_btn.configure(style="G.TButton", text='Generate!',
-                                    command=self.make_pass)
+                                    command=self.set_passstrings)
         self.generate_btn.focus()
         self.exclude_btn.configure(style="G.TButton", text="?", width=0,
                                    command=exclude_msg)
@@ -395,64 +395,40 @@ class PassGenerator:
 
     def get_words(self) -> None:
         """
-        Populate lists with words to randomize in make_pass().
+        Populate lists with words to randomize in set_passstrings().
+
+        :return: Lists of words ready to randomize.
         """
-        # Need to check for absence of both sys dict and EFF list or either.
-        # If False, then loop through the files-not-found message. The only exit
-        #   is by closing the main window from the system's close window button.
+        # Need to check for absence of both or either sys dict and EFF list.
+        # If both missing, then notify and exit.
         self.check_files()
 
+        # If pass the check, then at least one word file exists, so proceed...
         if MY_OS == 'win':
             self.eff_list = Path(EFFWORDS_PATH).read_text().split()
             self.eff_words = [word for word in self.eff_list if word.isalpha()]
-        # TODO: Why begin here from __main__?
         if MY_OS in 'lin, dar':
             if Path.is_file(SYSWORDS_PATH):
                 self.system_list = Path(SYSWORDS_PATH).read_text().split()
             elif Path.is_file(SYSWORDS_PATH) is False:
-                notice = ('*** The system dictionary cannot be found.\n'
-                          'Using EFF word list ... ***')
-                self.eff_checkbtn.toggle()
-                self.eff_checkbtn.config(state='disabled')
-                print(notice)
-                messagebox.showinfo(title='File not found',
-                                    detail=notice)
-                # Remove widgets specific to EFF results; as if Windows.
-                # Statements are duplicated from config_window() & grid_window().
-                #  ...need to condense code to a function?
-                self.any_describe.config(text="Any words from EFF wordlist")
-                self.any_lc_describe.config(text="...add 3 characters")
-                self.select_describe.config(text=" ")
-                self.any_describe.grid(column=0, row=2, pady=(6, 0),
-                                       sticky=tk.E)
-                self.select_describe.grid_forget()
-                self.length_some_label.grid_forget()
-                self.h_some_label.grid_forget()
-                self.phrase_some_display.grid_forget()
+                self.config_nosyswords()
+
             if Path.is_file(EFFWORDS_PATH):
                 self.eff_list = Path(EFFWORDS_PATH).read_text().split()
                 self.eff_words = [word for word in self.eff_list if
                                   word.isalpha()]
             elif Path.is_file(EFFWORDS_PATH) is False:
-                # self.eff_words = 'na'  # Necessary?
-                notice = (
-                    '*** EFF large wordlist cannot be found.\n'
-                    'That file is included with:\n'
-                    f'{PROJ_URL}\n'
-                    'Using system dictionary... ***\n'
-                )
-                self.eff_checkbtn.config(state='disabled')
-                print(notice)
-                messagebox.showinfo(title='File not found',
-                                    detail=notice)
+                self.config_noeffwords()
 
             # Need to remove words having the possessive form ('s, English)
             # Remove hyphenated words (4) from EFF wordlist (are not alpha).
             self.uniq_words = [word for word in self.system_list if word.isalpha()]
             self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
 
-    def make_pass(self) -> None:
+    def set_passstrings(self) -> None:
         """Provide pass-string results each time Generate! is evoked.
+
+        :return: Random pass-strings of specified length.
         """
         # Need different passphrase descriptions for sys dict and EEF list.
         # Initial label texts are for sys. dict. and are set in
@@ -580,11 +556,12 @@ class PassGenerator:
     def config_results(self) -> None:
         """
         Configure fonts and display widths in results frames.
-        :return: None
+
+        :return: A more readable display of results.
         """
         # Change font colors of results from the initial self.passstub_fg.
-        # This is only needed for first call to make_pass(). Make conditional
-        #   with a counter in make_pass or is it okay to 'reconfig' each call?
+        # This is only needed for first call to set_passstrings(). Make conditional
+        #   with a counter in set_passstrings or is it okay to 'reconfig' each call?
         self.phrase_any_display.config( fg=self.pass_fg)
         self.phrase_lc_display.config(  fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
@@ -626,7 +603,7 @@ class PassGenerator:
         :param excl_char: User-defined character(s) to be excluded.
         """
 
-        # Redefine string lists here b/c make_pass() may have excluded some.
+        # Redefine string lists here b/c set_passstrings() may have excluded some.
         caps = ascii_uppercase
         all_char = ascii_letters + digits + punctuation
         some_char = ascii_letters + digits + SYMBOLS
@@ -645,7 +622,7 @@ class PassGenerator:
         # There are too many combinations of multi-char strings to easily code.
         # -1 is good approx. b/c of v. low P of existence of multi-char strings,
         #   so 1 is the maximum likely reduction of N. (true?)
-        # Cannot use string1 and string2 from make_pass() b/c those lists
+        # Cannot use string1 and string2 from set_passstrings() b/c those lists
         #  are shortened by the excluded character.
         #  We need full sets of possible characters for N here.
         if len(excl_char) != 0:
@@ -667,7 +644,7 @@ class PassGenerator:
         # number of possible characters or words and L is the number of characters
         # or words in the pass-string. Log can be any base, but needs to be the
         # same in numerator and denominator.
-        # Note that N is already corrected for excluded words from make_pass().
+        # Note that N is already corrected for excluded words from set_passstrings().
         # Note that the label names for 'any' and 'lc' are recycled between
         #  system dict and eff wordlist options; in retrospect, not too smart.
         if MY_OS in 'lin, dar' and self.system_list:
@@ -687,6 +664,67 @@ class PassGenerator:
                 int(numwords * log(len(self.eff_words)) / log(2)))
             self.h_lc.set(self.h_any.get() + h_add3)
             self.h_some.set(' ')
+
+    def check_files(self) -> None:
+        """Confirm whether required files are present, exit if not.
+
+        :return: A graceful exit.
+        """
+        fnf_msg = (
+            f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} \n'
+            f'At a minimum, the file {EFFWORDS_PATH} should be in '
+            'the master directory.\nThat file is in the repository:\n'
+            f'{PROJ_URL}\n...Will exit program now...')
+        if MY_OS in 'lin, dar':
+            if Path.is_file(SYSWORDS_PATH) is False:
+                if Path.is_file(EFFWORDS_PATH) is False:
+                    print(fnf_msg)
+                    messagebox.showinfo(title='Files not found', detail=fnf_msg)
+                    self.generate_btn.configure(command=self.check_files)
+                    quit_gui()
+        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
+            print(fnf_msg)
+            messagebox.showinfo(title='Files not found', detail=fnf_msg)
+            self.generate_btn.configure(command=self.check_files)
+            quit_gui()
+
+    def config_nosyswords(self) -> None:
+        """
+        Warn that the Linux/MacOX system dictionary cannot be found.
+
+        :return: Pop-up message.
+        """
+        notice = ('Hmmm. The system dictionary cannot be found.\n'
+                  f'Using only {EFFWORDS_PATH} ...')
+        self.eff_checkbtn.toggle()
+        self.eff_checkbtn.config(state='disabled')
+        print(notice)
+        messagebox.showinfo(title='File not found', detail=notice)
+        # Remove widgets specific to EFF results; as if Windows.
+        # Statements are duplicated from config_window() & grid_window().
+        #  ...need to condense code to a function?
+        self.any_describe.config(text="Any words from EFF wordlist")
+        self.any_lc_describe.config(text="...add 3 characters")
+        self.select_describe.config(text=" ")
+        self.any_describe.grid(column=0, row=2, pady=(6, 0), sticky=tk.E)
+        self.select_describe.grid_forget()
+        self.length_some_label.grid_forget()
+        self.h_some_label.grid_forget()
+        self.phrase_some_display.grid_forget()
+
+    def config_noeffwords(self) -> None:
+        """Warn that EFF wordlist cannot be found.
+
+        :return: Pop-up message.
+        """
+        # This will not be called in the standalone app or executable.
+        notice = (f'Oops! {EFFWORDS_PATH} is missing.\n'
+                  'It should be in master directory and is'
+                  f' included with the repository\n'
+                  'Using system dictionary...\n')
+        self.eff_checkbtn.config(state='disabled')
+        print(notice)
+        messagebox.showinfo(title='File not found', detail=notice)
 
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
@@ -749,28 +787,6 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
                           relief='groove', borderwidth=10, padx=20, pady=10)
         infotxt.insert('1.0', info)
         infotxt.pack()
-
-    def check_files(self) -> None:
-        """Confirm whether required files are present.
-        """
-        fnf_msg = (
-            '\nHmmm. Cannot locate the system dictionary or EFF '
-            'wordlist\n'
-            f'At a minimum, the file {EFFWORDS_PATH} should be in '
-            'the master directory.\nThat file is in the repository:\n'
-            f'{PROJ_URL}\n...Will exit program now...')
-        if MY_OS in 'lin, dar':
-            if Path.is_file(SYSWORDS_PATH) is False:
-                if Path.is_file(EFFWORDS_PATH) is False:
-                    print(fnf_msg)
-                    messagebox.showinfo(title='Files not found', detail=fnf_msg)
-                    self.generate_btn.configure(command=self.check_files)
-                    quit_gui()
-        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
-            print(fnf_msg)
-            messagebox.showinfo(title='Files not found', detail=fnf_msg)
-            self.generate_btn.configure(command=self.check_files)
-            quit_gui()
 
 
 def exclude_msg() -> None:
