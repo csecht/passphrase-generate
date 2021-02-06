@@ -545,8 +545,6 @@ class PassGenerator:
         self.pw_any.set(self.password1)
         self.pw_some.set(self.password2)
 
-        self.config_results()
-
         # Finally, fill in H values for each pass-string.
         # The character lists here may have some characters excluded.
         self.set_entropy(numwords, numchars, unused)
@@ -621,6 +619,8 @@ class PassGenerator:
             self.h_lc.set(self.h_any.get() + h_add3)
             self.h_some.set(' ')
 
+        self.config_results()
+
     def config_results(self) -> None:
         """
         Configure fonts and display widths in results frames.
@@ -629,9 +629,8 @@ class PassGenerator:
         """
         # Change font colors of results from the initial self.passstub_fg.
         # This is only needed for first call to set_passstrings(). Make
-        # conditional
-        #   with a counter in set_passstrings or is it okay to 'reconfig'
-        #   each call?
+        #  conditional with a counter in set_passstrings
+        #  or is it okay to 'reconfig' each call?
         self.phrase_any_display.config(fg=self.pass_fg)
         self.phrase_lc_display.config(fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
