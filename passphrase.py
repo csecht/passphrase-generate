@@ -308,8 +308,7 @@ class PassGenerator:
         self.grid_window()
 
     def grid_window(self) -> None:
-        """
-        Layout all widgets on a tkinter grid.
+        """Grid all tkinter widgets.
 
         :return: A nice looking interactive window.
         """
@@ -801,8 +800,7 @@ def exclude_msg() -> None:
 
 
 def about() -> None:
-    """
-    Basic information for the script; called from GUI Help menu.
+    """Basic information for the script; called from GUI Help menu.
 
     :return: Information window.
     """
