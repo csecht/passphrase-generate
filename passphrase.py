@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.2'
+__version__ = '0.4.3'
 
 import random
 import sys
@@ -37,15 +37,14 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-# PROGRAM_VER = '0.4.1'
 PROJ_URL = 'https://github.com/csecht/passphrase-generate'
 SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
-MY_OS = sys.platform[:3]
-# MY_OS = 'win'  # TESTING
+# MY_OS = sys.platform[:3]
+MY_OS = 'win'  # TESTING
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 
-
+# TODO: This only does Terminal stdout, no good for MacOS (or Win) standalone.
 def file_check() -> None:
     """Confirm that required files are present, exit if not.
     """
@@ -125,10 +124,10 @@ class PassGenerator:
         self.phrase_some =       tk.StringVar()
         # Results are displayed in Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
-        self.phrase_any_display = tk.Entry(self.result_frame1,
-                                           textvariable=self.phrase_any)
-        self.phrase_lc_display =  tk.Entry(self.result_frame1,
-                                           textvariable=self.phrase_lc)
+        self.phrase_any_display = tk.Entry( self.result_frame1,
+                                            textvariable=self.phrase_any)
+        self.phrase_lc_display =  tk.Entry( self.result_frame1,
+                                            textvariable=self.phrase_lc)
         self.phrase_some_display = tk.Entry(self.result_frame1,
                                             textvariable=self.phrase_some)
         self.pw_header =          tk.Label()
@@ -137,16 +136,13 @@ class PassGenerator:
 
         self.pw_any =             tk.StringVar()
         self.pw_some =            tk.StringVar()
-        self.pw_any_display =     tk.Entry(self.result_frame2,
-                                           textvariable=self.pw_any, )
-        self.pw_some_display =    tk.Entry(self.result_frame2,
-                                           textvariable=self.pw_some)
+        self.pw_any_display =     tk.Entry( self.result_frame2,
+                                            textvariable=self.pw_any, )
+        self.pw_some_display =    tk.Entry( self.result_frame2,
+                                            textvariable=self.pw_some)
         # First used in get_words():
-        self.use_effwords = True
-        self.system_words = 'Null'
-        self.eff_wordlist = 'None'
-        self.eff_list = ['None']
-        self.system_list = ['None']
+        self.eff_list = []
+        self.system_list = []
         self.passphrase1 = ''
         self.passphrase2 = ''
         self.password1 = ''
@@ -164,7 +160,7 @@ class PassGenerator:
         """
         Configure all tkinter widgets.
 
-        :return: An understandable window framework.
+        :return: Easy to understand window labels and data.
         """
         if MY_OS == 'win':
             self.master.minsize(850, 360)
@@ -174,13 +170,12 @@ class PassGenerator:
             self.master.maxsize(1230, 390)
 
         # Use Courier b/c TKFixedFont does not monospace symbol characters.
-        #  also used in config_results().
-        self.display_font = 'Courier', 12
+        self.display_font = 'Courier', 12  # also used in config_results().
 
         master_bg = 'SkyBlue4'  # also used for some labels.
-        master_fg = 'LightCyan2'  # foreground for user entry labels
+        master_fg = 'LightCyan2'
         frame_bg = 'grey40'  # background for data labels and frame
-        stubresult_fg = 'grey60'
+        stubresult_fg = 'grey60'  # used only for initial window
         pass_bg = 'khaki2'
         self.pass_fg = 'brown4'  # also used in config_results()
 
@@ -217,8 +212,8 @@ class PassGenerator:
                                      fg=master_fg, bg=master_bg,
                                      activebackground='grey80',
                                      selectcolor=frame_bg)
-        if self.use_effwords is False:
-            self.eff_checkbtn.config(state='disabled')
+        # if self.use_effwords is False:
+        #     self.eff_checkbtn.config(state='disabled')
 
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=pass_bg, bg=master_bg)
@@ -415,24 +410,41 @@ class PassGenerator:
         """
         Populate lists with words to randomize in make_pass().
         """
+        # Have already checked for absense of both sys dict and EFF list, so now
+        #   need to check if only one is present and read from that.
         if MY_OS == 'win':
-            self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
-
+            self.eff_list = Path(EFFWORDS_PATH).read_text().split()
+            self.eff_words = [word for word in self.eff_list if word.isalpha()]
+        # TODO: Why begin here from __main__?
         if MY_OS in 'lin, dar':
             if Path.is_file(SYSWORDS_PATH):
-                self.system_words = Path(SYSWORDS_PATH).read_text()
+                self.system_list = Path(SYSWORDS_PATH).read_text().split()
             elif Path.is_file(SYSWORDS_PATH) is False:
-                notice = ('*** NOTICE: The system dictionary cannot be found.\n'
+                notice = ('*** The system dictionary cannot be found.\n'
                           'Using EFF word list ... ***')
-                self.system_words = 'Null'
+                self.eff_checkbtn.toggle()
                 self.eff_checkbtn.config(state='disabled')
                 print(notice)
                 messagebox.showinfo(title='File not found',
                                     detail=notice)
+                # Remove widgets specific to EFF results; as if Windows.
+                # Statements are duplicated from config_window() & grid_window().
+                #  ...need to condense code to a function?
+                self.any_describe.config(text="Any words from EFF wordlist")
+                self.any_lc_describe.config(text="...add 3 characters")
+                self.select_describe.config(text=" ")
+                self.any_describe.grid(column=0, row=2, pady=(6, 0),
+                                       sticky=tk.E)
+                self.select_describe.grid_forget()
+                self.length_some_label.grid_forget()
+                self.h_some_label.grid_forget()
+                self.phrase_some_display.grid_forget()
             if Path.is_file(EFFWORDS_PATH):
-                self.eff_wordlist = Path(EFFWORDS_PATH).read_text()
+                self.eff_list = Path(EFFWORDS_PATH).read_text().split()
+                self.eff_words = [word for word in self.eff_list if
+                                  word.isalpha()]
             elif Path.is_file(EFFWORDS_PATH) is False:
-                self.use_effwords = False  # Used in window_setup().
+                self.eff_words = 'na'  # Necessary?
                 notice = (
                     '*** EFF large wordlist cannot be found.\n'
                     'That file is included with:\n'
@@ -443,16 +455,12 @@ class PassGenerator:
                 print(notice)
                 messagebox.showinfo(title='File not found',
                                     detail=notice)
-            self.system_list = self.system_words.split()
-
-        self.eff_list = self.eff_wordlist.split()
 
         # Need to remove words having the possessive form ('s, English)...
         #  ...not relevant for Windows system.
         # Remove hyphenated words (4) from EFF wordlist (are not alpha).
         self.uniq_words = [word for word in self.system_list if word.isalpha()]
         self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
-        self.eff_words = [word for word in self.eff_list if word.isalpha()]
 
     def make_pass(self) -> None:
         """Provide pass-string results each time Generate! is evoked.
@@ -496,9 +504,13 @@ class PassGenerator:
 
         if len(unused) != 0:
             if MY_OS in 'lin, dar':
-                self.uniq_words = [word for word in self.uniq_words if unused not in word]
-                self.trim_words = [word for word in self.trim_words if unused not in word]
-            self.eff_words = [word for word in self.eff_words if unused not in word]
+                self.uniq_words = [
+                    word for word in self.uniq_words if unused not in word]
+                self.trim_words = [
+                    word for word in self.trim_words if unused not in word]
+            # Remaining statements apply to all OS.
+            self.eff_words = [
+                word for word in self.eff_words if unused not in word]
             caps = [letter for letter in caps if unused not in letter]
             all_char = [char for char in all_char if unused not in char]
             some_char = [char for char in some_char if unused not in char]
@@ -510,10 +522,16 @@ class PassGenerator:
         numchars = int(self.numchars_entry.get().strip())
 
         # Select user-specified number of words.
-        allwords = "".join(very_random.choice(self.uniq_words) for
-                           _ in range(numwords))
-        somewords = "".join(very_random.choice(self.trim_words) for
-                            _ in range(numwords))
+        if MY_OS in 'lin, dar':
+            allwords = "".join(very_random.choice(self.uniq_words) for
+                               _ in range(numwords))
+            somewords = "".join(very_random.choice(self.trim_words) for
+                                _ in range(numwords))
+        elif MY_OS == 'win':
+            # Need to define uniq and trim b/c used in set_entropy().
+            self.uniq_words = self.eff_words[:]
+            self.trim_words = self.eff_words[:]
+
         effwords = "".join(very_random.choice(self.eff_words) for
                            _ in range(numwords))
 
@@ -528,7 +546,7 @@ class PassGenerator:
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             allwords = effwords
             somewords = effwords
-        elif MY_OS == 'win' or self.system_words == 'Null':
+        elif MY_OS == 'win' or not self.system_list:
             allwords = effwords
             somewords = effwords
             if MY_OS in 'lin, dar':
@@ -679,7 +697,7 @@ class PassGenerator:
                 int(numwords * log(len(self.eff_words)) / log(2)))
             self.h_lc.set(self.h_any.get() + h_add3)
             self.h_some.set(' ')
-        elif MY_OS == 'win' or self.system_words == 'Null':
+        elif MY_OS == 'win' or not self.system_list:
             self.h_any.set(
                 int(numwords * log(len(self.eff_words)) / log(2)))
             self.h_lc.set(self.h_any.get() + h_add3)
@@ -689,14 +707,12 @@ class PassGenerator:
         """Provide information about words used to create passphrases.
         """
         # These variables are only valid for Linux and MacOS system dictionary.
-        word_num = self.system_words.split()
+        word_num = self.system_list
         unique = [word for word in self.system_list if word.isalpha()]
         trimmed = [word for word in unique if 8 >= len(word) >= 3]
 
         # Need to redefine lists for the Windows system dictionary b/c it is
-        # not accessible. The initial value of self.system_words from __init__
-        # is 'None', which gives a list length of 1 when the length should be
-        # 0; but can't set the __init__ value to null, [], b/c errors arise.
+        # not accessible.
         if MY_OS == 'win':
             word_num = unique = trimmed = []
 
