@@ -628,9 +628,9 @@ class PassGenerator:
         :return: A more readable display of results.
         """
         # Change font colors of results from the initial self.passstub_fg.
-        # This is only needed for first call to set_passstrings(). Make
-        #  conditional with a counter in set_passstrings
-        #  or is it okay to 'reconfig' each call?
+        # This is only needed for first call to set_passstrings().
+        #  Make it conditional with a counter in set_passstrings
+        #  or is it okay to .config() on each subsequent call?
         self.phrase_any_display.config(fg=self.pass_fg)
         self.phrase_lc_display.config(fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
@@ -639,30 +639,29 @@ class PassGenerator:
 
         # Need to reduce font size of long pass-string length to keep
         # window on screen, then reset to default font size when pass-string
-        # length is shortened. On MacOS, fonts can be too small.
-        # Adjust width of results entry widgets to THE longest result string.
-        # B/c 'width' is character units, not pixels, length is not perfect
-        #   fit when font sizes change.
+        # length is shortened.
+        # Adjust width of results display widgets to THE longest result string.
+        # B/c 'width' is character units, not pixels, length may change
+        #   as font sizes and string lengths change.
         small_font = 'Courier', 10
         if len(self.passphrase1) > 60:
-            self.phrase_any_display.config(font=small_font,
-                                           width=len(self.passphrase1))
-            self.phrase_lc_display.config(font=small_font)
+            self.phrase_any_display.config( font=small_font,
+                                            width=len(self.passphrase1))
+            self.phrase_lc_display.config(  font=small_font)
             self.phrase_some_display.config(font=small_font)
         elif len(self.passphrase1) <= 60:
-            self.phrase_any_display.config(font=self.display_font,
-                                           width=len(self.passphrase1))
-            self.phrase_lc_display.config(font=self.display_font)
-            self.phrase_some_display.config(font=self.display_font)
+            self.phrase_any_display.config( font=self.display_font, width=60)
+            self.phrase_lc_display.config(  font=self.display_font, width=60)
+            self.phrase_some_display.config(font=self.display_font, width=60)
 
         if len(self.password1) > 60:
-            self.pw_any_display.config(font=small_font,
-                                       width=len(self.password1))
-            self.pw_some_display.config(font=small_font,
-                                        width=len(self.password2))
+            self.pw_any_display.config(     font=small_font,
+                                            width=len(self.password1))
+            self.pw_some_display.config(    font=small_font,
+                                            width=len(self.password2))
         elif len(self.password1) <= 60:
-            self.pw_any_display.config(font=self.display_font, width=60)
-            self.pw_some_display.config(font=self.display_font, width=60)
+            self.pw_any_display.config(     font=self.display_font, width=60)
+            self.pw_some_display.config(    font=self.display_font, width=60)
 
     def check_files(self) -> None:
         """Confirm whether required files are present, exit if not.
