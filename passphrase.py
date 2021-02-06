@@ -727,8 +727,8 @@ class PassGenerator:
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
         """
-        # To count words in lists, need to redefine lists for the Windows
-        # b/c system dictionary is  not accessible.
+        # B/c system dictionary is not accessible in Windows, need to redefine
+        #   lists so that they sum to zero words.
         if MY_OS == 'win':
             self.system_list = self.uniq_words = self.trim_words = []
 
@@ -780,11 +780,11 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
         num_lines = info.count('\n')
-        infotxt = tk.Text(infowin, width=75, height=num_lines + 1,
-                          background='dark slate grey', foreground='grey94',
-                          relief='groove', borderwidth=10, padx=20, pady=10)
-        infotxt.insert('1.0', info)
-        infotxt.pack()
+        infotext = tk.Text(infowin, width=75, height=num_lines + 1,
+                           background='dark slate grey', foreground='grey94',
+                           relief='groove', borderwidth=10, padx=20, pady=10)
+        infotext.insert('1.0', info)
+        infotext.pack()
 
 
 def exclude_msg() -> None:
