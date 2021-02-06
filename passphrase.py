@@ -396,11 +396,12 @@ class PassGenerator:
 
         :return: Lists of words ready to randomize.
         """
-        # Need to check for absence of both or either sys dict and EFF list.
+        # Need to check for presence of system dictionary and EFF list.
         # If both missing, then notify and exit.
         self.check_files()
 
-        # If pass the check, then at least one word file exists, so proceed...
+        # If pass the check, then at least one file exists, so proceed to
+        #   populate word list(s).
         if MY_OS == 'win':
             self.eff_list = Path(EFFWORDS_PATH).read_text().split()
             self.eff_words = [word for word in self.eff_list if word.isalpha()]
@@ -423,7 +424,7 @@ class PassGenerator:
             self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
 
     def set_passstrings(self) -> None:
-        """Provide pass-string results each time Generate! is evoked.
+        """Provide pass-string results each time this is called.
 
         :return: Random pass-strings of specified length.
         """
@@ -457,13 +458,11 @@ class PassGenerator:
             self.numchars_entry.delete(0, 'end')
             self.numchars_entry.insert(0, '0')
 
+        # Filter out words and strings containing characters to be excluded.
+        unused = str(self.exclude_entry.get().strip())
         caps = ascii_uppercase
         all_char = ascii_letters + digits + punctuation
         some_char = ascii_letters + digits + SYMBOLS
-
-        # Filter out words and strings containing characters to be excluded.
-        unused = str(self.exclude_entry.get().strip())
-
         if len(unused) != 0:
             if MY_OS in 'lin, dar' and self.system_list:
                 self.uniq_words = [
@@ -483,25 +482,20 @@ class PassGenerator:
         numwords = int(self.numwords_entry.get().strip())
         numchars = int(self.numchars_entry.get().strip())
 
-        # Select user-specified number of words.
+        # Randomly select user-specified number of words.
         if MY_OS in 'lin, dar' and self.system_list:
             self.allwords = "".join(very_random.choice(self.uniq_words) for
                                     _ in range(numwords))
             self.somewords = "".join(very_random.choice(self.trim_words) for
                                      _ in range(numwords))
-
+        # Windows only uses EFF, Linux/MacOS uses it as an option.
         if Path.is_file(EFFWORDS_PATH):
             self.effwords = "".join(very_random.choice(self.eff_words) for
                                     _ in range(numwords))
 
-        # Select symbols to append, as a convenience; is not user-specified.
-        addsymbol = "".join(very_random.choice(SYMBOLS) for _ in range(1))
-        addcaps = "".join(very_random.choice(caps) for _ in range(1))
-        addnum = "".join(very_random.choice(digits) for _ in range(1))
-
-        # 1st condition evaluates eff checkbutton on, 2nd if no sys dict found.
-        #   3rd, if EFF is only choice in Linux/Mac, disable eff checkbutton.
-        #   There is probably a clearer way to work these conditions.
+        # 1st condition evaluates whether eff checkbutton state is on,
+        # 2nd if no sys dict found,
+        # 3rd if only EFF found in Linux/Mac, then disable eff checkbutton.
         if MY_OS in 'lin, dar' and self.eff.get() is True:
             self.allwords = self.effwords
             self.somewords = self.effwords
@@ -511,6 +505,11 @@ class PassGenerator:
             if MY_OS in 'lin, dar':
                 self.eff_checkbtn.config(state='disabled')
 
+        # Randomly select symbols to append; number is not user-specified.
+        addsymbol = "".join(very_random.choice(SYMBOLS) for _ in range(1))
+        addcaps = "".join(very_random.choice(caps) for _ in range(1))
+        addnum = "".join(very_random.choice(digits) for _ in range(1))
+
         # Build the pass-strings.
         self.passphrase1 = self.allwords.lower() + addsymbol + addnum + addcaps
         self.passphrase2 = self.somewords.lower() + addsymbol + addnum + addcaps
@@ -519,22 +518,8 @@ class PassGenerator:
         self.password2 = "".join(very_random.choice(some_char) for
                                  _ in range(numchars))
 
-        # Set all pass-strings for display.
-        #   No need to set sys dictionary vars or provide eff checkbutton
-        #     condition for Windows b/c no system dictionary is available.
-        if MY_OS in 'lin, dar':
-            if self.eff.get() is False:
-                self.phrase_some.set(self.passphrase2)
-                self.length_some.set(len(self.passphrase2))
-            elif self.eff.get() is True:
-                self.phrase_some.set(' ')
-                self.length_some.set(' ')
-
-        elif MY_OS == 'win':
-            self.phrase_some.set(' ')
-            self.length_some.set(' ')
-
-        # Set statements common to all OS eff conditions:
+        # Set all pass-strings for display as results.
+        # Set StringVar() that are used in all OS and eff states:
         self.phrase_any.set(self.allwords)
         self.phrase_lc.set(self.passphrase1)
         self.length_any.set(len(self.allwords))
@@ -543,9 +528,17 @@ class PassGenerator:
         self.length_pw_some.set(len(self.password2))
         self.pw_any.set(self.password1)
         self.pw_some.set(self.password2)
+        if MY_OS in 'lin, dar':
+            if self.eff.get() is False:
+                self.phrase_some.set(self.passphrase2)
+                self.length_some.set(len(self.passphrase2))
+            elif self.eff.get() is True:
+                self.phrase_some.set(' ')
+                self.length_some.set(' ')
+        #  ^^No need to set sys dictionary vars or evaluate eff checkbutton
+        #    state for Windows b/c no system dictionary is available.
 
-        # Finally, fill in H values for each pass-string.
-        # The character lists here may have some characters excluded.
+        # Finally, set H values for each pass-string.
         self.set_entropy(numwords, numchars, unused)
 
     def set_entropy(self, numwords: int, numchars: int, excl_char: str) -> None:
@@ -556,17 +549,12 @@ class PassGenerator:
         :param excl_char: User-defined character(s) to be excluded.
         """
 
-        # Redefine string lists here b/c set_passstrings() may have excluded some.
-        caps = ascii_uppercase
-        all_char = ascii_letters + digits + punctuation
-        some_char = ascii_letters + digits + SYMBOLS
-
         # https://en.wikipedia.org/wiki/Password_strength
         # We use only 1 character each from each set of symbols, numbers, caps.
         #  so only need P for selecting one from a set to calc H.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
         h_symbol =  -log(1/len(SYMBOLS), 2)
-        h_cap = -log(1/len(caps), 2)
+        h_cap = -log(1/len(ascii_uppercase), 2)
         h_digit = -log(1/len(digits), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 12
 
@@ -576,13 +564,15 @@ class PassGenerator:
         # -1 is good approx. b/c of v. low P of existence of multi-char strings,
         #   so 1 is the maximum likely reduction of N. (true?)
         # Cannot use string1 and string2 from set_passstrings() b/c those lists
-        #  are shortened by the excluded character.
-        #  We need full sets of possible characters for N here.
+        #   are shortened by the excluded character.
+        # Need full sets of possible characters for N here.
+        all_char = ascii_letters + digits + punctuation
+        some_char = ascii_letters + digits + SYMBOLS
         if len(excl_char) != 0:
             if excl_char in SYMBOLS:
                 h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
-            if excl_char in caps:
-                h_cap = -log(1 / (len(caps) - 1), 2)
+            if excl_char in ascii_uppercase:
+                h_cap = -log(1 / (len(ascii_uppercase) - 1), 2)
             if excl_char in digits:
                 h_digit = -log(1 / (len(digits) - 1), 2)
             h_add3 = int(h_symbol + h_cap + h_digit)
@@ -594,12 +584,12 @@ class PassGenerator:
                     int(numchars * log(len(some_char) - 1) / log(2)))
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
-        # number of possible characters or words and L is the number of characters
-        # or words in the pass-string. Log can be any base, but needs to be the
-        # same in numerator and denominator.
+        #   number of possible characters or words and L is the number of characters
+        #   or words in the pass-string. Log can be any base, but needs to be
+        #   the same in numerator and denominator.
         # Note that N is already corrected for excluded words from set_passstrings().
         # Note that the label names for 'any' and 'lc' are recycled between
-        #  system dict and eff wordlist options; in retrospect, not too smart.
+        #   system dict and eff wordlist options; in retrospect, maybe not smart.
         if MY_OS in 'lin, dar' and self.system_list:
             self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
             self.h_lc.set(self.h_any.get() + h_add3)
@@ -616,7 +606,6 @@ class PassGenerator:
             self.h_any.set(
                 int(numwords * log(len(self.eff_words)) / log(2)))
             self.h_lc.set(self.h_any.get() + h_add3)
-            self.h_some.set(' ')
 
         self.config_results()
 
@@ -627,9 +616,9 @@ class PassGenerator:
         :return: A more readable display of results.
         """
         # Change font colors of results from the initial self.passstub_fg.
-        # This is only needed for first call to set_passstrings().
-        #  Make it conditional with a counter in set_passstrings()
-        #  or is it okay to .config() on each subsequent call?
+        # pass_fg does not change after first call to set_passstrings().
+        #   So, make it conditional with a counter in set_passstrings()
+        #   or is it okay to .config() on every call?
         self.phrase_any_display.config( fg=self.pass_fg)
         self.phrase_lc_display.config(  fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
@@ -637,8 +626,8 @@ class PassGenerator:
         self.pw_some_display.config(    fg=self.pass_fg)
 
         # Need to reduce font size of long pass-string length to keep
-        # window on screen, then reset to default font size when pass-string
-        # length is shortened.
+        #   window on screen, then reset to default font size when pass-string
+        #   length is shortened.
         # Adjust width of results display widgets to THE longest result string.
         # B/c 'width' is character units, not pixels, length may change
         #   as font sizes and string lengths change.
@@ -677,12 +666,10 @@ class PassGenerator:
                 if Path.is_file(EFFWORDS_PATH) is False:
                     print(fnf_msg)
                     messagebox.showinfo(title='Files not found', detail=fnf_msg)
-                    self.generate_btn.configure(command=self.check_files)
                     quit_gui()
         elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
             print(fnf_msg)
             messagebox.showinfo(title='Files not found', detail=fnf_msg)
-            self.generate_btn.configure(command=self.check_files)
             quit_gui()
 
     def config_nosyswords(self) -> None:
@@ -699,7 +686,6 @@ class PassGenerator:
         messagebox.showinfo(title='File not found', detail=notice)
         # Remove widgets specific to EFF results; as if Windows.
         # Statements are duplicated from config_window() & grid_window().
-        #  ...need to condense code to a function?
         self.any_describe.config(text="Any words from EFF wordlist")
         self.any_lc_describe.config(text="...add 3 characters")
         self.select_describe.config(text=" ")
