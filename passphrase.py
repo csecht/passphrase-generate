@@ -693,6 +693,7 @@ class PassGenerator:
     def config_nosyswords(self) -> None:
         """
         Warn that the Linux/MacOX system dictionary cannot be found.
+        Call from get_words().
 
         :return: Pop-up message.
         """
@@ -714,7 +715,8 @@ class PassGenerator:
         self.phrase_some_display.grid_forget()
 
     def config_noeffwords(self) -> None:
-        """Warn that EFF wordlist cannot be found.
+        """
+        Warn that EFF wordlist cannot be found. Call from get_words().
 
         :return: Pop-up message.
         """
