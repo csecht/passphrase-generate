@@ -137,8 +137,9 @@ class PassGenerator:
         self.allwords = ''
         self.somewords = ''
         self.effwords = ''
+        self.prior_unused = ''
 
-        # Now put the widgets in the main window.
+        # Now configure widgets for the main window.
         self.display_font = ''  # also used in config_results().
         self.pass_fg = ''  # also used in config_results().
         self.config_window()
@@ -448,7 +449,7 @@ class PassGenerator:
             self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
 
     def set_passstrings(self) -> None:
-        """Generate and set pass-strings.
+        """Generate and set pass-strings; call: keybind, menu, or button.
 
         :return: Random pass-strings of specified length.
         """
@@ -456,7 +457,7 @@ class PassGenerator:
         # Initial label texts are for sys. dict. and are set in
         # window_setup(), but are modified here if EFF option is used.
         # OS label descriptors are written each time "Generate" command is run
-        #  b/c eff clickbutton options may require them to change.
+        #  b/c eff checkbutton options may require them to change.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.any_describe.config(   text="Any words from dictionary")
@@ -486,8 +487,11 @@ class PassGenerator:
             caps = [letter for letter in caps if unused not in letter]
             all_char = [char for char in all_char if unused not in char]
             some_char = [char for char in some_char if unused not in char]
+            self.prior_unused = unused
         # Need to reset lists if user removes prior excluded character(s).
-        elif len(unused) == 0:
+        # These lists are initially defined with default values in get_words().
+        #   Don't repopulate lists when there is no change to them.
+        elif len(unused) == 0 and self.prior_unused != unused:
             if MY_OS == 'win':
                 self.eff_words = [
                     word for word in self.eff_list if word.isalpha()]
@@ -498,6 +502,7 @@ class PassGenerator:
                     word for word in self.system_list if word.isalpha()]
                 self.trim_words = [
                     word for word in self.uniq_words if 8 >= len(word) >= 3]
+            self.prior_unused = unused
 
         # Need to correct invalid user entries.
         if self.numwords_entry.get() == '':
