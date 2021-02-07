@@ -57,8 +57,8 @@ class PassGenerator:
         """
         self.master = master
 
-        # Variables used in config_window(), in general order of appearance:
-        # EFF checkbutton is not used in Windows b/c EFF words are default.
+        # tkinter widgets used in config_window(), in general order of appearance:
+        # EFF checkbutton is not used in Windows b/c only EFF words are used.
         self.eff =          tk.BooleanVar()
         self.eff_checkbtn = tk.Checkbutton()
 
@@ -69,7 +69,7 @@ class PassGenerator:
         self.exclude_label =  tk.Label()
         self.exclude_entry =  tk.Entry()
 
-        # There are problems of tk.Button text showing up on MacOS, so ttk
+        # There are problems of tk.Button text showing up on MacOS, so ttk.
         self.exclude_btn =  ttk.Button()
         self.generate_btn = ttk.Button()
 
@@ -195,8 +195,6 @@ class PassGenerator:
                                      fg=master_fg, bg=master_bg,
                                      activebackground='grey80',
                                      selectcolor=frame_bg)
-        # if self.use_effwords is False:
-        #     self.eff_checkbtn.config(state='disabled')
 
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=pass_bg, bg=master_bg)
@@ -213,7 +211,7 @@ class PassGenerator:
         self.result_frame2.config(borderwidth=3, relief='sunken',
                                   background=frame_bg)
 
-        # Passphrase results section:
+        # Passphrase results section ##########################
         # Set up OS-specific widgets.
         if MY_OS in 'lin, dar':
             self.any_describe.config(   text="Any words from dictionary",
@@ -282,7 +280,7 @@ class PassGenerator:
         self.exclude_btn.configure(style="G.TButton", text="?", width=0,
                                    command=exclude_msg)
 
-        # Password results section:
+        # Password results section ##########################
         self.pw_header.config(       text='Passwords', font=('default', 12),
                                      fg=pass_bg, bg=master_bg)
         if MY_OS == 'dar':
@@ -307,7 +305,7 @@ class PassGenerator:
         self.exclude_label.config(   text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(   width=3)
-
+        #####################################################
         self.grid_window()
 
     def grid_window(self) -> None:
@@ -315,7 +313,7 @@ class PassGenerator:
 
         :return: A nice looking interactive window.
         """
-        # ############# sorted by row number #############
+        ############## sorted by row number #################
         # Passphrase widgets grid:
         self.eff_checkbtn.grid(      column=1, row=0, pady=(10, 5), padx=5,
                                      columnspan=2, sticky=tk.W)
@@ -396,7 +394,7 @@ class PassGenerator:
     def check_files(self):
         """Confirm whether required files are present, exit if not.
 
-        :return: A graceful exit or pass-strings.
+        :return: A graceful exit or pass through.
         """
         fnf_msg = (
             f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} '
@@ -423,7 +421,7 @@ class PassGenerator:
         """
         Populate lists with words to randomize in set_passstrings().
 
-        :return: Lists of words ready to randomize.
+        :return: Large word lists; pop-up msg if some files are missing.
         """
 
         # If pass the check, then at least one file exists, so proceed to
@@ -450,7 +448,7 @@ class PassGenerator:
             self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
 
     def set_passstrings(self) -> None:
-        """Provide pass-string results each time this is called.
+        """Generate and set pass-strings.
 
         :return: Random pass-strings of specified length.
         """
