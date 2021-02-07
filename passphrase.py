@@ -449,11 +449,12 @@ class PassGenerator:
                 self.phrase_some.set(' ')
 
         # Filter out words and strings containing characters to be excluded.
-        unused = str(self.exclude_entry.get().strip())
+        # unused = str(self.exclude_entry.get().strip())
+        unused = str(self.exclude_entry.get())
         caps = ascii_uppercase
         all_char = ascii_letters + digits + punctuation
         some_char = ascii_letters + digits + SYMBOLS
-        if len(unused) != 0:
+        if len(unused) > 0:
             if MY_OS in 'lin, dar' and self.system_list:
                 self.uniq_words = [
                     word for word in self.uniq_words if unused not in word]
@@ -546,7 +547,8 @@ class PassGenerator:
         :param numchars: User-defined number of password characters.
         :param excl_char: User-defined character(s) to be excluded.
         """
-
+        # TODO: H doesn't always change when excluded characters change, it
+        #  only decreases; doesn't increase when excl_char is removed.
         # https://en.wikipedia.org/wiki/Password_strength
         # We use only 1 character each from each set of symbols, numbers, caps.
         #  so only need P for selecting one from a set to calc H.
@@ -561,12 +563,12 @@ class PassGenerator:
         # There are too many combinations of multi-char strings to easily code.
         # -1 is good approx. b/c of v. low P of existence of multi-char strings,
         #   so 1 is the maximum likely reduction of N. (true?)
-        # Cannot use string1 and string2 from set_passstrings() b/c those lists
-        #   are shortened by the excluded character.
+        # Cannot use all_char and some_char from set_passstrings() b/c those
+        #   lists are shortened by the excluded character.
         # Need full sets of possible characters for N here.
         all_char = ascii_letters + digits + punctuation
         some_char = ascii_letters + digits + SYMBOLS
-        if len(excl_char) != 0:
+        if len(excl_char) > 0:
             if excl_char in SYMBOLS:
                 h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
             if excl_char in ascii_uppercase:
@@ -580,6 +582,10 @@ class PassGenerator:
             if excl_char in some_char:
                 self.h_pw_some.set(
                     int(numchars * log(len(some_char) - 1) / log(2)))
+        elif len(excl_char) == 0:
+            self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
+            self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
+            h_add3 = int(h_symbol + h_cap + h_digit)
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
         #   number of possible characters or words and L is the number of characters
@@ -588,22 +594,22 @@ class PassGenerator:
         # Note that N is already corrected for excluded words from set_passstrings().
         # Note that the label names for 'any' and 'lc' are recycled between
         #   system dict and eff wordlist options; in retrospect, maybe not smart.
+        # There is some tortured logic going on here, but it works concisely.
         if MY_OS in 'lin, dar' and self.system_list:
             self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
-            self.h_lc.set(self.h_any.get() + h_add3)
+            # self.h_lc.set(self.h_any.get() + h_add3)
             h_some = int(numwords * log(len(self.trim_words)) / log(2))
             self.h_some.set(h_some + h_add3)
-            self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
-            self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
             if self.eff.get() is True:
                 self.h_any.set(
                     int(numwords * log(len(self.eff_words)) / log(2)))
-                self.h_lc.set(self.h_any.get() + h_add3)
+                # self.h_lc.set(self.h_any.get() + h_add3)
                 self.h_some.set(' ')
         elif MY_OS == 'win' or not self.system_list:
             self.h_any.set(
                 int(numwords * log(len(self.eff_words)) / log(2)))
-            self.h_lc.set(self.h_any.get() + h_add3)
+            # self.h_lc.set(self.h_any.get() + h_add3)
+        self.h_lc.set(self.h_any.get() + h_add3)
 
         self.config_results()
 
