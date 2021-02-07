@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.5'
+__version__ = '0.4.6'
 
 import random
 import sys
@@ -393,15 +393,38 @@ class PassGenerator:
         self.exclude_btn.grid(       column=1, row=9, pady=(20, 5), padx=5,
                                      sticky=tk.W)
 
+    def check_files(self):
+        """Confirm whether required files are present, exit if not.
+
+        :return: A graceful exit or pass-strings.
+        """
+        fnf_msg = (
+            f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} '
+            f'\n'
+            f'At a minimum, the file {EFFWORDS_PATH} should be in '
+            'the master directory.\nThat file is in the repository:\n'
+            f'{PROJ_URL}\n...Will exit program now...')
+        if MY_OS in 'lin, dar':
+            if Path.is_file(SYSWORDS_PATH) is False:
+                if Path.is_file(EFFWORDS_PATH) is False:
+                    print(fnf_msg)
+                    messagebox.showinfo(title='Files not found',
+                                        detail=fnf_msg)
+                    quit_gui()
+        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
+            print(fnf_msg)
+            messagebox.showinfo(title='Files not found', detail=fnf_msg)
+            quit_gui()
+
+        # As long as necessary files are present, proceed...
+        self.get_words()
+
     def get_words(self) -> None:
         """
         Populate lists with words to randomize in set_passstrings().
 
         :return: Lists of words ready to randomize.
         """
-        # Need to check for presence of system dictionary and EFF list.
-        # If both missing, then notify and exit.
-        check_files()
 
         # If pass the check, then at least one file exists, so proceed to
         #   populate word list(s).
@@ -435,7 +458,7 @@ class PassGenerator:
         # Initial label texts are for sys. dict. and are set in
         # window_setup(), but are modified here if EFF option is used.
         # OS label descriptors are written each time "Generate" command is run
-        #  b/c clickbutton options may require them to change.
+        #  b/c eff clickbutton options may require them to change.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.any_describe.config(   text="Any words from dictionary")
@@ -449,8 +472,7 @@ class PassGenerator:
                 self.phrase_some.set(' ')
 
         # Filter out words and strings containing characters to be excluded.
-        # unused = str(self.exclude_entry.get().strip())
-        unused = str(self.exclude_entry.get())
+        unused = str(self.exclude_entry.get().strip())
         caps = ascii_uppercase
         all_char = ascii_letters + digits + punctuation
         some_char = ascii_letters + digits + SYMBOLS
@@ -466,6 +488,18 @@ class PassGenerator:
             caps = [letter for letter in caps if unused not in letter]
             all_char = [char for char in all_char if unused not in char]
             some_char = [char for char in some_char if unused not in char]
+        # Need to reset lists if user removes prior excluded character(s).
+        elif len(unused) == 0:
+            if MY_OS == 'win':
+                self.eff_words = [
+                    word for word in self.eff_list if word.isalpha()]
+            if MY_OS in 'lin, dar':
+                self.eff_words = [
+                    word for word in self.eff_list if word.isalpha()]
+                self.uniq_words = [
+                    word for word in self.system_list if word.isalpha()]
+                self.trim_words = [
+                    word for word in self.uniq_words if 8 >= len(word) >= 3]
 
         # Need to correct invalid user entries.
         if self.numwords_entry.get() == '':
@@ -474,6 +508,7 @@ class PassGenerator:
             self.numwords_entry.delete(0, 'end')
             self.numwords_entry.insert(0, '0')
         numwords = int(self.numwords_entry.get().strip())
+
         if self.numchars_entry.get() == '':
             self.numchars_entry.insert(0, '0')
         elif self.numchars_entry.get().isdigit() is False:
@@ -487,7 +522,7 @@ class PassGenerator:
                                     _ in range(numwords))
             self.somewords = "".join(VERY_RANDOM.choice(self.trim_words) for
                                      _ in range(numwords))
-        # Windows only uses EFF, Linux/MacOS uses it as an option.
+        # Windows only uses EFF file, Linux/MacOS uses it as an option.
         if Path.is_file(EFFWORDS_PATH):
             self.effwords = "".join(VERY_RANDOM.choice(self.eff_words) for
                                     _ in range(numwords))
@@ -517,8 +552,8 @@ class PassGenerator:
         self.password2 = "".join(VERY_RANDOM.choice(some_char) for
                                  _ in range(numchars))
 
-        # Set all pass-strings for display as results.
-        # Set StringVar() that are used in all OS and eff states:
+        # Set all pass-strings for display in results frames.
+        # Set OS-independent and eff-independent StringVar():
         self.phrase_any.set(self.allwords)
         self.phrase_lc.set(self.passphrase1)
         self.length_any.set(len(self.allwords))
@@ -527,6 +562,7 @@ class PassGenerator:
         self.length_pw_some.set(len(self.password2))
         self.pw_any.set(self.password1)
         self.pw_some.set(self.password2)
+        # Set OS-specific and eff-dependent StringVar()
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.phrase_some.set(self.passphrase2)
@@ -538,54 +574,24 @@ class PassGenerator:
         #    state for Windows b/c no system dictionary is available.
 
         # Finally, set H values for each pass-string.
-        self.set_entropy(numwords, numchars, unused)
+        self.set_entropy(numwords, numchars)
 
-    def set_entropy(self, numwords: int, numchars: int, excl_char: str) -> None:
+    def set_entropy(self, numwords: int, numchars: int) -> None:
         """Calculate and set values for information entropy, H.
 
         :param numwords: User-defined number of passphrase words.
         :param numchars: User-defined number of password characters.
-        :param excl_char: User-defined character(s) to be excluded.
         """
-        # TODO: H doesn't always change when excluded characters change, it
-        #  only decreases; doesn't increase when excl_char is removed.
         # https://en.wikipedia.org/wiki/Password_strength
         # We use only 1 character each from each set of symbols, numbers, caps.
         #  so only need P for selecting one from a set to calc H.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
+        all_char = ascii_letters + digits + punctuation
+        some_char = ascii_letters + digits + SYMBOLS
         h_symbol =  -log(1/len(SYMBOLS), 2)
         h_cap = -log(1/len(ascii_uppercase), 2)
         h_digit = -log(1/len(digits), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 12
-
-        # Need to correct H for excluded characters in passwords (lower the N).
-        # This accurately corrects H only when 1 char is excluded.
-        # There are too many combinations of multi-char strings to easily code.
-        # -1 is good approx. b/c of v. low P of existence of multi-char strings,
-        #   so 1 is the maximum likely reduction of N. (true?)
-        # Cannot use all_char and some_char from set_passstrings() b/c those
-        #   lists are shortened by the excluded character.
-        # Need full sets of possible characters for N here.
-        all_char = ascii_letters + digits + punctuation
-        some_char = ascii_letters + digits + SYMBOLS
-        if len(excl_char) > 0:
-            if excl_char in SYMBOLS:
-                h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
-            if excl_char in ascii_uppercase:
-                h_cap = -log(1 / (len(ascii_uppercase) - 1), 2)
-            if excl_char in digits:
-                h_digit = -log(1 / (len(digits) - 1), 2)
-            h_add3 = int(h_symbol + h_cap + h_digit)
-            if excl_char in all_char:
-                self.h_pw_any.set(
-                    int(numchars * log(len(all_char) - 1) / log(2)))
-            if excl_char in some_char:
-                self.h_pw_some.set(
-                    int(numchars * log(len(some_char) - 1) / log(2)))
-        elif len(excl_char) == 0:
-            self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
-            self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
-            h_add3 = int(h_symbol + h_cap + h_digit)
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
         #   number of possible characters or words and L is the number of characters
@@ -597,19 +603,45 @@ class PassGenerator:
         # There is some tortured logic going on here, but it works concisely.
         if MY_OS in 'lin, dar' and self.system_list:
             self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
-            # self.h_lc.set(self.h_any.get() + h_add3)
             h_some = int(numwords * log(len(self.trim_words)) / log(2))
             self.h_some.set(h_some + h_add3)
             if self.eff.get() is True:
                 self.h_any.set(
                     int(numwords * log(len(self.eff_words)) / log(2)))
-                # self.h_lc.set(self.h_any.get() + h_add3)
                 self.h_some.set(' ')
         elif MY_OS == 'win' or not self.system_list:
             self.h_any.set(
                 int(numwords * log(len(self.eff_words)) / log(2)))
-            # self.h_lc.set(self.h_any.get() + h_add3)
+
+        # Calculate H used for all OS.
         self.h_lc.set(self.h_any.get() + h_add3)
+        self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
+        self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
+
+        # There is no need to correct H for excluded characters (lower the N),
+        #   b/c reduction is too small to change integer H.
+        #   Length all_char: 94, Length some_char: 84
+        # But if float H were used instead of integer H, this is one way:
+        # This accurately corrects H only when 1 char is excluded.
+        # There are too many combinations of multi-char strings to easily code.
+        # -1 is good approx. b/c of v. low P of existence of multi-char strings,
+        #   1 is the maximum likely reduction of N. (true?)
+        # excl_char = self.exclude_entry.get().strip()
+        # if excl_char:
+        #     if excl_char in SYMBOLS:
+        #         h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
+        #     if excl_char in ascii_uppercase:
+        #         h_cap = -log(1 / (len(ascii_uppercase) - 1), 2)
+        #     if excl_char in digits:
+        #         h_digit = -log(1 / (len(digits) - 1), 2)
+        #     h_add3 = int(h_symbol + h_cap + h_digit)
+        #     self.h_lc.set(self.h_any.get() + h_add3)
+        #     if excl_char in all_char:
+        #         self.h_pw_any.set(
+        #             int(numchars * log(len(all_char) - 1) / log(2)))
+        #     if excl_char in some_char:
+        #         self.h_pw_some.set(
+        #             int(numchars * log(len(some_char) - 1) / log(2)))
 
         self.config_results()
 
@@ -815,28 +847,6 @@ along with this program. If not, see https://www.gnu.org/licenses/
     abouttxt.pack()
 
 
-def check_files() -> None:
-    """Confirm whether required files are present, exit if not.
-
-    :return: A graceful exit.
-    """
-    fnf_msg = (
-        f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} \n'
-        f'At a minimum, the file {EFFWORDS_PATH} should be in '
-        'the master directory.\nThat file is in the repository:\n'
-        f'{PROJ_URL}\n...Will exit program now...')
-    if MY_OS in 'lin, dar':
-        if Path.is_file(SYSWORDS_PATH) is False:
-            if Path.is_file(EFFWORDS_PATH) is False:
-                print(fnf_msg)
-                messagebox.showinfo(title='Files not found', detail=fnf_msg)
-                quit_gui()
-    elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
-        print(fnf_msg)
-        messagebox.showinfo(title='Files not found', detail=fnf_msg)
-        quit_gui()
-
-
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
@@ -848,5 +858,5 @@ def quit_gui() -> None:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Passphrase Generator")
-    PassGenerator(root).get_words()
+    PassGenerator(root).check_files()
     root.mainloop()
