@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.6'
+__version__ = '0.4.7'
 
 import random
 import sys
@@ -122,24 +122,24 @@ class PassGenerator:
 
         self.exclude_label =  tk.Label()
         self.exclude_entry =  tk.Entry()
-        self.exclude_info_b =    ttk.Button()
+        self.exclude_info_b = ttk.Button()
         self.no_exclude_btn = ttk.Button()
 
         # First used in get_words():
-        self.eff_list = []
-        self.system_list = []
-        self.passphrase1 = ''
-        self.passphrase2 = ''
-        self.password1 = ''
-        self.password2 = ''
+        self.eff_list =     []
+        self.system_list =  []
+        self.passphrase1 =  ''
+        self.passphrase2 =  ''
+        self.password1 =    ''
+        self.password2 =    ''
 
         # First used in set_passstrings()
-        self.uniq_words = []
-        self.trim_words = []
-        self.eff_words = []
-        self.allwords = ''
-        self.somewords = ''
-        self.effwords = ''
+        self.uniq_words =   []
+        self.trim_words =   []
+        self.eff_words =    []
+        self.allwords =     ''
+        self.somewords =    ''
+        self.effwords =     ''
         self.prior_unused = ''
 
         # Now configure widgets for the main window.
@@ -596,11 +596,11 @@ class PassGenerator:
         # Calculate information entropy, H = L * log N / log 2, where N is the
         #   number of possible characters or words and L is the number of characters
         #   or words in the pass-string. Log can be any base, but needs to be
-        #   the same in numerator and denominator.
-        # Note that N is already corrected for excluded words from set_passstrings().
-        # Note that the label names for 'any' and 'lc' are recycled between
-        #   system dict and eff wordlist options; in retrospect, maybe not smart.
-        # There is some tortured logic going on here, but it works concisely.
+        #   the same base in numerator and denominator.
+        # Note that N is corrected for any excluded words from set_passstrings().
+        # Note that the label names for 'h_any' and 'h_some' are recycled
+        #   between system dict and eff wordlist options.
+        # These are complicated conditions, but it works concisely.
         if MY_OS in 'lin, dar' and self.system_list:
             self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
             h_some = int(numwords * log(len(self.trim_words)) / log(2))
@@ -791,13 +791,14 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
         if MY_OS == 'win':
             self.eff_words = [
                 word for word in self.eff_list if word.isalpha()]
-        if MY_OS in 'lin, dar':
+        elif MY_OS in 'lin, dar':
             self.eff_words = [
                 word for word in self.eff_list if word.isalpha()]
             self.uniq_words = [
                 word for word in self.system_list if word.isalpha()]
             self.trim_words = [
                 word for word in self.uniq_words if 8 >= len(word) >= 3]
+
         self.exclude_entry.delete(0, 'end')
 
 
