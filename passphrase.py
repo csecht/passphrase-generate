@@ -66,11 +66,8 @@ class PassGenerator:
         self.numwords_entry = tk.Entry()
         self.numchars_label = tk.Label()
         self.numchars_entry = tk.Entry()
-        self.exclude_label =  tk.Label()
-        self.exclude_entry =  tk.Entry()
 
         # There are problems of tk.Button text showing up on MacOS, so ttk.
-        self.exclude_btn =  ttk.Button()
         self.generate_btn = ttk.Button()
 
         self.result_frame1 = tk.Frame()
@@ -122,6 +119,12 @@ class PassGenerator:
                                             textvariable=self.pw_any, )
         self.pw_some_display =    tk.Entry( self.result_frame2,
                                             textvariable=self.pw_some)
+
+        self.exclude_label =  tk.Label()
+        self.exclude_entry =  tk.Entry()
+        self.exclude_info_b =    ttk.Button()
+        self.no_exclude_btn = ttk.Button()
+
         # First used in get_words():
         self.eff_list = []
         self.system_list = []
@@ -278,8 +281,6 @@ class PassGenerator:
         self.generate_btn.configure(style="G.TButton", text='Generate!',
                                     command=self.set_passstrings)
         self.generate_btn.focus()
-        self.exclude_btn.configure(style="G.TButton", text="?", width=0,
-                                   command=exclude_msg)
 
         # Password results section ##########################
         self.pw_header.config(       text='Passwords', font=('default', 12),
@@ -306,6 +307,10 @@ class PassGenerator:
         self.exclude_label.config(   text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(   width=3)
+        self.no_exclude_btn.configure(style="G.TButton", text='Reset', width=6,
+                                      command=self.reset_exclusions)
+        self.exclude_info_b.configure(style="G.TButton", text="?", width=0,
+                                      command=exclude_msg)
         #####################################################
         self.grid_window()
 
@@ -358,39 +363,40 @@ class PassGenerator:
             self.phrase_some_display.grid_forget()
 
         # Need to pad and span to center the button between two results frames.
-        self.generate_btn.grid(      column=3, row=5, pady=(10, 5),
-                                     padx=(0, 200), sticky=tk.W,
-                                     rowspan=2)
+        self.generate_btn.grid(   column=3, row=5, pady=(10, 5), padx=(0, 200),
+                                  rowspan=2, sticky=tk.W)
 
         # Password widgets grid:
-        self.pw_header.grid(         column=0, row=5, pady=(12, 6), padx=5,
-                                     sticky=tk.W)
-        self.numchars_label.grid(    column=0, row=6, padx=5, sticky=tk.W)
-        self.numchars_entry.grid(    column=0, row=6, padx=(0, 65),
-                                     sticky=tk.E)
+        self.pw_header.grid(       column=0, row=5, pady=(12, 6), padx=5,
+                                   sticky=tk.W)
+        self.numchars_label.grid(  column=0, row=6, padx=5, sticky=tk.W)
+        self.numchars_entry.grid(  column=0, row=6, padx=(0, 65),
+                                   sticky=tk.E)
 
-        self.result_frame2.grid(     column=1, row=7, padx=(5, 10),
-                                     columnspan=3, rowspan=2, sticky=tk.EW)
+        self.result_frame2.grid(   column=1, row=7, padx=(5, 10),
+                                   columnspan=3, rowspan=2, sticky=tk.EW)
 
-        self.pw_any_describe.grid(   column=0, row=7, pady=(6, 0),
-                                     sticky=tk.E)
-        self.length_pw_any_l.grid(   column=1, row=7, pady=(6, 3), padx=(4, 0))
-        self.h_pw_any_l.grid(        column=2, row=7, pady=(6, 3), padx=(4, 0))
-        self.pw_any_display.grid(    column=3, row=7, pady=(6, 3), padx=5,
-                                     columnspan=2, ipadx=5, sticky=tk.EW)
-        self.pw_some_describe.grid(  column=0, row=8, pady=(0, 6), padx=(5, 0),
-                                     sticky=tk.E)
-        self.length_pw_some_l.grid(  column=1, row=8, pady=3, padx=(4, 0))
-        self.h_pw_some_l.grid(       column=2, row=8, pady=3, padx=(4, 0))
-        self.pw_some_display.grid(   column=3, row=8, pady=6, padx=5,
-                                     columnspan=2, ipadx=5, sticky=tk.EW)
+        self.pw_any_describe.grid( column=0, row=7, pady=(6, 0),
+                                   sticky=tk.E)
+        self.length_pw_any_l.grid( column=1, row=7, pady=(6, 3), padx=(4, 0))
+        self.h_pw_any_l.grid(      column=2, row=7, pady=(6, 3), padx=(4, 0))
+        self.pw_any_display.grid(  column=3, row=7, pady=(6, 3), padx=5,
+                                   columnspan=2, ipadx=5, sticky=tk.EW)
+        self.pw_some_describe.grid(column=0, row=8, pady=(0, 6), padx=(5, 0),
+                                   sticky=tk.E)
+        self.length_pw_some_l.grid(column=1, row=8, pady=3, padx=(4, 0))
+        self.h_pw_some_l.grid(     column=2, row=8, pady=3, padx=(4, 0))
+        self.pw_some_display.grid( column=3, row=8, pady=6, padx=5,
+                                   columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.exclude_label.grid(     column=0, row=9, pady=(20, 5), padx=5,
-                                     sticky=tk.W)
-        self.exclude_entry.grid(     column=0, row=9, pady=(20, 5), padx=(0, 10),
-                                     sticky=tk.E)
-        self.exclude_btn.grid(       column=1, row=9, pady=(20, 5), padx=5,
-                                     sticky=tk.W)
+        self.exclude_label.grid(   column=0, row=9, pady=(20, 5), padx=5,
+                                   sticky=tk.W)
+        self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 10),
+                                   sticky=tk.E)
+        self.no_exclude_btn.grid(  column=1, row=9, pady=(20, 5), padx=5,
+                                   sticky=tk.W)
+        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(0, 160),
+                                   sticky=tk.E)
 
     def check_files(self):
         """Confirm whether required files are present, exit if not.
@@ -490,18 +496,9 @@ class PassGenerator:
             self.prior_unused = unused
         # Need to reset lists if user removes prior excluded character(s).
         # These lists are initially defined with default values in get_words().
-        #   Don't repopulate lists when there is no change to them.
+        #   Don't repopulate lists if they are unchanged between calls.
         elif len(unused) == 0 and self.prior_unused != unused:
-            if MY_OS == 'win':
-                self.eff_words = [
-                    word for word in self.eff_list if word.isalpha()]
-            if MY_OS in 'lin, dar':
-                self.eff_words = [
-                    word for word in self.eff_list if word.isalpha()]
-                self.uniq_words = [
-                    word for word in self.system_list if word.isalpha()]
-                self.trim_words = [
-                    word for word in self.uniq_words if 8 >= len(word) >= 3]
+            self.reset_exclusions()
             self.prior_unused = unused
 
         # Need to correct invalid user entries.
@@ -781,7 +778,6 @@ https://en.wikipedia.org/wiki/Password_strength
 https://en.wikipedia.org/wiki/Entropy_(information_theory)
 """
 )
-
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
         num_lines = info.count('\n')
@@ -791,18 +787,47 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
         infotext.insert('1.0', info)
         infotext.pack()
 
+    def reset_exclusions(self) -> None:
+        if MY_OS == 'win':
+            self.eff_words = [
+                word for word in self.eff_list if word.isalpha()]
+        if MY_OS in 'lin, dar':
+            self.eff_words = [
+                word for word in self.eff_list if word.isalpha()]
+            self.uniq_words = [
+                word for word in self.system_list if word.isalpha()]
+            self.trim_words = [
+                word for word in self.uniq_words if 8 >= len(word) >= 3]
+        self.exclude_entry.delete(0, 'end')
+
 
 def exclude_msg() -> None:
     """A pop-up explaining how to use excluded characters.
     """
-    msg = 'The character(s) you enter...'
-    detail = ('will not appear in passphrase words, nor appear in '
-              'passwords. Multiple characters are treated as a '
-              'unit. For example, "es" will exclude "trees", not "eye" '
-              'and "says". Only these symbols are used in "+3 characters"'
-              f' and "More likely usable" passwords: {SYMBOLS}'
-              " (all other symbols and punctuation are excluded).")
-    messagebox.showinfo(title='Excluded from what?', message=msg, detail=detail)
+    msg = (
+"""
+The character(s) you enter will not appear in passphrase 
+words or passwords. Multiple characters are treated as a 
+unit. For example, "es" will exclude "trees", not "eye" 
+and  "says". Only these symbols are used in "+3 characters"
+"""
+f'and in "More likely usable" passwords: {SYMBOLS}\n'
+"""so there is no need to exclude them. However, 
+different characters entries used for successive clicks
+on Generate! will cumulatively exclude the target words. 
+
+The Reset button removes that history of excluded   
+characters and restores the original word lists.
+"""
+)
+    exclwin = tk.Toplevel()
+    exclwin.title('Exclude from what?')
+    num_lines = msg.count('\n')
+    infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
+                       background='dark slate grey', foreground='grey94',
+                       relief='groove', borderwidth=10, padx=20, pady=10)
+    infotext.insert('1.0', msg)
+    infotext.pack()
 
 
 def about() -> None:
