@@ -172,13 +172,11 @@ class PassGenerator:
         :return: Easy to understand window labels and data.
         """
         if MY_OS == 'win':
-            self.master.minsize(850, 360)
-            self.master.maxsize(1230, 360)
+            self.master.minsize(850, 390)
+            self.master.maxsize(1230, 390)
         elif MY_OS in 'lin, dar':
-            # self.master.minsize(850, 390)
-            # self.master.maxsize(1230, 390)
-            self.master.minsize(850, 444)
-            self.master.maxsize(1230, 444)
+            self.master.minsize(850, 420)
+            self.master.maxsize(1230, 420)
 
         master_bg = 'SkyBlue4'  # also used for some labels.
         master_fg = 'LightCyan2'
