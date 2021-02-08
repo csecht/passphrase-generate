@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.7'
+__version__ = '0.4.8'
 
 import random
 import sys
@@ -309,6 +309,9 @@ class PassGenerator:
         self.exclude_entry.config(   width=3)
         self.no_exclude_btn.configure(style="G.TButton", text='Reset', width=6,
                                       command=self.reset_exclusions)
+        if MY_OS == 'dar':
+            self.no_exclude_btn.configure(style="G.TButton", text='Reset', width=4,
+                                          command=self.reset_exclusions)
         self.exclude_info_b.configure(style="G.TButton", text="?", width=0,
                                       command=exclude_msg)
         #####################################################
@@ -397,6 +400,9 @@ class PassGenerator:
                                    sticky=tk.W)
         self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(0, 160),
                                    sticky=tk.E)
+        if MY_OS == 'dar':
+            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(0, 20),
+                                     sticky=tk.E)
 
     def check_files(self):
         """Confirm whether required files are present, exit if not.
@@ -810,15 +816,9 @@ def exclude_msg() -> None:
 The character(s) you enter will not appear in passphrase 
 words or passwords. Multiple characters are treated as a 
 unit. For example, "es" will exclude "trees", not "eye" 
-and  "says". Only these symbols are used in "+3 characters"
-"""
-f'and in "More likely usable" passwords: {SYMBOLS}\n'
-"""so there is no need to exclude them. However, 
-different characters entries used for successive clicks
-on Generate! will cumulatively exclude the target words. 
-
-The Reset button removes that history of excluded   
-characters and restores the original word lists.
+and  "says". To exclude all three words, enter "e",
+Generate!, enter "s", Generate!. The Reset button
+removes exclusions and restores the original word lists.
 """
 )
     exclwin = tk.Toplevel()
