@@ -207,7 +207,7 @@ class PassGenerator:
         menu.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="What's going on here?",
                               command=self.explain)
-        help_menu.add_command(label="About", command=about)
+        help_menu.add_command(label="About", command=self.about)
 
         # Configure and set initial values of user entry and control widgets:
         stubresult = 'Result can be copied and pasted from keyboard.'
@@ -244,14 +244,12 @@ class PassGenerator:
             self.select_describe.config(text="...with words of 3 to 8 letters",
                                         fg=master_fg, bg=master_bg)
             self.length_some.set(0)
-            self.length_some_label.config(textvariable=self.length_some,
-                                          width=3)
+            self.length_some_label.config(width=3)
             self.h_some.set(0)
             self.h_some_label.config(     width=4)
             self.phrase_some.set(stubresult)
             self.phrase_some_display.config(width=60, font=self.display_font,
-                                            fg=stubresult_fg,
-                                            bg=pass_bg)
+                                            fg=stubresult_fg, bg=pass_bg)
         elif MY_OS == 'win':
             self.any_describe.config(   text="Any words from EFF wordlist",
                                         fg=master_fg, bg=master_bg)
@@ -325,15 +323,17 @@ class PassGenerator:
         self.exclude_describe.config(text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(   width=3)
-        self.reset_button.configure(style="G.TButton", text='Reset',
-                                    width=6,
-                                    command=self.reset_exclusions)
+
+        self.reset_button.configure(    style="G.TButton", text='Reset',
+                                        width=6,
+                                        command=self.reset_exclusions)
         if MY_OS == 'dar':
             self.reset_button.configure(style="G.TButton", text='Reset',
                                         width=4,
                                         command=self.reset_exclusions)
-        self.exclude_info_b.configure(style="G.TButton", text="?", width=0,
-                                      command=self.exclude_msg)
+
+        self.exclude_info_b.configure(  style="G.TButton", text="?", width=0,
+                                        command=self.exclude_msg)
         self.excluded_show.config(fg='orange', bg=master_bg)
         #####################################################
         self.grid_window()
@@ -815,7 +815,8 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
         self.all_unused = ''
         self.excluded.set(self.all_unused)
 
-    def exclude_msg(self) -> None:
+    @staticmethod
+    def exclude_msg() -> None:
         """A pop-up explaining how to use excluded characters.
         """
         msg = (
@@ -827,10 +828,7 @@ and  "says". To exclude all three words, enter "e", then
 Generate!, enter "s", then Generate!. 
 The Reset button removes exclusions and restores all  
 words, characters, numbers, and symbols.
-
-Only these symbols are used in "+3 characters" and in 
 """
-f'"More likely usable" passwords: {self.symbols}\n'
 )
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
@@ -841,14 +839,14 @@ f'"More likely usable" passwords: {self.symbols}\n'
         infotext.insert('1.0', msg)
         infotext.pack()
 
+    @staticmethod
+    def about() -> None:
+        """Basic information about the script; called from GUI Help menu.
 
-def about() -> None:
-    """Basic information about the script; called from GUI Help menu.
-
-    :return: Information window.
-    """
-    # msg separators use em dashes.
-    boilerplate = ("""
+        :return: Information window.
+        """
+        # msg separators use em dashes.
+        boilerplate = ("""
 passphrase.py and its stand-alones generate passphrases and passwords.
 Download the most recent version from:
 """ 
@@ -866,27 +864,27 @@ See the GNU General Public License for more details.\n
 You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
 ————————————————————————————————————————————————————————————————————\n
-            Author:     cecht
-            Copyright:  Copyright (C) 2021 C. Echt
-            Development Status: 4 - Beta
-            Version:    """)  # The version number is appended here.
+                   Author:     cecht
+                   Copyright:  Copyright (C) 2021 C.S. Echt
+                   Development Status: 4 - Beta
+                   Version:    """)  # __version__ is appended here.
 
-    num_lines = boilerplate.count('\n')
-    aboutwin = tk.Toplevel()
-    aboutwin.title('About Passphrase')
-    colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
-              'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
-              'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
-              'DarkOrchid4']
-    bkg = random.choice(colour)
-    abouttxt = tk.Text(aboutwin, width=72, height=num_lines + 2,
-                       background=bkg, foreground='grey98',
-                       relief='groove', borderwidth=5, padx=5)
-    abouttxt.insert('1.0', boilerplate + __version__)
-    # Center text preceding the Author, etc. details.
-    abouttxt.tag_add('text1', '1.0', float(num_lines - 5))
-    abouttxt.tag_configure('text1', justify='center')
-    abouttxt.pack()
+        num_lines = boilerplate.count('\n')
+        aboutwin = tk.Toplevel()
+        aboutwin.title('About Passphrase')
+        colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
+                  'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
+                  'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
+                  'DarkOrchid4']
+        bkg = random.choice(colour)
+        abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
+                           background=bkg, foreground='grey98',
+                           relief='groove', borderwidth=5, padx=5)
+        abouttxt.insert('0.0', boilerplate + __version__)
+        # Center text preceding the Author, etc. details.
+        abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
+        abouttxt.tag_configure('text1', justify='center')
+        abouttxt.pack()
 
 
 def quit_gui() -> None:
