@@ -312,8 +312,13 @@ class PassGenerator:
         self.exclude_label.config(   text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(   width=3)
-        self.no_exclude_btn.configure(style="G.TButton", text='Reset', width=6,
+        self.no_exclude_btn.configure(style="G.TButton", text='Reset',
+                                      width=6,
                                       command=self.reset_exclusions)
+        if MY_OS == 'dar':
+            self.no_exclude_btn.configure(style="G.TButton", text='Reset',
+                                          width=4,
+                                          command=self.reset_exclusions)
         self.exclude_info_b.configure(style="G.TButton", text="?", width=0,
                                       command=self.exclude_msg)
         #####################################################
@@ -400,8 +405,11 @@ class PassGenerator:
                                    sticky=tk.E)
         self.no_exclude_btn.grid(  column=1, row=9, pady=(20, 5), padx=5,
                                    sticky=tk.W)
-        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(0, 160),
-                                   sticky=tk.E)
+        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5),
+                                   padx=(0, 160),  sticky=tk.E)
+        if MY_OS == 'dar':
+            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5),
+                                     padx=(0, 20), sticky=tk.E)
 
     def check_files(self):
         """Confirm whether required files are present, exit if not.
@@ -791,17 +799,15 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
 The character(s) you enter will not appear in passphrase 
 words or passwords. Multiple characters are treated as a 
 unit. For example, "es" will exclude "trees", not "eye" 
-and  "says". Only these symbols are used in "+3 characters"
-"""
-f'and in "More likely usable" passwords: {self.symbols}\n'
-"""so there is no need to exclude them. However, 
-different characters entries used for successive clicks
-on Generate! will cumulatively exclude the target words. 
+and  "says". To exclude all three words, enter "e", then
+Generate!, enter "s", then Generate!. 
+The Reset button removes exclusions and restores all  
+words, characters, numbers, and symbols.
 
-The Reset button removes that history of excluded   
-characters and restores the original word lists.
+Only these symbols are used in "+3 characters" and in 
 """
-    )
+f'"More likely usable" passwords: {self.symbols}\n'
+)
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         num_lines = msg.count('\n')
