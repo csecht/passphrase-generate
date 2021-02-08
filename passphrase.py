@@ -3,8 +3,7 @@
 """
 A utility to create random passphrases and passwords.
 Inspired by code from @codehub.py via Instagram.
-
-    Copyright (C) 2021 C.S. Echt
+     Copyright (C) 2021 C.S. Echt
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -389,6 +388,9 @@ class PassGenerator:
         # Need to pad and span to center the button between two results frames.
         self.generate_btn.grid(   column=3, row=5, pady=(10, 5), padx=(0, 250),
                                   rowspan=2, sticky=tk.W)
+        if MY_OS == 'dar':
+            self.generate_btn.grid(column=3, row=5, pady=(10, 5), padx=(0, 150),
+                                   rowspan=2, sticky=tk.W)
 
         # Password widgets grid:
         self.pw_header.grid(       column=0, row=5, pady=(12, 6), padx=5,
@@ -417,13 +419,13 @@ class PassGenerator:
                                    sticky=tk.W)
         self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 10),
                                    sticky=tk.E)
-        self.reset_button.grid(    column=1, row=9, pady=(20, 5), padx=5,
+        self.reset_button.grid(    column=1, row=9, pady=(20, 5), padx=(0, 0),
                                    sticky=tk.W)
-        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5),
-                                   padx=(0, 160),  sticky=tk.E)
+        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(70, 0),
+                                   sticky=tk.W)
         if MY_OS == 'dar':
-            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(0, 20),
-                                     sticky=tk.E)
+            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(78, 0),
+                                     sticky=tk.W)
 
         self. excluded_show.grid(    column=0, row=10, padx=5, sticky=tk.W)
 
