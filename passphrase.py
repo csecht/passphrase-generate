@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.8'
+__version__ = '0.4.9'
 
 import random
 import sys
@@ -38,9 +38,9 @@ except (ImportError, ModuleNotFoundError) as error:
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 PROJ_URL = 'https://github.com/csecht/passphrase-generate'
-SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
+SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 VERY_RANDOM = random.Random(random.random())
@@ -132,6 +132,11 @@ class PassGenerator:
         self.passphrase2 =  ''
         self.password1 =    ''
         self.password2 =    ''
+        self.symbols =   SYMBOLS
+        self.digi =      digits
+        self.caps =      ascii_uppercase
+        self.all_char =  ascii_letters + digits + punctuation
+        self.some_char = ascii_letters + digits + self.symbols
 
         # First used in set_passstrings()
         self.uniq_words =   []
@@ -220,7 +225,7 @@ class PassGenerator:
         if MY_OS in 'lin, dar':
             self.any_describe.config(   text="Any words from dictionary",
                                         fg=master_fg, bg=master_bg)
-            self.any_lc_describe.config(text="...+3 characters & lower case",
+            self.any_lc_describe.config(text="... +3 characters & lower case",
                                         fg=master_fg, bg=master_bg)
             self.select_describe.config(text="...with words of 3 to 8 letters",
                                         fg=master_fg, bg=master_bg)
@@ -309,11 +314,8 @@ class PassGenerator:
         self.exclude_entry.config(   width=3)
         self.no_exclude_btn.configure(style="G.TButton", text='Reset', width=6,
                                       command=self.reset_exclusions)
-        if MY_OS == 'dar':
-            self.no_exclude_btn.configure(style="G.TButton", text='Reset', width=4,
-                                          command=self.reset_exclusions)
         self.exclude_info_b.configure(style="G.TButton", text="?", width=0,
-                                      command=exclude_msg)
+                                      command=self.exclude_msg)
         #####################################################
         self.grid_window()
 
@@ -400,9 +402,6 @@ class PassGenerator:
                                    sticky=tk.W)
         self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(0, 160),
                                    sticky=tk.E)
-        if MY_OS == 'dar':
-            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(0, 20),
-                                     sticky=tk.E)
 
     def check_files(self):
         """Confirm whether required files are present, exit if not.
@@ -461,32 +460,27 @@ class PassGenerator:
             self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
 
     def set_passstrings(self) -> None:
-        """Generate and set pass-strings; call: keybind, menu, or button.
+        """Generate and set pass-strings.
+        Called from keybind, menu, or button.
 
         :return: Random pass-strings of specified length.
         """
-        # Need different passphrase descriptions for sys dict and EEF list.
-        # Initial label texts are for sys. dict. and are set in
-        # window_setup(), but are modified here if EFF option is used.
-        # OS label descriptors are written each time "Generate" command is run
-        #  b/c eff checkbutton options may require them to change.
+        # Need different passphrase descriptions for sys dict and EEF list
+        # to be re-configured here b/c EFF option may be used between calls.
         if MY_OS in 'lin, dar':
             if self.eff.get() is False:
                 self.any_describe.config(   text="Any words from dictionary")
-                self.any_lc_describe.config(text="...+3 characters & lower case")
+                self.any_lc_describe.config(text="... +3 characters & lower case")
                 self.select_describe.config(text="...with words of 3 to 8 letters")
             elif self.eff.get() is True:
                 self.any_describe.config(   text="Any words from EFF wordlist")
-                self.any_lc_describe.config(text="...+3 characters")
+                self.any_lc_describe.config(text="... +3 characters")
                 self.select_describe.config(text=" ")
                 self.length_some.set(' ')
                 self.phrase_some.set(' ')
 
         # Filter out words and strings containing characters to be excluded.
         unused = str(self.exclude_entry.get().strip())
-        caps = ascii_uppercase
-        all_char = ascii_letters + digits + punctuation
-        some_char = ascii_letters + digits + SYMBOLS
         if len(unused) > 0:
             if MY_OS in 'lin, dar' and self.system_list:
                 self.uniq_words = [
@@ -496,9 +490,12 @@ class PassGenerator:
             # Remaining statements apply to all OS.
             self.eff_words = [
                 word for word in self.eff_words if unused not in word]
-            caps = [letter for letter in caps if unused not in letter]
-            all_char = [char for char in all_char if unused not in char]
-            some_char = [char for char in some_char if unused not in char]
+            self.symbols = [char for char in self.symbols if unused not in char]
+            self.digi = [num for num in self.digi if unused not in num]
+            self.caps = [letter for letter in self.caps if unused not in letter]
+            self.all_char = [char for char in self.all_char if unused not in char]
+            self.some_char = [char for char in self.some_char if unused not in char]
+
             self.prior_unused = unused
         # Need to reset lists if user removes prior excluded character(s).
         # These lists are initially defined with default values in get_words().
@@ -546,16 +543,16 @@ class PassGenerator:
                 self.eff_checkbtn.config(state='disabled')
 
         # Randomly select symbols to append; number is not user-specified.
-        addsymbol = "".join(VERY_RANDOM.choice(SYMBOLS) for _ in range(1))
-        addcaps = "".join(VERY_RANDOM.choice(caps) for _ in range(1))
-        addnum = "".join(VERY_RANDOM.choice(digits) for _ in range(1))
+        addsymbol = "".join(VERY_RANDOM.choice(self.symbols) for _ in range(1))
+        addnum = "".join(VERY_RANDOM.choice(self.digi) for _ in range(1))
+        addcaps = "".join(VERY_RANDOM.choice(self.caps) for _ in range(1))
 
         # Build the pass-strings.
         self.passphrase1 = self.allwords.lower() + addsymbol + addnum + addcaps
         self.passphrase2 = self.somewords.lower() + addsymbol + addnum + addcaps
-        self.password1 = "".join(VERY_RANDOM.choice(all_char) for
+        self.password1 = "".join(VERY_RANDOM.choice(self.all_char) for
                                  _ in range(numchars))
-        self.password2 = "".join(VERY_RANDOM.choice(some_char) for
+        self.password2 = "".join(VERY_RANDOM.choice(self.some_char) for
                                  _ in range(numchars))
 
         # Set all pass-strings for display in results frames.
@@ -592,11 +589,10 @@ class PassGenerator:
         # We use only 1 character each from each set of symbols, numbers, caps.
         #  so only need P for selecting one from a set to calc H.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
-        all_char = ascii_letters + digits + punctuation
-        some_char = ascii_letters + digits + SYMBOLS
-        h_symbol =  -log(1/len(SYMBOLS), 2)
-        h_cap = -log(1/len(ascii_uppercase), 2)
-        h_digit = -log(1/len(digits), 2)
+        # Note that length of these strings may reflect excluded characters.
+        h_symbol =  -log(1 / len(self.symbols), 2)
+        h_digit = -log(1/len(self.digi), 2)
+        h_cap = -log(1/len(self.caps), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 12
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
@@ -621,33 +617,8 @@ class PassGenerator:
 
         # Calculate H used for all OS.
         self.h_lc.set(self.h_any.get() + h_add3)
-        self.h_pw_any.set(int(numchars * log(len(all_char)) / log(2)))
-        self.h_pw_some.set(int(numchars * log(len(some_char)) / log(2)))
-
-        # There is no need to correct H for excluded characters (lower the N),
-        #   b/c reduction is too small to change integer H.
-        #   Length all_char: 94, Length some_char: 84
-        # But if float H were used instead of integer H, this is one way:
-        # This accurately corrects H only when 1 char is excluded.
-        # There are too many combinations of multi-char strings to easily code.
-        # -1 is good approx. b/c of v. low P of existence of multi-char strings,
-        #   1 is the maximum likely reduction of N. (true?)
-        # excl_char = self.exclude_entry.get().strip()
-        # if excl_char:
-        #     if excl_char in SYMBOLS:
-        #         h_symbol = -log(1 / (len(SYMBOLS) - 1), 2)
-        #     if excl_char in ascii_uppercase:
-        #         h_cap = -log(1 / (len(ascii_uppercase) - 1), 2)
-        #     if excl_char in digits:
-        #         h_digit = -log(1 / (len(digits) - 1), 2)
-        #     h_add3 = int(h_symbol + h_cap + h_digit)
-        #     self.h_lc.set(self.h_any.get() + h_add3)
-        #     if excl_char in all_char:
-        #         self.h_pw_any.set(
-        #             int(numchars * log(len(all_char) - 1) / log(2)))
-        #     if excl_char in some_char:
-        #         self.h_pw_some.set(
-        #             int(numchars * log(len(some_char) - 1) / log(2)))
+        self.h_pw_any.set(int(numchars * log(len(self.all_char)) / log(2)))
+        self.h_pw_some.set(int(numchars * log(len(self.some_char)) / log(2)))
 
         self.config_results()
 
@@ -769,7 +740,7 @@ only 7772 are used here because hyphenated word are excluded.
 To accommodate password policies of some web sites and applications, a 
 choice is provided that adds three characters : 1 symbol, 1 number, 
 and 1 upper case letter. Symbols used are restricted to these: """
-f'\n{SYMBOLS}\n'
+f'\n{self.symbols}\n'
 """
 There is an option to exclude any character or string of characters
 from your passphrase words and passwords (together called pass-strings).
@@ -804,35 +775,45 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
                 word for word in self.system_list if word.isalpha()]
             self.trim_words = [
                 word for word in self.uniq_words if 8 >= len(word) >= 3]
+        self.symbols =   SYMBOLS
+        self.digi =      digits
+        self.caps =      ascii_uppercase
+        self.all_char =  ascii_letters + digits + punctuation
+        self.some_char = ascii_letters + digits + SYMBOLS
 
         self.exclude_entry.delete(0, 'end')
 
-
-def exclude_msg() -> None:
-    """A pop-up explaining how to use excluded characters.
-    """
-    msg = (
+    def exclude_msg(self) -> None:
+        """A pop-up explaining how to use excluded characters.
+        """
+        msg = (
 """
 The character(s) you enter will not appear in passphrase 
 words or passwords. Multiple characters are treated as a 
 unit. For example, "es" will exclude "trees", not "eye" 
-and  "says". To exclude all three words, enter "e",
-Generate!, enter "s", Generate!. The Reset button
-removes exclusions and restores the original word lists.
+and  "says". Only these symbols are used in "+3 characters"
 """
-)
-    exclwin = tk.Toplevel()
-    exclwin.title('Exclude from what?')
-    num_lines = msg.count('\n')
-    infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
-                       background='dark slate grey', foreground='grey94',
-                       relief='groove', borderwidth=10, padx=20, pady=10)
-    infotext.insert('1.0', msg)
-    infotext.pack()
+f'and in "More likely usable" passwords: {self.symbols}\n'
+"""so there is no need to exclude them. However, 
+different characters entries used for successive clicks
+on Generate! will cumulatively exclude the target words. 
+
+The Reset button removes that history of excluded   
+characters and restores the original word lists.
+"""
+    )
+        exclwin = tk.Toplevel()
+        exclwin.title('Exclude from what?')
+        num_lines = msg.count('\n')
+        infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
+                           background='dark slate grey', foreground='grey94',
+                           relief='groove', borderwidth=10, padx=20, pady=10)
+        infotext.insert('1.0', msg)
+        infotext.pack()
 
 
 def about() -> None:
-    """Basic information for the script; called from GUI Help menu.
+    """Basic information about the script; called from GUI Help menu.
 
     :return: Information window.
     """
