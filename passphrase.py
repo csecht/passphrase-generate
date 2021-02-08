@@ -427,7 +427,7 @@ class PassGenerator:
 
         self. excluded_show.grid(    column=0, row=10, padx=5, sticky=tk.W)
 
-    def check_files(self):
+    def check_files(self) -> None:
         """Confirm whether required files are present, exit if not.
 
         :return: A graceful exit or pass through.
@@ -795,6 +795,10 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
         infotext.pack()
 
     def reset_exclusions(self) -> None:
+        """Restore original word and character lists.
+
+        :return: Words and characters without exclusions.
+        """
         if MY_OS == 'win':
             self.eff_words = [
                 word for word in self.eff_list if word.isalpha()]
@@ -817,7 +821,8 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
     @staticmethod
     def exclude_msg() -> None:
-        """A pop-up explaining how to use excluded characters.
+        """A pop-up explaining how to use excluded characters. Called
+        from a Button.
         """
         msg = (
 """
