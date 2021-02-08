@@ -20,7 +20,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.9'
+__version__ = '0.4.10'
 
 import random
 import sys
@@ -40,7 +40,8 @@ except (ImportError, ModuleNotFoundError) as error:
 PROJ_URL = 'https://github.com/csecht/passphrase-generate'
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
-SYMBOLS = "~!@#$%^&*_-+=(){}[]<>?"
+SYMBOLS = "~!@#$%^&*()_-+="
+# SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 VERY_RANDOM = random.Random(random.random())
@@ -88,16 +89,26 @@ class PassGenerator:
         self.h_some =            tk.IntVar()
         self.h_pw_any =          tk.IntVar()
         self.h_pw_some =         tk.IntVar()
-        self.length_any_label =  tk.Label(self.result_frame1)
-        self.length_lc_label =   tk.Label(self.result_frame1)
-        self.length_some_label = tk.Label(self.result_frame1)
-        self.length_pw_any_l =   tk.Label(self.result_frame2)
-        self.length_pw_some_l =  tk.Label(self.result_frame2)
-        self.h_any_label =       tk.Label(self.result_frame1)
-        self.h_lc_label =        tk.Label(self.result_frame1)
-        self.h_some_label =      tk.Label(self.result_frame1)
-        self.h_pw_any_l =        tk.Label(self.result_frame2)
-        self.h_pw_some_l =       tk.Label(self.result_frame2)
+        self.length_any_label =  tk.Label(self.result_frame1,
+                                          textvariable=self.length_any)
+        self.length_lc_label =   tk.Label(self.result_frame1,
+                                          textvariable=self.length_lc)
+        self.length_some_label = tk.Label(self.result_frame1,
+                                          textvariable=self.length_some)
+        self.length_pw_any_l =   tk.Label(self.result_frame2,
+                                          textvariable=self.length_pw_any)
+        self.length_pw_some_l =  tk.Label(self.result_frame2,
+                                          textvariable=self.length_pw_some)
+        self.h_any_label =       tk.Label(self.result_frame1,
+                                          textvariable=self.h_any)
+        self.h_lc_label =        tk.Label(self.result_frame1,
+                                          textvariable=self.h_lc)
+        self.h_some_label =      tk.Label(self.result_frame1,
+                                          textvariable=self.h_some)
+        self.h_pw_any_l =        tk.Label(self.result_frame2,
+                                          textvariable=self.h_pw_any)
+        self.h_pw_some_l =       tk.Label(self.result_frame2,
+                                          textvariable=self.h_pw_some)
         self.phrase_any =        tk.StringVar()
         self.phrase_lc =         tk.StringVar()
         self.phrase_some =       tk.StringVar()
@@ -120,10 +131,12 @@ class PassGenerator:
         self.pw_some_display =    tk.Entry( self.result_frame2,
                                             textvariable=self.pw_some)
 
-        self.exclude_label =  tk.Label()
-        self.exclude_entry =  tk.Entry()
-        self.exclude_info_b = ttk.Button()
-        self.no_exclude_btn = ttk.Button()
+        self.exclude_describe =  tk.Label()
+        self.exclude_entry =     tk.Entry()
+        self.exclude_info_b =    ttk.Button()
+        self.reset_button =      ttk.Button()
+        self.excluded =          tk.StringVar()
+        self.excluded_show =     tk.Label(textvariable=self.excluded)
 
         # First used in get_words():
         self.eff_list =     []
@@ -146,6 +159,7 @@ class PassGenerator:
         self.somewords =    ''
         self.effwords =     ''
         self.prior_unused = ''
+        self.all_unused = ''
 
         # Now configure widgets for the main window.
         self.display_font = ''  # also used in config_results().
@@ -161,8 +175,10 @@ class PassGenerator:
             self.master.minsize(850, 360)
             self.master.maxsize(1230, 360)
         elif MY_OS in 'lin, dar':
-            self.master.minsize(850, 390)
-            self.master.maxsize(1230, 390)
+            # self.master.minsize(850, 390)
+            # self.master.maxsize(1230, 390)
+            self.master.minsize(850, 444)
+            self.master.maxsize(1230, 444)
 
         master_bg = 'SkyBlue4'  # also used for some labels.
         master_fg = 'LightCyan2'
@@ -233,8 +249,7 @@ class PassGenerator:
             self.length_some_label.config(textvariable=self.length_some,
                                           width=3)
             self.h_some.set(0)
-            self.h_some_label.config(     textvariable=self.h_some,
-                                          width=4)
+            self.h_some_label.config(     width=4)
             self.phrase_some.set(stubresult)
             self.phrase_some_display.config(width=60, font=self.display_font,
                                             fg=stubresult_fg,
@@ -257,18 +272,18 @@ class PassGenerator:
         self.length_lc.set(0)
         self.length_pw_any.set(0)
         self.length_pw_some.set(0)
-        self.length_any_label.config(textvariable=self.length_any, width=3)
-        self.length_lc_label.config( textvariable=self.length_lc, width=3)
-        self.length_pw_any_l.config( textvariable=self.length_pw_any, width=3)
-        self.length_pw_some_l.config(textvariable=self.length_pw_some, width=3)
+        self.length_any_label.config(width=3)
+        self.length_lc_label.config( width=3)
+        self.length_pw_any_l.config( width=3)
+        self.length_pw_some_l.config(width=3)
         self.h_any.set(0)
         self.h_lc.set(0)
         self.h_pw_any.set(0)
         self.h_pw_some.set(0)
-        self.h_any_label.config(textvariable=self.h_any, width=4)
-        self.h_lc_label.config( textvariable=self.h_lc, width=4)
-        self.h_pw_any_l.config( textvariable=self.h_pw_any, width=4)
-        self.h_pw_some_l.config(textvariable=self.h_pw_some, width=4)
+        self.h_any_label.config(width=4)
+        self.h_lc_label.config( width=4)
+        self.h_pw_any_l.config( width=4)
+        self.h_pw_some_l.config(width=4)
         self.phrase_any.set(stubresult)
         self.phrase_lc.set(stubresult)
         self.phrase_any_display.config(width=60, font=self.display_font,
@@ -309,18 +324,19 @@ class PassGenerator:
         self.pw_some_display.config( width=60, font=self.display_font,
                                      fg=stubresult_fg, bg=pass_bg)
 
-        self.exclude_label.config(   text='Exclude character(s)',
+        self.exclude_describe.config(text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(   width=3)
-        self.no_exclude_btn.configure(style="G.TButton", text='Reset',
-                                      width=6,
-                                      command=self.reset_exclusions)
+        self.reset_button.configure(style="G.TButton", text='Reset',
+                                    width=6,
+                                    command=self.reset_exclusions)
         if MY_OS == 'dar':
-            self.no_exclude_btn.configure(style="G.TButton", text='Reset',
-                                          width=4,
-                                          command=self.reset_exclusions)
+            self.reset_button.configure(style="G.TButton", text='Reset',
+                                        width=4,
+                                        command=self.reset_exclusions)
         self.exclude_info_b.configure(style="G.TButton", text="?", width=0,
                                       command=self.exclude_msg)
+        self.excluded_show.config(fg='orange', bg=master_bg)
         #####################################################
         self.grid_window()
 
@@ -373,7 +389,7 @@ class PassGenerator:
             self.phrase_some_display.grid_forget()
 
         # Need to pad and span to center the button between two results frames.
-        self.generate_btn.grid(   column=3, row=5, pady=(10, 5), padx=(0, 200),
+        self.generate_btn.grid(   column=3, row=5, pady=(10, 5), padx=(0, 250),
                                   rowspan=2, sticky=tk.W)
 
         # Password widgets grid:
@@ -399,17 +415,19 @@ class PassGenerator:
         self.pw_some_display.grid( column=3, row=8, pady=6, padx=5,
                                    columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.exclude_label.grid(   column=0, row=9, pady=(20, 5), padx=5,
+        self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=5,
                                    sticky=tk.W)
         self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 10),
                                    sticky=tk.E)
-        self.no_exclude_btn.grid(  column=1, row=9, pady=(20, 5), padx=5,
+        self.reset_button.grid(    column=1, row=9, pady=(20, 5), padx=5,
                                    sticky=tk.W)
         self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5),
                                    padx=(0, 160),  sticky=tk.E)
         if MY_OS == 'dar':
-            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5),
-                                     padx=(0, 20), sticky=tk.E)
+            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(0, 20),
+                                     sticky=tk.E)
+
+        self. excluded_show.grid(    column=0, row=10, padx=5, sticky=tk.W)
 
     def check_files(self):
         """Confirm whether required files are present, exit if not.
@@ -487,8 +505,9 @@ class PassGenerator:
                 self.length_some.set(' ')
                 self.phrase_some.set(' ')
 
-        # Filter out words and strings containing characters to be excluded.
-        unused = str(self.exclude_entry.get().strip())
+        # Need to filter words and strings containing characters to be excluded.
+        unused = self.exclude_entry.get().strip()
+
         if len(unused) > 0:
             if MY_OS in 'lin, dar' and self.system_list:
                 self.uniq_words = [
@@ -512,7 +531,12 @@ class PassGenerator:
             self.reset_exclusions()
             self.prior_unused = unused
 
-        # Need to correct invalid user entries.
+        # Need to display all excluded characters by user.
+        if unused not in self.all_unused:
+            self.all_unused = unused  + ' ' + self.all_unused
+        self.excluded.set(self.all_unused)
+
+        # Need to correct invalid user entries for number of words & characters.
         if self.numwords_entry.get() == '':
             self.numwords_entry.insert(0, '0')
         elif self.numwords_entry.get().isdigit() is False:
@@ -601,7 +625,7 @@ class PassGenerator:
         h_symbol =  -log(1 / len(self.symbols), 2)
         h_digit = -log(1/len(self.digi), 2)
         h_cap = -log(1/len(self.caps), 2)
-        h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 12
+        h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 11
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
         #   number of possible characters or words and L is the number of characters
@@ -790,6 +814,8 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
         self.some_char = ascii_letters + digits + SYMBOLS
 
         self.exclude_entry.delete(0, 'end')
+        self.all_unused = ''
+        self.excluded.set(self.all_unused)
 
     def exclude_msg(self) -> None:
         """A pop-up explaining how to use excluded characters.
