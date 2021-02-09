@@ -135,7 +135,7 @@ class PassGenerator:
         self.exclude_info_b =    ttk.Button()
         self.reset_button =      ttk.Button()
         self.excluded =          tk.StringVar()
-        self.excluded_show =     tk.Label(textvariable=self.excluded)
+        self.excluded_display =  tk.Label(textvariable=self.excluded)
 
         # First used in get_words():
         self.eff_list =     []
@@ -158,7 +158,7 @@ class PassGenerator:
         self.somewords =    ''
         self.effwords =     ''
         self.prior_unused = ''
-        self.all_unused = ''
+        self.all_unused = []
 
         # Now configure widgets for the main window.
         self.display_font = ''  # also used in config_results().
@@ -333,8 +333,9 @@ class PassGenerator:
 
         self.exclude_info_b.configure(  style="G.TButton", text="?", width=0,
                                         command=self.exclude_msg)
-        self.excluded_show.config(fg='orange', bg=master_bg)
+        self.excluded_display.config(fg='orange', bg=master_bg)
         #####################################################
+
         self.grid_window()
 
     def grid_window(self) -> None:
@@ -427,7 +428,7 @@ class PassGenerator:
             self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(78, 0),
                                      sticky=tk.W)
 
-        self. excluded_show.grid(    column=0, row=10, padx=5, sticky=tk.W)
+        self. excluded_display.grid( column=0, row=10, padx=5, sticky=tk.W)
 
     def check_files(self) -> None:
         """Confirm whether required files are present, exit if not.
@@ -531,9 +532,9 @@ class PassGenerator:
             self.reset_exclusions()
             self.prior_unused = unused
 
-        # Need to display all excluded characters by user.
+        # Need to display all characters that have been excluded by user.
         if unused not in self.all_unused:
-            self.all_unused = unused  + ' ' + self.all_unused
+            self.all_unused.append(unused)
         self.excluded.set(self.all_unused)
 
         # Need to correct invalid user entries for number of words & characters.
