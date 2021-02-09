@@ -256,7 +256,7 @@ class PassGenerator:
             self.length_some.set(0)
             self.length_some_label.config(width=3)
             self.h_some.set(0)
-            self.h_some_label.config(width=4)
+            self.h_some_label.config(width=3)
             self.phrase_some.set(stubresult)
             self.phrase_some_display.config(width=60, font=self.display_font,
                                             fg=stubresult_fg, bg=pass_bg)
@@ -282,8 +282,8 @@ class PassGenerator:
 
         self.h_any.set(0)
         self.h_lc.set(0)
-        self.h_any_label.config(width=4)
-        self.h_lc_label.config( width=4)
+        self.h_any_label.config(width=3)
+        self.h_lc_label.config( width=3)
 
         self.phrase_any.set(stubresult)
         self.phrase_lc.set(stubresult)
@@ -325,8 +325,8 @@ class PassGenerator:
 
         self.h_pw_any.set(0)
         self.h_pw_some.set(0)
-        self.h_pw_any_l.config( width=4)
-        self.h_pw_some_l.config(width=4)
+        self.h_pw_any_l.config( width=3)
+        self.h_pw_some_l.config(width=3)
 
         self.pw_any_describe.config( text="Any characters",
                                      fg=master_fg, bg=master_bg)
