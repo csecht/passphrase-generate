@@ -84,7 +84,6 @@ class PassGenerator:
                                           textvariable=self.length_lc)
         self.length_some_label = tk.Label(self.result_frame1,
                                           textvariable=self.length_some)
-
         self.h_any =             tk.IntVar()
         self.h_lc =              tk.IntVar()
         self.h_some =            tk.IntVar()
@@ -121,6 +120,7 @@ class PassGenerator:
 
         self.pw_any_describe =  tk.Label()
         self.pw_some_describe = tk.Label()
+
         self.length_pw_any =    tk.IntVar()
         self.length_pw_some =   tk.IntVar()
         self.length_pw_any_l =  tk.Label(self.result_frame2,
@@ -129,11 +129,11 @@ class PassGenerator:
                                          textvariable=self.length_pw_some)
         self.h_pw_any =         tk.IntVar()
         self.h_pw_some =        tk.IntVar()
-
         self.h_pw_any_l =       tk.Label(self.result_frame2,
                                          textvariable=self.h_pw_any)
         self.h_pw_some_l =      tk.Label(self.result_frame2,
                                          textvariable=self.h_pw_some)
+
         self.pw_any =           tk.StringVar()
         self.pw_some =          tk.StringVar()
         self.pw_any_display =   tk.Entry(self.result_frame2,
@@ -152,25 +152,25 @@ class PassGenerator:
         # First used in get_words():
         self.eff_list =     []
         self.system_list =  []
+        self.uniq_words =   []
+        self.trim_words =   []
+        self.eff_words =    []
+
+        # First used in set_passstrings()
+        self.symbols =   SYMBOLS
+        self.digi =      digits
+        self.caps =      ascii_uppercase
+        self.all_char = ascii_letters + digits + punctuation
+        self.some_char = ascii_letters + digits + self.symbols
+        self.prior_unused = ''
+        self.allwords =     ''
+        self.somewords =    ''
+        self.effwords =     ''
+        self.all_unused =   ''
         self.passphrase1 =  ''
         self.passphrase2 =  ''
         self.password1 =    ''
         self.password2 =    ''
-        self.symbols =   SYMBOLS
-        self.digi =      digits
-        self.caps =      ascii_uppercase
-        self.all_char =  ascii_letters + digits + punctuation
-        self.some_char = ascii_letters + digits + self.symbols
-
-        # First used in set_passstrings()
-        self.uniq_words =   []
-        self.trim_words =   []
-        self.eff_words =    []
-        self.allwords =     ''
-        self.somewords =    ''
-        self.effwords =     ''
-        self.prior_unused = ''
-        self.all_unused =   ''
 
         # Now configure widgets for the main window.
         self.display_font = ''  # also used in config_results().
@@ -189,12 +189,12 @@ class PassGenerator:
             self.master.minsize(850, 420)
             self.master.maxsize(1230, 420)
 
-        master_bg = 'SkyBlue4'  # also used for some labels.
+        master_bg = 'SkyBlue4'    # also used for some labels.
         master_fg = 'LightCyan2'
-        frame_bg = 'grey40'  # background for data labels and frame
+        frame_bg = 'grey40'       # background for data labels and frame
         stubresult_fg = 'grey60'  # used only for initial window
         pass_bg = 'khaki2'
-        self.pass_fg = 'brown4'  # also used in config_results()
+        self.pass_fg = 'brown4'   # also used in config_results()
         # Use Courier b/c TKFixedFont does not monospace symbol characters.
         self.display_font = 'Courier', 12  # also used in config_results().
 
@@ -223,13 +223,14 @@ class PassGenerator:
         # Configure and set initial values of user entry and control widgets:
         stubresult = 'Result can be copied and pasted from keyboard.'
 
+        # Using eff word list is not an option in Windows.
         if MY_OS in 'lin, dar':
             self.eff_checkbtn.config(text='Use EFF word list ',
                                      variable=self.eff,
                                      fg=master_fg, bg=master_bg,
                                      activebackground='grey80',
                                      selectcolor=frame_bg)
-
+        # Used in all OS, but MacOS had different font sizes.
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=pass_bg, bg=master_bg)
         if MY_OS == 'dar':
@@ -242,10 +243,8 @@ class PassGenerator:
 
         self.result_frame1.config(borderwidth=3, relief='sunken',
                                   background=frame_bg)
-        self.result_frame2.config(borderwidth=3, relief='sunken',
-                                  background=frame_bg)
 
-        # Passphrase results section ##########################
+        # Passphrase section ##################################################
         # Set up OS-specific widgets.
         if MY_OS in 'lin, dar':
             self.any_describe.config(   text="Any words from dictionary",
@@ -257,7 +256,7 @@ class PassGenerator:
             self.length_some.set(0)
             self.length_some_label.config(width=3)
             self.h_some.set(0)
-            self.h_some_label.config(     width=4)
+            self.h_some_label.config(width=4)
             self.phrase_some.set(stubresult)
             self.phrase_some_display.config(width=60, font=self.display_font,
                                             fg=stubresult_fg, bg=pass_bg)
@@ -277,26 +276,22 @@ class PassGenerator:
 
         self.length_any.set(0)
         self.length_lc.set(0)
-        self.length_pw_any.set(0)
-        self.length_pw_some.set(0)
+
         self.length_any_label.config(width=3)
         self.length_lc_label.config( width=3)
-        self.length_pw_any_l.config( width=3)
-        self.length_pw_some_l.config(width=3)
+
         self.h_any.set(0)
         self.h_lc.set(0)
-        self.h_pw_any.set(0)
-        self.h_pw_some.set(0)
         self.h_any_label.config(width=4)
         self.h_lc_label.config( width=4)
-        self.h_pw_any_l.config( width=4)
-        self.h_pw_some_l.config(width=4)
+
         self.phrase_any.set(stubresult)
         self.phrase_lc.set(stubresult)
         self.phrase_any_display.config(width=60, font=self.display_font,
                                        fg=stubresult_fg, bg=pass_bg)
         self.phrase_lc_display.config( width=60, font=self.display_font,
                                        fg=stubresult_fg, bg=pass_bg)
+        # End passphrase section ##############################################
 
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
@@ -309,7 +304,10 @@ class PassGenerator:
                                     command=self.set_passstrings)
         self.generate_btn.focus()
 
-        # Password results section ##########################
+        self.result_frame2.config(borderwidth=3, relief='sunken',
+                                  background=frame_bg)
+
+        # Password section ####################################################
         self.pw_header.config(       text='Passwords', font=('default', 12),
                                      fg=pass_bg, bg=master_bg)
         if MY_OS == 'dar':
@@ -319,6 +317,16 @@ class PassGenerator:
                                      fg=pass_bg, bg=master_bg)
         self.numchars_entry.config(  width=3)
         self.numchars_entry.insert(0, 0)
+
+        self.length_pw_any.set(0)
+        self.length_pw_some.set(0)
+        self.length_pw_any_l.config( width=3)
+        self.length_pw_some_l.config(width=3)
+
+        self.h_pw_any.set(0)
+        self.h_pw_some.set(0)
+        self.h_pw_any_l.config( width=4)
+        self.h_pw_some_l.config(width=4)
 
         self.pw_any_describe.config( text="Any characters",
                                      fg=master_fg, bg=master_bg)
@@ -330,11 +338,12 @@ class PassGenerator:
                                      fg=stubresult_fg, bg=pass_bg)
         self.pw_some_display.config( width=60, font=self.display_font,
                                      fg=stubresult_fg, bg=pass_bg)
+        # End password section ################################################
 
+        # Excluded character section ##########################################
         self.exclude_describe.config(text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(   width=3)
-
         self.reset_button.configure(    style="G.TButton", text='Reset',
                                         width=6,
                                         command=self.reset_exclusions)
@@ -346,8 +355,9 @@ class PassGenerator:
         self.exclude_info_b.configure(  style="G.TButton", text="?", width=0,
                                         command=self.exclude_msg)
         self.excluded_display.config(fg='orange', bg=master_bg)
-        #####################################################
+        # End exclude section #################################################
 
+        # Now organize all widgets on a grid.
         self.grid_window()
 
     def grid_window(self) -> None:
@@ -356,7 +366,7 @@ class PassGenerator:
         :return: A nice looking interactive window.
         """
         ############## sorted by row number #################
-        # Passphrase widgets grid:
+        # Passphrase widgets ##################################################
         self.eff_checkbtn.grid(      column=1, row=0, pady=(10, 5), padx=5,
                                      columnspan=2, sticky=tk.W)
 
@@ -405,7 +415,7 @@ class PassGenerator:
             self.generate_btn.grid(column=3, row=5, pady=(10, 5), padx=(0, 150),
                                    rowspan=2, sticky=tk.W)
 
-        # Password widgets grid:
+        # Password widgets ####################################################
         self.pw_header.grid(       column=0, row=5, pady=(12, 6), padx=5,
                                    sticky=tk.W)
         self.numchars_label.grid(  column=0, row=6, padx=5, sticky=tk.W)
@@ -428,6 +438,7 @@ class PassGenerator:
         self.pw_some_display.grid( column=3, row=8, pady=6, padx=5,
                                    columnspan=2, ipadx=5, sticky=tk.EW)
 
+        # Excluded character widgets ##########################################
         self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=5,
                                    sticky=tk.W)
         self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 10),
