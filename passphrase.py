@@ -62,73 +62,85 @@ class PassGenerator:
         self.eff =          tk.BooleanVar()
         self.eff_checkbtn = tk.Checkbutton()
 
+        # Passphrase section ##################################################
         self.numwords_label = tk.Label()
         self.numwords_entry = tk.Entry()
-        self.numchars_label = tk.Label()
-        self.numchars_entry = tk.Entry()
 
-        # There are problems of tk.Button text showing up on MacOS, so ttk.
-        self.generate_btn = ttk.Button()
+        self.l_and_h_header = tk.Label()
+        self.passphrase_header = tk.Label()
 
         self.result_frame1 = tk.Frame()
-        self.result_frame2 = tk.Frame()
 
-        self.l_and_h_header =    tk.Label()
-        self.passphrase_header = tk.Label()
         self.any_describe =      tk.Label()
         self.any_lc_describe =   tk.Label()
         self.select_describe =   tk.Label()
+
         self.length_any =        tk.IntVar()
         self.length_lc =         tk.IntVar()
         self.length_some =       tk.IntVar()
-        self.length_pw_any =     tk.IntVar()
-        self.length_pw_some =    tk.IntVar()
-        self.h_any =             tk.IntVar()
-        self.h_lc =              tk.IntVar()
-        self.h_some =            tk.IntVar()
-        self.h_pw_any =          tk.IntVar()
-        self.h_pw_some =         tk.IntVar()
         self.length_any_label =  tk.Label(self.result_frame1,
                                           textvariable=self.length_any)
         self.length_lc_label =   tk.Label(self.result_frame1,
                                           textvariable=self.length_lc)
         self.length_some_label = tk.Label(self.result_frame1,
                                           textvariable=self.length_some)
-        self.length_pw_any_l =   tk.Label(self.result_frame2,
-                                          textvariable=self.length_pw_any)
-        self.length_pw_some_l =  tk.Label(self.result_frame2,
-                                          textvariable=self.length_pw_some)
+
+        self.h_any =             tk.IntVar()
+        self.h_lc =              tk.IntVar()
+        self.h_some =            tk.IntVar()
         self.h_any_label =       tk.Label(self.result_frame1,
                                           textvariable=self.h_any)
         self.h_lc_label =        tk.Label(self.result_frame1,
                                           textvariable=self.h_lc)
         self.h_some_label =      tk.Label(self.result_frame1,
                                           textvariable=self.h_some)
-        self.h_pw_any_l =        tk.Label(self.result_frame2,
-                                          textvariable=self.h_pw_any)
-        self.h_pw_some_l =       tk.Label(self.result_frame2,
-                                          textvariable=self.h_pw_some)
+
         self.phrase_any =        tk.StringVar()
         self.phrase_lc =         tk.StringVar()
         self.phrase_some =       tk.StringVar()
         # Results are displayed in Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
-        self.phrase_any_display = tk.Entry( self.result_frame1,
+        self.phrase_any_display =  tk.Entry(self.result_frame1,
                                             textvariable=self.phrase_any)
-        self.phrase_lc_display =  tk.Entry( self.result_frame1,
+        self.phrase_lc_display =   tk.Entry(self.result_frame1,
                                             textvariable=self.phrase_lc)
         self.phrase_some_display = tk.Entry(self.result_frame1,
                                             textvariable=self.phrase_some)
-        self.pw_header =          tk.Label()
-        self.pw_any_describe =    tk.Label()
-        self.pw_some_describe =   tk.Label()
+        # End passphrase section ##############################################
 
-        self.pw_any =             tk.StringVar()
-        self.pw_some =            tk.StringVar()
-        self.pw_any_display =     tk.Entry( self.result_frame2,
-                                            textvariable=self.pw_any, )
-        self.pw_some_display =    tk.Entry( self.result_frame2,
-                                            textvariable=self.pw_some)
+        self.generate_btn = ttk.Button()
+
+        # Password section ####################################################
+        self.pw_header =      tk.Label()
+
+        # There are problems of tk.Button text showing up on MacOS, so ttk.
+        self.numchars_label =   tk.Label()
+        self.numchars_entry =   tk.Entry()
+
+        self.result_frame2 =    tk.Frame()
+
+        self.pw_any_describe =  tk.Label()
+        self.pw_some_describe = tk.Label()
+        self.length_pw_any =    tk.IntVar()
+        self.length_pw_some =   tk.IntVar()
+        self.length_pw_any_l =  tk.Label(self.result_frame2,
+                                         textvariable=self.length_pw_any)
+        self.length_pw_some_l = tk.Label(self.result_frame2,
+                                         textvariable=self.length_pw_some)
+        self.h_pw_any =         tk.IntVar()
+        self.h_pw_some =        tk.IntVar()
+
+        self.h_pw_any_l =       tk.Label(self.result_frame2,
+                                         textvariable=self.h_pw_any)
+        self.h_pw_some_l =      tk.Label(self.result_frame2,
+                                         textvariable=self.h_pw_some)
+        self.pw_any =           tk.StringVar()
+        self.pw_some =          tk.StringVar()
+        self.pw_any_display =   tk.Entry(self.result_frame2,
+                                         textvariable=self.pw_any, )
+        self.pw_some_display =  tk.Entry(self.result_frame2,
+                                         textvariable=self.pw_some)
+        # End password section ################################################
 
         self.exclude_describe =  tk.Label()
         self.exclude_entry =     tk.Entry()
@@ -158,8 +170,7 @@ class PassGenerator:
         self.somewords =    ''
         self.effwords =     ''
         self.prior_unused = ''
-        self.all_unused = ''
-
+        self.all_unused =   ''
 
         # Now configure widgets for the main window.
         self.display_font = ''  # also used in config_results().
