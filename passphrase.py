@@ -160,7 +160,7 @@ class PassGenerator:
         self.symbols =   SYMBOLS
         self.digi =      digits
         self.caps =      ascii_uppercase
-        self.all_char = ascii_letters + digits + punctuation
+        self.all_char =  ascii_letters + digits + punctuation
         self.some_char = ascii_letters + digits + self.symbols
         self.prior_unused = ''
         self.allwords =     ''
@@ -561,19 +561,21 @@ class PassGenerator:
         self.excluded.set(self.all_unused)
 
         # Need to correct invalid user entries for number of words & characters.
-        if self.numwords_entry.get() == '':
+        numwords = str(self.numwords_entry.get()).strip()
+        if numwords == '':
             self.numwords_entry.insert(0, '0')
-        elif self.numwords_entry.get().isdigit() is False:
+        elif numwords.isdigit() is False:
             self.numwords_entry.delete(0, 'end')
             self.numwords_entry.insert(0, '0')
-        numwords = int(self.numwords_entry.get().strip())
+        numwords = int(self.numwords_entry.get())
 
-        if self.numchars_entry.get() == '':
+        numchars = str(self.numchars_entry.get()).strip()
+        if numchars == '':
             self.numchars_entry.insert(0, '0')
-        elif self.numchars_entry.get().isdigit() is False:
+        if numchars.isdigit() is False:
             self.numchars_entry.delete(0, 'end')
             self.numchars_entry.insert(0, '0')
-        numchars = int(self.numchars_entry.get().strip())
+        numchars = int(self.numchars_entry.get())
 
         # Randomly select user-specified number of words.
         if MY_OS in 'lin, dar' and self.system_list:
