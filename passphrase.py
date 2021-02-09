@@ -41,6 +41,7 @@ MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 SYMBOLS = "~!@#$%^&*()_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
+W = 60  # Default width of the results display fields.
 SYSWORDS_PATH = Path('/usr/share/dict/words')
 EFFWORDS_PATH = Path('eff_large_wordlist.txt')
 VERY_RANDOM = random.Random(random.random())
@@ -258,7 +259,7 @@ class PassGenerator:
             self.h_some.set(0)
             self.h_some_label.config(width=3)
             self.phrase_some.set(stubresult)
-            self.phrase_some_display.config(width=60, font=self.display_font,
+            self.phrase_some_display.config(width=W, font=self.display_font,
                                             fg=stubresult_fg, bg=pass_bg)
         elif MY_OS == 'win':
             self.any_describe.config(   text="Any words from EFF wordlist",
@@ -287,9 +288,9 @@ class PassGenerator:
 
         self.phrase_any.set(stubresult)
         self.phrase_lc.set(stubresult)
-        self.phrase_any_display.config(width=60, font=self.display_font,
+        self.phrase_any_display.config(width=W, font=self.display_font,
                                        fg=stubresult_fg, bg=pass_bg)
-        self.phrase_lc_display.config( width=60, font=self.display_font,
+        self.phrase_lc_display.config( width=W, font=self.display_font,
                                        fg=stubresult_fg, bg=pass_bg)
         # End passphrase section ##############################################
 
@@ -334,9 +335,9 @@ class PassGenerator:
                                      fg=master_fg, bg=master_bg)
         self.pw_any.set(stubresult)
         self.pw_some.set(stubresult)
-        self.pw_any_display.config(  width=60, font=self.display_font,
+        self.pw_any_display.config(  width=W, font=self.display_font,
                                      fg=stubresult_fg, bg=pass_bg)
-        self.pw_some_display.config( width=60, font=self.display_font,
+        self.pw_some_display.config( width=W, font=self.display_font,
                                      fg=stubresult_fg, bg=pass_bg)
         # End password section ################################################
 
@@ -704,24 +705,24 @@ class PassGenerator:
         # B/c 'width' is character units, not pixels, length may change
         #   as font sizes and string lengths change.
         small_font = 'Courier', 10
-        if len(self.passphrase1) > 60:
+        if len(self.passphrase1) > W:
             self.phrase_any_display.config( font=small_font,
                                             width=len(self.passphrase1))
             self.phrase_lc_display.config(  font=small_font)
             self.phrase_some_display.config(font=small_font)
-        elif len(self.passphrase1) <= 60:
-            self.phrase_any_display.config( font=self.display_font, width=60)
-            self.phrase_lc_display.config(  font=self.display_font, width=60)
-            self.phrase_some_display.config(font=self.display_font, width=60)
+        elif len(self.passphrase1) <= W:
+            self.phrase_any_display.config( font=self.display_font, width=W)
+            self.phrase_lc_display.config(  font=self.display_font, width=W)
+            self.phrase_some_display.config(font=self.display_font, width=W)
 
-        if len(self.password1) > 60:
+        if len(self.password1) > W:
             self.pw_any_display.config(     font=small_font,
                                             width=len(self.password1))
             self.pw_some_display.config(    font=small_font,
                                             width=len(self.password2))
-        elif len(self.password1) <= 60:
-            self.pw_any_display.config(     font=self.display_font, width=60)
-            self.pw_some_display.config(    font=self.display_font, width=60)
+        elif len(self.password1) <= W:
+            self.pw_any_display.config(     font=self.display_font, width=W)
+            self.pw_some_display.config(    font=self.display_font, width=W)
 
     def config_nosyswords(self) -> None:
         """
