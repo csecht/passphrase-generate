@@ -29,8 +29,8 @@ from string import digits, punctuation, ascii_letters, ascii_uppercase
 
 try:
     import tkinter as tk
-    from tkinter import messagebox
     import tkinter.ttk as ttk
+    from tkinter import messagebox
 except (ImportError, ModuleNotFoundError) as error:
     print('GUI requires tkinter, which is included with Python 3.7 and higher'
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
@@ -158,7 +158,8 @@ class PassGenerator:
         self.somewords =    ''
         self.effwords =     ''
         self.prior_unused = ''
-        self.all_unused = []
+        self.all_unused = ''
+
 
         # Now configure widgets for the main window.
         self.display_font = ''  # also used in config_results().
@@ -534,7 +535,7 @@ class PassGenerator:
 
         # Need to display all characters that have been excluded by user.
         if unused not in self.all_unused:
-            self.all_unused.append(unused)
+            self.all_unused = ' '.join([unused, self.all_unused])
         self.excluded.set(self.all_unused)
 
         # Need to correct invalid user entries for number of words & characters.
@@ -619,10 +620,11 @@ class PassGenerator:
         :param numchars: User-defined number of password characters.
         """
         # https://en.wikipedia.org/wiki/Password_strength
-        # We use only 1 character each from each set of symbols, numbers, caps.
-        #  so only need P for selecting one from a set to calc H.
+        # For +3 characters, we use only 1 character each from each set of
+        # symbols, numbers, caps, so only need P of selecting one element
+        # from a set to obtain H, then sum all P.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
-        # Note that length of these strings may reflect excluded characters.
+        # Note that length of these string may reflect excluded characters.
         h_symbol =  -log(1 / len(self.symbols), 2)
         h_digit = -log(1/len(self.digi), 2)
         h_cap = -log(1/len(self.caps), 2)
