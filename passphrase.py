@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.12'
+__version__ = '0.4.13'
 
 import random
 import sys
@@ -173,10 +173,12 @@ class PassGenerator:
         self.password1 =    ''
         self.password2 =    ''
 
-        # Now configure widgets for the main window.
+        # Configure and grid all widgets & check for needed files.
         self.display_font = ''  # also used in config_results().
         self.pass_fg = ''  # also used in config_results().
         self.config_window()
+        self.grid_window()
+        self.check_files()
 
     def config_window(self) -> None:
         """Configure all tkinter widgets.
@@ -358,9 +360,6 @@ class PassGenerator:
         self.excluded_display.config(fg='orange', bg=master_bg)
         # End exclude section #################################################
 
-        # Now organize all widgets on a grid.
-        self.grid_window()
-
     def grid_window(self) -> None:
         """Grid all tkinter widgets.
 
@@ -452,12 +451,12 @@ class PassGenerator:
             self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(78, 0),
                                      sticky=tk.W)
 
-        self. excluded_display.grid( column=0, row=10, padx=5, sticky=tk.W)
+        self.excluded_display.grid( column=0, row=10, padx=5, sticky=tk.W)
 
-    def check_files(self) -> None:
+    def check_files(self) -> object:
         """Confirm whether required files are present, exit if not.
 
-        :return: A graceful exit or pass through.
+        :return: A graceful exit or pass through to continue program.
         """
         fnf_msg = (
             f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} '
@@ -471,14 +470,14 @@ class PassGenerator:
                     print(fnf_msg)
                     messagebox.showinfo(title='Files not found',
                                         detail=fnf_msg)
-                    quit_gui()
+                    return quit_gui()
         elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
             print(fnf_msg)
             messagebox.showinfo(title='Files not found', detail=fnf_msg)
-            quit_gui()
+            return quit_gui()
 
         # As long as necessary files are present, proceed...
-        self.get_words()
+        return self.get_words()
 
     def get_words(self) -> None:
         """
@@ -933,5 +932,5 @@ def quit_gui() -> None:
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Passphrase Generator")
-    PassGenerator(root).check_files()
+    PassGenerator(root)
     root.mainloop()
