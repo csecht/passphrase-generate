@@ -456,7 +456,7 @@ class PassGenerator:
     def check_files(self) -> object:
         """Confirm whether required files are present, exit if not.
 
-        :return: A graceful exit or pass through to continue program.
+        :return: quit_gui() or self.get_words()
         """
         fnf_msg = (
             f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} '
@@ -509,11 +509,11 @@ class PassGenerator:
             self.uniq_words = [word for word in self.system_list if word.isalpha()]
             self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
 
-    def set_passstrings(self) -> None:
-        """Generate and set pass-strings.
+    def set_passstrings(self) -> object:
+        """Generate and set random pass-strings.
         Called from keybind, menu, or button.
 
-        :return: Random pass-strings of specified length.
+        :return: self.set_entropy()
         """
         # Need different passphrase descriptions for sys dict and EEF list
         # to be re-configured here b/c EFF option may be used between calls.
@@ -635,13 +635,14 @@ class PassGenerator:
         #    state for Windows b/c no system dictionary is available.
 
         # Finally, set H values for each pass-string.
-        self.set_entropy(numwords, numchars)
+        return self.set_entropy(numwords, numchars)
 
-    def set_entropy(self, numwords: int, numchars: int) -> None:
+    def set_entropy(self, numwords: int, numchars: int) -> object:
         """Calculate and set values for information entropy, H.
 
         :param numwords: User-defined number of passphrase words.
         :param numchars: User-defined number of password characters.
+        :return: self.config_results()
         """
         # https://en.wikipedia.org/wiki/Password_strength
         # For +3 characters, we use only 1 character each from each set of
@@ -679,7 +680,7 @@ class PassGenerator:
         self.h_pw_any.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.h_pw_some.set(int(numchars * log(len(self.some_char)) / log(2)))
 
-        self.config_results()
+        return self.config_results()
 
     def config_results(self) -> None:
         """
