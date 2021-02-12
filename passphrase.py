@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 import glob
 import random
@@ -63,7 +63,7 @@ class PassGenerator:
         # EFF checkbutton is not used in Windows b/c only EFF words are used.
         # self.eff =          tk.BooleanVar()
         self.choice = tk.StringVar()
-        self.choose_wordlist = ttk.Combobox(state='readonly', textvariable=self.choice)
+        self.choose_wordlist = ttk.Combobox(state='readonly')
         # https://www.tcl.tk/man/tcl/TkCmd/ttk_combobox.htm
 
         # Passphrase section ##################################################
@@ -503,7 +503,9 @@ class PassGenerator:
         self.word_list = [word for word in self.allwords if word.isalpha()]
         self.trim_words = [word for word in self.word_list if 8 >= len(word) >= 3]
 
-        # print('the length of', choice, 'is', len(self.word_list))  # TESTING
+        # Need special case for system dictionary to report in explain().
+        if 'System' in self.choice:
+            self.system_list = self.allwords
 
     def set_passstrings(self) -> object:
         """Generate and set random pass-strings.
@@ -715,58 +717,61 @@ class PassGenerator:
         # Formatting this is a pain.  There must be a better way.
         info = (
 """A passphrase is a random string of words that can be more secure and
-easier to remember than a shorter or complicated password.
-For more information on passphrases, see, for example, a discussion of
-word lists and selection at the Electronic Frontier Foundation (EFF):
+easier to remember than a password of random characters. For more 
+information on passphrases, see, for example, a discussion of word lists
+and word selection at the Electronic Frontier Foundation (EFF):
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases 
 
-On MacOS and Linux systems, the system dictionary is used by default.
-Windows  users, however, can use only the optional wordlists. 
-Your system dictionary provides:
+On MacOS and Linux systems, the system dictionary is used by default to
+provide words, though optional wordlists are available. Windows users 
+can use only the optional wordlists. Your system dictionary provides:
 """
 f"    {len(self.system_list)} words of any length, of which...\n"
-f"    {len(self.word_list)} are unique (no possessive forms of nouns) and... \n"
+f"    {len(self.word_list)} are unique (no apostrophes or hyphens) and... \n"
 f"    {len(self.trim_words)} of unique words that have 3 to 8 letters."
 """
 Only the unique and word-length-limited subsets are used for passphrases. 
-Passphrases built from the system dictionary may include proper names 
-and diacritics.
 
-All words provided are three or more characters in length.
-The optional wordlists were derived from text obtained from:
-https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
-https://www.gutenberg.org
-https://www.archives.gov/founding-docs/constitution-transcript 
-
-The EFF large word list option includes words only of 3 to 9 characters
-that are generally easier to remember than those from most sources. 
+Optional wordlists were derived from text obtained from these sites:
+    https://www.gutenberg.org
+    https://www.archives.gov/founding-docs/constitution-transcript
+    https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used 
 here because hyphenated word are excluded.
 
-To accommodate password policies of some web sites and applications, a 
-choice is provided that adds three characters : 1 symbol, 1 number, 
-and 1 upper case letter. Symbols used are restricted to these: """
-f'\n{self.symbols}\n'
+"""
+f'There are {len(self.word_list)} words available from the currently selected wordlist.'
+""" 
+Words with excluded characters are not available nor counted.
+You may need to Generate! to update the count for non-excluded words.
+(Multiple windows can be left open to compare word counts.)
+
+Words from any source will have at least 3 letters.
+
+To accommodate some password requirements, a choice is provided that 
+adds three characters : 1 symbol, 1 number, and 1 upper case letter.
+"""
+f'Symbols used are these: {self.symbols}\n'
 """
 There is an option to exclude any character or string of characters
 from your passphrase words and passwords (together called pass-strings).
 
-In the results boxes, L is the character length of each pass-string.
-H, as used here, is for comparing relative pass-string strengths. Higher
-is better; each increase of 1 doubles the relative strength. H is 
-actually the information entropy (Shannon entropy) value and is 
+In the results fields, L is the character length of each pass-string.
+H, as used here, is for comparing relative pass-string strengths.
+Higher is better; each increase of 1 doubles the relative strength. 
+H is actually the information entropy (Shannon entropy) value and is 
 equivalent to bits of entropy. For more information see: 
-https://explainxkcd.com/wiki/index.php/936:_Password_Strength 
-https://en.wikipedia.org/wiki/Password_strength
-https://en.wikipedia.org/wiki/Entropy_(information_theory)
+    https://explainxkcd.com/wiki/index.php/936:_Password_Strength 
+    https://en.wikipedia.org/wiki/Password_strength
+    https://en.wikipedia.org/wiki/Entropy_(information_theory)
 """
 )
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
         num_lines = info.count('\n')
         infotext = tk.Text(infowin, width=75, height=num_lines + 1,
-                           background='dark slate grey', foreground='grey94',
-                           relief='groove', borderwidth=10, padx=20, pady=10)
+                           background='grey40', foreground='grey98',
+                           relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', info)
         infotext.pack()
 
@@ -798,7 +803,7 @@ words or passwords. Multiple characters are treated as a
 unit. For example, "es" will exclude "trees", not "eye" 
 and  "says". To exclude all three words, enter "e", then
 Generate!, enter "s", then Generate!. 
-The Reset button removes exclusions and restores all  
+The Reset button removes exclusions and restores original  
 words, characters, numbers, and symbols.
 """
 )
@@ -806,8 +811,8 @@ words, characters, numbers, and symbols.
         exclwin.title('Exclude from what?')
         num_lines = msg.count('\n')
         infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
-                           background='dark slate grey', foreground='grey94',
-                           relief='groove', borderwidth=10, padx=20, pady=10)
+                           background='grey40', foreground='grey98',
+                           relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', msg)
         infotext.pack()
 
@@ -851,7 +856,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         bkg = random.choice(colour)
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
                            background=bkg, foreground='grey98',
-                           relief='groove', borderwidth=5, padx=5)
+                           relief='groove', borderwidth=8, padx=5)
         abouttxt.insert('0.0', boilerplate + __version__)
         # Center text preceding the Author, etc. details.
         abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
