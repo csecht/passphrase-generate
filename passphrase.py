@@ -496,7 +496,7 @@ class PassGenerator:
         # Use set() and split() here to generalize for any text file.
         self.choice = self.choose_wordlist.get()
         self.wordfile = self.wordlists[self.choice]
-        self.allwords =  set(Path(self.wordfile).read_text().split())
+        self.allwords =  set(Path(self.wordfile).read_text(encoding='utf8').split())
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   Also removes hyphenated words; EFF large wordlist has 4.
