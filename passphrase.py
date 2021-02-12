@@ -19,8 +19,9 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.4.13'
+__version__ = '0.5.0'
 
+import glob
 import random
 import sys
 from math import log
@@ -36,17 +37,17 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROJ_URL = 'https://github.com/csecht/passphrase-generate'
+PROJ_URL = 'github.com/csecht/passphrase-generate'
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 SYMBOLS = "~!@#$%^&*()_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
-W = 60  # Default width of the results display fields.
-SYSWORDS_PATH = Path('/usr/share/dict/words')
-EFFWORDS_PATH = Path('eff_large_wordlist.txt')
+SYSDICT_PATH = Path('/usr/share/dict/words')
+WORDDIR = './wordlists/'
 VERY_RANDOM = random.Random(random.random())
 # VERY_RANDOM = random.Random(time.time())  # Use epoch timestamp seed.
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
+W = 60  # Default width of the results display fields.
 
 
 class PassGenerator:
@@ -60,8 +61,10 @@ class PassGenerator:
 
         # tkinter widgets used in config_window(), in general order of appearance:
         # EFF checkbutton is not used in Windows b/c only EFF words are used.
-        self.eff =          tk.BooleanVar()
-        self.eff_checkbtn = tk.Checkbutton()
+        # self.eff =          tk.BooleanVar()
+        self.choice = tk.StringVar()
+        self.choose_wordlist = ttk.Combobox(state='readonly', textvariable=self.choice)
+        # https://www.tcl.tk/man/tcl/TkCmd/ttk_combobox.htm
 
         # Passphrase section ##################################################
         self.numwords_label = tk.Label()
@@ -151,11 +154,12 @@ class PassGenerator:
         self.excluded_display =  tk.Label(textvariable=self.excluded)
 
         # First used in get_words():
-        self.eff_list =     []
-        self.system_list =  []
-        self.uniq_words =   []
-        self.trim_words =   []
-        self.eff_words =    []
+        self.wordfile =    []
+        self.allwords =    []
+        self.word_list =   []
+        self.trim_words =  []
+        self.wordlists =   {}
+        self.choice =      ''
 
         # First used in set_passstrings()
         self.symbols =   SYMBOLS
@@ -164,14 +168,15 @@ class PassGenerator:
         self.all_char =  ascii_letters + digits + punctuation
         self.some_char = ascii_letters + digits + self.symbols
         self.prior_unused = ''
-        self.allwords =     ''
         self.somewords =    ''
-        self.effwords =     ''
         self.all_unused =   ''
         self.passphrase1 =  ''
         self.passphrase2 =  ''
         self.password1 =    ''
         self.password2 =    ''
+
+        # Used only in explain()
+        self.system_list = []
 
         # Configure and grid all widgets & check for needed files.
         self.display_font = ''  # also used in config_results().
@@ -185,12 +190,9 @@ class PassGenerator:
 
         :return: Easy to understand window labels and data.
         """
-        if MY_OS == 'win':
-            self.master.minsize(850, 390)
-            self.master.maxsize(1230, 390)
-        elif MY_OS in 'lin, dar':
-            self.master.minsize(850, 420)
-            self.master.maxsize(1230, 420)
+
+        self.master.minsize(850, 420)
+        self.master.maxsize(1230, 420)
 
         master_bg = 'SkyBlue4'    # also used for some labels.
         master_fg = 'LightCyan2'
@@ -226,13 +228,30 @@ class PassGenerator:
         # Configure and set initial values of user entry and control widgets:
         stubresult = 'Result can be copied and pasted from keyboard.'
 
+        self.wordlists = {
+            'System dictionary': SYSDICT_PATH,
+            'EFF long wordlist': WORDDIR + 'eff_large_wordlist.txt',
+            'US Constitution'  : WORDDIR + 'usconst_wordlist.txt',
+            'Don Quijote'      : WORDDIR + 'don_quijote_wordlist.txt',
+            'Frankenstein'     : WORDDIR + 'frankenstein_wordlist.txt'
+            }
+
         # Using eff word list is not an option in Windows.
         if MY_OS in 'lin, dar':
-            self.eff_checkbtn.config(text='Use EFF word list ',
-                                     variable=self.eff,
-                                     fg=master_fg, bg=master_bg,
-                                     activebackground='grey80',
-                                     selectcolor=frame_bg)
+            self.choose_wordlist['values'] = ('System dictionary',
+                                              'EFF long wordlist',
+                                              'US Constitution',
+                                              'Don Quijote',
+                                              'Frankenstein')
+        if MY_OS == 'win':
+            self.choose_wordlist['values'] = ('EFF long wordlist',
+                                              'US Constitution',
+                                              'Don Quijote',
+                                              'Frankenstein')
+
+        self.choose_wordlist.current(0)
+        self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
+
         # Used in all OS, but MacOS had different font sizes.
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=pass_bg, bg=master_bg)
@@ -248,28 +267,19 @@ class PassGenerator:
                                   background=frame_bg)
 
         # Passphrase section ##################################################
-        # Set up OS-specific widgets.
-        if MY_OS in 'lin, dar':
-            self.any_describe.config(   text="Any words from dictionary",
-                                        fg=master_fg, bg=master_bg)
-            self.any_lc_describe.config(text="... +3 characters & lower case",
-                                        fg=master_fg, bg=master_bg)
-            self.select_describe.config(text="...with words of 3 to 8 letters",
-                                        fg=master_fg, bg=master_bg)
-            self.length_some.set(0)
-            self.length_some_label.config(width=3)
-            self.h_some.set(0)
-            self.h_some_label.config(width=3)
-            self.phrase_some.set(stubresult)
-            self.phrase_some_display.config(width=W, font=self.display_font,
-                                            fg=stubresult_fg, bg=pass_bg)
-        elif MY_OS == 'win':
-            self.any_describe.config(   text="Any words from EFF wordlist",
-                                        fg=master_fg, bg=master_bg)
-            self.any_lc_describe.config(text="...add 3 characters",
-                                        fg=master_fg, bg=master_bg)
-            self.select_describe.config(text=" ",
-                                        fg=master_fg, bg=master_bg)
+        self.any_describe.config(   text="Any words from dictionary",
+                                    fg=master_fg, bg=master_bg)
+        self.any_lc_describe.config(text="... plus 3 characters",
+                                    fg=master_fg, bg=master_bg)
+        self.select_describe.config(text="...with words of 3 to 8 letters",
+                                    fg=master_fg, bg=master_bg)
+        self.length_some.set(0)
+        self.length_some_label.config(width=3)
+        self.h_some.set(0)
+        self.h_some_label.config(width=3)
+        self.phrase_some.set(stubresult)
+        self.phrase_some_display.config(width=W, font=self.display_font,
+                                        fg=stubresult_fg, bg=pass_bg)
 
         # Passphrase widgets used by all OS.
         self.numwords_label.config(text='# words',
@@ -367,8 +377,8 @@ class PassGenerator:
         """
         ############## sorted by row number #################
         # Passphrase widgets ##################################################
-        self.eff_checkbtn.grid(      column=1, row=0, pady=(10, 5), padx=5,
-                                     columnspan=2, sticky=tk.W)
+        self.choose_wordlist.grid(column=1, row=0, pady=(10, 5), padx=5,
+                                  columnspan=2, sticky=tk.W)
 
         self.passphrase_header.grid( column=0, row=0, pady=(10, 5), padx=5,
                                      sticky=tk.W)
@@ -397,16 +407,6 @@ class PassGenerator:
         self.h_some_label.grid(      column=2, row=4, pady=3, padx=(4, 0))
         self.phrase_some_display.grid(column=3, row=4, pady=6, padx=5, ipadx=5,
                                       sticky=tk.EW)
-        # Don't show system dictionary or EFF-specific widgets on Windows.
-        # Need to adjust padding to keep row headers aligned with results b/c
-        #  of deletion of those widgets. (?)
-        if MY_OS == 'win':
-            self.eff_checkbtn.grid_forget()
-            self.any_describe.grid(column=0, row=2, pady=(6, 0), sticky=tk.E)
-            self.select_describe.grid_forget()
-            self.length_some_label.grid_forget()
-            self.h_some_label.grid_forget()
-            self.phrase_some_display.grid_forget()
 
         # Need to pad and span to center the button between two results frames.
         self.generate_btn.grid(   column=3, row=5, pady=(10, 5), padx=(0, 250),
@@ -459,88 +459,67 @@ class PassGenerator:
         :return: quit_gui() or self.get_words()
         """
         fnf_msg = (
-            f'\nHmmm. Cannot locate the system dictionary or {EFFWORDS_PATH} '
-            f'\n'
-            f'At a minimum, the file {EFFWORDS_PATH} should be in '
-            'the master directory.\nThat file is in the repository:\n'
-            f'{PROJ_URL}\n...Will exit program now...')
-        if MY_OS in 'lin, dar':
-            if Path.is_file(SYSWORDS_PATH) is False:
-                if Path.is_file(EFFWORDS_PATH) is False:
-                    print(fnf_msg)
-                    messagebox.showinfo(title='Files not found',
-                                        detail=fnf_msg)
-                    return quit_gui()
-        elif MY_OS == 'win' and Path.is_file(EFFWORDS_PATH) is False:
-            print(fnf_msg)
-            messagebox.showinfo(title='Files not found', detail=fnf_msg)
-            return quit_gui()
+            '\nHmmm. Cannot locate system dictionary\n'
+            ' words nor any custom wordlist files\n'
+            ' (*_wordlist.txt). Wordlist files should be\n'
+            ' in a folder called "wordfiles" included\n'
+            ' with the repository downloaded from:\n'
+            f'{PROJ_URL}\nWill exit program now...')
+
+        wordfiles = glob.glob(WORDDIR + '*_wordlist.txt')
+        # This covers OS with and w/o system dictionary.
+        if Path.is_file(SYSDICT_PATH) is False:
+            if len(wordfiles) == 0:
+                print(fnf_msg)
+                messagebox.showinfo(title='Files not found',
+                                    detail=fnf_msg)
+                return quit_gui()
+            if len(wordfiles) > 0:
+                return self.config_nosyswords()
+        elif Path.is_file(SYSDICT_PATH) is True:
+            if len(wordfiles) == 0:
+                return self.config_no_options()
 
         # As long as necessary files are present, proceed...
         return self.get_words()
 
-    def get_words(self) -> None:
+    def get_words(self, event = None) -> None:
         """
         Populate lists with words to randomize in set_passstrings().
 
-        :return: Large word lists; pop-up msg if some files are missing.
+        :param: event is a call from <<ComboboxSelected>>.
+
+        :return: Word lists or pop-up msg if some files are missing.
         """
 
-        # If pass the check, then at least one file exists, so proceed to
-        #   populate word list(s).
-        if MY_OS == 'win':
-            self.eff_list = Path(EFFWORDS_PATH).read_text().split()
-            self.eff_words = [word for word in self.eff_list if word.isalpha()]
-        if MY_OS in 'lin, dar':
-            if Path.is_file(SYSWORDS_PATH):
-                self.system_list = Path(SYSWORDS_PATH).read_text().split()
-            elif Path.is_file(SYSWORDS_PATH) is False:
-                self.config_nosyswords()
+        # The *_wordlist.txt files were pre-compiled to have only unique words.
+        # Use set() and split() here to generalize for any text file.
+        self.choice = self.choose_wordlist.get()
+        self.wordfile = self.wordlists[self.choice]
+        self.allwords =  set(Path(self.wordfile).read_text().split())
+        # Need to remove words having the possessive form ('s) b/c they
+        #   duplicate many nouns in an English system dictionary.
+        #   Also removes hyphenated words; EFF large wordlist has 4.
+        self.word_list = [word for word in self.allwords if word.isalpha()]
+        self.trim_words = [word for word in self.word_list if 8 >= len(word) >= 3]
 
-            if Path.is_file(EFFWORDS_PATH):
-                self.eff_list = Path(EFFWORDS_PATH).read_text().split()
-                self.eff_words = [word for word in self.eff_list if
-                                  word.isalpha()]
-            elif Path.is_file(EFFWORDS_PATH) is False:
-                self.config_noeffwords()
-
-            # Need to remove words having the possessive form ('s, English)
-            # Remove hyphenated words (4) from EFF wordlist (are not alpha).
-            self.uniq_words = [word for word in self.system_list if word.isalpha()]
-            self.trim_words = [word for word in self.uniq_words if 8 >= len(word) >= 3]
+        # print('the length of', choice, 'is', len(self.word_list))  # TESTING
 
     def set_passstrings(self) -> object:
         """Generate and set random pass-strings.
-        Called from keybind, menu, or button.
+        Called from keybinding, menu, or button.
 
         :return: self.set_entropy()
         """
-        # Need different passphrase descriptions for sys dict and EEF list
-        # to be re-configured here b/c EFF option may be used between calls.
-        if MY_OS in 'lin, dar':
-            if self.eff.get() is False:
-                self.any_describe.config(   text="Any words from dictionary")
-                self.any_lc_describe.config(text="... +3 characters & lower case")
-                self.select_describe.config(text="...with words of 3 to 8 letters")
-            elif self.eff.get() is True:
-                self.any_describe.config(   text="Any words from EFF wordlist")
-                self.any_lc_describe.config(text="... +3 characters")
-                self.select_describe.config(text=" ")
-                self.length_some.set(' ')
-                self.phrase_some.set(' ')
 
         # Need to filter words and strings containing characters to be excluded.
         unused = self.exclude_entry.get().strip()
 
         if len(unused) > 0:
-            if MY_OS in 'lin, dar' and self.system_list:
-                self.uniq_words = [
-                    word for word in self.uniq_words if unused not in word]
-                self.trim_words = [
-                    word for word in self.trim_words if unused not in word]
-            # Remaining statements apply to all OS.
-            self.eff_words = [
-                word for word in self.eff_words if unused not in word]
+            self.word_list = [
+                word for word in self.word_list if unused not in word]
+            self.trim_words = [
+                word for word in self.trim_words if unused not in word]
             self.symbols = [char for char in self.symbols if unused not in char]
             self.digi = [num for num in self.digi if unused not in num]
             self.caps = [letter for letter in self.caps if unused not in letter]
@@ -578,27 +557,10 @@ class PassGenerator:
         numchars = int(self.numchars_entry.get())
 
         # Randomly select user-specified number of words.
-        if MY_OS in 'lin, dar' and self.system_list:
-            self.allwords = "".join(VERY_RANDOM.choice(self.uniq_words) for
-                                    _ in range(numwords))
-            self.somewords = "".join(VERY_RANDOM.choice(self.trim_words) for
-                                     _ in range(numwords))
-        # Windows only uses EFF file, Linux/MacOS uses it as an option.
-        if Path.is_file(EFFWORDS_PATH):
-            self.effwords = "".join(VERY_RANDOM.choice(self.eff_words) for
-                                    _ in range(numwords))
-
-        # 1st condition evaluates whether eff checkbutton state is on,
-        # 2nd if no sys dict found,
-        # 3rd if only EFF found in Linux/Mac, then disable eff checkbutton.
-        if MY_OS in 'lin, dar' and self.eff.get() is True:
-            self.allwords = self.effwords
-            self.somewords = self.effwords
-        elif MY_OS == 'win' or not self.system_list:
-            self.allwords = self.effwords
-            self.somewords = self.effwords
-            if MY_OS in 'lin, dar':
-                self.eff_checkbtn.config(state='disabled')
+        self.allwords = "".join(VERY_RANDOM.choice(self.word_list) for
+                                _ in range(numwords))
+        self.somewords = "".join(VERY_RANDOM.choice(self.trim_words) for
+                                 _ in range(numwords))
 
         # Randomly select symbols to append; number is not user-specified.
         addsymbol = "".join(VERY_RANDOM.choice(self.symbols) for _ in range(1))
@@ -606,8 +568,8 @@ class PassGenerator:
         addcaps = "".join(VERY_RANDOM.choice(self.caps) for _ in range(1))
 
         # Build the pass-strings.
-        self.passphrase1 = self.allwords.lower() + addsymbol + addnum + addcaps
-        self.passphrase2 = self.somewords.lower() + addsymbol + addnum + addcaps
+        self.passphrase1 = self.allwords + addsymbol + addnum + addcaps
+        self.passphrase2 = self.somewords + addsymbol + addnum + addcaps
         self.password1 = "".join(VERY_RANDOM.choice(self.all_char) for
                                  _ in range(numchars))
         self.password2 = "".join(VERY_RANDOM.choice(self.some_char) for
@@ -623,16 +585,9 @@ class PassGenerator:
         self.length_pw_some.set(len(self.password2))
         self.pw_any.set(self.password1)
         self.pw_some.set(self.password2)
-        # Set OS-specific and eff-dependent StringVar()
-        if MY_OS in 'lin, dar':
-            if self.eff.get() is False:
-                self.phrase_some.set(self.passphrase2)
-                self.length_some.set(len(self.passphrase2))
-            elif self.eff.get() is True:
-                self.phrase_some.set(' ')
-                self.length_some.set(' ')
-        #  ^^No need to set sys dictionary vars or evaluate eff checkbutton
-        #    state for Windows b/c no system dictionary is available.
+
+        self.phrase_some.set(self.passphrase2)
+        self.length_some.set(len(self.passphrase2))
 
         # Finally, set H values for each pass-string.
         return self.set_entropy(numwords, numchars)
@@ -662,20 +617,10 @@ class PassGenerator:
         # Note that N is corrected for any excluded words from set_passstrings().
         # Note that the label names for 'h_any' and 'h_some' are recycled
         #   between system dict and eff wordlist options.
-        # These are complicated conditions, but it works concisely.
-        if MY_OS in 'lin, dar' and self.system_list:
-            self.h_any.set(int(numwords * log(len(self.uniq_words)) / log(2)))
-            h_some = int(numwords * log(len(self.trim_words)) / log(2))
-            self.h_some.set(h_some + h_add3)
-            if self.eff.get() is True:
-                self.h_any.set(
-                    int(numwords * log(len(self.eff_words)) / log(2)))
-                self.h_some.set(' ')
-        elif MY_OS == 'win' or not self.system_list:
-            self.h_any.set(
-                int(numwords * log(len(self.eff_words)) / log(2)))
+        self.h_any.set(int(numwords * log(len(self.word_list)) / log(2)))
+        h_some = int(numwords * log(len(self.trim_words)) / log(2))
+        self.h_some.set(h_some + h_add3)
 
-        # Calculate H used for all OS.
         self.h_lc.set(self.h_any.get() + h_add3)
         self.h_pw_any.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.h_pw_some.set(int(numchars * log(len(self.some_char)) / log(2)))
@@ -690,8 +635,6 @@ class PassGenerator:
         """
         # Change font colors of results from the initial self.passstub_fg.
         # pass_fg does not change after first call to set_passstrings().
-        #   So, make it conditional with a counter in set_passstrings()
-        #   or is it okay to .config() on every call?
         self.phrase_any_display.config( fg=self.pass_fg)
         self.phrase_lc_display.config(  fg=self.pass_fg)
         self.phrase_some_display.config(fg=self.pass_fg)
@@ -727,49 +670,47 @@ class PassGenerator:
     def config_nosyswords(self) -> None:
         """
         Warn that the Linux/MacOX system dictionary cannot be found.
-        Call from get_words().
 
-        :return: Pop-up message.
+        :return: No system dictionary option, use available wordlists.
         """
         notice = ('Hmmm. The system dictionary cannot be found.\n'
-                  f'Using only {EFFWORDS_PATH} ...')
-        self.eff_checkbtn.toggle()
-        self.eff_checkbtn.config(state='disabled')
-        print(notice)
+                  'Using only custom wordlists ...')
+        # print(notice)
         messagebox.showinfo(title='File not found', detail=notice)
-        # Remove widgets specific to EFF results; as if Windows.
-        # Statements are duplicated from config_window() & grid_window().
-        self.any_describe.config(text="Any words from EFF wordlist")
-        self.any_lc_describe.config(text="...add 3 characters")
-        self.select_describe.config(text=" ")
-        self.any_describe.grid(column=0, row=2, pady=(6, 0), sticky=tk.E)
-        self.select_describe.grid_forget()
-        self.length_some_label.grid_forget()
-        self.h_some_label.grid_forget()
-        self.phrase_some_display.grid_forget()
+        self.choose_wordlist['values'] = ('EFF long wordlist',
+                                          'US Constitution',
+                                          'Don Quijote',
+                                          'Frankenstein')
+        self.choose_wordlist.current(0)
+        return self.get_words()
 
-    def config_noeffwords(self) -> None:
+    def config_no_options(self) -> None:
         """
-        Warn that EFF wordlist cannot be found. Call from get_words().
+        Warn that optional wordlists cannot be found.
 
-        :return: Pop-up message.
+        :return: No optional wordlists, use only system dictionary.
         """
         # This will not be called in the standalone app or executable.
-        notice = (f'Oops! {EFFWORDS_PATH} is missing.\n'
-                  'It should be in master directory and is'
-                  f' included with the repository\n'
-                  'Using system dictionary...\n')
-        self.eff_checkbtn.config(state='disabled')
-        print(notice)
+        notice = ('Oops! Optional wordlists are missing.\n'
+                  'Wordlist files should be in a folder\n'
+                  ' called "wordfiles" included with'
+                  ' the repository downloaded from:\n'
+                  f'{PROJ_URL}\n'
+                  'Using system dictionary words...\n')
+        self.choose_wordlist.config(state='disabled')
+        # print(notice)
         messagebox.showinfo(title='File not found', detail=notice)
+        self.choose_wordlist['values'] = ('System dictionary',)
+        self.choose_wordlist.current(0)
+        return self.get_words()
 
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
         """
         # B/c system dictionary is not accessible in Windows, need to redefine
         #   lists so that they sum to zero words.
-        if MY_OS == 'win':
-            self.system_list = self.uniq_words = self.trim_words = []
+        if MY_OS == 'win' or Path.is_file(SYSDICT_PATH) is False:
+            self.system_list = self.word_list = self.trim_words = []
 
         # Formatting this is a pain.  There must be a better way.
         info = (
@@ -779,23 +720,28 @@ For more information on passphrases, see, for example, a discussion of
 word lists and selection at the Electronic Frontier Foundation (EFF):
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases 
 
-While MacOS and Linux users have an option to use an EFF wordlist, by 
-default the system dictionary is used. Windows users, however, by default
-can use only the EFF wordlist. Your system dictionary provides:
+On MacOS and Linux systems, the system dictionary is used by default.
+Windows  users, however, can use only the optional wordlists. 
+Your system dictionary provides:
 """
 f"    {len(self.system_list)} words of any length, of which...\n"
-f"    {len(self.uniq_words)} are unique (no possessive forms of nouns) and... \n"
+f"    {len(self.word_list)} are unique (no possessive forms of nouns) and... \n"
 f"    {len(self.trim_words)} of unique words that have 3 to 8 letters."
 """
-Only the unique and length-limited word subsets are used for passphrases
-if the EFF word list option is not selected. Passphrases built from the
-system dictionary may include proper names and diacritics.
+Only the unique and word-length-limited subsets are used for passphrases. 
+Passphrases built from the system dictionary may include proper names 
+and diacritics.
 
-Proper names or diacritics are not in EFF large word list used here,
-https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt. Its words 
-(English) are generally shorter and easier to remember than those from a
-system dictionary. Although the EFF list contains 7776 selected words,
-only 7772 are used here because hyphenated word are excluded.
+All words provided are three or more characters in length.
+The optional wordlists were derived from text obtained from:
+https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
+https://www.gutenberg.org
+https://www.archives.gov/founding-docs/constitution-transcript 
+
+The EFF large word list option includes words only of 3 to 8 characters
+that are generally easier to remember than those from most sources. 
+Although the EFF list contains 7776 selected words, only 7772 are used 
+here because hyphenated word are excluded.
 
 To accommodate password policies of some web sites and applications, a 
 choice is provided that adds three characters : 1 symbol, 1 number, 
@@ -829,16 +775,7 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
         :return: Words and characters without exclusions.
         """
-        if MY_OS == 'win':
-            self.eff_words = [
-                word for word in self.eff_list if word.isalpha()]
-        elif MY_OS in 'lin, dar':
-            self.eff_words = [
-                word for word in self.eff_list if word.isalpha()]
-            self.uniq_words = [
-                word for word in self.system_list if word.isalpha()]
-            self.trim_words = [
-                word for word in self.uniq_words if 8 >= len(word) >= 3]
+        self.get_words()
         self.symbols =   SYMBOLS
         self.digi =      digits
         self.caps =      ascii_uppercase

@@ -8,7 +8,7 @@ Words and character strings are randomized with Python's Random class using a ra
 The different pass-strings generated provide options for compliance with a range of website and application requirements. 
 Suggestions for improvement are welcome, especially ideas to access the system dictionary on Windows.
 
-![passphrase GUI](passphrase_scrnshot.png)
+![passphrase GUI](Unused/passphrase_scrnshot.png)
 
 #### Requirements
 Developed with Python 3.8-3.9, under Ubuntu 20.04, Windows 10, and MacOS 10.13.6 & 11.1. The standalone programs do not need Python installation. 
@@ -35,4 +35,4 @@ A **Windows** standalone of passphrase.py. Download an extract the GitHub distri
 
 ## Development plans:
 - Implement Windows installer
-- Research different word list options
+- Make Debian package
