@@ -436,7 +436,7 @@ class PassGenerator:
         self.length_pw_some_l.grid(column=1, row=8, pady=3, padx=(4, 0))
         self.h_pw_some_l.grid(     column=2, row=8, pady=3, padx=(4, 0))
         self.pw_some_display.grid( column=3, row=8, pady=6, padx=5,
-                                   columnspan=2, ipadx=5, sticky=tk.EW)
+                                   columnspan=2, ipadx=5, sticky=tk.EW )
 
         # Excluded character widgets ##########################################
         self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=5,
@@ -738,7 +738,7 @@ https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 https://www.gutenberg.org
 https://www.archives.gov/founding-docs/constitution-transcript 
 
-The EFF large word list option includes words only of 3 to 8 characters
+The EFF large word list option includes words only of 3 to 9 characters
 that are generally easier to remember than those from most sources. 
 Although the EFF list contains 7776 selected words, only 7772 are used 
 here because hyphenated word are excluded.
