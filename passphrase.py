@@ -242,9 +242,10 @@ class PassGenerator:
             # ^^ Removal of 'System dictionary' also in config_nosyswords().
         # Need to default to the 1st wordlist
         self.choose_wordlist.current(0)
-
         self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
 
+        # Passphrase section ##################################################
+        # Statements generally grouped by row number.
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=pass_bg, bg=master_bg)
         # MacOS needs a larger font
@@ -259,13 +260,11 @@ class PassGenerator:
         self.result_frame1.config(borderwidth=3, relief='sunken',
                                   background=frame_bg)
 
-        stubresult = 'Result can be copied and pasted from keyboard.'
-
-        # Passphrase section ##################################################
-        # Statements generally grouped by row number.
         self.numwords_label.config(text='# words', fg=pass_bg, bg=master_bg)
         self.numwords_entry.config(width=2)
         self.numwords_entry.insert(0, '5')
+
+        stubresult = 'Result can be copied and pasted from keyboard.'
 
         self.any_describe.config(text="Any words from dictionary",
                                  fg=master_fg, bg=master_bg)
