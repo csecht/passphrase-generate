@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.2'
+__version__ = '0.5.3'
 
 import glob
 import random
@@ -38,8 +38,8 @@ except (ImportError, ModuleNotFoundError) as error:
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 PROJ_URL = 'github.com/csecht/passphrase-generate'
-MY_OS = sys.platform[:3]
-# MY_OS = 'win'  # TESTING
+# MY_OS = sys.platform[:3]
+MY_OS = 'win'  # TESTING
 SYMBOLS = "~!@#$%^&*()_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
 SYSDICT_PATH = Path('/usr/share/dict/words')
@@ -77,7 +77,7 @@ class PassGenerator:
 
         self.any_describe =      tk.Label()
         self.any_lc_describe =   tk.Label()
-        self.select_describe =   tk.Label()
+        self.some_describe =   tk.Label()
 
         self.length_any =        tk.IntVar()
         self.length_lc =         tk.IntVar()
@@ -226,8 +226,6 @@ class PassGenerator:
         help_menu.add_command(label="About", command=self.about)
 
         # Configure and set initial values of user entry and control widgets:
-        stubresult = 'Result can be copied and pasted from keyboard.'
-
         self.wordlists = {
             'System dictionary': SYSDICT_PATH,
             'EFF long wordlist': WORDDIR + 'eff_large_wordlist.txt',
@@ -235,26 +233,21 @@ class PassGenerator:
             'Don Quijote'      : WORDDIR + 'don_quijote_wordlist.txt',
             'Frankenstein'     : WORDDIR + 'frankenstein_wordlist.txt'
             }
-
-        # Using eff word list is not an option in Windows.
         if MY_OS in 'lin, dar':
-            self.choose_wordlist['values'] = ('System dictionary',
-                                              'EFF long wordlist',
-                                              'US Constitution',
-                                              'Don Quijote',
-                                              'Frankenstein')
+            self.choose_wordlist['values'] = tuple(self.wordlists.keys())
         if MY_OS == 'win':
-            self.choose_wordlist['values'] = ('EFF long wordlist',
-                                              'US Constitution',
-                                              'Don Quijote',
-                                              'Frankenstein')
-
+            nosys = list(self.wordlists.keys())
+            del nosys[0]
+            self.choose_wordlist['values'] = nosys
+            # ^^ Removal of 'System dictionary' also in config_nosyswords().
+        # Need to default to the 1st wordlist
         self.choose_wordlist.current(0)
+
         self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
 
-        # Used in all OS, but MacOS had different font sizes.
         self.passphrase_header.config(text='Passphrases', font=('default', 12),
                                       fg=pass_bg, bg=master_bg)
+        # MacOS needs a larger font
         if MY_OS == 'dar':
             self.passphrase_header.config(font=('default', 16))
 
@@ -266,13 +259,36 @@ class PassGenerator:
         self.result_frame1.config(borderwidth=3, relief='sunken',
                                   background=frame_bg)
 
+        stubresult = 'Result can be copied and pasted from keyboard.'
+
         # Passphrase section ##################################################
-        self.any_describe.config(   text="Any words from dictionary",
-                                    fg=master_fg, bg=master_bg)
+        # Statements generally grouped by row number.
+        self.numwords_label.config(text='# words', fg=pass_bg, bg=master_bg)
+        self.numwords_entry.config(width=2)
+        self.numwords_entry.insert(0, '5')
+
+        self.any_describe.config(text="Any words from dictionary",
+                                 fg=master_fg, bg=master_bg)
+        self.length_any.set(0)
+        self.length_any_label.config(width=3)
+        self.h_any.set(0)
+        self.h_any_label.config(width=3)
+        self.phrase_any.set(stubresult)
+        self.phrase_any_display.config(width=W, font=self.display_font,
+                                       fg=stubresult_fg, bg=pass_bg)
+
         self.any_lc_describe.config(text="... plus 3 characters",
                                     fg=master_fg, bg=master_bg)
-        self.select_describe.config(text="...with words of 3 to 8 letters",
-                                    fg=master_fg, bg=master_bg)
+        self.length_lc.set(0)
+        self.length_lc_label.config(width=3)
+        self.h_lc.set(0)
+        self.h_lc_label.config(width=3)
+        self.phrase_lc.set(stubresult)
+        self.phrase_lc_display.config(width=W, font=self.display_font,
+                                      fg=stubresult_fg, bg=pass_bg)
+
+        self.some_describe.config(text="...with words of 3 to 8 letters",
+                                  fg=master_fg, bg=master_bg)
         self.length_some.set(0)
         self.length_some_label.config(width=3)
         self.h_some.set(0)
@@ -280,30 +296,6 @@ class PassGenerator:
         self.phrase_some.set(stubresult)
         self.phrase_some_display.config(width=W, font=self.display_font,
                                         fg=stubresult_fg, bg=pass_bg)
-
-        # Passphrase widgets used by all OS.
-        self.numwords_label.config(text='# words',
-                                   fg=pass_bg, bg=master_bg)
-        self.numwords_entry.config(width=2)
-        self.numwords_entry.insert(0, '5')
-
-        self.length_any.set(0)
-        self.length_lc.set(0)
-
-        self.length_any_label.config(width=3)
-        self.length_lc_label.config( width=3)
-
-        self.h_any.set(0)
-        self.h_lc.set(0)
-        self.h_any_label.config(width=3)
-        self.h_lc_label.config( width=3)
-
-        self.phrase_any.set(stubresult)
-        self.phrase_lc.set(stubresult)
-        self.phrase_any_display.config(width=W, font=self.display_font,
-                                       fg=stubresult_fg, bg=pass_bg)
-        self.phrase_lc_display.config( width=W, font=self.display_font,
-                                       fg=stubresult_fg, bg=pass_bg)
         # End passphrase section ##############################################
 
         # Explicit styles are needed for buttons to show properly on MacOS.
@@ -321,54 +313,48 @@ class PassGenerator:
                                   background=frame_bg)
 
         # Password section ####################################################
-        self.pw_header.config(       text='Passwords', font=('default', 12),
-                                     fg=pass_bg, bg=master_bg)
+        # Statements generally grouped by row number.
+        self.pw_header.config(text='Passwords', font=('default', 12),
+                              fg=pass_bg, bg=master_bg)
         if MY_OS == 'dar':
             self.pw_header.config(font=('default', 16))
 
-        self.numchars_label.config(  text='# characters',
-                                     fg=pass_bg, bg=master_bg)
-        self.numchars_entry.config(  width=3)
+        self.numchars_label.config(text='# characters',
+                                   fg=pass_bg, bg=master_bg)
+        self.numchars_entry.config(width=3)
         self.numchars_entry.insert(0, 0)
 
+        self.pw_any_describe.config(text="Any characters",
+                                    fg=master_fg, bg=master_bg)
         self.length_pw_any.set(0)
-        self.length_pw_some.set(0)
-        self.length_pw_any_l.config( width=3)
-        self.length_pw_some_l.config(width=3)
-
+        self.length_pw_any_l.config(width=3)
         self.h_pw_any.set(0)
-        self.h_pw_some.set(0)
-        self.h_pw_any_l.config( width=3)
-        self.h_pw_some_l.config(width=3)
+        self.h_pw_any_l.config(width=3)
+        self.pw_any.set(stubresult)
+        self.pw_any_display.config(width=W, font=self.display_font,
+                                   fg=stubresult_fg, bg=pass_bg)
 
-        self.pw_any_describe.config( text="Any characters",
-                                     fg=master_fg, bg=master_bg)
         self.pw_some_describe.config(text="More likely usable characters",
                                      fg=master_fg, bg=master_bg)
-        self.pw_any.set(stubresult)
+        self.length_pw_some.set(0)
+        self.length_pw_some_l.config(width=3)
+        self.h_pw_some.set(0)
+        self.h_pw_some_l.config(width=3)
         self.pw_some.set(stubresult)
-        self.pw_any_display.config(  width=W, font=self.display_font,
-                                     fg=stubresult_fg, bg=pass_bg)
         self.pw_some_display.config( width=W, font=self.display_font,
                                      fg=stubresult_fg, bg=pass_bg)
-        # End password section ################################################
 
         # Excluded character section ##########################################
         self.exclude_describe.config(text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
-        self.exclude_entry.config(   width=3)
-        self.reset_button.configure(    style="G.TButton", text='Reset',
-                                        width=6,
-                                        command=self.reset_exclusions)
-        if MY_OS == 'dar':
-            self.reset_button.configure(style="G.TButton", text='Reset',
-                                        width=4,
-                                        command=self.reset_exclusions)
-
-        self.exclude_info_b.configure(  style="G.TButton", text="?", width=0,
-                                        command=self.exclude_msg)
+        self.exclude_entry.config(width=3)
+        self.reset_button.configure(style="G.TButton", text='Reset',
+                                    width=0,
+                                    command=self.reset_exclusions)
         self.excluded_display.config(fg='orange', bg=master_bg)
-        # End exclude section #################################################
+        self.exclude_info_b.configure(style="G.TButton", text="?",
+                                      width=0,
+                                      command=self.exclude_msg)
 
     def grid_window(self) -> None:
         """Grid all tkinter widgets.
@@ -402,7 +388,7 @@ class PassGenerator:
         self.h_lc_label.grid(        column=2, row=3, pady=(5, 3), padx=(4, 0))
         self.phrase_lc_display.grid( column=3, row=3, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
-        self.select_describe.grid(   column=0, row=4, pady=(0, 3), sticky=tk.E)
+        self.some_describe.grid(column=0, row=4, pady=(0, 3), sticky=tk.E)
         self.length_some_label.grid( column=1, row=4, pady=3, padx=(4, 0))
         self.h_some_label.grid(      column=2, row=4, pady=3, padx=(4, 0))
         self.phrase_some_display.grid(column=3, row=4, pady=6, padx=5, ipadx=5,
@@ -507,7 +493,7 @@ class PassGenerator:
         """Generate and set random pass-strings.
         Called from keybinding, menu, or button.
 
-        :return: self.set_entropy()
+        :return: Calls to self.set_entropy() and self.config_results().
         """
 
         # Need to filter words and strings containing characters to be excluded.
@@ -675,10 +661,9 @@ class PassGenerator:
                   'Using only custom wordlists ...')
         # print(notice)
         messagebox.showinfo(title='File not found', detail=notice)
-        self.choose_wordlist['values'] = ('EFF long wordlist',
-                                          'US Constitution',
-                                          'Don Quijote',
-                                          'Frankenstein')
+        nosys = list(self.wordlists.keys())
+        del nosys[0]
+        self.choose_wordlist['values'] = nosys
         self.choose_wordlist.current(0)
         return self.get_words()
 
