@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
 
 import glob
 import random
@@ -503,11 +503,7 @@ class PassGenerator:
         self.word_list = [word for word in self.allwords if word.isalpha()]
         self.trim_words = [word for word in self.word_list if 8 >= len(word) >= 3]
 
-        # Need special case for system dictionary to report in explain().
-        if 'System' in self.choice:
-            self.system_list = self.allwords
-
-    def set_passstrings(self) -> object:
+    def set_passstrings(self) -> None:
         """Generate and set random pass-strings.
         Called from keybinding, menu, or button.
 
@@ -578,23 +574,22 @@ class PassGenerator:
                                  _ in range(numchars))
 
         # Set all pass-strings for display in results frames.
-        # Set OS-independent and eff-independent StringVar():
         self.phrase_any.set(self.allwords)
-        self.phrase_lc.set(self.passphrase1)
         self.length_any.set(len(self.allwords))
+        self.phrase_lc.set(self.passphrase1)
         self.length_lc.set(len(self.passphrase1))
-        self.length_pw_any.set(len(self.password1))
-        self.length_pw_some.set(len(self.password2))
-        self.pw_any.set(self.password1)
-        self.pw_some.set(self.password2)
-
         self.phrase_some.set(self.passphrase2)
         self.length_some.set(len(self.passphrase2))
+        self.pw_any.set(self.password1)
+        self.length_pw_any.set(len(self.password1))
+        self.pw_some.set(self.password2)
+        self.length_pw_some.set(len(self.password2))
 
-        # Finally, set H values for each pass-string.
-        return self.set_entropy(numwords, numchars)
+        # Finally, set H values for each pass-string and configure results.
+        self.set_entropy(numwords, numchars)
+        self.config_results()
 
-    def set_entropy(self, numwords: int, numchars: int) -> object:
+    def set_entropy(self, numwords: int, numchars: int) -> None:
         """Calculate and set values for information entropy, H.
 
         :param numwords: User-defined number of passphrase words.
@@ -627,7 +622,7 @@ class PassGenerator:
         self.h_pw_any.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.h_pw_some.set(int(numchars * log(len(self.some_char)) / log(2)))
 
-        return self.config_results()
+        # return self.config_results()
 
     def config_results(self) -> None:
         """
@@ -671,9 +666,10 @@ class PassGenerator:
 
     def config_nosyswords(self) -> None:
         """
-        Warn that the Linux/MacOX system dictionary cannot be found.
+        Warn if the Linux/MacOX system dictionary cannot be found.
+        Warns by default on Windows.
 
-        :return: No system dictionary option, use available wordlists.
+        :return: A notice and updated Combobox.
         """
         notice = ('Hmmm. The system dictionary cannot be found.\n'
                   'Using only custom wordlists ...')
@@ -690,7 +686,7 @@ class PassGenerator:
         """
         Warn that optional wordlists cannot be found.
 
-        :return: No optional wordlists, use only system dictionary.
+        :return: A text window notice and an updated Combobox.
         """
         # This will not be called in the standalone app or executable.
         notice = ('Oops! Optional wordlists are missing.\n'
@@ -708,6 +704,8 @@ class PassGenerator:
 
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
+
+        :return: An text window notice with current wordlist data.
         """
         # B/c system dictionary is not accessible in Windows, need to redefine
         #   lists so that they sum to zero words.
@@ -722,40 +720,34 @@ information on passphrases, see, for example, a discussion of word lists
 and word selection at the Electronic Frontier Foundation (EFF):
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases 
 
-On MacOS and Linux systems, the system dictionary is used by default to
-provide words, though optional wordlists are available. Windows users 
-can use only the optional wordlists. Your system dictionary provides:
-"""
-f"    {len(self.system_list)} words of any length, of which...\n"
-f"    {len(self.word_list)} are unique (no apostrophes or hyphens) and... \n"
-f"    {len(self.trim_words)} of unique words that have 3 to 8 letters."
-"""
-Only the unique and word-length-limited subsets are used for passphrases. 
+On MacOS and Linux systems, the system dictionary wordlist is used by 
+default to provide words, though optional wordlists are available. 
+Windows users can use only the optional wordlists.
 
-Optional wordlists were derived from text obtained from these sites:
+"""
+f'There are {len(self.word_list)} words available to construct passphrases'
+f' from the\ncurrently selected wordlist, {self.choice}.\n'
+"""
+There is an option to exclude any character or string of characters 
+from passphrase words and passwords. Words with excluded letters are not 
+available nor counted above. You may need to click the Generate! button 
+(or use Ctrl C) to update the non-excluded word count. Multiple windows 
+can remain open to compare the counts and lists reported above.
+
+Optional wordlists were derived from texts obtained from these sites:
     https://www.gutenberg.org
     https://www.archives.gov/founding-docs/constitution-transcript
     https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used 
 here because hyphenated word are excluded.
 
-"""
-f'There are {len(self.word_list)} words available from the currently selected wordlist.'
-""" 
-Words with excluded characters are not available nor counted.
-You may need to Generate! to update the count for non-excluded words.
-(Multiple windows can be left open to compare word counts.)
-
-Words from any source will have at least 3 letters.
+Words with less than 3 letters are not used in any wordlist.
 
 To accommodate some password requirements, a choice is provided that 
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
 """
-f'Symbols used are these: {self.symbols}\n'
+f'The symbols used are: {self.symbols}\n'
 """
-There is an option to exclude any character or string of characters
-from your passphrase words and passwords (together called pass-strings).
-
 In the results fields, L is the character length of each pass-string.
 H, as used here, is for comparing relative pass-string strengths.
 Higher is better; each increase of 1 doubles the relative strength. 
@@ -778,7 +770,7 @@ equivalent to bits of entropy. For more information see:
     def reset_exclusions(self) -> None:
         """Restore original word and character lists.
 
-        :return: Words and characters without exclusions.
+        :return: Wordlists and characters with no exclusions.
         """
         self.get_words()
         self.symbols =   SYMBOLS
@@ -793,8 +785,10 @@ equivalent to bits of entropy. For more information see:
 
     @staticmethod
     def exclude_msg() -> None:
-        """A pop-up explaining how to use excluded characters. Called
-        from a Button.
+        """A pop-up explaining how to use excluded characters.
+        Called  from a Button.
+
+        :return: A message text window.
         """
         msg = (
 """
