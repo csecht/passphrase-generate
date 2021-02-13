@@ -489,7 +489,7 @@ class PassGenerator:
         self.word_list = [word for word in self.allwords if word.isalpha()]
         self.trim_words = [word for word in self.word_list if 8 >= len(word) >= 3]
 
-    def set_passstrings(self) -> None:
+    def set_passstrings(self) -> object:
         """Generate and set random pass-strings.
         Called from keybinding, menu, or button.
 
@@ -572,15 +572,15 @@ class PassGenerator:
         self.length_pw_some.set(len(self.password2))
 
         # Finally, set H values for each pass-string and configure results.
-        self.set_entropy(numwords, numchars)
-        self.config_results()
+        return self.set_entropy(numwords, numchars),  self.config_results()
 
     def set_entropy(self, numwords: int, numchars: int) -> None:
         """Calculate and set values for information entropy, H.
 
         :param numwords: User-defined number of passphrase words.
         :param numchars: User-defined number of password characters.
-        :return: self.config_results()
+
+        :return: pass-through from set_passstrings() to self.config_results()
         """
         # https://en.wikipedia.org/wiki/Password_strength
         # For +3 characters, we use only 1 character each from each set of
@@ -607,8 +607,6 @@ class PassGenerator:
         self.h_lc.set(self.h_any.get() + h_add3)
         self.h_pw_any.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.h_pw_some.set(int(numchars * log(len(self.some_char)) / log(2)))
-
-        # return self.config_results()
 
     def config_results(self) -> None:
         """
@@ -650,7 +648,7 @@ class PassGenerator:
             self.pw_any_display.config(     font=self.display_font, width=W)
             self.pw_some_display.config(    font=self.display_font, width=W)
 
-    def config_nosyswords(self) -> None:
+    def config_nosyswords(self) -> object:
         """
         Warn if the Linux/MacOX system dictionary cannot be found.
         Warns by default on Windows.
@@ -668,7 +666,7 @@ class PassGenerator:
         self.choose_wordlist.current(0)
         return self.get_words()
 
-    def config_no_options(self) -> None:
+    def config_no_options(self) -> object:
         """
         Warn that optional wordlists cannot be found.
 
