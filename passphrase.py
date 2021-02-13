@@ -38,8 +38,8 @@ except (ImportError, ModuleNotFoundError) as error:
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 PROJ_URL = 'github.com/csecht/passphrase-generate'
-# MY_OS = sys.platform[:3]
-MY_OS = 'win'  # TESTING
+MY_OS = sys.platform[:3]
+# MY_OS = 'win'  # TESTING
 SYMBOLS = "~!@#$%^&*()_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
 SYSDICT_PATH = Path('/usr/share/dict/words')
@@ -226,6 +226,7 @@ class PassGenerator:
         help_menu.add_command(label="About", command=self.about)
 
         # Configure and set initial values of user entry and control widgets:
+        self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
         self.wordlists = {
             'System dictionary': SYSDICT_PATH,
             'EFF long wordlist': WORDDIR + 'eff_large_wordlist.txt',
@@ -233,16 +234,16 @@ class PassGenerator:
             'Don Quijote'      : WORDDIR + 'don_quijote_wordlist.txt',
             'Frankenstein'     : WORDDIR + 'frankenstein_wordlist.txt'
             }
+        all_lists = list(self.wordlists.keys())
         if MY_OS in 'lin, dar':
-            self.choose_wordlist['values'] = tuple(self.wordlists.keys())
+            self.choose_wordlist['values'] = all_lists
+        # Need to remove 'System dictionary' from Windows usage.
+        # Remove 'System dictionary' also in config_nosyswords().
         if MY_OS == 'win':
-            nosys = list(self.wordlists.keys())
-            del nosys[0]
-            self.choose_wordlist['values'] = nosys
-            # ^^ Removal of 'System dictionary' also in config_nosyswords().
-        # Need to default to the 1st wordlist
+            del all_lists[0]
+            self.choose_wordlist['values'] = all_lists
+        # Need to default to the 1st wordlist.
         self.choose_wordlist.current(0)
-        self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
 
         # Passphrase section ##################################################
         # Statements generally grouped by row number.
@@ -660,9 +661,10 @@ class PassGenerator:
                   'Using only custom wordlists ...')
         # print(notice)
         messagebox.showinfo(title='File not found', detail=notice)
-        nosys = list(self.wordlists.keys())
-        del nosys[0]
-        self.choose_wordlist['values'] = nosys
+        # Need to remove 'System dictionary' from available wordlists.
+        all_lists = list(self.wordlists.keys())
+        del all_lists[0]
+        self.choose_wordlist['values'] = all_lists
         self.choose_wordlist.current(0)
         return self.get_words()
 
