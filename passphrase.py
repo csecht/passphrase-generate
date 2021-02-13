@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.3'
+__version__ = '0.5.4'
 
 import glob
 import random
@@ -691,10 +691,6 @@ class PassGenerator:
 
         :return: An text window notice with current wordlist data.
         """
-        # B/c system dictionary is not accessible in Windows, need to redefine
-        #   lists so that they sum to zero words.
-        if MY_OS == 'win' or Path.is_file(SYSDICT_PATH) is False:
-            self.system_list = self.word_list = self.trim_words = []
 
         # Formatting this is a pain.  There must be a better way.
         info = (
