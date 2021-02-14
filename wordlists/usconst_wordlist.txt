@@ -5,6 +5,7 @@ Account
 Adjournment
 Adoption
 Advice
+Affirmation
 Age
 Agreement
 Aid
@@ -36,6 +37,8 @@ Bills
 Blessings
 Branch
 Breach
+Buildings
+Business
 But
 Captures
 Care
@@ -51,8 +54,10 @@ Citizens
 Claim
 Claims
 Class
+Classes
 Clauses
 Coin
+Comfort
 Commander
 Commerce
 Commission
@@ -60,6 +65,7 @@ Commissions
 Compact
 Compensation
 Concurrence
+Confederation
 Confession
 Congress
 Connecticut
@@ -67,6 +73,7 @@ Consent
 Consequence
 Consideration
 Constitution
+Consuls
 Continuance
 Contrary
 Controul
@@ -79,6 +86,7 @@ Corruption
 Court
 Courts
 Credit
+Crime
 Crimes
 Danger
 Day
@@ -89,9 +97,11 @@ Defence
 Delaware
 Demand
 Department
+Departments
 Desire
 Disability
 Disagreement
+Discoveries
 District
 Duties
 Duty
@@ -100,6 +110,7 @@ Effect
 Eighty
 Election
 Elections
+Elector
 Electors
 Emolument
 Emoluments
@@ -118,6 +129,7 @@ Expiration
 Faith
 Felonies
 Felony
+Forces
 Forfeiture
 Form
 Full
@@ -129,9 +141,11 @@ Hampshire
 Heads
 House
 Houses
+III
 Immediately
 Immunities
 Impeachment
+Impeachments
 Importation
 Imports
 Imposts
@@ -144,7 +158,9 @@ Inhabitant
 Insurrections
 Intents
 Invasion
+Invasions
 Inventors
+Island
 Jackson
 Jersey
 Journal
@@ -153,6 +169,7 @@ Judges
 Judgment
 Junction
 Jurisdiction
+Jury
 Justice
 Labour
 Land
@@ -184,10 +201,12 @@ Migration
 Miles
 Militia
 Ministers
+Misdemeanors
 Mode
 Monday
 Money
 Names
+Nations
 Navy
 Nays
 Neither
@@ -259,6 +278,7 @@ Representation
 Representative
 Representatives
 Reprieves
+Reprisal
 Republican
 Resident
 Resignation
@@ -266,7 +286,9 @@ Respect
 Returns
 Revenue
 Revision
+Rhode
 Right
+Roads
 Rule
 Rules
 Safety
@@ -274,6 +296,7 @@ Same
 Science
 Seat
 Seats
+Secrecy
 Secretary
 Section
 Securities
@@ -293,7 +316,9 @@ State
 Statement
 States
 Subject
+Subjects
 Suffrage
+Sundays
 Tax
 Taxes
 Tender
@@ -312,6 +337,7 @@ Treason
 Treasury
 Treaties
 Trial
+Tribes
 Tribunals
 Trust
 Twelfth
@@ -319,14 +345,17 @@ Unanimous
 Union
 United
 Use
+VII
 Vacancies
 Value
 Vessels
 Vice
+Violence
 Virginia
 Vote
 Votes
 War
+Water
 Weights
 Welfare
 When
@@ -340,6 +369,7 @@ Writs
 Year
 Years
 Yeas
+York
 absent
 absolutely
 accept
@@ -355,6 +385,7 @@ admit
 admitted
 affect
 affecting
+affirm
 after
 against
 agree
@@ -377,6 +408,7 @@ ascertained
 assemble
 assembled
 attained
+attainted
 authorized
 become
 been
@@ -415,7 +447,9 @@ constitute
 construed
 contracted
 convene
+convened
 convicted
+counted
 counterfeiting
 credit
 current
@@ -425,6 +459,7 @@ declaring
 deem
 defend
 define
+delay
 delivered
 deprived
 determine
@@ -442,16 +477,19 @@ disorderly
 dispose
 disqualification
 divided
+dock
 dollars
 domestic
 done
 drawn
+due
 during
 duty
 each
 eight
 eighth
 either
+elected
 eligible
 emit
 employed
@@ -473,6 +511,7 @@ every
 exceed
 exceeding
 except
+excepted
 excepting
 excluding
 exclusive
@@ -481,6 +520,7 @@ executing
 executive
 exercise
 existing
+expedient
 expel
 expire
 exported
@@ -552,7 +592,6 @@ interlined
 into
 issue
 its
-it's
 judge
 judicial
 keep
@@ -590,6 +629,7 @@ nine
 nor
 not
 nothing
+notwithstanding
 now
 numerous
 obliged
@@ -620,6 +660,7 @@ prescribe
 prescribed
 present
 presented
+preside
 prevent
 principal
 prior
@@ -665,6 +706,7 @@ requisite
 reserving
 respecting
 respective
+respectively
 return
 returned
 returning
@@ -688,6 +730,7 @@ sixth
 smaller
 sole
 solemnly
+square
 stated
 subject
 subscribed
@@ -707,6 +750,7 @@ that
 the
 their
 them
+themselves
 then
 there
 thereof
@@ -761,3 +805,4 @@ witness
 work
 written
 yeas
+
