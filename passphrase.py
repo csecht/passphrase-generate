@@ -234,11 +234,11 @@ class PassGenerator:
         if MY_OS in 'lin, dar':
             self.choose_wordlist['values'] = all_lists
         # Need to remove 'System dictionary' from Windows usage.
-        # Remove 'System dictionary' also in config_nosyswords().
+        # Remove 'System dictionary' also used in config_nosyswords().
         if MY_OS == 'win':
-            del all_lists[0]
+            all_lists.remove('System dictionary')
             self.choose_wordlist['values'] = all_lists
-        # Need to default to the 1st wordlist.
+        # Need to default to the 1st (remaining) wordlist.
         self.choose_wordlist.current(0)
 
         # Passphrase section ##################################################
@@ -655,7 +655,7 @@ class PassGenerator:
             messagebox.showinfo(title='File not found', detail=notice)
             # Need to remove 'System dictionary' from available wordlists.
             all_lists = list(self.wordlists.keys())
-            del all_lists[0]
+            all_lists.remove('System dictionary')
             self.choose_wordlist['values'] = all_lists
             self.choose_wordlist.current(0)
         return self.get_words()
