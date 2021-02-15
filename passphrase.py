@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.6'
+__version__ = '0.5.7'
 
 import glob
 import random
@@ -228,7 +228,8 @@ class PassGenerator:
             'EFF long wordlist': WORDDIR + 'eff_large_wordlist.txt',
             'US Constitution'  : WORDDIR + 'usconst_wordlist.txt',
             'Don Quijote'      : WORDDIR + 'don_quijote_wordlist.txt',
-            'Frankenstein'     : WORDDIR + 'frankenstein_wordlist.txt'
+            'Frankenstein'     : WORDDIR + 'frankenstein_wordlist.txt',
+            '此開卷第'          : WORDDIR + 'red_chamber_wordlist.txt'
             }
         all_lists = list(self.wordlists.keys())
         if MY_OS in 'lin, dar':
