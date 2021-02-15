@@ -705,7 +705,7 @@ f' from the\ncurrently selected wordlist, {self.choice}.\n'
 There is an option to exclude any character or string of characters 
 from passphrase words and passwords. Words with excluded letters are not 
 available nor counted above. You may need to click the Generate! button 
-(or use Ctrl C) to update the non-excluded word count. Multiple windows 
+(or use Ctrl G) to update the non-excluded word count. Multiple windows 
 can remain open to compare the counts and lists reported above.
 
 Optional wordlists were derived from texts obtained from these sites:
@@ -713,7 +713,7 @@ Optional wordlists were derived from texts obtained from these sites:
     https://www.archives.gov/founding-docs/constitution-transcript
     https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used 
-here because hyphenated word are excluded.
+here because hyphenated word were excluded.
 
 Words with less than 3 letters are not used in any wordlist.
 
