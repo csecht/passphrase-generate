@@ -720,7 +720,7 @@ Words with less than 3 letters are not used in any wordlist.
 To accommodate some password requirements, a choice is provided that 
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
 """
-f'The symbols used are: {self.symbols}\n'
+f'The symbols used are: {SYMBOLS}\n'
 """
 In the results fields, L is the character length of each pass-string.
 H, as used here, is for comparing relative pass-string strengths.
