@@ -714,7 +714,7 @@ Optional wordlists were derived from texts obtained from these sites:
     https://www.archives.gov/founding-docs/constitution-transcript
     https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used 
-here because hyphenated word were excluded.
+here because hyphenated words are excluded from all wordlists.
 
 Words with less than 3 letters are not used in any wordlist.
 
