@@ -397,8 +397,8 @@ class PassGenerator:
                                     sticky=tk.EW)
 
         # Need to pad and span to center the button between two results frames.
-        self.generate_btn.grid(   column=3, row=5, pady=(10, 5), padx=(0, 250),
-                                  rowspan=2, sticky=tk.W)
+        self.generate_btn.grid(     column=3, row=5, pady=(10, 5), padx=(0, 250),
+                                    rowspan=2, sticky=tk.W)
         if MY_OS == 'dar':
             self.generate_btn.grid(column=3, row=5, pady=(10, 5), padx=(0, 150),
                                    rowspan=2, sticky=tk.W)
@@ -476,7 +476,7 @@ class PassGenerator:
         """
         Populate lists with words to randomize in set_passstrings().
 
-        :param: event is a call from <<ComboboxSelected>>.
+        :param: optional event is a call from <<ComboboxSelected>>.
 
         :return: Word lists or pop-up msg if some files are missing.
         """
@@ -493,10 +493,11 @@ class PassGenerator:
         self.short_words = [word for word in self.word_list if 8 >= len(word) >= 3]
 
     def set_passstrings(self) -> object:
-        """Generate and set random pass-strings.
+        """
+        Generate and set random pass-strings.
         Called from keybinding, menu, or button.
 
-        :return: Calls to self.set_entropy() and self.config_results().
+        :return: set_entropy() and config_results().
         """
 
         # Need to filter words and strings containing characters to be excluded.
@@ -587,7 +588,7 @@ class PassGenerator:
         :param numwords: User-defined number of passphrase words.
         :param numchars: User-defined number of password characters.
 
-        :return: pass-through from set_passstrings() to self.config_results()
+        :return: pass-through from set_passstrings() to config_results().
         """
         # https://en.wikipedia.org/wiki/Password_strength
         # For +3 characters, we use only 1 character each from each set of
@@ -657,7 +658,7 @@ class PassGenerator:
         """
         Warn if the Linux or MacOS system dictionary cannot be found.
 
-        :return: Pop-up window, updated Combobox, self.get_words().
+        :return: Pop-up window, updated Combobox, get_words().
         """
         if MY_OS != 'win':
             notice = ('Hmmm. The system dictionary cannot be found.\n'
@@ -676,7 +677,7 @@ class PassGenerator:
         """
         Warn that optional wordlists cannot be found.
 
-        :return: Pop-up window, updated Combobox, self.get_words().
+        :return: Pop-up window, updated Combobox, get_words().
         """
         # This will not be called in the standalone app or executable.
         notice = ('Oops! Optional wordlists are missing.\n'
@@ -757,7 +758,7 @@ equivalent to bits of entropy. For more information see:
     def reset_exclusions(self) -> object:
         """Restore original word and character lists.
 
-        :return: self.get_words() method with default values.
+        :return: get_words() method with default values.
         """
         self.symbols =   SYMBOLS
         self.digi =      digits
