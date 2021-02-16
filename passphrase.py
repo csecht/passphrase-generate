@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.9'
+__version__ = '0.5.10'
 
 import glob
 import random
@@ -522,8 +522,12 @@ class PassGenerator:
             self.prior_unused = unused
 
         # Need to display all characters that have been excluded by user.
-        if unused not in self.all_unused:
+        # Do not accept entries that have characters separated by space(s).
+        if unused not in self.all_unused and ' ' not in unused:
             self.all_unused = ' '.join([unused, self.all_unused])
+        elif ' ' in unused:
+            self.reset_exclusions()
+
         self.excluded.set(self.all_unused)
 
         # Need to correct invalid user entries for number of words & characters.
@@ -653,7 +657,7 @@ class PassGenerator:
         """
         Warn if the Linux or MacOS system dictionary cannot be found.
 
-        :return: A notice and updated Combobox.
+        :return: Pop-up window, updated Combobox, self.get_words().
         """
         if MY_OS != 'win':
             notice = ('Hmmm. The system dictionary cannot be found.\n'
@@ -665,13 +669,14 @@ class PassGenerator:
             all_lists.remove('System dictionary')
             self.choose_wordlist['values'] = all_lists
             self.choose_wordlist.current(0)
+
         return self.get_words()
 
     def config_no_options(self) -> object:
         """
         Warn that optional wordlists cannot be found.
 
-        :return: A text window notice and an updated Combobox.
+        :return: Pop-up window, updated Combobox, self.get_words().
         """
         # This will not be called in the standalone app or executable.
         notice = ('Oops! Optional wordlists are missing.\n'
@@ -685,6 +690,7 @@ class PassGenerator:
         messagebox.showinfo(title='File not found', detail=notice)
         self.choose_wordlist['values'] = ('System dictionary',)
         self.choose_wordlist.current(0)
+
         return self.get_words()
 
     def explain(self) -> None:
@@ -748,12 +754,11 @@ equivalent to bits of entropy. For more information see:
         infotext.insert('1.0', info)
         infotext.pack()
 
-    def reset_exclusions(self) -> None:
+    def reset_exclusions(self) -> object:
         """Restore original word and character lists.
 
-        :return: Wordlists and characters with no exclusions.
+        :return: self.get_words() method with default values.
         """
-        self.get_words()
         self.symbols =   SYMBOLS
         self.digi =      digits
         self.caps =      ascii_uppercase
@@ -764,10 +769,12 @@ equivalent to bits of entropy. For more information see:
         self.all_unused = ''
         self.excluded.set(self.all_unused)
 
+        return self.get_words()
+
     @staticmethod
     def exclude_msg() -> None:
         """A pop-up explaining how to use excluded characters.
-        Called  from a Button.
+        Called only from a Button.
 
         :return: A message text window.
         """
