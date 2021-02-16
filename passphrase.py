@@ -347,7 +347,7 @@ class PassGenerator:
         # Excluded character section ##########################################
         self.exclude_describe.config(text='Exclude character(s)',
                                      fg=pass_bg, bg=master_bg)
-        self.exclude_entry.config(width=3)
+        self.exclude_entry.config(width=2)
         self.reset_button.configure(style="G.TButton", text='Reset',
                                     width=0,
                                     command=self.reset_exclusions)
@@ -380,17 +380,17 @@ class PassGenerator:
                                     columnspan=3, rowspan=3, sticky=tk.EW)
 
         # Result _shows will maintain equal widths with sticky=tk.EW.
-        self.raw_describe.grid(     column=0, row=2, pady=(5, 0), sticky=tk.E)
+        self.raw_describe.grid(     column=0, row=2, pady=(6, 0), sticky=tk.E)
         self.length_raw_l.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
         self.h_raw_l.grid(          column=2, row=2, pady=(5, 3), padx=(5, 0))
         self.phrase_raw_show.grid(  column=3, row=2, pady=(5, 3), padx=5,
                                     ipadx=5, sticky=tk.EW)
-        self.plus_describe.grid(    column=0, row=3, pady=(0, 0), sticky=tk.E)
+        self.plus_describe.grid(    column=0, row=3, pady=(3, 0), sticky=tk.E)
         self.length_plus_l.grid(    column=1, row=3, pady=(5, 3), padx=(5, 0))
         self.h_plus_l.grid(         column=2, row=3, pady=(5, 3), padx=(5, 0))
         self.phrase_plus_show.grid( column=3, row=3, pady=(5, 3), padx=5,
                                     ipadx=5, sticky=tk.EW)
-        self.short_describe.grid(   column=0, row=4, pady=(0, 6), sticky=tk.E)
+        self.short_describe.grid(   column=0, row=4, pady=(3, 6), sticky=tk.E)
         self.length_short_l.grid(   column=1, row=4, pady=3, padx=(5, 0))
         self.h_short_l.grid(        column=2, row=4, pady=3, padx=(5, 0))
         self.phrase_short_show.grid(column=3, row=4, pady=6, padx=5, ipadx=5,
@@ -427,7 +427,7 @@ class PassGenerator:
                                    columnspan=2, ipadx=5, sticky=tk.EW)
 
         # Excluded character widgets ##########################################
-        self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=(5, 0),
+        self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=(17, 0),
                                    sticky=tk.W)
         self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 15),
                                    sticky=tk.E)
@@ -435,9 +435,11 @@ class PassGenerator:
                                    sticky=tk.W)
         self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(65, 0),
                                    sticky=tk.W)
+        # Need to adjust padding for MacOS b/c of different character widths.
+        # The difference from lin/dar is +9
         if MY_OS == 'dar':
-            self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(78, 0),
-                                     sticky=tk.W)
+            self.exclude_info_b.grid(padx=(84, 0))
+            self.exclude_describe.grid(padx=(8, 0))
 
         self.excluded_describe.grid(column=0, row=10, padx=(0, 10), sticky=tk.E)
         self.excluded_show.grid(    column=1, row=10, padx=(0, 0), sticky=tk.W)
