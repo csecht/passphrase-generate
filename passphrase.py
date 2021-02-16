@@ -381,18 +381,18 @@ class PassGenerator:
 
         # Result _shows will maintain equal widths with sticky=tk.EW.
         self.raw_describe.grid(     column=0, row=2, pady=(5, 0), sticky=tk.E)
-        self.length_raw_l.grid(     column=1, row=2, pady=(5, 3), padx=(4, 0))
-        self.h_raw_l.grid(          column=2, row=2, pady=(5, 3), padx=(4, 0))
+        self.length_raw_l.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
+        self.h_raw_l.grid(          column=2, row=2, pady=(5, 3), padx=(5, 0))
         self.phrase_raw_show.grid(  column=3, row=2, pady=(5, 3), padx=5,
                                     ipadx=5, sticky=tk.EW)
         self.plus_describe.grid(    column=0, row=3, pady=(0, 0), sticky=tk.E)
-        self.length_plus_l.grid(    column=1, row=3, pady=(5, 3), padx=(4, 0))
-        self.h_plus_l.grid(         column=2, row=3, pady=(5, 3), padx=(4, 0))
+        self.length_plus_l.grid(    column=1, row=3, pady=(5, 3), padx=(5, 0))
+        self.h_plus_l.grid(         column=2, row=3, pady=(5, 3), padx=(5, 0))
         self.phrase_plus_show.grid( column=3, row=3, pady=(5, 3), padx=5,
                                     ipadx=5, sticky=tk.EW)
-        self.short_describe.grid(   column=0, row=4, pady=(0, 3), sticky=tk.E)
-        self.length_short_l.grid(   column=1, row=4, pady=3, padx=(4, 0))
-        self.h_short_l.grid(        column=2, row=4, pady=3, padx=(4, 0))
+        self.short_describe.grid(   column=0, row=4, pady=(0, 6), sticky=tk.E)
+        self.length_short_l.grid(   column=1, row=4, pady=3, padx=(5, 0))
+        self.h_short_l.grid(        column=2, row=4, pady=3, padx=(5, 0))
         self.phrase_short_show.grid(column=3, row=4, pady=6, padx=5, ipadx=5,
                                     sticky=tk.EW)
 
@@ -415,14 +415,14 @@ class PassGenerator:
 
         self.pw_any_describe.grid( column=0, row=7, pady=(6, 0),
                                    sticky=tk.E)
-        self.length_pw_any_l.grid( column=1, row=7, pady=(6, 3), padx=(4, 0))
-        self.h_pw_any_l.grid(      column=2, row=7, pady=(6, 3), padx=(4, 0))
+        self.length_pw_any_l.grid( column=1, row=7, pady=(6, 3), padx=(5, 0))
+        self.h_pw_any_l.grid(      column=2, row=7, pady=(6, 3), padx=(5, 0))
         self.pw_any_show.grid(     column=3, row=7, pady=(6, 3), padx=5,
                                    columnspan=2, ipadx=5, sticky=tk.EW)
         self.pw_some_describe.grid(column=0, row=8, pady=(0, 6), padx=(5, 0),
                                    sticky=tk.E)
-        self.length_pw_some_l.grid(column=1, row=8, pady=3, padx=(4, 0))
-        self.h_pw_some_l.grid(     column=2, row=8, pady=3, padx=(4, 0))
+        self.length_pw_some_l.grid(column=1, row=8, pady=3, padx=(5, 0))
+        self.h_pw_some_l.grid(     column=2, row=8, pady=3, padx=(5, 0))
         self.pw_some_show.grid(    column=3, row=8, pady=6, padx=5,
                                    columnspan=2, ipadx=5, sticky=tk.EW)
 
@@ -439,8 +439,8 @@ class PassGenerator:
             self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(78, 0),
                                      sticky=tk.W)
 
-        self.excluded_describe.grid( column=0, row=10, padx=(0, 10), sticky=tk.E)
-        self.excluded_show.grid(     column=1, row=10, padx=(0, 0), sticky=tk.W)
+        self.excluded_describe.grid(column=0, row=10, padx=(0, 10), sticky=tk.E)
+        self.excluded_show.grid(    column=1, row=10, padx=(0, 0), sticky=tk.W)
 
     def check_files(self) -> object:
         """Confirm whether required files are present, exit if not.
