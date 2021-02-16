@@ -191,6 +191,10 @@ class PassGenerator:
         self.master.minsize(850, 420)
         self.master.maxsize(1230, 420)
 
+        if MY_OS == 'win':
+            self.master.minsize(950, 390)
+            self.master.maxsize(1230, 390)
+
         master_bg = 'SkyBlue4'    # also used for some labels.
         master_fg = 'LightCyan2'
         frame_bg = 'grey40'       # background for data labels and frame
