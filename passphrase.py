@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.10'
+__version__ = '0.5.11'
 
 import glob
 import random
@@ -47,7 +47,7 @@ WORDDIR = './wordlists/'
 VERY_RANDOM = random.Random(random.random())
 # VERY_RANDOM = random.Random(time.time())  # Use epoch timestamp seed.
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
-W = 60  # Default width of the results display fields.
+W = 65  # Default width of the results display fields.
 
 
 class PassGenerator:
