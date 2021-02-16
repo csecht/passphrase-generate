@@ -521,17 +521,16 @@ class PassGenerator:
         # These lists are initially defined with default values in get_words().
         #   Don't repopulate lists if they are unchanged between calls.
         elif len(unused) == 0 and self.prior_unused != unused:
-            self.reset_exclusions()
             self.prior_unused = unused
+            self.reset_exclusions()
 
         # Need to display all characters that have been excluded by user.
         # Do not accept entries that have characters separated by space(s).
-        if unused not in self.all_unused and ' ' not in unused:
+        if f'{unused} ' not in self.all_unused and ' ' not in unused:
             self.all_unused = ' '.join([unused, self.all_unused])
+            self.excluded.set(self.all_unused)
         elif ' ' in unused:
             self.reset_exclusions()
-
-        self.excluded.set(self.all_unused)
 
         # Need to correct invalid user entries for number of words & characters.
         numwords = str(self.numwords_entry.get()).strip()
@@ -783,13 +782,13 @@ equivalent to bits of entropy. For more information see:
         """
         msg = (
 """
-The character(s) you enter will not appear in passphrase 
+Any character(s) you enter will not appear in passphrase 
 words or passwords. Multiple characters are treated as a 
 unit. For example, "es" will exclude "trees", not "eye" 
-and  "says". To exclude all three words, enter "e", then
-Generate!, enter "s", then Generate!. 
-The Reset button removes exclusions and restores original  
-words, characters, numbers, and symbols.
+and  "says". To exclude everything having "e" and "s",
+enter "e", click Generate!, enter "s", then Generate!
+The Reset button removes all exclusions. A space entered
+between characters will also trigger a reset.
 """
 )
         exclwin = tk.Toplevel()
