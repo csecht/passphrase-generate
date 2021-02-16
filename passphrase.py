@@ -151,6 +151,7 @@ class PassGenerator:
         self.reset_button =      ttk.Button()
         self.excluded =          tk.StringVar()
         self.excluded_show =  tk.Label(textvariable=self.excluded)
+        self.excluded_describe = tk.Label()
 
         # First used in get_words():
         self.wordfile =    []
@@ -222,6 +223,7 @@ class PassGenerator:
         help_menu.add_command(label="About", command=self.about)
 
         # Configure and set initial values of user entry and control widgets:
+        self.choose_wordlist.configure(width=22)
         self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
         self.wordlists = {
             'System dictionary'         : SYSDICT_PATH,
@@ -236,7 +238,7 @@ class PassGenerator:
             self.choose_wordlist['values'] = all_lists
         # Need to remove 'System dictionary' from Windows usage.
         # Remove 'System dictionary' also used in config_nosyswords().
-        if MY_OS == 'win':
+        elif MY_OS == 'win':
             all_lists.remove('System dictionary')
             self.choose_wordlist['values'] = all_lists
         # Need to default to the 1st (remaining) wordlist.
@@ -244,7 +246,8 @@ class PassGenerator:
 
         # Passphrase section ##################################################
         # Statements generally grouped by row number.
-        self.passphrase_header.config(text='Passphrases', font=('default', 12),
+        self.passphrase_header.config(text='Passphrase wordlists',
+                                      font=('default', 12),
                                       fg=pass_bg, bg=master_bg)
         # MacOS needs a larger font
         if MY_OS == 'dar':
@@ -252,7 +255,7 @@ class PassGenerator:
 
         # This header spans two columns, but much easier to align with grid
         #  in the results frame if "pad" it across columns with spaces.
-        self.l_and_h_header.config(text=' L       H', width=10,
+        self.l_and_h_header.config(text=' L      H', width=10,
                                    fg=master_fg, bg=master_bg)
 
         self.result_frame1.config(borderwidth=3, relief='sunken',
@@ -264,7 +267,7 @@ class PassGenerator:
 
         stubresult = 'Result can be copied and pasted from keyboard.'
 
-        self.raw_describe.config(text="Any words from dictionary",
+        self.raw_describe.config(text="Any words",
                                  fg=master_fg, bg=master_bg)
         self.length_raw.set(0)
         self.length_raw_l.config(width=3)
@@ -352,6 +355,8 @@ class PassGenerator:
         self.exclude_info_b.configure(style="G.TButton", text="?",
                                       width=0,
                                       command=self.exclude_msg)
+        self.excluded_describe.config(text='Currently excluded:',
+                                      fg=master_fg, bg=master_bg)
 
     def grid_window(self) -> None:
         """Grid all tkinter widgets.
@@ -422,19 +427,20 @@ class PassGenerator:
                                    columnspan=2, ipadx=5, sticky=tk.EW)
 
         # Excluded character widgets ##########################################
-        self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=5,
+        self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=(5, 0),
                                    sticky=tk.W)
-        self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 10),
+        self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 15),
                                    sticky=tk.E)
         self.reset_button.grid(    column=1, row=9, pady=(20, 5), padx=(0, 0),
                                    sticky=tk.W)
-        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(70, 0),
+        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(65, 0),
                                    sticky=tk.W)
         if MY_OS == 'dar':
             self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(78, 0),
                                      sticky=tk.W)
 
-        self.excluded_show.grid(   column=0, row=10, padx=5, sticky=tk.W)
+        self.excluded_describe.grid( column=0, row=10, padx=(0, 10), sticky=tk.E)
+        self.excluded_show.grid(     column=1, row=10, padx=(0, 0), sticky=tk.W)
 
     def check_files(self) -> object:
         """Confirm whether required files are present, exit if not.
