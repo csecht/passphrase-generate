@@ -440,10 +440,10 @@ class PassGenerator:
         self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(65, 0),
                                    sticky=tk.W)
         # Need to adjust padding for MacOS b/c of different character widths.
-        # The difference from lin/dar is +9
+        # The difference from lin/dar is 9 (for some reason?).
         if MY_OS == 'dar':
-            self.exclude_info_b.grid(padx=(84, 0))
             self.exclude_describe.grid(padx=(8, 0))
+            self.exclude_info_b.grid(padx=(84, 0))
 
         self.excluded_describe.grid(column=0, row=10, padx=(0, 10), sticky=tk.E)
         self.excluded_show.grid(    column=1, row=10, padx=(0, 0), sticky=tk.W)
@@ -487,11 +487,12 @@ class PassGenerator:
         :return: Word lists or pop-up msg if some files are missing.
         """
 
-        # The *_wordlist.txt files were pre-compiled to have only unique words.
-        # Use set() and split() here to generalize for any text file.
+        # The *_wordlist.txt files have only unique words, but...
+        #   use set() and split() here to generalize for any text file.
         self.choice = self.choose_wordlist.get()
         self.wordfile = self.wordlists[self.choice]
         self.passphrase =  set(Path(self.wordfile).read_text(encoding='utf8').split())
+
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   .isalpha() also removes hyphenated words; EFF large wordlist has 4.
@@ -542,6 +543,7 @@ class PassGenerator:
                     char for char in self.all_char if unused not in char]
                 self.some_char = [
                     char for char in self.some_char if unused not in char]
+
                 # Display currently excluded characters
                 self.all_unused = self.all_unused + ' ' + unused
                 self.excluded.set(self.all_unused)
@@ -701,6 +703,24 @@ class PassGenerator:
 
         return self.get_words()
 
+    def reset_exclusions(self) -> object:
+        """Restore original word and character lists.
+
+        :return: get_words() method with default values.
+        """
+        self.exclude_entry.delete(0, 'end')
+        self.excluded.set('')
+        self.all_unused = ''
+        self.prior_unused = ''
+
+        self.symbols = SYMBOLS
+        self.digi = digits
+        self.caps = ascii_uppercase
+        self.all_char = ascii_letters + digits + punctuation
+        self.some_char = ascii_letters + digits + SYMBOLS
+
+        return self.get_words()
+
     def explain(self) -> None:
         """Provide information about words used to create passphrases.
 
@@ -761,25 +781,6 @@ equivalent to bits of entropy. For more information see:
                            relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', info)
         infotext.pack()
-
-    def reset_exclusions(self) -> object:
-        """Restore original word and character lists.
-
-        :return: get_words() method with default values.
-        """
-        self.exclude_entry.delete(0, 'end')
-        self.excluded.set('')
-
-        self.symbols =   SYMBOLS
-        self.digi =      digits
-        self.caps =      ascii_uppercase
-        self.all_char =  ascii_letters + digits + punctuation
-        self.some_char = ascii_letters + digits + SYMBOLS
-
-        self.all_unused = ''
-        self.prior_unused = ''
-
-        return self.get_words()
 
     @staticmethod
     def exclude_msg() -> None:
