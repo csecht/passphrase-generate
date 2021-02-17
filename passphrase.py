@@ -506,36 +506,6 @@ class PassGenerator:
         :return: set_entropy() and config_results().
         """
 
-        # Need to filter words and strings containing characters to be excluded.
-        unused = self.exclude_entry.get().strip()
-
-        if len(unused) > 0:
-            self.word_list = [
-                word for word in self.word_list if unused not in word]
-            self.short_words = [
-                word for word in self.short_words if unused not in word]
-            self.symbols = [char for char in self.symbols if unused not in char]
-            self.digi = [num for num in self.digi if unused not in num]
-            self.caps = [letter for letter in self.caps if unused not in letter]
-            self.all_char = [char for char in self.all_char if unused not in char]
-            self.some_char = [char for char in self.some_char if unused not in char]
-
-            self.prior_unused = unused
-        # Need to reset lists if user removes prior excluded character(s).
-        # These lists are initially defined with default values in get_words().
-        #   Don't repopulate lists if they are unchanged between calls.
-        elif len(unused) == 0 and self.prior_unused != unused:
-            self.prior_unused = unused
-            self.reset_exclusions()
-
-        # Need to display all characters that have been excluded by user.
-        # Do not accept entries that have characters separated by space(s).
-        if f'{unused} ' not in self.all_unused and ' ' not in unused:
-            self.all_unused = ' '.join([unused, self.all_unused])
-            self.excluded.set(self.all_unused)
-        elif ' ' in unused:
-            self.reset_exclusions()
-
         # Need to correct invalid user entries for number of words & characters.
         numwords = str(self.numwords_entry.get()).strip()
         if numwords == '':
@@ -552,6 +522,38 @@ class PassGenerator:
             self.numchars_entry.delete(0, 'end')
             self.numchars_entry.insert(0, '0')
         numchars = int(self.numchars_entry.get())
+
+        # Need to filter words and strings containing characters to be excluded.
+        unused = self.exclude_entry.get().strip()
+        # Don't repopulate lists if unchanged between calls.
+        if unused != self.prior_unused:
+            if len(unused) > 0:
+                self.word_list = [
+                    word for word in self.word_list if unused not in word]
+                self.short_words = [
+                    word for word in self.short_words if unused not in word]
+                self.symbols = [
+                    char for char in self.symbols if unused not in char]
+                self.digi = [
+                    num for num in self.digi if unused not in num]
+                self.caps = [
+                    letter for letter in self.caps if unused not in letter]
+                self.all_char = [
+                    char for char in self.all_char if unused not in char]
+                self.some_char = [
+                    char for char in self.some_char if unused not in char]
+
+                self.all_unused = unused + ' ' + self.all_unused
+                self.excluded.set(self.all_unused)
+
+                self.prior_unused = unused
+            # Need to reset to default lists if user deletes prior entry.
+            elif len(unused) == 0:
+                self.reset_exclusions()
+
+        # Do not accept entries with space between characters.
+        if ' ' in unused:
+            self.reset_exclusions()
 
         # Randomly select user-specified number of words.
         self.passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
@@ -774,6 +776,7 @@ equivalent to bits of entropy. For more information see:
         self.exclude_entry.delete(0, 'end')
         self.all_unused = ''
         self.excluded.set(self.all_unused)
+        self.prior_unused = ''
 
         return self.get_words()
 
@@ -790,7 +793,8 @@ Any character(s) you enter will not appear in passphrase
 words or passwords. Multiple characters are treated as a 
 unit. For example, "es" will exclude "trees", not "eye" 
 and  "says". To exclude everything having "e" and "s",
-enter "e", click Generate!, enter "s", then Generate!
+enter "e", click Generate!, then enter "s" and Generate!
+
 The Reset button removes all exclusions. A space entered
 between characters will also trigger a reset.
 """
