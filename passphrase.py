@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.13'
+__version__ = '0.5.14'
 
 import glob
 import random
@@ -195,6 +195,11 @@ class PassGenerator:
             self.master.minsize(950, 390)
             self.master.maxsize(1230, 390)
 
+        # Need pass-string fields to stretch with window drag size.
+        self.master.columnconfigure(3, weight=1)
+        self.result_frame1.columnconfigure(3, weight=1)
+        self.result_frame2.columnconfigure(3, weight=1)
+
         master_bg = 'SkyBlue4'    # also used for some labels.
         master_fg = 'LightCyan2'
         frame_bg = 'grey40'       # background for data labels and frame
@@ -203,6 +208,8 @@ class PassGenerator:
         self.pass_fg = 'brown4'   # also used in config_results()
         # Use Courier b/c TKFixedFont does not monospace symbol characters.
         self.display_font = 'Courier', 12  # also used in config_results().
+        if MY_OS == 'dar':
+            self.display_font = 'Courier', 14
 
         # Widget configurations are generally listed top to bottom of window.
         self.master.bind("<Escape>", lambda q: quit_gui())
@@ -642,6 +649,9 @@ class PassGenerator:
         # B/c 'width' is character units, not pixels, length may change
         #   as font sizes and string lengths change.
         small_font = 'Courier', 10
+        if MY_OS == 'dar':
+            small_font = 'Courier', 12
+
         if len(self.phraseplus) > W:
             self.phrase_raw_show.config(  font=small_font,
                                           width=len(self.phraseplus))
