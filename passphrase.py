@@ -542,8 +542,8 @@ class PassGenerator:
                     char for char in self.all_char if unused not in char]
                 self.some_char = [
                     char for char in self.some_char if unused not in char]
-
-                self.all_unused = unused + ' ' + self.all_unused
+                # Display currently excluded characters
+                self.all_unused = self.all_unused + ' ' + unused
                 self.excluded.set(self.all_unused)
 
                 self.prior_unused = unused
@@ -767,15 +767,16 @@ equivalent to bits of entropy. For more information see:
 
         :return: get_words() method with default values.
         """
+        self.exclude_entry.delete(0, 'end')
+        self.excluded.set('')
+
         self.symbols =   SYMBOLS
         self.digi =      digits
         self.caps =      ascii_uppercase
         self.all_char =  ascii_letters + digits + punctuation
         self.some_char = ascii_letters + digits + SYMBOLS
 
-        self.exclude_entry.delete(0, 'end')
         self.all_unused = ''
-        self.excluded.set(self.all_unused)
         self.prior_unused = ''
 
         return self.get_words()
