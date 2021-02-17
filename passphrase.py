@@ -491,7 +491,7 @@ class PassGenerator:
 
         :param: optional event is a call from <<ComboboxSelected>>.
 
-        :return: Word lists or pop-up msg if some files are missing.
+        :return: New lists of words from the selected wordlist file.
         """
 
         # The *_wordlist.txt files have only unique words, but...
