@@ -408,10 +408,10 @@ class PassGenerator:
                                     sticky=tk.EW)
 
         # Need to pad and span to center the button between two results frames.
-        self.generate_btn.grid(     column=3, row=5, pady=(10, 5), padx=(0, 250),
+        self.generate_btn.grid(     column=3, row=5, pady=(10, 5), padx=(125, 0),
                                     rowspan=2, sticky=tk.W)
         if MY_OS == 'dar':
-            self.generate_btn.grid(column=3, row=5, pady=(10, 5), padx=(0, 150),
+            self.generate_btn.grid(column=3, row=5, pady=(10, 5), padx=(50, 0),
                                    rowspan=2, sticky=tk.W)
 
         # Password widgets ####################################################
