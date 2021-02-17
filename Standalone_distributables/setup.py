@@ -35,7 +35,7 @@ setup(
     # windows=['passphrase.py,],  # uncomment for Windows
     data_files=DATA_FILES,
     name='Passphrase',
-    version='0.5.11',
+    version='0.0.0',
     author='C.S. Echt',
     description=('A utility to create random passphrases and passwords'),
     license='GNU General Public License',
