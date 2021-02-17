@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.14'
+__version__ = '0.5.15'
 
 import glob
 import random
@@ -564,24 +564,24 @@ class PassGenerator:
         if ' ' in unused:
             self.reset_exclusions()
 
-        # Randomly select user-specified number of words.
+        # Randomly select user-specified number of words or characters.
         self.passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
                                   _ in range(numwords))
         self.shortphrase = "".join(VERY_RANDOM.choice(self.short_words) for
                                    _ in range(numwords))
+        self.password1 = "".join(VERY_RANDOM.choice(self.all_char) for
+                                 _ in range(numchars))
+        self.password2 = "".join(VERY_RANDOM.choice(self.some_char) for
+                                 _ in range(numchars))
 
         # Randomly select symbols to append; number is not user-specified.
         addsymbol = "".join(VERY_RANDOM.choice(self.symbols) for _ in range(1))
         addnum = "".join(VERY_RANDOM.choice(self.digi) for _ in range(1))
         addcaps = "".join(VERY_RANDOM.choice(self.caps) for _ in range(1))
 
-        # Build the pass-strings.
+        # Build final passphrase alternatives.
         self.phraseplus = self.passphrase + addsymbol + addnum + addcaps
         self.shortplus = self.shortphrase + addsymbol + addnum + addcaps
-        self.password1 = "".join(VERY_RANDOM.choice(self.all_char) for
-                                 _ in range(numchars))
-        self.password2 = "".join(VERY_RANDOM.choice(self.some_char) for
-                                 _ in range(numchars))
 
         # Set all pass-strings for display in results frames.
         self.phrase_raw.set(self.passphrase)
@@ -623,10 +623,9 @@ class PassGenerator:
         #   the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_passstrings().
         self.h_raw.set(int(numwords * log(len(self.word_list)) / log(2)))
+        self.h_plus.set(self.h_raw.get() + h_add3)
         h_some = int(numwords * log(len(self.short_words)) / log(2))
         self.h_short.set(h_some + h_add3)
-
-        self.h_plus.set(self.h_raw.get() + h_add3)
         self.h_pw_any.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.h_pw_some.set(int(numchars * log(len(self.some_char)) / log(2)))
 
