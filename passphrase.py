@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.5.15'
+__version__ = '0.5.16'
 
 import glob
 import random
@@ -69,51 +69,51 @@ class PassGenerator:
         self.numwords_label = tk.Label()
         self.numwords_entry = tk.Entry()
 
-        self.l_and_h_header =    tk.Label()
-        self.passphrase_header = tk.Label()
+        self.l_and_h_header =  tk.Label()
+        self.pp_section_head = tk.Label()
 
         self.result_frame1 = tk.Frame()
 
-        self.raw_describe =   tk.Label()
-        self.plus_describe =  tk.Label()
-        self.short_describe = tk.Label()
+        self.pp_raw_head =   tk.Label()
+        self.pp_plus_head =  tk.Label()
+        self.pp_short_head = tk.Label()
 
-        self.length_raw =     tk.IntVar()
-        self.length_plus =    tk.IntVar()
-        self.length_short =   tk.IntVar()
-        self.length_raw_l =   tk.Label(self.result_frame1,
-                                       textvariable=self.length_raw)
-        self.length_plus_l =  tk.Label(self.result_frame1,
-                                       textvariable=self.length_plus)
-        self.length_short_l = tk.Label(self.result_frame1,
-                                       textvariable=self.length_short)
-        self.h_raw =          tk.IntVar()
-        self.h_plus =         tk.IntVar()
-        self.h_short =        tk.IntVar()
-        self.h_raw_l =        tk.Label(self.result_frame1,
-                                       textvariable=self.h_raw)
-        self.h_plus_l =       tk.Label(self.result_frame1,
-                                       textvariable=self.h_plus)
-        self.h_short_l =      tk.Label(self.result_frame1,
-                                       textvariable=self.h_short)
+        self.pp_raw_length =    tk.IntVar()
+        self.pp_plus_length =   tk.IntVar()
+        self.pp_short_length =  tk.IntVar()
+        self.pp_raw_len_lbl =   tk.Label(self.result_frame1,
+                                         textvariable=self.pp_raw_length)
+        self.pp_plus_len_lbl =  tk.Label(self.result_frame1,
+                                         textvariable=self.pp_plus_length)
+        self.pp_short_len_lbl = tk.Label(self.result_frame1,
+                                         textvariable=self.pp_short_length)
+        self.pp_raw_h =          tk.IntVar()
+        self.pp_plus_h =         tk.IntVar()
+        self.pp_short_h =        tk.IntVar()
+        self.pp_raw_h_lbl =      tk.Label(self.result_frame1,
+                                          textvariable=self.pp_raw_h)
+        self.pp_plus_h_lbl =     tk.Label(self.result_frame1,
+                                          textvariable=self.pp_plus_h)
+        self.pp_short_h_lbl =    tk.Label(self.result_frame1,
+                                          textvariable=self.pp_short_h)
 
         self.phrase_raw =     tk.StringVar()
         self.phrase_plus =    tk.StringVar()
         self.phrase_short =   tk.StringVar()
         # Results are displayed in Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
-        self.phrase_raw_show =   tk.Entry(self.result_frame1,
-                                          textvariable=self.phrase_raw)
-        self.phrase_plus_show =  tk.Entry(self.result_frame1,
-                                          textvariable=self.phrase_plus)
-        self.phrase_short_show = tk.Entry(self.result_frame1,
-                                          textvariable=self.phrase_short)
+        self.pp_raw_show =   tk.Entry(self.result_frame1,
+                                      textvariable=self.phrase_raw)
+        self.pp_plus_show =  tk.Entry(self.result_frame1,
+                                      textvariable=self.phrase_plus)
+        self.pp_short_show = tk.Entry(self.result_frame1,
+                                      textvariable=self.phrase_short)
         # End passphrase section ##############################################
 
         self.generate_btn = ttk.Button()
 
         # Password section ####################################################
-        self.pw_header =      tk.Label()
+        self.pw_section_head =  tk.Label()
 
         # There are problems of tk.Button text showing up on MacOS, so ttk.
         self.numchars_label =   tk.Label()
@@ -121,37 +121,37 @@ class PassGenerator:
 
         self.result_frame2 =    tk.Frame()
 
-        self.pw_any_describe =  tk.Label()
-        self.pw_some_describe = tk.Label()
+        self.pw_any_head =  tk.Label()
+        self.pw_some_head = tk.Label()
 
-        self.length_pw_any =    tk.IntVar()
-        self.length_pw_some =   tk.IntVar()
-        self.length_pw_any_l =  tk.Label(self.result_frame2,
-                                         textvariable=self.length_pw_any)
-        self.length_pw_some_l = tk.Label(self.result_frame2,
-                                         textvariable=self.length_pw_some)
-        self.h_pw_any =         tk.IntVar()
-        self.h_pw_some =        tk.IntVar()
-        self.h_pw_any_l =       tk.Label(self.result_frame2,
-                                         textvariable=self.h_pw_any)
-        self.h_pw_some_l =      tk.Label(self.result_frame2,
-                                         textvariable=self.h_pw_some)
+        self.pw_any_length =   tk.IntVar()
+        self.pw_some_length =  tk.IntVar()
+        self.pw_any_len_lbl =  tk.Label(self.result_frame2,
+                                        textvariable=self.pw_any_length)
+        self.pw_some_len_lbl = tk.Label(self.result_frame2,
+                                        textvariable=self.pw_some_length)
+        self.pw_any_h =        tk.IntVar()
+        self.pw_some_h =       tk.IntVar()
+        self.pw_any_h_lbl =    tk.Label(self.result_frame2,
+                                        textvariable=self.pw_any_h)
+        self.pw_some_h_lbl =   tk.Label(self.result_frame2,
+                                        textvariable=self.pw_some_h)
 
-        self.pw_any =           tk.StringVar()
-        self.pw_some =          tk.StringVar()
-        self.pw_any_show =   tk.Entry(self.result_frame2,
-                                      textvariable=self.pw_any, )
-        self.pw_some_show =  tk.Entry(self.result_frame2,
-                                      textvariable=self.pw_some)
+        self.pw_any =          tk.StringVar()
+        self.pw_some =         tk.StringVar()
+        self.pw_any_show =     tk.Entry(self.result_frame2,
+                                        textvariable=self.pw_any, )
+        self.pw_some_show =    tk.Entry(self.result_frame2,
+                                       textvariable=self.pw_some)
         # End password section ################################################
 
-        self.exclude_describe =  tk.Label()
-        self.exclude_entry =     tk.Entry()
-        self.exclude_info_b =    ttk.Button()
-        self.reset_button =      ttk.Button()
-        self.excluded =          tk.StringVar()
+        self.exclude_head =   tk.Label()
+        self.exclude_entry =  tk.Entry()
+        self.exclude_info_b = ttk.Button()
+        self.reset_button =   ttk.Button()
+        self.excluded =       tk.StringVar()
         self.excluded_show =  tk.Label(textvariable=self.excluded)
-        self.excluded_describe = tk.Label()
+        self.excluded_head = tk.Label()
 
         # First used in get_words():
         self.wordfile =    []
@@ -257,12 +257,12 @@ class PassGenerator:
 
         # Passphrase section ##################################################
         # Statements generally grouped by row number.
-        self.passphrase_header.config(text='Passphrase wordlists',
-                                      font=('default', 12),
-                                      fg=pass_bg, bg=master_bg)
+        self.pp_section_head.config(text='Passphrase wordlists',
+                                    font=('default', 12),
+                                    fg=pass_bg, bg=master_bg)
         # MacOS needs a larger font
         if MY_OS == 'dar':
-            self.passphrase_header.config(font=('default', 16))
+            self.pp_section_head.config(font=('default', 16))
 
         # This header spans two columns, but much easier to align with grid
         #  in the results frame if "pad" it across columns with spaces.
@@ -278,35 +278,35 @@ class PassGenerator:
 
         stubresult = 'Result can be copied and pasted from keyboard.'
 
-        self.raw_describe.config(text="Any words",
-                                 fg=master_fg, bg=master_bg)
-        self.length_raw.set(0)
-        self.length_raw_l.config(width=3)
-        self.h_raw.set(0)
-        self.h_raw_l.config(width=3)
+        self.pp_raw_head.config(text="Any words",
+                                fg=master_fg, bg=master_bg)
+        self.pp_raw_length.set(0)
+        self.pp_raw_len_lbl.config(width=3)
+        self.pp_raw_h.set(0)
+        self.pp_raw_h_lbl.config(width=3)
         self.phrase_raw.set(stubresult)
-        self.phrase_raw_show.config(width=W, font=self.display_font,
-                                    fg=stubresult_fg, bg=pass_bg)
+        self.pp_raw_show.config(width=W, font=self.display_font,
+                                fg=stubresult_fg, bg=pass_bg)
 
-        self.plus_describe.config(text="... plus 3 characters",
-                                  fg=master_fg, bg=master_bg)
-        self.length_plus.set(0)
-        self.length_plus_l.config(width=3)
-        self.h_plus.set(0)
-        self.h_plus_l.config(width=3)
+        self.pp_plus_head.config(text="... plus 3 characters",
+                                 fg=master_fg, bg=master_bg)
+        self.pp_plus_length.set(0)
+        self.pp_plus_len_lbl.config(width=3)
+        self.pp_plus_h.set(0)
+        self.pp_plus_h_lbl.config(width=3)
         self.phrase_plus.set(stubresult)
-        self.phrase_plus_show.config(width=W, font=self.display_font,
-                                     fg=stubresult_fg, bg=pass_bg)
+        self.pp_plus_show.config(width=W, font=self.display_font,
+                                 fg=stubresult_fg, bg=pass_bg)
 
-        self.short_describe.config(text="...with words of 3 to 8 letters",
-                                   fg=master_fg, bg=master_bg)
-        self.length_short.set(0)
-        self.length_short_l.config(width=3)
-        self.h_short.set(0)
-        self.h_short_l.config(width=3)
+        self.pp_short_head.config(text="...with words of 3 to 8 letters",
+                                  fg=master_fg, bg=master_bg)
+        self.pp_short_length.set(0)
+        self.pp_short_len_lbl.config(width=3)
+        self.pp_short_h.set(0)
+        self.pp_short_h_lbl.config(width=3)
         self.phrase_short.set(stubresult)
-        self.phrase_short_show.config(width=W, font=self.display_font,
-                                      fg=stubresult_fg, bg=pass_bg)
+        self.pp_short_show.config(width=W, font=self.display_font,
+                                  fg=stubresult_fg, bg=pass_bg)
         # End passphrase section ##############################################
 
         # Explicit styles are needed for buttons to show properly on MacOS.
@@ -325,39 +325,39 @@ class PassGenerator:
 
         # Password section ####################################################
         # Statements generally grouped by row number.
-        self.pw_header.config(text='Passwords', font=('default', 12),
-                              fg=pass_bg, bg=master_bg)
+        self.pw_section_head.config(text='Passwords', font=('default', 12),
+                                    fg=pass_bg, bg=master_bg)
         if MY_OS == 'dar':
-            self.pw_header.config(font=('default', 16))
+            self.pw_section_head.config(font=('default', 16))
 
         self.numchars_label.config(text='# characters',
                                    fg=pass_bg, bg=master_bg)
         self.numchars_entry.config(width=3)
         self.numchars_entry.insert(0, 0)
 
-        self.pw_any_describe.config(text="Any characters",
-                                    fg=master_fg, bg=master_bg)
-        self.length_pw_any.set(0)
-        self.length_pw_any_l.config(width=3)
-        self.h_pw_any.set(0)
-        self.h_pw_any_l.config(width=3)
+        self.pw_any_head.config(text="Any characters",
+                                fg=master_fg, bg=master_bg)
+        self.pw_any_length.set(0)
+        self.pw_any_len_lbl.config(width=3)
+        self.pw_any_h.set(0)
+        self.pw_any_h_lbl.config(width=3)
         self.pw_any.set(stubresult)
         self.pw_any_show.config(width=W, font=self.display_font,
                                 fg=stubresult_fg, bg=pass_bg)
 
-        self.pw_some_describe.config(text="More likely usable characters",
-                                     fg=master_fg, bg=master_bg)
-        self.length_pw_some.set(0)
-        self.length_pw_some_l.config(width=3)
-        self.h_pw_some.set(0)
-        self.h_pw_some_l.config(width=3)
+        self.pw_some_head.config(text="More likely usable characters",
+                                 fg=master_fg, bg=master_bg)
+        self.pw_some_length.set(0)
+        self.pw_some_len_lbl.config(width=3)
+        self.pw_some_h.set(0)
+        self.pw_some_h_lbl.config(width=3)
         self.pw_some.set(stubresult)
         self.pw_some_show.config(width=W, font=self.display_font,
                                  fg=stubresult_fg, bg=pass_bg)
 
         # Excluded character section ##########################################
-        self.exclude_describe.config(text='Exclude character(s)',
-                                     fg=pass_bg, bg=master_bg)
+        self.exclude_head.config(text='Exclude character(s)',
+                                 fg=pass_bg, bg=master_bg)
         self.exclude_entry.config(width=2)
         self.reset_button.configure(style="G.TButton", text='Reset',
                                     width=0,
@@ -366,8 +366,8 @@ class PassGenerator:
         self.exclude_info_b.configure(style="G.TButton", text="?",
                                       width=0,
                                       command=self.exclude_msg)
-        self.excluded_describe.config(text='Currently excluded:',
-                                      fg=master_fg, bg=master_bg)
+        self.excluded_head.config(text='Currently excluded:',
+                                  fg=master_fg, bg=master_bg)
 
     def grid_window(self) -> None:
         """Grid all tkinter widgets.
@@ -376,84 +376,84 @@ class PassGenerator:
         """
         ############## sorted by row number #################
         # Passphrase widgets ##################################################
-        self.choose_wordlist.grid(  column=1, row=0, pady=(10, 5), padx=5,
-                                    columnspan=2, sticky=tk.W)
+        self.choose_wordlist.grid(column=1, row=0, pady=(10, 5), padx=5,
+                                  columnspan=2, sticky=tk.W)
 
-        self.passphrase_header.grid(column=0, row=0, pady=(10, 5), padx=5,
-                                    sticky=tk.W)
-        self.l_and_h_header.grid(   column=1, row=1, padx=0, sticky=tk.W)
+        self.pp_section_head.grid(column=0, row=0, pady=(10, 5), padx=5,
+                                  sticky=tk.W)
 
-        self.numwords_label.grid(   column=0, row=1, padx=5, sticky=tk.W)
-        self.numwords_entry.grid(   column=0, row=1, padx=(5, 100),
-                                    sticky=tk.E)
+        self.numwords_label.grid( column=0, row=1, padx=5, sticky=tk.W)
+        self.numwords_entry.grid( column=0, row=1, padx=(5, 100), sticky=tk.E)
+        self.l_and_h_header.grid( column=1, row=1, padx=0, sticky=tk.W)
 
-        self.result_frame1.grid(    column=1, row=2, padx=(5, 10),
-                                    columnspan=3, rowspan=3, sticky=tk.EW)
+        self.result_frame1.grid(  column=1, row=2, padx=(5, 10),
+                                  columnspan=3, rowspan=3, sticky=tk.EW)
 
         # Result _shows will maintain equal widths with sticky=tk.EW.
-        self.raw_describe.grid(     column=0, row=2, pady=(6, 0), sticky=tk.E)
-        self.length_raw_l.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
-        self.h_raw_l.grid(          column=2, row=2, pady=(5, 3), padx=(5, 0))
-        self.phrase_raw_show.grid(  column=3, row=2, pady=(5, 3), padx=5,
-                                    ipadx=5, sticky=tk.EW)
-        self.plus_describe.grid(    column=0, row=3, pady=(3, 0), sticky=tk.E)
-        self.length_plus_l.grid(    column=1, row=3, pady=(5, 3), padx=(5, 0))
-        self.h_plus_l.grid(         column=2, row=3, pady=(5, 3), padx=(5, 0))
-        self.phrase_plus_show.grid( column=3, row=3, pady=(5, 3), padx=5,
-                                    ipadx=5, sticky=tk.EW)
-        self.short_describe.grid(   column=0, row=4, pady=(3, 6), sticky=tk.E)
-        self.length_short_l.grid(   column=1, row=4, pady=3, padx=(5, 0))
-        self.h_short_l.grid(        column=2, row=4, pady=3, padx=(5, 0))
-        self.phrase_short_show.grid(column=3, row=4, pady=6, padx=5, ipadx=5,
-                                    sticky=tk.EW)
+        self.pp_raw_head.grid(    column=0, row=2, pady=(6, 0), sticky=tk.E)
+        self.pp_raw_len_lbl.grid( column=1, row=2, pady=(5, 3), padx=(5, 0))
+        self.pp_raw_h_lbl.grid(   column=2, row=2, pady=(5, 3), padx=(5, 0))
+        self.pp_raw_show.grid(    column=3, row=2, pady=(5, 3), padx=5,
+                                  ipadx=5, sticky=tk.EW)
+        self.pp_plus_head.grid(   column=0, row=3, pady=(3, 0), sticky=tk.E)
+        self.pp_plus_len_lbl.grid(column=1, row=3, pady=(5, 3), padx=(5, 0))
+        self.pp_plus_h_lbl.grid(  column=2, row=3, pady=(5, 3), padx=(5, 0))
+        self.pp_plus_show.grid(   column=3, row=3, pady=(5, 3), padx=5,
+                                  ipadx=5, sticky=tk.EW)
+        self.pp_short_head.grid(  column=0, row=4, pady=(3, 6), sticky=tk.E)
+        self.pp_short_len_lbl.grid(column=1, row=4, pady=3, padx=(5, 0))
+        self.pp_short_h_lbl.grid( column=2, row=4, pady=3, padx=(5, 0))
+        self.pp_short_show.grid(  column=3, row=4, pady=6, padx=5,
+                                  ipadx=5, sticky=tk.EW)
 
         # Need to pad and span to center the button between two results frames.
-        self.generate_btn.grid(     column=3, row=5, pady=(10, 5), padx=(125, 0),
-                                    rowspan=2, sticky=tk.W)
+        #   ...with different padding to keep it aligned in MacOS.
+        self.generate_btn.grid(   column=3, row=5, pady=(10, 5), rowspan=2,
+                                  padx=(125, 0), sticky=tk.W)
         if MY_OS == 'dar':
-            self.generate_btn.grid(column=3, row=5, pady=(10, 5), padx=(50, 0),
-                                   rowspan=2, sticky=tk.W)
+            self.generate_btn.grid( padx=(50, 0))
 
         # Password widgets ####################################################
-        self.pw_header.grid(       column=0, row=5, pady=(12, 6), padx=5,
-                                   sticky=tk.W)
-        self.numchars_label.grid(  column=0, row=6, padx=5, sticky=tk.W)
-        self.numchars_entry.grid(  column=0, row=6, padx=(0, 65),
-                                   sticky=tk.E)
+        self.pw_section_head.grid(column=0, row=5, pady=(12, 6), padx=5,
+                                  sticky=tk.W)
+        self.numchars_label.grid( column=0, row=6, pady=0, padx=5,
+                                  sticky=tk.W)
+        self.numchars_entry.grid( column=0, row=6, pady=0, padx=(0, 65),
+                                  sticky=tk.E)
 
-        self.result_frame2.grid(   column=1, row=7, padx=(5, 10),
-                                   columnspan=3, rowspan=2, sticky=tk.EW)
+        self.result_frame2.grid(  column=1, row=7, padx=(5, 10),
+                                  columnspan=3, rowspan=2, sticky=tk.EW)
 
-        self.pw_any_describe.grid( column=0, row=7, pady=(6, 0),
-                                   sticky=tk.E)
-        self.length_pw_any_l.grid( column=1, row=7, pady=(6, 3), padx=(5, 0))
-        self.h_pw_any_l.grid(      column=2, row=7, pady=(6, 3), padx=(5, 0))
-        self.pw_any_show.grid(     column=3, row=7, pady=(6, 3), padx=5,
-                                   columnspan=2, ipadx=5, sticky=tk.EW)
-        self.pw_some_describe.grid(column=0, row=8, pady=(0, 6), padx=(5, 0),
-                                   sticky=tk.E)
-        self.length_pw_some_l.grid(column=1, row=8, pady=3, padx=(5, 0))
-        self.h_pw_some_l.grid(     column=2, row=8, pady=3, padx=(5, 0))
-        self.pw_some_show.grid(    column=3, row=8, pady=6, padx=5,
-                                   columnspan=2, ipadx=5, sticky=tk.EW)
+        self.pw_any_head.grid(    column=0, row=7, pady=(6, 0),
+                                  sticky=tk.E)
+        self.pw_any_len_lbl.grid( column=1, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_h_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_show.grid(    column=3, row=7, pady=(6, 3), padx=5,
+                                  columnspan=2, ipadx=5, sticky=tk.EW)
+        self.pw_some_head.grid(   column=0, row=8, pady=(0, 6), padx=(5, 0),
+                                  sticky=tk.E)
+        self.pw_some_len_lbl.grid(column=1, row=8, pady=3, padx=(5, 0))
+        self.pw_some_h_lbl.grid(  column=2, row=8, pady=3, padx=(5, 0))
+        self.pw_some_show.grid(   column=3, row=8, pady=6, padx=5,
+                                  columnspan=2, ipadx=5, sticky=tk.EW)
 
         # Excluded character widgets ##########################################
-        self.exclude_describe.grid(column=0, row=9, pady=(20, 0), padx=(17, 0),
-                                   sticky=tk.W)
-        self.exclude_entry.grid(   column=0, row=9, pady=(20, 5), padx=(0, 15),
-                                   sticky=tk.E)
-        self.reset_button.grid(    column=1, row=9, pady=(20, 5), padx=(0, 0),
-                                   sticky=tk.W)
-        self.exclude_info_b.grid(  column=1, row=9, pady=(20, 5), padx=(65, 0),
-                                   sticky=tk.W)
+        self.exclude_head.grid(   column=0, row=9, pady=(20, 0), padx=(17, 0),
+                                  sticky=tk.W)
+        self.exclude_entry.grid(  column=0, row=9, pady=(20, 5), padx=(0, 15),
+                                  sticky=tk.E)
+        self.reset_button.grid(   column=1, row=9, pady=(20, 5), padx=(0, 0),
+                                  sticky=tk.W)
+        self.exclude_info_b.grid( column=1, row=9, pady=(20, 5), padx=(65, 0),
+                                  sticky=tk.W)
         # Need to adjust padding for MacOS b/c of different character widths.
         # The difference from lin/dar is 9 (for some reason?).
         if MY_OS == 'dar':
-            self.exclude_describe.grid(padx=(8, 0))
+            self.exclude_head.grid(padx=(8, 0))
             self.exclude_info_b.grid(padx=(84, 0))
 
-        self.excluded_describe.grid(column=0, row=10, padx=(0, 10), sticky=tk.E)
-        self.excluded_show.grid(    column=1, row=10, padx=(0, 0), sticky=tk.W)
+        self.excluded_head.grid(column=0, row=10, sticky=tk.E)
+        self.excluded_show.grid(column=1, row=10, sticky=tk.W)
 
     def check_files(self) -> object:
         """Confirm whether required files are present, exit if not.
@@ -585,15 +585,15 @@ class PassGenerator:
 
         # Set all pass-strings for display in results frames.
         self.phrase_raw.set(self.passphrase)
-        self.length_raw.set(len(self.passphrase))
+        self.pp_raw_length.set(len(self.passphrase))
         self.phrase_plus.set(self.phraseplus)
-        self.length_plus.set(len(self.phraseplus))
+        self.pp_plus_length.set(len(self.phraseplus))
         self.phrase_short.set(self.shortplus)
-        self.length_short.set(len(self.shortplus))
+        self.pp_short_length.set(len(self.shortplus))
         self.pw_any.set(self.password1)
-        self.length_pw_any.set(len(self.password1))
+        self.pw_any_length.set(len(self.password1))
         self.pw_some.set(self.password2)
-        self.length_pw_some.set(len(self.password2))
+        self.pw_some_length.set(len(self.password2))
 
         # Finally, set H values for each pass-string and configure results.
         return self.set_entropy(numwords, numchars),  self.config_results()
@@ -622,12 +622,12 @@ class PassGenerator:
         #   or words in the pass-string. Log can be any base, but needs to be
         #   the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_passstrings().
-        self.h_raw.set(int(numwords * log(len(self.word_list)) / log(2)))
-        self.h_plus.set(self.h_raw.get() + h_add3)
+        self.pp_raw_h.set(int(numwords * log(len(self.word_list)) / log(2)))
+        self.pp_plus_h.set(self.pp_raw_h.get() + h_add3)
         h_some = int(numwords * log(len(self.short_words)) / log(2))
-        self.h_short.set(h_some + h_add3)
-        self.h_pw_any.set(int(numchars * log(len(self.all_char)) / log(2)))
-        self.h_pw_some.set(int(numchars * log(len(self.some_char)) / log(2)))
+        self.pp_short_h.set(h_some + h_add3)
+        self.pw_any_h.set(int(numchars * log(len(self.all_char)) / log(2)))
+        self.pw_some_h.set(int(numchars * log(len(self.some_char)) / log(2)))
 
     def config_results(self) -> None:
         """
@@ -637,9 +637,9 @@ class PassGenerator:
         """
         # Change font colors of results from the initial self.passstub_fg.
         # pass_fg does not change after first call to set_passstrings().
-        self.phrase_raw_show.config(  fg=self.pass_fg)
-        self.phrase_plus_show.config( fg=self.pass_fg)
-        self.phrase_short_show.config(fg=self.pass_fg)
+        self.pp_raw_show.config(fg=self.pass_fg)
+        self.pp_plus_show.config(fg=self.pass_fg)
+        self.pp_short_show.config(fg=self.pass_fg)
         self.pw_any_show.config(      fg=self.pass_fg)
         self.pw_some_show.config(     fg=self.pass_fg)
 
@@ -654,14 +654,14 @@ class PassGenerator:
             small_font = 'Courier', 12
 
         if len(self.phraseplus) > W:
-            self.phrase_raw_show.config(  font=small_font,
-                                          width=len(self.phraseplus))
-            self.phrase_plus_show.config( font=small_font)
-            self.phrase_short_show.config(font=small_font)
+            self.pp_raw_show.config(font=small_font,
+                                    width=len(self.phraseplus))
+            self.pp_plus_show.config(font=small_font)
+            self.pp_short_show.config(font=small_font)
         elif len(self.phraseplus) <= W:
-            self.phrase_raw_show.config(  font=self.display_font, width=W)
-            self.phrase_plus_show.config( font=self.display_font, width=W)
-            self.phrase_short_show.config(font=self.display_font, width=W)
+            self.pp_raw_show.config(font=self.display_font, width=W)
+            self.pp_plus_show.config(font=self.display_font, width=W)
+            self.pp_short_show.config(font=self.display_font, width=W)
 
         if len(self.password1) > W:
             self.pw_any_show.config( font=small_font,
