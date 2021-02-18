@@ -216,6 +216,7 @@ class PassGenerator:
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.set_passstrings())
         self.master.config(bg=master_bg)
+        self.master.bind('<Button-3>', RightClickCopy)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -785,40 +786,14 @@ equivalent to bits of entropy. For more information see:
 )
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
+
         num_lines = info.count('\n')
         infotext = tk.Text(infowin, width=75, height=num_lines + 1,
                            background='grey40', foreground='grey98',
                            relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', info)
         infotext.pack()
-
-    @staticmethod
-    def exclude_msg() -> None:
-        """A pop-up explaining how to use excluded characters.
-        Called only from a Button.
-
-        :return: A message text window.
-        """
-        msg = (
-"""
-Any character(s) you enter will not appear in passphrase 
-words or passwords. Multiple characters are treated as a 
-unit. For example, "es" will exclude "trees", not "eye" 
-and  "says". To exclude everything having "e" and "s",
-enter "e", click Generate!, then enter "s" and Generate!
-
-The Reset button removes all exclusions. A space entered
-between characters will also trigger a reset.
-"""
-)
-        exclwin = tk.Toplevel()
-        exclwin.title('Exclude from what?')
-        num_lines = msg.count('\n')
-        infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
-                           background='grey40', foreground='grey98',
-                           relief='groove', borderwidth=8, padx=20, pady=10)
-        infotext.insert('1.0', msg)
-        infotext.pack()
+        infotext.bind('<Button-3>', RightClickCopy)
 
     @staticmethod
     def about() -> None:
@@ -866,6 +841,52 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack()
+        abouttxt.bind('<Button-3>', RightClickCopy)
+
+    @staticmethod
+    def exclude_msg() -> None:
+        """A pop-up explaining how to use excluded characters.
+        Called only from a Button.
+
+        :return: A message text window.
+        """
+        msg = (
+"""
+Any character(s) you enter will not appear in passphrase 
+words or passwords. Multiple characters are treated as a 
+unit. For example, "es" will exclude "trees", not "eye" 
+and  "says". To exclude everything having "e" and "s",
+enter "e", click Generate!, then enter "s" and Generate!
+
+The Reset button removes all exclusions. A space entered
+between characters will also trigger a reset.
+"""
+)
+        exclwin = tk.Toplevel()
+        exclwin.title('Exclude from what?')
+        num_lines = msg.count('\n')
+        infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
+                           background='grey40', foreground='grey98',
+                           relief='groove', borderwidth=8, padx=20, pady=10)
+        infotext.insert('1.0', msg)
+        infotext.pack()
+
+
+class RightClickCopy:
+    """
+    Right-click copies text from info windows and results cells.
+    """
+    def __init__(self, event):
+        right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
+        right_click_menu.add_command(
+            label='Copy', command=lambda event=event, text='Copy':
+            self.right_click_command(event, 'Copy'))
+
+        right_click_menu.tk_popup(event.x_root + 10, event.y_root + 10)
+
+    @staticmethod
+    def right_click_command(event, cmd):
+        event.widget.event_generate(f'<<{cmd}>>')
 
 
 def quit_gui() -> None:
