@@ -536,22 +536,24 @@ class PassGenerator:
         # Need to filter words and strings containing characters to be excluded.
         unused = self.exclude_entry.get().strip()
         # No need to repopulate lists if unchanged between calls.
+        # TODO: Can these lists be repopulated with a for loop?
+        # all_lists = [self.word_list, self.short_words, self.symbols, self.digi, self.caps, self.all_char, self.some_char]
         if unused != self.prior_unused:
             if len(unused) > 0:
                 self.word_list = [
-                    word for word in self.word_list if unused not in word]
+                    string for string in self.word_list if unused not in string]
                 self.short_words = [
-                    word for word in self.short_words if unused not in word]
+                    string for string in self.short_words if unused not in string]
                 self.symbols = [
-                    char for char in self.symbols if unused not in char]
+                    string for string in self.symbols if unused not in string]
                 self.digi = [
-                    num for num in self.digi if unused not in num]
+                    string for string in self.digi if unused not in string]
                 self.caps = [
-                    letter for letter in self.caps if unused not in letter]
+                    string for string in self.caps if unused not in string]
                 self.all_char = [
-                    char for char in self.all_char if unused not in char]
+                    string for string in self.all_char if unused not in string]
                 self.some_char = [
-                    char for char in self.some_char if unused not in char]
+                    string for string in self.some_char if unused not in string]
 
                 # Display currently excluded characters
                 self.all_unused = self.all_unused + ' ' + unused
