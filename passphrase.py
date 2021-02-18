@@ -876,6 +876,7 @@ class RightClickCopy:
     """
     Right-click copies text from info windows and results cells.
     """
+    # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
         right_click_menu.add_command(
