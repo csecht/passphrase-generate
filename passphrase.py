@@ -171,7 +171,7 @@ class PassGenerator:
         self.shortphrase =  ''
         self.all_unused =   ''
         self.phraseplus =   ''
-        self.shortplus =    ''
+        self.phraseshort = ''
         self.password1 =    ''
         self.password2 =    ''
 
@@ -234,7 +234,7 @@ class PassGenerator:
         help_menu.add_command(label="About", command=self.about)
 
         # Configure and set initial values of user entry and control widgets:
-        self.choose_wordlist.configure(width=22)
+        self.choose_wordlist.configure(width=24)
         self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
         self.wordlists = {
             'System dictionary'         : SYSDICT_PATH,
@@ -496,13 +496,14 @@ class PassGenerator:
 
         # The *_wordlist.txt files have only unique words, but...
         #   use set() and split() here to generalize for any text file.
+        # Need read_text(encoding) for Windows to read all wordlist fonts.
         self.choice = self.choose_wordlist.get()
         self.wordfile = self.wordlists[self.choice]
-        self.passphrase = set(Path(self.wordfile).read_text(encoding='utf8').split())
+        self.passphrase = set(Path(self.wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
-        #   .isalpha() also removes hyphenated words; EFF large wordlist has 4.
+        #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
         self.word_list = [word for word in self.passphrase if word.isalpha()]
         self.short_words = [word for word in self.word_list if 8 >= len(word) >= 3]
 
@@ -581,15 +582,15 @@ class PassGenerator:
 
         # Build final passphrase alternatives.
         self.phraseplus = self.passphrase + addsymbol + addnum + addcaps
-        self.shortplus = self.shortphrase + addsymbol + addnum + addcaps
+        self.phraseshort = self.shortphrase + addsymbol + addnum + addcaps
 
         # Set all pass-strings for display in results frames.
         self.phrase_raw.set(self.passphrase)
         self.pp_raw_length.set(len(self.passphrase))
         self.phrase_plus.set(self.phraseplus)
         self.pp_plus_length.set(len(self.phraseplus))
-        self.phrase_short.set(self.shortplus)
-        self.pp_short_length.set(len(self.shortplus))
+        self.phrase_short.set(self.phraseshort)
+        self.pp_short_length.set(len(self.phraseshort))
         self.pw_any.set(self.password1)
         self.pw_any_length.set(len(self.password1))
         self.pw_some.set(self.password2)
@@ -637,11 +638,11 @@ class PassGenerator:
         """
         # Change font colors of results from the initial self.passstub_fg.
         # pass_fg does not change after first call to set_passstrings().
-        self.pp_raw_show.config(fg=self.pass_fg)
-        self.pp_plus_show.config(fg=self.pass_fg)
+        self.pp_raw_show.config(  fg=self.pass_fg)
+        self.pp_plus_show.config( fg=self.pass_fg)
         self.pp_short_show.config(fg=self.pass_fg)
-        self.pw_any_show.config(      fg=self.pass_fg)
-        self.pw_some_show.config(     fg=self.pass_fg)
+        self.pw_any_show.config(  fg=self.pass_fg)
+        self.pw_some_show.config( fg=self.pass_fg)
 
         # Need to reduce font size of long pass-string length to keep
         #   window on screen, then reset to default font size when pass-string
@@ -654,13 +655,13 @@ class PassGenerator:
             small_font = 'Courier', 12
 
         if len(self.phraseplus) > W:
-            self.pp_raw_show.config(font=small_font,
-                                    width=len(self.phraseplus))
-            self.pp_plus_show.config(font=small_font)
+            self.pp_raw_show.config(  font=small_font,
+                                      width=len(self.phraseplus))
+            self.pp_plus_show.config( font=small_font)
             self.pp_short_show.config(font=small_font)
         elif len(self.phraseplus) <= W:
-            self.pp_raw_show.config(font=self.display_font, width=W)
-            self.pp_plus_show.config(font=self.display_font, width=W)
+            self.pp_raw_show.config(  font=self.display_font, width=W)
+            self.pp_plus_show.config( font=self.display_font, width=W)
             self.pp_short_show.config(font=self.display_font, width=W)
 
         if len(self.password1) > W:
