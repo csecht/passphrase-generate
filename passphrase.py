@@ -113,16 +113,16 @@ class PassGenerator:
         self.generate_btn = ttk.Button()
 
         # Password section ####################################################
-        self.pw_section_head =  tk.Label()
+        self.pw_section_head = tk.Label()
 
         # There are problems of tk.Button text showing up on MacOS, so ttk.
-        self.numchars_label =   tk.Label()
-        self.numchars_entry =   tk.Entry()
+        self.numchars_label =  tk.Label()
+        self.numchars_entry =  tk.Entry()
 
-        self.result_frame2 =    tk.Frame()
+        self.result_frame2 =   tk.Frame()
 
-        self.pw_any_head =  tk.Label()
-        self.pw_some_head = tk.Label()
+        self.pw_any_head =     tk.Label()
+        self.pw_some_head =    tk.Label()
 
         self.pw_any_length =   tk.IntVar()
         self.pw_some_length =  tk.IntVar()
@@ -142,16 +142,16 @@ class PassGenerator:
         self.pw_any_show =     tk.Entry(self.result_frame2,
                                         textvariable=self.pw_any, )
         self.pw_some_show =    tk.Entry(self.result_frame2,
-                                       textvariable=self.pw_some)
+                                        textvariable=self.pw_some)
         # End password section ################################################
 
         self.exclude_head =   tk.Label()
         self.exclude_entry =  tk.Entry()
         self.exclude_info_b = ttk.Button()
         self.reset_button =   ttk.Button()
+        self.excluded_head =  tk.Label()
         self.excluded =       tk.StringVar()
         self.excluded_show =  tk.Label(textvariable=self.excluded)
-        self.excluded_head = tk.Label()
 
         # First used in get_words():
         self.wordfile =    []
@@ -498,7 +498,7 @@ class PassGenerator:
         #   use set() and split() here to generalize for any text file.
         self.choice = self.choose_wordlist.get()
         self.wordfile = self.wordlists[self.choice]
-        self.passphrase =  set(Path(self.wordfile).read_text(encoding='utf8').split())
+        self.passphrase = set(Path(self.wordfile).read_text(encoding='utf8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
@@ -533,7 +533,7 @@ class PassGenerator:
 
         # Need to filter words and strings containing characters to be excluded.
         unused = self.exclude_entry.get().strip()
-        # Don't repopulate lists if unchanged between calls.
+        # No need to repopulate lists if unchanged between calls.
         if unused != self.prior_unused:
             if len(unused) > 0:
                 self.word_list = [
@@ -564,7 +564,7 @@ class PassGenerator:
         if ' ' in unused:
             self.reset_exclusions()
 
-        # Randomly select user-specified number of words or characters.
+        # Randomly select user-specified number of pp words and pw characters.
         self.passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
                                   _ in range(numwords))
         self.shortphrase = "".join(VERY_RANDOM.choice(self.short_words) for
