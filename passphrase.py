@@ -216,7 +216,10 @@ class PassGenerator:
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.set_passstrings())
         self.master.config(bg=master_bg)
-        self.master.bind('<Button-3>', RightClickCopy)
+        if MY_OS == 'dar':
+            self.master.bind('<Button-2>', RightClickCopy)
+        elif MY_OS in 'lin, win':
+            self.master.bind('<Button-3>', RightClickCopy)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -795,7 +798,10 @@ equivalent to bits of entropy. For more information see:
                            relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', info)
         infotext.pack()
-        infotext.bind('<Button-3>', RightClickCopy)
+        if MY_OS == 'dar':
+            infotext.bind('<Button-2>', RightClickCopy)
+        elif MY_OS in 'lin, win':
+            infotext.bind('<Button-3>', RightClickCopy)
 
     @staticmethod
     def about() -> None:
@@ -843,7 +849,10 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack()
-        abouttxt.bind('<Button-3>', RightClickCopy)
+        if MY_OS == 'dar':
+            abouttxt.bind('<Button-2>', RightClickCopy)
+        elif MY_OS in 'lin, win':
+            abouttxt.bind('<Button-3>', RightClickCopy)
 
     @staticmethod
     def exclude_msg() -> None:
@@ -876,7 +885,7 @@ between characters will also trigger a reset.
 
 class RightClickCopy:
     """
-    Right-click copies text from info windows and results cells.
+    Right-click pop-up option to copy selected text.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
@@ -885,7 +894,7 @@ class RightClickCopy:
             label='Copy', command=lambda event=event, text='Copy':
             self.right_click_command(event, 'Copy'))
 
-        right_click_menu.tk_popup(event.x_root + 10, event.y_root + 10)
+        right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
     def right_click_command(event, cmd):
