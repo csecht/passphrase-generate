@@ -154,7 +154,6 @@ class PassGenerator:
         self.excluded_show =  tk.Label(textvariable=self.excluded)
 
         # First used in get_words():
-        self.wordfile =    []
         self.passphrase =  []
         self.word_list =   []
         self.short_words = []
@@ -502,8 +501,8 @@ class PassGenerator:
         #   use set() and split() here to generalize for any text file.
         # Need read_text(encoding) for Windows to read all wordlist fonts.
         self.choice = self.choose_wordlist.get()
-        self.wordfile = self.wordlists[self.choice]
-        self.passphrase = set(Path(self.wordfile).read_text(encoding='utf-8').split())
+        wordfile = self.wordlists[self.choice]
+        self.passphrase = set(Path(wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
@@ -653,7 +652,7 @@ class PassGenerator:
         # Need to reduce font size of long pass-string length to keep
         #   window on screen, then reset to default font size when pass-string
         #   length is shortened.
-        # Adjust width of results display widgets to THE longest result string.
+        # Use phraseplus, the likely longest passstring, to trigger font change.
         # B/c 'width' is character units, not pixels, length may change
         #   as font sizes and string lengths change.
         small_font = 'Courier', 10
