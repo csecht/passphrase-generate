@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.6.1'
+__version__ = '0.6.2'
 
 import glob
 import random
@@ -887,17 +887,29 @@ class RightClickCopy:
     """
     Right-click pop-up option to copy selected text.
     """
+
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
-        right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
-        right_click_menu.add_command(
-            label='Copy', command=lambda event=event, text='Copy':
-            self.right_click_command(event, 'Copy'))
+        self.event = event
+        self.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
+        self.right_click_menu.tk_popup(event.x_root + 10, event.y_root + 10)
+        self.menu_commands()
 
-        right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
+    def menu_commands(self):
+        # for txt in ('Cut', 'Copy', 'Paste'):
+        for txt in ('Copy',):
+            self.right_click_menu.add_command(
+                label=txt,
+                command=lambda event = self.event, text = txt:
+                self.right_click_command(event, text))
 
     @staticmethod
     def right_click_command(event, cmd):
+        """Generate event selected in pop-up menu..
+
+        :param event: Right button mouse click (or Trackpad equivalent).
+        :param cmd: Text editing command selected from menu.
+        """
         event.widget.event_generate(f'<<{cmd}>>')
 
 
