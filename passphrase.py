@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.6.3'
+__version__ = '0.6.4'
 
 import glob
 import random
@@ -273,8 +273,10 @@ class PassGenerator:
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(     label="Help", menu=help_menu)
-        help_menu.add_command(label="What's going on here?", command=self.explain)
-        help_menu.add_command(label="About", command=self.about)
+        help_menu.add_command(label="What's going on here?",
+                              command=lambda: Fyi.explain(self.choice,
+                                                          self.word_list))
+        help_menu.add_command(label="About", command=Fyi.about)
 
     def config_frames(self) -> None:
         """Set up frames used to display results.
@@ -403,7 +405,7 @@ class PassGenerator:
                                       command=self.reset_exclusions)
         self.exclude_info_b.configure(style="G.TButton", text="?",
                                       width=0,
-                                      command=self.exclude_msg)
+                                      command=Fyi.exclude_msg)
 
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
@@ -749,46 +751,6 @@ class PassGenerator:
             self.pw_any_show.config( font=self.display_font, width=W)
             self.pw_some_show.config(font=self.display_font, width=W)
 
-    # def config_nosyswords(self) -> object:
-    #     """
-    #     Warn if the Linux or MacOS system dictionary cannot be found.
-    #
-    #     :return: Pop-up window, updated Combobox, get_words().
-    #     """
-    #     if MY_OS != 'win':
-    #         notice = ('Hmmm. The system dictionary cannot be found.\n'
-    #                   'Using only custom wordlists ...')
-    #         # print(notice)
-    #         messagebox.showinfo(title='File not found', detail=notice)
-    #         # Need to remove 'System dictionary' from available wordlists.
-    #         all_lists = list(self.wordlists.keys())
-    #         all_lists.remove('System dictionary')
-    #         self.choose_wordlist['values'] = all_lists
-    #         self.choose_wordlist.current(0)
-    #
-    #     return self.get_words()
-    #
-    # def config_no_options(self) -> object:
-    #     """
-    #     Warn that optional wordlists cannot be found.
-    #
-    #     :return: Pop-up window, updated Combobox, get_words().
-    #     """
-    #     # This will not be called in the standalone app or executable.
-    #     notice = ('Oops! Optional wordlists are missing.\n'
-    #               'Wordlist files should be in a folder\n'
-    #               ' called "wordfiles" included with'
-    #               ' the repository downloaded from:\n'
-    #               f'{PROJ_URL}\n'
-    #               'Using system dictionary words...\n')
-    #     self.choose_wordlist.config(state='disabled')
-    #     # print(notice)
-    #     messagebox.showinfo(title='File not found', detail=notice)
-    #     self.choose_wordlist['values'] = ('System dictionary',)
-    #     self.choose_wordlist.current(0)
-    #
-    #     return self.get_words()
-
     def reset_exclusions(self) -> object:
         """Restore original word and character lists.
 
@@ -807,9 +769,17 @@ class PassGenerator:
 
         return self.get_words()
 
-    def explain(self) -> None:
+
+class Fyi:
+    """Provide pop-up windows to answer user queries.
+    """
+
+    @staticmethod
+    def explain(selection, wordlist) -> None:
         """Provide information about words used to create passphrases.
 
+        :param selection: User selected wordlist.
+        :param wordlist: Word count (length) of selected wordlist.
         :return: An text window notice with current wordlist data.
         """
 
@@ -826,8 +796,8 @@ default to provide words, though optional wordlists are available.
 Windows users can use only the optional wordlists.
 
 """
-f'There are {len(self.word_list)} words available to construct passphrases'
-f' from the\ncurrently selected wordlist, {self.choice}.\n'
+f'There are {len(wordlist)} words available to construct passphrases'
+f' from the\ncurrently selected wordlist, {selection}.\n'
 """
 There is an option to exclude any character or string of characters 
 from passphrase words and passwords. Words with excluded letters are not 
@@ -926,7 +896,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
     @staticmethod
     def exclude_msg() -> None:
-        """A pop-up explaining how to use excluded characters.
+        """A pop-up describing how to use excluded characters.
         Called only from a Button.
 
         :return: A message text window.
