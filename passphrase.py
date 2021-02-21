@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.6.2'
+__version__ = '0.6.3'
 
 import glob
 import random
@@ -44,10 +44,40 @@ SYMBOLS = "~!@#$%^&*()_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
 SYSDICT_PATH = Path('/usr/share/dict/words')
 WORDDIR = './wordlists/'
+# Note: The optional wordlist files are defined in PassGenerator.check_files()
+
 VERY_RANDOM = random.Random(random.random())
 # VERY_RANDOM = random.Random(time.time())  # Use epoch timestamp seed.
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
 W = 65  # Default width of the results display fields.
+
+
+class RightClickCopy:
+    """
+    Right-click pop-up option to copy selected text.
+    """
+    # Based on: https://stackoverflow.com/questions/57701023/
+    def __init__(self, event):
+        self.event = event
+        self.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
+        self.right_click_menu.tk_popup(event.x_root + 10, event.y_root + 10)
+        self.menu_commands()
+
+    def menu_commands(self):
+        # for txt in ('Cut', 'Copy', 'Paste'):
+        for txt in ('Copy',):
+            self.right_click_menu.add_command(
+                label=txt, command=lambda event=self.event, text=txt:
+                self.right_click_command(event, text))
+
+    @staticmethod
+    def right_click_command(event, cmd):
+        """Generate event selected in pop-up menu.
+
+        :param event: Right button mouse click (or Trackpad equivalent).
+        :param cmd: Text editing command selected from menu.
+        """
+        event.widget.event_generate(f'<<{cmd}>>')
 
 
 class PassGenerator:
@@ -72,7 +102,8 @@ class PassGenerator:
         self.l_and_h_header =  tk.Label()
         self.pp_section_head = tk.Label()
 
-        self.result_frame1 = tk.Frame()
+        self.result_frame1 = tk.Frame(master)
+        self.result_frame2 = tk.Frame(master)
 
         self.pp_raw_head =   tk.Label()
         self.pp_plus_head =  tk.Label()
@@ -119,8 +150,6 @@ class PassGenerator:
         self.numchars_label =  tk.Label()
         self.numchars_entry =  tk.Entry()
 
-        self.result_frame2 =   tk.Frame()
-
         self.pw_any_head =     tk.Label()
         self.pw_some_head =    tk.Label()
 
@@ -153,14 +182,28 @@ class PassGenerator:
         self.excluded =       tk.StringVar()
         self.excluded_show =  tk.Label(textvariable=self.excluded)
 
+        # Colors and fonts used in config_ methods:
+        self.master_bg =     'SkyBlue4'  # also used for some labels.
+        self.pass_fg =       'brown4'  # also used in config_results()
+        # Use Courier b/c TKFixedFont does not monospace symbol characters.
+        self.display_font =  'Courier', 12  # also used in config_results().
+        if MY_OS == 'dar':
+            self.display_font = 'Courier', 14
+        self.master_fg =     'LightCyan2'
+        self.frame_bg =      'grey40'  # Also background for data labels.
+        self.stubresult_fg = 'grey60'  # For initial window, alt for pass_fg.
+        self.pass_bg =       'khaki2'
+
         # First used in get_words():
+        self.wordfile =    []
         self.passphrase =  []
         self.word_list =   []
         self.short_words = []
         self.wordlists =   {}
         self.choice =      ''
 
-        # First used in set_passstrings()
+        # First used in set_pstrings()
+        self.stubresult = ''
         self.symbols =   SYMBOLS
         self.digi =      digits
         self.caps =      ascii_uppercase
@@ -175,50 +218,47 @@ class PassGenerator:
         self.password2 =    ''
 
         # Configure and grid all widgets & check for needed files.
-        self.display_font = ''  # also used in config_results().
-        self.pass_fg = ''  # also used in config_results().
-        self.config_window()
-        self.grid_window()
+        self.config_master()
+        self.config_frames()
+        self.config_buttons()
+        self.config_pp_section()
+        self.config_pw_section()
+        self.config_exclusion()
+        self.grid_all()
         self.check_files()
+        self.get_words()
 
-    def config_window(self) -> None:
-        """Configure all tkinter widgets.
+        self.master.mainloop()
 
-        :return: Easy to understand window labels and data cells.
+    def config_master(self) -> None:
+        """Set up main window geometry, keybindings, menus.
         """
-
+        self.master.title("Passphrase Generator")
         self.master.minsize(850, 420)
         self.master.maxsize(1230, 420)
-
         if MY_OS == 'win':
             self.master.minsize(950, 390)
             self.master.maxsize(1230, 390)
+
+        if MY_OS == 'dar':
+            self.master.bind('<Button-2>', RightClickCopy)
+        elif MY_OS in 'lin, win':
+            self.master.bind('<Button-3>', RightClickCopy)
 
         # Need pass-string fields to stretch with window drag size.
         self.master.columnconfigure(3, weight=1)
         self.result_frame1.columnconfigure(3, weight=1)
         self.result_frame2.columnconfigure(3, weight=1)
 
-        master_bg = 'SkyBlue4'    # also used for some labels.
-        master_fg = 'LightCyan2'
-        frame_bg = 'grey40'       # background for data labels and frame
-        stubresult_fg = 'grey60'  # used only for initial window
-        pass_bg = 'khaki2'
-        self.pass_fg = 'brown4'   # also used in config_results()
-        # Use Courier b/c TKFixedFont does not monospace symbol characters.
-        self.display_font = 'Courier', 12  # also used in config_results().
-        if MY_OS == 'dar':
-            self.display_font = 'Courier', 14
-
         # Widget configurations are generally listed top to bottom of window.
         self.master.bind("<Escape>", lambda q: quit_gui())
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.set_passstrings())
-        self.master.config(bg=master_bg)
-        if MY_OS == 'dar':
-            self.master.bind('<Button-2>', RightClickCopy)
-        elif MY_OS in 'lin, win':
-            self.master.bind('<Button-3>', RightClickCopy)
+        self.master.config(bg=self.master_bg)
+        # if MY_OS == 'dar':
+        #     self.master.bind('<Button-2>', RightClickCopy)
+        # elif MY_OS in 'lin, win':
+        #     self.master.bind('<Button-3>', RightClickCopy)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -228,154 +268,145 @@ class PassGenerator:
         menu.add_cascade(label="File", menu=file)
         file.add_command(label="Generate", command=self.set_passstrings,
                          accelerator="Ctrl+G")
-        file.add_command(label="Quit", command=quit_gui, accelerator="Ctrl+Q")
+        file.add_command(label="Quit", command=quit_gui,
+                         accelerator="Ctrl+Q")
 
         help_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="What's going on here?",
-                              command=self.explain)
+        menu.add_cascade(     label="Help", menu=help_menu)
+        help_menu.add_command(label="What's going on here?", command=self.explain)
         help_menu.add_command(label="About", command=self.about)
+
+    def config_frames(self) -> None:
+        """Set up frames used to display results.
+        """
+        self.result_frame1.config(borderwidth=3, relief='sunken',
+                                  background=self.frame_bg)
+        self.result_frame2.config(borderwidth=3, relief='sunken',
+                                  background=self.frame_bg)
+
+    def config_pp_section(self) -> None:
+        """
+        Set up wordlist choices, row headers, and default entry values
+        for passphrases.
+        """
 
         # Configure and set initial values of user entry and control widgets:
         self.choose_wordlist.configure(width=24)
         self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
-        self.wordlists = {
-            'System dictionary'         : SYSDICT_PATH,
-            'EFF long wordlist'         : WORDDIR + 'eff_large_wordlist.txt',
-            'US Constitution'           : WORDDIR + 'usconst_wordlist.txt',
-            'Don Quijote'               : WORDDIR + 'don_quijote_wordlist.txt',
-            'Frankenstein'              : WORDDIR + 'frankenstein_wordlist.txt',
-            '此開卷第 Story of the Stone' : WORDDIR + 'red_chamber_wordlist.txt'
-            }
-        all_lists = list(self.wordlists.keys())
-        if MY_OS in 'lin, dar':
-            self.choose_wordlist['values'] = all_lists
-        # Need to remove 'System dictionary' from Windows usage.
-        # Remove 'System dictionary' also used in config_nosyswords().
-        elif MY_OS == 'win':
-            all_lists.remove('System dictionary')
-            self.choose_wordlist['values'] = all_lists
-        # Need to default to the 1st (remaining) wordlist.
-        self.choose_wordlist.current(0)
 
-        # Passphrase section ##################################################
-        # Statements generally grouped by row number.
         self.pp_section_head.config(text='Passphrase wordlists',
-                                    font=('default', 12),
-                                    fg=pass_bg, bg=master_bg)
+                                    font=('default', 12), fg=self.pass_bg,
+                                    bg=self.master_bg)
         # MacOS needs a larger font
         if MY_OS == 'dar':
             self.pp_section_head.config(font=('default', 16))
 
         # This header spans two columns, but much easier to align with grid
         #  in the results frame if "pad" it across columns with spaces.
-        self.l_and_h_header.config(text=' L      H', width=10,
-                                   fg=master_fg, bg=master_bg)
+        self.l_and_h_header.config(text=' L      H', width=10, fg=self.master_fg,
+                                   bg=self.master_bg)
 
-        self.result_frame1.config(borderwidth=3, relief='sunken',
-                                  background=frame_bg)
-
-        self.numwords_label.config(text='# words', fg=pass_bg, bg=master_bg)
+        self.numwords_label.config(text='# words', fg=self.pass_bg, bg=self.master_bg)
         self.numwords_entry.config(width=2)
         self.numwords_entry.insert(0, '5')
 
-        stubresult = 'Result can be copied and pasted from keyboard.'
+        self.stubresult = 'Result can be copied and pasted from keyboard.'
 
-        self.pp_raw_head.config(text="Any words",
-                                fg=master_fg, bg=master_bg)
+        self.pp_raw_head.config(text="Any words", fg=self.master_fg, bg=self.master_bg)
         self.pp_raw_length.set(0)
         self.pp_raw_len_lbl.config(width=3)
         self.pp_raw_h.set(0)
         self.pp_raw_h_lbl.config(width=3)
-        self.phrase_raw.set(stubresult)
+        self.phrase_raw.set(self.stubresult)
         self.pp_raw_show.config(width=W, font=self.display_font,
-                                fg=stubresult_fg, bg=pass_bg)
+                                fg=self.stubresult_fg, bg=self.pass_bg)
 
-        self.pp_plus_head.config(text="... plus 3 characters",
-                                 fg=master_fg, bg=master_bg)
+        self.pp_plus_head.config(text="... plus 3 characters", fg=self.master_fg,
+                                 bg=self.master_bg)
         self.pp_plus_length.set(0)
         self.pp_plus_len_lbl.config(width=3)
         self.pp_plus_h.set(0)
         self.pp_plus_h_lbl.config(width=3)
-        self.phrase_plus.set(stubresult)
+        self.phrase_plus.set(self.stubresult)
         self.pp_plus_show.config(width=W, font=self.display_font,
-                                 fg=stubresult_fg, bg=pass_bg)
+                                 fg=self.stubresult_fg, bg=self.pass_bg)
 
         self.pp_short_head.config(text="...with words of 3 to 8 letters",
-                                  fg=master_fg, bg=master_bg)
+                                  fg=self.master_fg, bg=self.master_bg)
         self.pp_short_length.set(0)
         self.pp_short_len_lbl.config(width=3)
         self.pp_short_h.set(0)
         self.pp_short_h_lbl.config(width=3)
-        self.phrase_short.set(stubresult)
+        self.phrase_short.set(self.stubresult)
         self.pp_short_show.config(width=W, font=self.display_font,
-                                  fg=stubresult_fg, bg=pass_bg)
-        # End passphrase section ##############################################
+                                  fg=self.stubresult_fg, bg=self.pass_bg)
 
+    def config_pw_section(self) -> None:
+        """
+        Set up row headers and default entry values for passwords.
+        """
+        self.pw_section_head.config(text='Passwords', font=('default', 12),
+                                    fg=self.pass_bg, bg=self.master_bg)
+        if MY_OS == 'dar':
+            self.pw_section_head.config(font=('default', 16))
+
+        self.numchars_label.config(text='# characters', fg=self.pass_bg,
+                                   bg=self.master_bg)
+        self.numchars_entry.config(width=3)
+        self.numchars_entry.insert(0, 0)
+
+        self.pw_any_head.config(text="Any characters", fg=self.master_fg,
+                                bg=self.master_bg)
+        self.pw_any_length.set(0)
+        self.pw_any_len_lbl.config(width=3)
+        self.pw_any_h.set(0)
+        self.pw_any_h_lbl.config(width=3)
+        self.pw_any.set(self.stubresult)
+        self.pw_any_show.config(width=W, font=self.display_font,
+                                fg=self.stubresult_fg, bg=self.pass_bg)
+
+        self.pw_some_head.config(text="More likely usable characters",
+                                 fg=self.master_fg, bg=self.master_bg)
+        self.pw_some_length.set(0)
+        self.pw_some_len_lbl.config(width=3)
+        self.pw_some_h.set(0)
+        self.pw_some_h_lbl.config(width=3)
+        self.pw_some.set(self.stubresult)
+        self.pw_some_show.config(width=W, font=self.display_font,
+                                 fg=self.stubresult_fg, bg=self.pass_bg)
+
+    def config_exclusion(self) -> None:
+        """Set up row headers and entry widgets for character exclusion.
+        """
+        self.exclude_head.config( text='Exclude character(s)',
+                                  fg=self.pass_bg, bg=self.master_bg)
+        self.exclude_entry.config(width=2)
+        self.excluded_show.config(fg='orange', bg=self.master_bg)
+        self.excluded_head.config(text='Currently excluded:',
+                                  fg=self.master_fg, bg=self.master_bg)
+
+    def config_buttons(self) -> None:
+        """Set up all buttons used in master window.
+        """
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
         style = ttk.Style()
         style.map("G.TButton",
                   foreground=[('active', self.pass_fg)],
-                  background=[('pressed', frame_bg),
-                              ('active', pass_bg)])
-        self.generate_btn.configure(style="G.TButton", text='Generate!',
-                                    command=self.set_passstrings)
+                  background=[('pressed', self.frame_bg),
+                              ('active', self.pass_bg)])
+        self.generate_btn.configure(  style="G.TButton", text='Generate!',
+                                      command=self.set_passstrings)
         self.generate_btn.focus()
-
-        self.result_frame2.config(borderwidth=3, relief='sunken',
-                                  background=frame_bg)
-
-        # Password section ####################################################
-        # Statements generally grouped by row number.
-        self.pw_section_head.config(text='Passwords', font=('default', 12),
-                                    fg=pass_bg, bg=master_bg)
-        if MY_OS == 'dar':
-            self.pw_section_head.config(font=('default', 16))
-
-        self.numchars_label.config(text='# characters',
-                                   fg=pass_bg, bg=master_bg)
-        self.numchars_entry.config(width=3)
-        self.numchars_entry.insert(0, 0)
-
-        self.pw_any_head.config(text="Any characters",
-                                fg=master_fg, bg=master_bg)
-        self.pw_any_length.set(0)
-        self.pw_any_len_lbl.config(width=3)
-        self.pw_any_h.set(0)
-        self.pw_any_h_lbl.config(width=3)
-        self.pw_any.set(stubresult)
-        self.pw_any_show.config(width=W, font=self.display_font,
-                                fg=stubresult_fg, bg=pass_bg)
-
-        self.pw_some_head.config(text="More likely usable characters",
-                                 fg=master_fg, bg=master_bg)
-        self.pw_some_length.set(0)
-        self.pw_some_len_lbl.config(width=3)
-        self.pw_some_h.set(0)
-        self.pw_some_h_lbl.config(width=3)
-        self.pw_some.set(stubresult)
-        self.pw_some_show.config(width=W, font=self.display_font,
-                                 fg=stubresult_fg, bg=pass_bg)
-
-        # Excluded character section ##########################################
-        self.exclude_head.config(text='Exclude character(s)',
-                                 fg=pass_bg, bg=master_bg)
-        self.exclude_entry.config(width=2)
-        self.reset_button.configure(style="G.TButton", text='Reset',
-                                    width=0,
-                                    command=self.reset_exclusions)
-        self.excluded_show.config(fg='orange', bg=master_bg)
+        self.reset_button.configure(  style="G.TButton", text='Reset',
+                                      width=0,
+                                      command=self.reset_exclusions)
         self.exclude_info_b.configure(style="G.TButton", text="?",
                                       width=0,
                                       command=self.exclude_msg)
-        self.excluded_head.config(text='Currently excluded:',
-                                  fg=master_fg, bg=master_bg)
 
-    def grid_window(self) -> None:
+    def grid_all(self) -> None:
         """Grid all tkinter widgets.
-
-        :return: A nice looking interactive window.
         """
         ############## sorted by row number #################
         # Passphrase widgets ##################################################
@@ -461,38 +492,75 @@ class PassGenerator:
     def check_files(self) -> object:
         """Confirm whether required files are present, exit if not.
 
-        :return: quit_gui() or self.get_words()
+        :return: quit_gui() or get_words().
         """
-        fnf_msg = (
-            '\nHmmm. Cannot locate system dictionary\n'
-            ' words nor any custom wordlist files\n'
-            ' (*_wordlist.txt). Wordlist files should be\n'
-            ' in a folder called "wordfiles" included\n'
-            ' with the repository downloaded from:\n'
-            f'{PROJ_URL}\nWill exit program now...')
+
+        self.wordlists = {
+            'System dictionary'         : SYSDICT_PATH,
+            'EFF long wordlist'         : WORDDIR + 'eff_large_wordlist.txt',
+            'US Constitution'           : WORDDIR + 'usconst_wordlist.txt',
+            'Don Quijote'               : WORDDIR + 'don_quijote_wordlist.txt',
+            'Frankenstein'              : WORDDIR + 'frankenstein_wordlist.txt',
+            '此開卷第 Story of the Stone' : WORDDIR + 'red_chamber_wordlist.txt'
+            }
+        all_lists = list(self.wordlists.keys())
+        if MY_OS in 'lin, dar':
+            self.choose_wordlist['values'] = all_lists
+        # Need to remove 'System dictionary' from Windows usage.
+        # 'System dictionary' also removed in missing_syswords().
+        elif MY_OS == 'win':
+            all_lists.remove('System dictionary')
+            self.choose_wordlist['values'] = all_lists
+        # Default is the 1st wordlist in dictionary.
+        self.choose_wordlist.current(0)
+
+        fnf_msg = ('\nHmmm. Cannot locate system dictionary\n'
+                   ' words nor any custom wordlist files\n'
+                   ' (*_wordlist.txt). Wordlist files should be\n'
+                   ' in a folder called "wordfiles" included\n'
+                   ' with the repository downloaded from:\n'
+                   f'{PROJ_URL}\nWill exit program now...')
 
         wordfiles = glob.glob(WORDDIR + '*_wordlist.txt')
         # This covers OS with and w/o system dictionary.
         if Path.is_file(SYSDICT_PATH) is False:
             if len(wordfiles) == 0:
                 print(fnf_msg)
-                messagebox.showinfo(title='Files not found',
-                                    detail=fnf_msg)
+                messagebox.showinfo(title='Files not found', detail=fnf_msg)
                 return quit_gui()
-            if len(wordfiles) > 0:
-                return self.config_nosyswords()
-        elif Path.is_file(SYSDICT_PATH) is True:
-            if len(wordfiles) == 0:
-                return self.config_no_options()
 
-        # Necessary files are present, so proceed...
-        return self.get_words()
+            if len(wordfiles) > 0 and MY_OS != 'win':
+                notice = ('Hmmm. The system dictionary cannot be found.\n'
+                          'Using only custom wordlists ...')
+                # print(notice)
+                messagebox.showinfo(title='File not found', detail=notice)
+                # Need to remove 'System dictionary' from available
+                # wordlists.
+                all_lists = list(self.wordlists.keys())
+                all_lists.remove('System dictionary')
+                self.choose_wordlist['values'] = all_lists
+                self.choose_wordlist.current(0)
+                return self.get_words()
 
-    def get_words(self, event = None) -> None:
+        elif Path.is_file(SYSDICT_PATH) is True and len(wordfiles) == 0:
+            notice = ('Oops! Optional wordlists are missing.\n'
+                      'Wordlist files should be in a folder\n'
+                      ' called "wordfiles" included with'
+                      ' the repository downloaded from:\n'
+                      f'{PROJ_URL}\n'
+                      'Using system dictionary words...\n')
+            self.choose_wordlist.config(state='disabled')
+            # print(notice)
+            messagebox.showinfo(title='File not found', detail=notice)
+            self.choose_wordlist['values'] = ('System dictionary',)
+            self.choose_wordlist.current(0)
+            return self.get_words()
+
+    def get_words(self, event = None) -> list:
         """
-        Populate lists with words to randomize in set_passstrings().
+        Populate lists with words to randomize in set_pstrings().
 
-        :param: optional event is a call from <<ComboboxSelected>>.
+        :param event: optional event is a call from ComboboxSelected.
 
         :return: New lists of words from the selected wordlist file.
         """
@@ -501,14 +569,15 @@ class PassGenerator:
         #   use set() and split() here to generalize for any text file.
         # Need read_text(encoding) for Windows to read all wordlist fonts.
         self.choice = self.choose_wordlist.get()
-        wordfile = self.wordlists[self.choice]
-        self.passphrase = set(Path(wordfile).read_text(encoding='utf-8').split())
+        self.wordfile = self.wordlists[self.choice]
+        allwords = set(Path(self.wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
-        self.word_list = [word for word in self.passphrase if word.isalpha()]
-        self.short_words = [word for word in self.word_list if 8 >= len(word) >= 3]
+        self.word_list = [word for word in allwords if word.isalpha()]
+        # self.short_words = [word for word in self.word_list if 8 >= len(word) >= 3]
+        return self.word_list
 
     def set_passstrings(self) -> object:
         """
@@ -518,6 +587,7 @@ class PassGenerator:
         :return: set_entropy() and config_results().
         """
 
+        self.short_words = [word for word in self.get_words() if 8 >= len(word) >= 3]
         # Need to correct invalid user entries for number of words & characters.
         numwords = str(self.numwords_entry.get()).strip()
         if numwords == '':
@@ -539,7 +609,8 @@ class PassGenerator:
         unused = self.exclude_entry.get().strip()
         # No need to repopulate lists if unchanged between calls.
         # TODO: Can these lists be repopulated with a for loop?
-        # all_lists = [self.word_list, self.short_words, self.symbols, self.digi, self.caps, self.all_char, self.some_char]
+        # all_lists = [self.word_list, self.short_words, self.symbols, self.digi,
+        # self.caps, self.all_char, self.some_char]
         if unused != self.prior_unused:
             if len(unused) > 0:
                 self.word_list = [
@@ -610,7 +681,7 @@ class PassGenerator:
         :param numwords: User-defined number of passphrase words.
         :param numchars: User-defined number of password characters.
 
-        :return: pass-through from set_passstrings() to config_results().
+        :return: pass-through from set_pstrings() to config_results().
         """
         # https://en.wikipedia.org/wiki/Password_strength
         # For +3 characters, we use only 1 character each from each set of
@@ -627,7 +698,7 @@ class PassGenerator:
         #   number of possible characters or words and L is the number of characters
         #   or words in the pass-string. Log can be any base, but needs to be
         #   the same base in numerator and denominator.
-        # Note that N is corrected for any excluded words from set_passstrings().
+        # Note that N is corrected for any excluded words from set_pstrings().
         self.pp_raw_h.set(int(numwords * log(len(self.word_list)) / log(2)))
         self.pp_plus_h.set(self.pp_raw_h.get() + h_add3)
         h_some = int(numwords * log(len(self.short_words)) / log(2))
@@ -642,7 +713,7 @@ class PassGenerator:
         :return: A more readable display of results.
         """
         # Change font colors of results from the initial self.passstub_fg.
-        # pass_fg does not change after first call to set_passstrings().
+        # pass_fg does not change after first call to set_pstrings().
         self.pp_raw_show.config(  fg=self.pass_fg)
         self.pp_plus_show.config( fg=self.pass_fg)
         self.pp_short_show.config(fg=self.pass_fg)
@@ -678,45 +749,45 @@ class PassGenerator:
             self.pw_any_show.config( font=self.display_font, width=W)
             self.pw_some_show.config(font=self.display_font, width=W)
 
-    def config_nosyswords(self) -> object:
-        """
-        Warn if the Linux or MacOS system dictionary cannot be found.
-
-        :return: Pop-up window, updated Combobox, get_words().
-        """
-        if MY_OS != 'win':
-            notice = ('Hmmm. The system dictionary cannot be found.\n'
-                      'Using only custom wordlists ...')
-            # print(notice)
-            messagebox.showinfo(title='File not found', detail=notice)
-            # Need to remove 'System dictionary' from available wordlists.
-            all_lists = list(self.wordlists.keys())
-            all_lists.remove('System dictionary')
-            self.choose_wordlist['values'] = all_lists
-            self.choose_wordlist.current(0)
-
-        return self.get_words()
-
-    def config_no_options(self) -> object:
-        """
-        Warn that optional wordlists cannot be found.
-
-        :return: Pop-up window, updated Combobox, get_words().
-        """
-        # This will not be called in the standalone app or executable.
-        notice = ('Oops! Optional wordlists are missing.\n'
-                  'Wordlist files should be in a folder\n'
-                  ' called "wordfiles" included with'
-                  ' the repository downloaded from:\n'
-                  f'{PROJ_URL}\n'
-                  'Using system dictionary words...\n')
-        self.choose_wordlist.config(state='disabled')
-        # print(notice)
-        messagebox.showinfo(title='File not found', detail=notice)
-        self.choose_wordlist['values'] = ('System dictionary',)
-        self.choose_wordlist.current(0)
-
-        return self.get_words()
+    # def config_nosyswords(self) -> object:
+    #     """
+    #     Warn if the Linux or MacOS system dictionary cannot be found.
+    #
+    #     :return: Pop-up window, updated Combobox, get_words().
+    #     """
+    #     if MY_OS != 'win':
+    #         notice = ('Hmmm. The system dictionary cannot be found.\n'
+    #                   'Using only custom wordlists ...')
+    #         # print(notice)
+    #         messagebox.showinfo(title='File not found', detail=notice)
+    #         # Need to remove 'System dictionary' from available wordlists.
+    #         all_lists = list(self.wordlists.keys())
+    #         all_lists.remove('System dictionary')
+    #         self.choose_wordlist['values'] = all_lists
+    #         self.choose_wordlist.current(0)
+    #
+    #     return self.get_words()
+    #
+    # def config_no_options(self) -> object:
+    #     """
+    #     Warn that optional wordlists cannot be found.
+    #
+    #     :return: Pop-up window, updated Combobox, get_words().
+    #     """
+    #     # This will not be called in the standalone app or executable.
+    #     notice = ('Oops! Optional wordlists are missing.\n'
+    #               'Wordlist files should be in a folder\n'
+    #               ' called "wordfiles" included with'
+    #               ' the repository downloaded from:\n'
+    #               f'{PROJ_URL}\n'
+    #               'Using system dictionary words...\n')
+    #     self.choose_wordlist.config(state='disabled')
+    #     # print(notice)
+    #     messagebox.showinfo(title='File not found', detail=notice)
+    #     self.choose_wordlist['values'] = ('System dictionary',)
+    #     self.choose_wordlist.current(0)
+    #
+    #     return self.get_words()
 
     def reset_exclusions(self) -> object:
         """Restore original word and character lists.
@@ -882,46 +953,13 @@ between characters will also trigger a reset.
         infotext.pack()
 
 
-class RightClickCopy:
-    """
-    Right-click pop-up option to copy selected text.
-    """
-
-    # Based on: https://stackoverflow.com/questions/57701023/
-    def __init__(self, event):
-        self.event = event
-        self.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
-        self.right_click_menu.tk_popup(event.x_root + 10, event.y_root + 10)
-        self.menu_commands()
-
-    def menu_commands(self):
-        # for txt in ('Cut', 'Copy', 'Paste'):
-        for txt in ('Copy',):
-            self.right_click_menu.add_command(
-                label=txt,
-                command=lambda event = self.event, text = txt:
-                self.right_click_command(event, text))
-
-    @staticmethod
-    def right_click_command(event, cmd):
-        """Generate event selected in pop-up menu..
-
-        :param event: Right button mouse click (or Trackpad equivalent).
-        :param cmd: Text editing command selected from menu.
-        """
-        event.widget.event_generate(f'<<{cmd}>>')
-
-
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
     print('\n  *** User has quit the program. Exiting...\n')
-    root.destroy()
+    tk.Tk().destroy()
     sys.exit(0)
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Passphrase Generator")
-    PassGenerator(root)
-    root.mainloop()
+    PassGenerator(tk.Tk())
