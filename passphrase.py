@@ -196,11 +196,9 @@ class PassGenerator:
 
         # First used in get_words():
         self.wordfile =    []
-        self.passphrase =  []
         self.word_list =   []
         self.short_words = []
         self.wordlists =   {}
-        self.choice =      ''
 
         # First used in set_pstrings()
         self.stubresult = ''
@@ -210,12 +208,9 @@ class PassGenerator:
         self.all_char =  ascii_letters + digits + punctuation
         self.some_char = ascii_letters + digits + self.symbols
         self.prior_unused = ''
-        self.shortphrase =  ''
         self.all_unused =   ''
         self.phraseplus =   ''
-        self.phraseshort = ''
         self.password1 =    ''
-        self.password2 =    ''
 
         # Configure and grid all widgets & check for needed files.
         self.config_master()
@@ -644,14 +639,14 @@ class PassGenerator:
             self.reset_exclusions()
 
         # Randomly select user-specified number of pp words and pw characters.
-        self.passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
-                                  _ in range(numwords))
-        self.shortphrase = "".join(VERY_RANDOM.choice(self.short_words) for
-                                   _ in range(numwords))
+        passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
+                             _ in range(numwords))
+        shortphrase = "".join(VERY_RANDOM.choice(self.short_words) for
+                              _ in range(numwords))
         self.password1 = "".join(VERY_RANDOM.choice(self.all_char) for
                                  _ in range(numchars))
-        self.password2 = "".join(VERY_RANDOM.choice(self.some_char) for
-                                 _ in range(numchars))
+        password2 = "".join(VERY_RANDOM.choice(self.some_char) for
+                            _ in range(numchars))
 
         # Randomly select symbols to append; number is not user-specified.
         addsymbol = "".join(VERY_RANDOM.choice(self.symbols) for _ in range(1))
@@ -659,20 +654,20 @@ class PassGenerator:
         addcaps = "".join(VERY_RANDOM.choice(self.caps) for _ in range(1))
 
         # Build final passphrase alternatives.
-        self.phraseplus = self.passphrase + addsymbol + addnum + addcaps
-        self.phraseshort = self.shortphrase + addsymbol + addnum + addcaps
+        self.phraseplus = passphrase + addsymbol + addnum + addcaps
+        phraseshort = shortphrase + addsymbol + addnum + addcaps
 
         # Set all pass-strings for display in results frames.
-        self.phrase_raw.set(self.passphrase)
-        self.pp_raw_length.set(len(self.passphrase))
+        self.phrase_raw.set(passphrase)
+        self.pp_raw_length.set(len(passphrase))
         self.phrase_plus.set(self.phraseplus)
         self.pp_plus_length.set(len(self.phraseplus))
-        self.phrase_short.set(self.phraseshort)
-        self.pp_short_length.set(len(self.phraseshort))
+        self.phrase_short.set(phraseshort)
+        self.pp_short_length.set(len(phraseshort))
         self.pw_any.set(self.password1)
         self.pw_any_length.set(len(self.password1))
-        self.pw_some.set(self.password2)
-        self.pw_some_length.set(len(self.password2))
+        self.pw_some.set(password2)
+        self.pw_some_length.set(len(password2))
 
         # Finally, set H values for each pass-string and configure results.
         return self.set_entropy(numwords, numchars),  self.config_results()
@@ -731,24 +726,24 @@ class PassGenerator:
         small_font = 'Courier', 10
         if MY_OS == 'dar':
             small_font = 'Courier', 12
-
-        if len(self.phraseplus) > W:
-            self.pp_raw_show.config(  font=small_font,
-                                      width=len(self.phraseplus))
-            self.pp_plus_show.config( font=small_font)
+        if self.pp_raw_length.get() > W:
+            self.pp_raw_show.config(font=small_font,
+                                    width=self.pp_raw_length.get())
+            self.pp_plus_show.config(font=small_font)
             self.pp_short_show.config(font=small_font)
-        elif len(self.phraseplus) <= W:
-            self.pp_raw_show.config(  font=self.display_font, width=W)
-            self.pp_plus_show.config( font=self.display_font, width=W)
+
+        elif self.pp_raw_length.get() <= W:
+            self.pp_raw_show.config(font=self.display_font, width=W)
+            self.pp_plus_show.config(font=self.display_font, width=W)
             self.pp_short_show.config(font=self.display_font, width=W)
 
-        if len(self.password1) > W:
-            self.pw_any_show.config( font=small_font,
-                                     width=len(self.password1))
-            self.pw_some_show.config(font=small_font,
-                                     width=len(self.password2))
-        elif len(self.password1) <= W:
-            self.pw_any_show.config( font=self.display_font, width=W)
+        if self.pw_any_length.get() > W:
+            self.pw_any_show.config(font=small_font,
+                                    width=self.pw_any_length.get())
+            self.pw_some_show.config(font=small_font)
+
+        elif self.pw_any_length.get() <= W:
+            self.pw_any_show.config(font=self.display_font, width=W)
             self.pw_some_show.config(font=self.display_font, width=W)
 
     def reset_exclusions(self) -> object:
