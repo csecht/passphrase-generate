@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.6.4'
+__version__ = '0.6.5'
 
 import glob
 import random
@@ -102,8 +102,8 @@ class PassGenerator:
         self.l_and_h_header =  tk.Label()
         self.pp_section_head = tk.Label()
 
-        self.result_frame1 = tk.Frame(master)
-        self.result_frame2 = tk.Frame(master)
+        self.result_frame1 = tk.Frame()
+        self.result_frame2 = tk.Frame()
 
         self.pp_raw_head =   tk.Label()
         self.pp_plus_head =  tk.Label()
@@ -486,7 +486,7 @@ class PassGenerator:
         self.excluded_head.grid(column=0, row=10, sticky=tk.E)
         self.excluded_show.grid(column=1, row=10, sticky=tk.W)
 
-    def check_files(self) -> object:
+    def check_files(self) -> None:
         """Confirm whether required files are present, exit if not.
 
         :return: quit_gui() or get_words().
@@ -524,7 +524,7 @@ class PassGenerator:
             if len(wordfiles) == 0:
                 print(fnf_msg)
                 messagebox.showinfo(title='Files not found', detail=fnf_msg)
-                return quit_gui()
+                quit_gui()
 
             if len(wordfiles) > 0 and MY_OS != 'win':
                 notice = ('Hmmm. The system dictionary cannot be found.\n'
@@ -537,7 +537,7 @@ class PassGenerator:
                 all_lists.remove('System dictionary')
                 self.choose_wordlist['values'] = all_lists
                 self.choose_wordlist.current(0)
-                return self.get_words()
+                self.get_words()
 
         elif Path.is_file(SYSDICT_PATH) is True and len(wordfiles) == 0:
             notice = ('Oops! Optional wordlists are missing.\n'
@@ -551,9 +551,9 @@ class PassGenerator:
             messagebox.showinfo(title='File not found', detail=notice)
             self.choose_wordlist['values'] = ('System dictionary',)
             self.choose_wordlist.current(0)
-            return self.get_words()
+            self.get_words()
 
-    def get_words(self, event = None) -> list:
+    def get_words(self, event = None) -> None:
         """
         Populate lists with words to randomize in set_pstrings().
 
@@ -573,10 +573,9 @@ class PassGenerator:
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
         self.word_list = [word for word in allwords if word.isalpha()]
-        # self.short_words = [word for word in self.word_list if 8 >= len(word) >= 3]
-        return self.word_list
+        self.short_words = [word for word in self.word_list if 8 >= len(word) >= 3]
 
-    def set_passstrings(self) -> object:
+    def set_passstrings(self) -> None:
         """
         Generate and set random pass-strings.
         Called from keybinding, menu, or button.
@@ -584,9 +583,9 @@ class PassGenerator:
         :return: set_entropy() and config_results().
         """
 
-        self.short_words = [word for word in self.get_words() if 8 >= len(word) >= 3]
         # Need to correct invalid user entries for number of words & characters.
-        numwords = str(self.numwords_entry.get()).strip()
+        numwords = self.numwords_entry.get().strip()
+
         if numwords == '':
             self.numwords_entry.insert(0, '0')
         elif numwords.isdigit() is False:
@@ -594,7 +593,7 @@ class PassGenerator:
             self.numwords_entry.insert(0, '0')
         numwords = int(self.numwords_entry.get())
 
-        numchars = str(self.numchars_entry.get()).strip()
+        numchars = self.numchars_entry.get().strip()
         if numchars == '':
             self.numchars_entry.insert(0, '0')
         if numchars.isdigit() is False:
@@ -670,7 +669,8 @@ class PassGenerator:
         self.pw_some_length.set(len(password2))
 
         # Finally, set H values for each pass-string and configure results.
-        return self.set_entropy(numwords, numchars),  self.config_results()
+        self.set_entropy(numwords, numchars)
+        self.config_results()
 
     def set_entropy(self, numwords: int, numchars: int) -> None:
         """Calculate and set values for information entropy, H.
@@ -687,8 +687,8 @@ class PassGenerator:
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
         # Note that length of these string may reflect excluded characters.
         h_symbol =  -log(1 / len(self.symbols), 2)
-        h_digit = -log(1/len(self.digi), 2)
-        h_cap = -log(1/len(self.caps), 2)
+        h_digit = -log(1 / len(self.digi), 2)
+        h_cap = -log(1 / len(self.caps), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 11
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
@@ -696,6 +696,7 @@ class PassGenerator:
         #   or words in the pass-string. Log can be any base, but needs to be
         #   the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_pstrings().
+        # Need to display H as integer, not float.
         self.pp_raw_h.set(int(numwords * log(len(self.word_list)) / log(2)))
         self.pp_plus_h.set(self.pp_raw_h.get() + h_add3)
         h_some = int(numwords * log(len(self.short_words)) / log(2))
@@ -746,7 +747,7 @@ class PassGenerator:
             self.pw_any_show.config(font=self.display_font, width=W)
             self.pw_some_show.config(font=self.display_font, width=W)
 
-    def reset_exclusions(self) -> object:
+    def reset_exclusions(self) -> None:
         """Restore original word and character lists.
 
         :return: get_words() method with default values.
@@ -762,7 +763,7 @@ class PassGenerator:
         self.all_char = ascii_letters + digits + punctuation
         self.some_char = ascii_letters + digits + SYMBOLS
 
-        return self.get_words()
+        self.get_words()
 
 
 class Fyi:
