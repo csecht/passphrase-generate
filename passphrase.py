@@ -42,7 +42,7 @@ MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 SYMBOLS = "~!@#$%^&*()_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
-SYSDICT_PATH = Path('/usr/share/dict/wordsXXX')
+SYSDICT_PATH = Path('/usr/share/dict/words')
 WORDDIR = './wordlists/'
 # Note: The optional wordlist files are defined in PassGenerator.check_files()
 
@@ -357,8 +357,6 @@ class PassGenerator:
         self.some_char = ascii_letters + digits + self.symbols
         self.prior_unused = ''
         self.all_unused =   ''
-        self.phraseplus =   ''
-        self.password1 =    ''
 
         # Configure and grid all widgets & check for needed files.
         self.config_master()
@@ -790,7 +788,7 @@ class PassGenerator:
                              _ in range(numwords))
         shortphrase = "".join(VERY_RANDOM.choice(self.short_words) for
                               _ in range(numwords))
-        self.password1 = "".join(VERY_RANDOM.choice(self.all_char) for
+        password1 = "".join(VERY_RANDOM.choice(self.all_char) for
                                  _ in range(numchars))
         password2 = "".join(VERY_RANDOM.choice(self.some_char) for
                             _ in range(numchars))
@@ -801,18 +799,18 @@ class PassGenerator:
         addcaps = "".join(VERY_RANDOM.choice(self.caps) for _ in range(1))
 
         # Build final passphrase alternatives.
-        self.phraseplus = passphrase + addsymbol + addnum + addcaps
+        phraseplus = passphrase + addsymbol + addnum + addcaps
         phraseshort = shortphrase + addsymbol + addnum + addcaps
 
         # Set all pass-strings for display in results frames.
         self.phrase_raw.set(passphrase)
         self.pp_raw_length.set(len(passphrase))
-        self.phrase_plus.set(self.phraseplus)
-        self.pp_plus_length.set(len(self.phraseplus))
+        self.phrase_plus.set(phraseplus)
+        self.pp_plus_length.set(len(phraseplus))
         self.phrase_short.set(phraseshort)
         self.pp_short_length.set(len(phraseshort))
-        self.pw_any.set(self.password1)
-        self.pw_any_length.set(len(self.password1))
+        self.pw_any.set(password1)
+        self.pw_any_length.set(len(password1))
         self.pw_some.set(password2)
         self.pw_some_length.set(len(password2))
 
