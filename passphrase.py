@@ -85,11 +85,11 @@ class Fyi:
     """
 
     @staticmethod
-    def explain(selection, wordlist) -> None:
+    def explain(selection, wordcount) -> None:
         """Provide information about words used to create passphrases.
 
         :param selection: User selected wordlist name.
-        :param wordlist: Selected wordlist list.
+        :param wordcount: Length of selected wordlist list.
         :return: An text window notice with current wordlist data.
         """
 
@@ -106,7 +106,7 @@ default to provide words, though optional wordlists are available.
 Windows users can use only the optional wordlists.
 
 """
-f'There are {len(wordlist)} words available to construct passphrases'
+f'There are {wordcount} words available to construct passphrases'
 f' from the\ncurrently selected wordlist, {selection}.\n'
 """
 There is an option to exclude any character or string of characters 
@@ -344,7 +344,9 @@ class PassGenerator:
         self.pass_bg =       'khaki2'
 
         # First used in get_words():
-        self.wordlists =   {}
+        self.word_list =  []
+        self.short_list = []
+        self.wordlists =  {}
 
         # First used in set_pstrings()
         self.stubresult = ''
@@ -408,7 +410,7 @@ class PassGenerator:
         menu.add_cascade(     label="Help", menu=help_menu)
         help_menu.add_command(label="What's going on here?",
                               command=lambda: Fyi.explain(self.choose_wordlist.get(),
-                                                          self.get_words()[0]))
+                                                          self.get_words()))
         help_menu.add_command(label="About", command=Fyi.about)
 
     def config_frames(self) -> None:
@@ -691,7 +693,7 @@ class PassGenerator:
             self.choose_wordlist.current(0)
             self.get_words()
 
-    def get_words(self, event = None) -> tuple:
+    def get_words(self, event = None) -> int:
         """
         Populate lists with words to randomize in set_passstrings().
 
@@ -710,12 +712,10 @@ class PassGenerator:
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
-        # self.shared_data['word_list'].set([word for word in all_words if word.isalpha()])
-        # self.shared_data['short_list'].set([word for word in self.shared_data['word_list'] if 8 >= len(word) >= 3])
-        allwords = [word for word in all_words if word.isalpha()]
-        shortwords = [word for word in allwords if 8 >= len(word) >= 3]
+        self.word_list = [word for word in all_words if word.isalpha()]
+        self.short_list = [word for word in self.word_list if 8 >= len(word) >= 3]
 
-        return allwords, shortwords
+        return len(self.word_list)
 
     def set_passstrings(self) -> None:
         """
@@ -745,25 +745,23 @@ class PassGenerator:
 
         # Need to filter words and strings containing characters to be excluded.
         unused = self.exclude_entry.get().strip()
-        (allwords, shortwords) = self.get_words()
-
-        # No need to repopulate lists if unchanged between calls.
+        # Don't repopulate lists if unchanged between calls.
         if unused != self.prior_unused:
             if len(unused) > 0:
-                allwords = [
-                    string for string in allwords if unused not in string]
-                shortwords = [
-                    string for string in shortwords if unused not in string]
+                self.word_list = [
+                    word for word in self.word_list if unused not in word]
+                self.short_list = [
+                    word for word in self.short_list if unused not in word]
                 self.symbols = [
-                    string for string in self.symbols if unused not in string]
+                    char for char in self.symbols if unused not in char]
                 self.digi = [
-                    string for string in self.digi if unused not in string]
+                    num for num in self.digi if unused not in num]
                 self.caps = [
-                    string for string in self.caps if unused not in string]
+                    letter for letter in self.caps if unused not in letter]
                 self.all_char = [
-                    string for string in self.all_char if unused not in string]
+                    char for char in self.all_char if unused not in char]
                 self.some_char = [
-                    string for string in self.some_char if unused not in string]
+                    char for char in self.some_char if unused not in char]
 
                 # Display currently excluded characters
                 self.all_unused = self.all_unused + ' ' + unused
@@ -779,9 +777,9 @@ class PassGenerator:
             self.reset_exclusions()
 
         # Randomly select user-specified number of pp words and pw characters.
-        passphrase = "".join(VERY_RANDOM.choice(allwords) for
+        passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
                              _ in range(numwords))
-        shortphrase = "".join(VERY_RANDOM.choice(shortwords) for
+        shortphrase = "".join(VERY_RANDOM.choice(self.short_list) for
                               _ in range(numwords))
         password1 = "".join(VERY_RANDOM.choice(self.all_char) for
                                  _ in range(numchars))
@@ -832,17 +830,15 @@ class PassGenerator:
         h_cap = -log(1 / len(self.caps), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 11
 
-        (allwords, shortwords) = self.get_words()
-
         # Calculate information entropy, H = L * log N / log 2, where N is the
         #   number of possible characters or words and L is the number of characters
         #   or words in the pass-string. Log can be any base, but needs to be
         #   the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_pstrings().
         # Need to display H as integer, not float.
-        self.pp_raw_h.set(int(numwords * log(len(allwords)) / log(2)))
+        self.pp_raw_h.set(int(numwords * log(len(self.word_list)) / log(2)))
         self.pp_plus_h.set(self.pp_raw_h.get() + h_add3)
-        h_some = int(numwords * log(len(shortwords)) / log(2))
+        h_some = int(numwords * log(len(self.short_list)) / log(2))
         self.pp_short_h.set(h_some + h_add3)
         self.pw_any_h.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.pw_some_h.set(int(numchars * log(len(self.some_char)) / log(2)))
