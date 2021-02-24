@@ -354,7 +354,7 @@ class PassGenerator:
         self.digi =      digits
         self.caps =      ascii_uppercase
         self.all_char =  ascii_letters + digits + punctuation
-        self.some_char = ascii_letters + digits + self.symbols
+        self.some_char = ascii_letters + digits + SYMBOLS
         self.prior_unused = ''
         self.all_unused =   ''
 
@@ -901,8 +901,6 @@ class PassGenerator:
         self.exclude_entry.delete(0, 'end')
         self.excluded.set('')
         self.all_unused = ''
-        self.prior_unused = ''
-
         self.symbols = SYMBOLS
         self.digi = digits
         self.caps = ascii_uppercase
