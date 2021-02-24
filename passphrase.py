@@ -42,7 +42,7 @@ MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 SYMBOLS = "~!@#$%^&*()_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
-SYSDICT_PATH = Path('/usr/share/dict/words')
+SYSDICT_PATH = Path('/usr/share/dict/wordsXXX')
 WORDDIR = './wordlists/'
 # Note: The optional wordlist files are defined in PassGenerator.check_files()
 
@@ -237,11 +237,10 @@ class PassGenerator:
     """
     A GUI to make random passphrases and passwords of specified lengths.
     """
-    def __init__(self, parent):
-        self.parent = parent
+    def __init__(self, master):
+        self.master = master
 
         # tkinter widgets, in general order of appearance:
-        self.choice = tk.StringVar()
         self.choose_wordlist = ttk.Combobox(state='readonly')
         # https://www.tcl.tk/man/tcl/TkCmd/ttk_combobox.htm
 
@@ -345,7 +344,6 @@ class PassGenerator:
         self.pass_bg =       'khaki2'
 
         # First used in get_words():
-        self.wordfile =    []
         self.word_list =   []
         self.short_words = []
         self.wordlists =   {}
@@ -363,7 +361,7 @@ class PassGenerator:
         self.password1 =    ''
 
         # Configure and grid all widgets & check for needed files.
-        self.config_parent()
+        self.config_master()
         self.config_frames()
         self.config_buttons()
         self.config_pp_section()
@@ -373,41 +371,39 @@ class PassGenerator:
         self.check_files()
         self.get_words()
 
-        # self.master.mainloop()
-
-    def config_parent(self) -> None:
+    def config_master(self) -> None:
         """Set up main window geometry, keybindings, menus.
         """
-        self.parent.title("Passphrase Generator")
-        self.parent.minsize(850, 420)
-        self.parent.maxsize(1230, 420)
+        self.master.title("Passphrase Generator")
+        self.master.minsize(850, 420)
+        self.master.maxsize(1230, 420)
         if MY_OS == 'win':
-            self.parent.minsize(950, 390)
-            self.parent.maxsize(1230, 390)
+            self.master.minsize(950, 390)
+            self.master.maxsize(1230, 390)
 
         if MY_OS == 'dar':
-            self.parent.bind('<Button-2>', RightClickCopy)
+            self.master.bind('<Button-2>', RightClickCopy)
         elif MY_OS in 'lin, win':
-            self.parent.bind('<Button-3>', RightClickCopy)
+            self.master.bind('<Button-3>', RightClickCopy)
 
         # Need pass-string fields to stretch with window drag size.
-        self.parent.columnconfigure(3, weight=1)
+        self.master.columnconfigure(3, weight=1)
         self.result_frame1.columnconfigure(3, weight=1)
         self.result_frame2.columnconfigure(3, weight=1)
 
         # Widget configurations are generally listed top to bottom of window.
-        self.parent.bind("<Escape>", lambda q: quit_gui())
-        self.parent.bind("<Control-q>", lambda q: quit_gui())
-        self.parent.bind("<Control-g>", lambda q: self.set_passstrings())
-        self.parent.config(bg=self.master_bg)
+        self.master.bind("<Escape>", lambda q: quit_gui())
+        self.master.bind("<Control-q>", lambda q: quit_gui())
+        self.master.bind("<Control-g>", lambda q: self.set_passstrings())
+        self.master.config(bg=self.master_bg)
         # if MY_OS == 'dar':
         #     self.master.bind('<Button-2>', RightClickCopy)
         # elif MY_OS in 'lin, win':
         #     self.master.bind('<Button-3>', RightClickCopy)
 
         # Create menu instance and add pull-down menus
-        menu = tk.Menu(self.parent)
-        self.parent.config(menu=menu)
+        menu = tk.Menu(self.master)
+        self.master.config(menu=menu)
 
         file = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="File", menu=file)
@@ -419,7 +415,7 @@ class PassGenerator:
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(     label="Help", menu=help_menu)
         help_menu.add_command(label="What's going on here?",
-                              command=lambda: Fyi.explain(self.choice,
+                              command=lambda: Fyi.explain(self.choose_wordlist.get(),
                                                           self.word_list))
         help_menu.add_command(label="About", command=Fyi.about)
 
@@ -715,9 +711,9 @@ class PassGenerator:
         # The *_wordlist.txt files have only unique words, but...
         #   use set() and split() here to generalize for any text file.
         # Need read_text(encoding) for Windows to read all wordlist fonts.
-        self.choice = self.choose_wordlist.get()
-        self.wordfile = self.wordlists[self.choice]
-        allwords = set(Path(self.wordfile).read_text(encoding='utf-8').split())
+        choice = self.choose_wordlist.get()
+        wordfile = self.wordlists[choice]
+        allwords = set(Path(wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
