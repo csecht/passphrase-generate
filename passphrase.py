@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.6.5'
+__version__ = '0.6.6'
 
 import glob
 import random
@@ -344,8 +344,6 @@ class PassGenerator:
         self.pass_bg =       'khaki2'
 
         # First used in get_words():
-        self.word_list =   []
-        self.short_list = []
         self.wordlists =   {}
 
         # First used in set_pstrings()
@@ -697,13 +695,13 @@ class PassGenerator:
             self.choose_wordlist.current(0)
             self.get_words()
 
-    def get_words(self, event = None) -> list:
+    def get_words(self, event = None) -> tuple:
         """
-        Populate lists with words to randomize in set_pstrings().
+        Populate lists with words to randomize in set_passstrings().
 
         :param event: optional event is a call from ComboboxSelected.
 
-        :return: New lists of words from the selected wordlist file.
+        :return: Two lists: all words from file, shorter words from file.
         """
 
         # The *_wordlist.txt files have only unique words, but...
@@ -711,15 +709,17 @@ class PassGenerator:
         # Need read_text(encoding) for Windows to read all wordlist fonts.
         choice = self.choose_wordlist.get()
         wordfile = self.wordlists[choice]
-        allwords = set(Path(wordfile).read_text(encoding='utf-8').split())
+        all_words = set(Path(wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
-        self.word_list = [word for word in allwords if word.isalpha()]
-        self.short_list = [word for word in self.word_list if 8 >= len(word) >= 3]
+        # self.shared_data['word_list'].set([word for word in all_words if word.isalpha()])
+        # self.shared_data['short_list'].set([word for word in self.shared_data['word_list'] if 8 >= len(word) >= 3])
+        allwords = [word for word in all_words if word.isalpha()]
+        shortwords = [word for word in allwords if 8 >= len(word) >= 3]
 
-        return self.word_list
+        return allwords, shortwords
 
     def set_passstrings(self) -> None:
         """
@@ -749,16 +749,15 @@ class PassGenerator:
 
         # Need to filter words and strings containing characters to be excluded.
         unused = self.exclude_entry.get().strip()
+        (allwords, shortwords) = self.get_words()
+
         # No need to repopulate lists if unchanged between calls.
-        # TODO: Can these lists be repopulated with a for loop?
-        # all_lists = [self.word_list, self.short_list, self.symbols, self.digi,
-        # self.caps, self.all_char, self.some_char]
         if unused != self.prior_unused:
             if len(unused) > 0:
-                self.word_list = [
-                    string for string in self.word_list if unused not in string]
-                self.short_list = [
-                    string for string in self.short_list if unused not in string]
+                allwords = [
+                    string for string in allwords if unused not in string]
+                shortwords = [
+                    string for string in shortwords if unused not in string]
                 self.symbols = [
                     string for string in self.symbols if unused not in string]
                 self.digi = [
@@ -784,9 +783,9 @@ class PassGenerator:
             self.reset_exclusions()
 
         # Randomly select user-specified number of pp words and pw characters.
-        passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
+        passphrase = "".join(VERY_RANDOM.choice(allwords) for
                              _ in range(numwords))
-        shortphrase = "".join(VERY_RANDOM.choice(self.short_list) for
+        shortphrase = "".join(VERY_RANDOM.choice(shortwords) for
                               _ in range(numwords))
         password1 = "".join(VERY_RANDOM.choice(self.all_char) for
                                  _ in range(numchars))
@@ -837,15 +836,17 @@ class PassGenerator:
         h_cap = -log(1 / len(self.caps), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 11
 
+        (allwords, shortwords) = self.get_words()
+
         # Calculate information entropy, H = L * log N / log 2, where N is the
         #   number of possible characters or words and L is the number of characters
         #   or words in the pass-string. Log can be any base, but needs to be
         #   the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_pstrings().
         # Need to display H as integer, not float.
-        self.pp_raw_h.set(int(numwords * log(len(self.word_list)) / log(2)))
+        self.pp_raw_h.set(int(numwords * log(len(allwords)) / log(2)))
         self.pp_plus_h.set(self.pp_raw_h.get() + h_add3)
-        h_some = int(numwords * log(len(self.short_list)) / log(2))
+        h_some = int(numwords * log(len(shortwords)) / log(2))
         self.pp_short_h.set(h_some + h_add3)
         self.pw_any_h.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.pw_some_h.set(int(numchars * log(len(self.some_char)) / log(2)))
