@@ -345,7 +345,7 @@ class PassGenerator:
 
         # First used in get_words():
         self.word_list =   []
-        self.short_words = []
+        self.short_list = []
         self.wordlists =   {}
 
         # First used in set_pstrings()
@@ -717,7 +717,7 @@ class PassGenerator:
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
         self.word_list = [word for word in allwords if word.isalpha()]
-        self.short_words = [word for word in self.word_list if 8 >= len(word) >= 3]
+        self.short_list = [word for word in self.word_list if 8 >= len(word) >= 3]
 
         return self.word_list
 
@@ -751,14 +751,14 @@ class PassGenerator:
         unused = self.exclude_entry.get().strip()
         # No need to repopulate lists if unchanged between calls.
         # TODO: Can these lists be repopulated with a for loop?
-        # all_lists = [self.word_list, self.short_words, self.symbols, self.digi,
+        # all_lists = [self.word_list, self.short_list, self.symbols, self.digi,
         # self.caps, self.all_char, self.some_char]
         if unused != self.prior_unused:
             if len(unused) > 0:
                 self.word_list = [
                     string for string in self.word_list if unused not in string]
-                self.short_words = [
-                    string for string in self.short_words if unused not in string]
+                self.short_list = [
+                    string for string in self.short_list if unused not in string]
                 self.symbols = [
                     string for string in self.symbols if unused not in string]
                 self.digi = [
@@ -786,7 +786,7 @@ class PassGenerator:
         # Randomly select user-specified number of pp words and pw characters.
         passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
                              _ in range(numwords))
-        shortphrase = "".join(VERY_RANDOM.choice(self.short_words) for
+        shortphrase = "".join(VERY_RANDOM.choice(self.short_list) for
                               _ in range(numwords))
         password1 = "".join(VERY_RANDOM.choice(self.all_char) for
                                  _ in range(numchars))
@@ -845,7 +845,7 @@ class PassGenerator:
         # Need to display H as integer, not float.
         self.pp_raw_h.set(int(numwords * log(len(self.word_list)) / log(2)))
         self.pp_plus_h.set(self.pp_raw_h.get() + h_add3)
-        h_some = int(numwords * log(len(self.short_words)) / log(2))
+        h_some = int(numwords * log(len(self.short_list)) / log(2))
         self.pp_short_h.set(h_some + h_add3)
         self.pw_any_h.set(int(numchars * log(len(self.all_char)) / log(2)))
         self.pw_some_h.set(int(numchars * log(len(self.some_char)) / log(2)))
