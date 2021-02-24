@@ -88,8 +88,8 @@ class Fyi:
     def explain(selection, wordlist) -> None:
         """Provide information about words used to create passphrases.
 
-        :param selection: User selected wordlist.
-        :param wordlist: Word count (length) of selected wordlist.
+        :param selection: User selected wordlist name.
+        :param wordlist: Selected wordlist list.
         :return: An text window notice with current wordlist data.
         """
 
@@ -392,10 +392,6 @@ class PassGenerator:
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.set_passstrings())
         self.master.config(bg=self.master_bg)
-        # if MY_OS == 'dar':
-        #     self.master.bind('<Button-2>', RightClickCopy)
-        # elif MY_OS in 'lin, win':
-        #     self.master.bind('<Button-3>', RightClickCopy)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -412,7 +408,7 @@ class PassGenerator:
         menu.add_cascade(     label="Help", menu=help_menu)
         help_menu.add_command(label="What's going on here?",
                               command=lambda: Fyi.explain(self.choose_wordlist.get(),
-                                                          self.word_list))
+                                                          self.get_words()[0]))
         help_menu.add_command(label="About", command=Fyi.about)
 
     def config_frames(self) -> None:
