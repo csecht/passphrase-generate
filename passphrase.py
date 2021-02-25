@@ -346,7 +346,7 @@ class PassGenerator:
         # First used in get_words():
         self.word_list =  []
         self.short_list = []
-        self.wordlists =  {}
+        self.wordlist_files =  {}
 
         # First used in set_pstrings()
         self.stubresult = ''
@@ -632,7 +632,7 @@ class PassGenerator:
         :return: quit_gui() or get_words().
         """
 
-        self.wordlists = {
+        self.wordlist_files = {
             'System dictionary'         : SYSDICT_PATH,
             'EFF long wordlist'         : WORDDIR + 'eff_large_wordlist.txt',
             'US Constitution'           : WORDDIR + 'usconst_wordlist.txt',
@@ -640,7 +640,7 @@ class PassGenerator:
             'Frankenstein'              : WORDDIR + 'frankenstein_wordlist.txt',
             '此開卷第 Story of the Stone' : WORDDIR + 'red_chamber_wordlist.txt'
             }
-        all_lists = list(self.wordlists.keys())
+        all_lists = list(self.wordlist_files.keys())
         if MY_OS in 'lin, dar':
             self.choose_wordlist['values'] = all_lists
         # Need to remove 'System dictionary' from Windows usage.
@@ -671,9 +671,8 @@ class PassGenerator:
                           'Using only custom wordlists ...')
                 # print(notice)
                 messagebox.showinfo(title='File not found', detail=notice)
-                # Need to remove 'System dictionary' from available
-                # wordlists.
-                all_lists = list(self.wordlists.keys())
+                # Need to remove 'System dictionary' from available wordlists.
+                all_lists = list(self.wordlist_files.keys())
                 all_lists.remove('System dictionary')
                 self.choose_wordlist['values'] = all_lists
                 self.choose_wordlist.current(0)
@@ -682,7 +681,7 @@ class PassGenerator:
         elif Path.is_file(SYSDICT_PATH) is True and len(wordfiles) == 0:
             notice = ('Oops! Optional wordlists are missing.\n'
                       'Wordlist files should be in a folder\n'
-                      ' called "wordfiles" included with'
+                      ' called "wordlists" included with'
                       ' the repository downloaded from:\n'
                       f'{PROJ_URL}\n'
                       'Using system dictionary words...\n')
@@ -706,7 +705,7 @@ class PassGenerator:
         #   use set() and split() here to generalize for any text file.
         # Need read_text(encoding) for Windows to read all wordlist fonts.
         choice = self.choose_wordlist.get()
-        wordfile = self.wordlists[choice]
+        wordfile = self.wordlist_files[choice]
         all_words = set(Path(wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
