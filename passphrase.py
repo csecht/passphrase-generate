@@ -19,7 +19,7 @@ Inspired by code from @codehub.py via Instagram.
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.6.6'
+__version__ = '0.6.7'
 
 import glob
 import random
@@ -64,6 +64,7 @@ class RightClickCopy:
         self.menu_commands()
 
     def menu_commands(self):
+        """Structured for general use, but using only for Copy."""
         # for txt in ('Cut', 'Copy', 'Paste'):
         for txt in ('Copy',):
             self.right_click_menu.add_command(
@@ -93,48 +94,47 @@ class Fyi:
         :return: An text window notice with current wordlist data.
         """
 
-        # Formatting this is a pain.  There must be a better way.
         info = (
 """A passphrase is a random string of words that can be more secure and
-easier to remember than a password of random characters. For more 
+easier to remember than a password of random characters. For more
 information on passphrases, see, for example, a discussion of word lists
 and word selection at the Electronic Frontier Foundation (EFF):
-https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases 
+https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
 
-On MacOS and Linux systems, the system dictionary wordlist is used by 
-default to provide words, though optional wordlists are available. 
-Windows users can use only the optional wordlists.
+On MacOS and Linux systems, the system dictionary wordlist is used by
+default to provide words, though optional wordfiles are available.
+Windows users can use only the optional wordfiles.
 
 """
 f'There are {wordcount} words available to construct passphrases'
 f' from the\ncurrently selected wordlist, {selection}.\n'
 """
-There is an option to exclude any character or string of characters 
-from passphrase words and passwords. Words with excluded letters are not 
-available nor counted above. You may need to click the Generate! button 
-(or use Ctrl G) to update the non-excluded word count. Multiple windows 
+There is an option to exclude any character or string of characters
+from passphrase words and passwords. Words with excluded letters are not
+available nor counted above. You may need to click the Generate! button
+(or use Ctrl G) to update the non-excluded word count. Multiple windows
 can remain open to compare the counts and lists reported above.
 
-Optional wordlists were derived from texts obtained from these sites:
+Optional wordfiles were derived from texts obtained from these sites:
     https://www.gutenberg.org
     https://www.archives.gov/founding-docs/constitution-transcript
     https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
-Although the EFF list contains 7776 selected words, only 7772 are used 
-here because hyphenated words are excluded from all wordlists.
+Although the EFF list contains 7776 selected words, only 7772 are used
+here because hyphenated words are excluded from all wordfiles.
 
 Words with less than 3 letters are not used in any wordlist.
 
-To accommodate some password requirements, a choice is provided that 
+To accommodate some password requirements, a choice is provided that
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
 """
 f'The symbols used are: {SYMBOLS}\n'
 """
 In the results fields, L is the character length of each pass-string.
 H, as used here, is for comparing relative pass-string strengths.
-Higher is better; each increase of 1 doubles the relative strength. 
-H is actually the information entropy (Shannon entropy) value and is 
-equivalent to bits of entropy. For more information see: 
-    https://explainxkcd.com/wiki/index.php/936:_Password_Strength 
+Higher is better; each increase of 1 doubles the relative strength.
+H is actually the information entropy (Shannon entropy) value and is
+equivalent to bits of entropy. For more information see:
+    https://explainxkcd.com/wiki/index.php/936:_Password_Strength
     https://en.wikipedia.org/wiki/Password_strength
     https://en.wikipedia.org/wiki/Entropy_(information_theory)
 """
@@ -163,7 +163,7 @@ equivalent to bits of entropy. For more information see:
         boilerplate = ("""
 passphrase.py and its stand-alones generate passphrases and passwords.
 Download the most recent version from:
-""" 
+"""
 f'{PROJ_URL}'
 """
 ————————————————————————————————————————————————————————————————————
@@ -213,9 +213,9 @@ along with this program. If not, see https://www.gnu.org/licenses/
         """
         msg = (
 """
-Any character(s) you enter will not appear in passphrase 
-words or passwords. Multiple characters are treated as a 
-unit. For example, "es" will exclude "trees", not "eye" 
+Any character(s) you enter will not appear in passphrase
+words or passwords. Multiple characters are treated as a
+unit. For example, "es" will exclude "trees", not "eye"
 and  "says". To exclude everything having "e" and "s",
 enter "e", click Generate!, then enter "s" and Generate!
 
@@ -226,7 +226,7 @@ between characters will also trigger a reset.
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         num_lines = msg.count('\n')
-        infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
+        infotext = tk.Text(exclwin, width=60, height=num_lines + 1,
                            background='grey40', foreground='grey98',
                            relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', msg)
@@ -240,132 +240,188 @@ class PassGenerator:
     def __init__(self, master):
         self.master = master
 
+        # Colors and fonts:
+        self.master_fg =     'LightCyan2'  # Used for row headers.
+        self.master_bg =     'SkyBlue4'  # Also used for some labels.
+        self.frame_bg =      'grey40'  # Also background for data labels.
+        # Use Courier b/c TKFixedFont does not monospace symbol characters.
+        self.display_font =  'Courier', 12  # Used for pass-string results.
+        if MY_OS == 'dar':
+            self.display_font = 'Courier', 14
+        self.stubresult_fg = 'grey60'  # For initial pass-string stub, result uses pass_fg.
+        self.pass_fg =       'brown4'  # Pass-string font color.
+        self.pass_bg =       'khaki2'  # Background of pass-string results cells.
+
+        self.stubresult = 'Result can be copied and pasted from keyboard.'
+
+        self.tkdata = {
+            "pp_raw_len"    : tk.IntVar(),
+            "pp_plus_len"   : tk.IntVar(),
+            "pp_short_len"  : tk.IntVar(),
+            "pp_raw_h"      : tk.IntVar(),
+            "pp_plus_h"     : tk.IntVar(),
+            "pp_short_h"    : tk.IntVar(),
+            "phrase_raw"    : tk.StringVar(),
+            "phrase_plus"   : tk.StringVar(),
+            "phrase_short"  : tk.StringVar(),
+            "pw_any_len"    : tk.IntVar(),
+            "pw_some_len"   : tk.IntVar(),
+            "pw_any_h"      : tk.IntVar(),
+            "pw_some_h"     : tk.IntVar(),
+            "pw_any"        : tk.StringVar(),
+            "pw_some"       : tk.StringVar(),
+            "excluded"      : tk.StringVar()
+        }
+        self.strdata = {
+            'symbols'   : SYMBOLS,
+            'digi'      : digits,
+            'caps'      : ascii_uppercase,
+            'all_char'  : ascii_letters + digits + punctuation,
+            'some_char' : ascii_letters + digits + SYMBOLS,
+            'all_unused': '',
+            'prior_unused': ''
+        }
+        self.word_files = {
+            'System dictionary'         : SYSDICT_PATH,
+            'EFF long wordlist'         : WORDDIR + 'eff_large_wordlist.txt',
+            'US Constitution'           : WORDDIR + 'usconst_wordlist.txt',
+            'Don Quijote'               : WORDDIR + 'don_quijote_wordlist.txt',
+            'Frankenstein'              : WORDDIR + 'frankenstein_wordlist.txt',
+            '此開卷第 Story of the Stone' : WORDDIR + 'red_chamber_wordlist.txt'
+            }
+
+        self.listdata = {'word_list': [], 'short_list': []}
+
         # tkinter widgets, in general order of appearance:
-        self.choose_wordlist = ttk.Combobox(state='readonly')
+        self.choose_wordlist = ttk.Combobox(state='readonly', width=24)
         # https://www.tcl.tk/man/tcl/TkCmd/ttk_combobox.htm
+        self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
 
         # Passphrase section ##################################################
-        self.numwords_label = tk.Label()
-        self.numwords_entry = tk.Entry()
+        self.numwords_label = tk.Label(text='# words',
+                                       fg=self.pass_bg, bg=self.master_bg)
+        self.numwords_entry = tk.Entry(width=2)
+        self.numwords_entry.insert(0, '5')
 
-        self.l_and_h_header =  tk.Label()
-        self.pp_section_head = tk.Label()
+        self.l_and_h_header =  tk.Label(text=' H      L', width=10,
+                                        fg=self.master_fg, bg=self.master_bg)
+        self.pp_section_head = tk.Label(text='Passphrase wordlists',
+                                        font=('default', 12),
+                                        fg=self.pass_bg, bg=self.master_bg)
+        # MacOS needs a larger font
+        if MY_OS == 'dar':
+            self.pp_section_head.config(font=('default', 16))
 
-        self.result_frame1 = tk.Frame()
-        self.result_frame2 = tk.Frame()
+        self.result_frame1 = tk.Frame(borderwidth=3, relief='sunken',
+                                      background=self.frame_bg)
+        self.result_frame2 = tk.Frame(borderwidth=3, relief='sunken',
+                                      background=self.frame_bg)
 
-        self.pp_raw_head =   tk.Label()
-        self.pp_plus_head =  tk.Label()
-        self.pp_short_head = tk.Label()
+        self.pp_raw_head =   tk.Label(text="Any words",
+                                      fg=self.master_fg, bg=self.master_bg)
+        self.pp_plus_head =  tk.Label(text="... plus 3 characters",
+                                      fg=self.master_fg, bg=self.master_bg)
+        self.pp_short_head = tk.Label(text="...with words of 3 to 8 letters",
+                                      fg=self.master_fg, bg=self.master_bg)
 
-        self.pp_raw_length =    tk.IntVar()
-        self.pp_plus_length =   tk.IntVar()
-        self.pp_short_length =  tk.IntVar()
-        self.pp_raw_len_lbl =   tk.Label(self.result_frame1,
-                                         textvariable=self.pp_raw_length)
-        self.pp_plus_len_lbl =  tk.Label(self.result_frame1,
-                                         textvariable=self.pp_plus_length)
-        self.pp_short_len_lbl = tk.Label(self.result_frame1,
-                                         textvariable=self.pp_short_length)
-        self.pp_raw_h =          tk.IntVar()
-        self.pp_plus_h =         tk.IntVar()
-        self.pp_short_h =        tk.IntVar()
-        self.pp_raw_h_lbl =      tk.Label(self.result_frame1,
-                                          textvariable=self.pp_raw_h)
-        self.pp_plus_h_lbl =     tk.Label(self.result_frame1,
-                                          textvariable=self.pp_plus_h)
-        self.pp_short_h_lbl =    tk.Label(self.result_frame1,
-                                          textvariable=self.pp_short_h)
+        self.tkdata['pp_raw_len'].set(0)
+        self.tkdata['pp_plus_len'].set(0)
+        self.tkdata['pp_short_len'].set(0)
+        self.pp_raw_len_lbl =   tk.Label(self.result_frame1, width=3,
+                                         textvariable=self.tkdata['pp_raw_len'])
+        self.pp_plus_len_lbl =  tk.Label(self.result_frame1, width=3,
+                                         textvariable=self.tkdata['pp_plus_len'])
+        self.pp_short_len_lbl = tk.Label(self.result_frame1, width=3,
+                                         textvariable=self.tkdata['pp_short_len'])
 
-        self.phrase_raw =     tk.StringVar()
-        self.phrase_plus =    tk.StringVar()
-        self.phrase_short =   tk.StringVar()
+        self.tkdata['pp_raw_h'].set(0)
+        self.tkdata['pp_plus_h'].set(0)
+        self.tkdata['pp_short_h'].set(0)
+        self.pp_raw_h_lbl =      tk.Label(self.result_frame1, width=3,
+                                          textvariable=self.tkdata['pp_raw_h'])
+        self.pp_plus_h_lbl =     tk.Label(self.result_frame1, width=3,
+                                          textvariable=self.tkdata['pp_plus_h'])
+        self.pp_short_h_lbl =    tk.Label(self.result_frame1, width=3,
+                                          textvariable=self.tkdata['pp_short_h'])
+
+        self.tkdata['phrase_raw'].set(self.stubresult)
+        self.tkdata['phrase_plus'].set(self.stubresult)
+        self.tkdata['phrase_short'].set(self.stubresult)
         # Results are displayed in Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
         self.pp_raw_show =   tk.Entry(self.result_frame1,
-                                      textvariable=self.phrase_raw)
+                                      textvariable=self.tkdata['phrase_raw'],
+                                      width=W, font=self.display_font,
+                                      fg=self.stubresult_fg, bg=self.pass_bg)
         self.pp_plus_show =  tk.Entry(self.result_frame1,
-                                      textvariable=self.phrase_plus)
+                                      textvariable=self.tkdata['phrase_plus'],
+                                      width=W, font=self.display_font,
+                                      fg=self.stubresult_fg, bg=self.pass_bg)
         self.pp_short_show = tk.Entry(self.result_frame1,
-                                      textvariable=self.phrase_short)
+                                      textvariable=self.tkdata['phrase_short'],
+                                      width=W, font=self.display_font,
+                                      fg=self.stubresult_fg, bg=self.pass_bg)
         # End passphrase section ##############################################
 
         self.generate_btn = ttk.Button()
 
         # Password section ####################################################
-        self.pw_section_head = tk.Label()
+        self.pw_section_head = tk.Label(text='Passwords', font=('default', 12),
+                                        fg=self.pass_bg, bg=self.master_bg)
+        if MY_OS == 'dar':
+            self.pw_section_head.config(font=('default', 16))
 
         # There are problems of tk.Button text showing up on MacOS, so ttk.
-        self.numchars_label =  tk.Label()
-        self.numchars_entry =  tk.Entry()
+        self.numchars_label = tk.Label(text='# characters', fg=self.pass_bg,
+                                       bg=self.master_bg)
+        self.numchars_entry = tk.Entry(width=3)
+        self.numchars_entry.insert(0, 0)
 
-        self.pw_any_head =     tk.Label()
-        self.pw_some_head =    tk.Label()
+        self.pw_any_head = tk.Label(text="Any characters", fg=self.master_fg,
+                                    bg=self.master_bg)
+        self.pw_some_head = tk.Label(text="More likely usable characters",
+                                     fg=self.master_fg, bg=self.master_bg)
 
-        self.pw_any_length =   tk.IntVar()
-        self.pw_some_length =  tk.IntVar()
-        self.pw_any_len_lbl =  tk.Label(self.result_frame2,
-                                        textvariable=self.pw_any_length)
-        self.pw_some_len_lbl = tk.Label(self.result_frame2,
-                                        textvariable=self.pw_some_length)
-        self.pw_any_h =        tk.IntVar()
-        self.pw_some_h =       tk.IntVar()
-        self.pw_any_h_lbl =    tk.Label(self.result_frame2,
-                                        textvariable=self.pw_any_h)
-        self.pw_some_h_lbl =   tk.Label(self.result_frame2,
-                                        textvariable=self.pw_some_h)
+        self.tkdata['pw_any_len'].set(0)
+        self.tkdata['pw_some_len'].set(0)
+        self.pw_any_len_lbl =  tk.Label(self.result_frame2, width=3,
+                                        textvariable=self.tkdata['pw_any_len'])
+        self.pw_some_len_lbl = tk.Label(self.result_frame2, width=3,
+                                        textvariable=self.tkdata['pw_some_len'])
+        self.tkdata['pw_any_h'].set(0)
+        self.tkdata['pw_some_h'].set(0)
+        self.pw_any_h_lbl =    tk.Label(self.result_frame2, width=3,
+                                        textvariable=self.tkdata['pw_any_h'])
+        self.pw_some_h_lbl =   tk.Label(self.result_frame2, width=3,
+                                        textvariable=self.tkdata['pw_some_h'])
 
-        self.pw_any =          tk.StringVar()
-        self.pw_some =         tk.StringVar()
+        self.tkdata['pw_any'].set(self.stubresult)
+        self.tkdata['pw_some'].set(self.stubresult)
         self.pw_any_show =     tk.Entry(self.result_frame2,
-                                        textvariable=self.pw_any, )
+                                        textvariable=self.tkdata['pw_any'],
+                                        width=W, font=self.display_font,
+                                        fg=self.stubresult_fg, bg=self.pass_bg)
         self.pw_some_show =    tk.Entry(self.result_frame2,
-                                        textvariable=self.pw_some)
+                                        textvariable=self.tkdata['pw_some'],
+                                        width=W, font=self.display_font,
+                                        fg=self.stubresult_fg, bg=self.pass_bg)
         # End password section ################################################
 
-        self.exclude_head =   tk.Label()
-        self.exclude_entry =  tk.Entry()
+        self.exclude_head =   tk.Label(text='Exclude character(s)',
+                                       fg=self.pass_bg, bg=self.master_bg)
+        self.exclude_entry =  tk.Entry(width=2)
         self.exclude_info_b = ttk.Button()
         self.reset_button =   ttk.Button()
-        self.excluded_head =  tk.Label()
-        self.excluded =       tk.StringVar()
-        self.excluded_show =  tk.Label(textvariable=self.excluded)
+        self.excluded_head =  tk.Label(text='Currently excluded:',
+                                       fg=self.master_fg, bg=self.master_bg)
+        self.excluded_show =  tk.Label(textvariable=self.tkdata['excluded'],
+                                       fg='orange', bg=self.master_bg)
 
-        # Colors and fonts used in config_ methods:
-        self.master_bg =     'SkyBlue4'  # also used for some labels.
-        self.pass_fg =       'brown4'  # also used in config_results()
-        # Use Courier b/c TKFixedFont does not monospace symbol characters.
-        self.display_font =  'Courier', 12  # also used in config_results().
-        if MY_OS == 'dar':
-            self.display_font = 'Courier', 14
-        self.master_fg =     'LightCyan2'
-        self.frame_bg =      'grey40'  # Also background for data labels.
-        self.stubresult_fg = 'grey60'  # For initial window, alt for pass_fg.
-        self.pass_bg =       'khaki2'
-
-        # First used in get_words():
-        self.word_list =  []
-        self.short_list = []
-        self.wordlist_files =  {}
-
-        # First used in set_pstrings()
-        self.stubresult = ''
-        self.symbols =   SYMBOLS
-        self.digi =      digits
-        self.caps =      ascii_uppercase
-        self.all_char =  ascii_letters + digits + punctuation
-        self.some_char = ascii_letters + digits + SYMBOLS
-        self.prior_unused = ''
-        self.all_unused =   ''
-
-        # Configure and grid all widgets & check for needed files.
+        # Configure main window and buttons; grid all widgets.
         self.config_master()
-        self.config_frames()
         self.config_buttons()
-        self.config_pp_section()
-        self.config_pw_section()
-        self.config_exclusion()
         self.grid_all()
+
         self.check_files()
         self.get_words()
 
@@ -413,115 +469,6 @@ class PassGenerator:
                                                           self.get_words()))
         help_menu.add_command(label="About", command=Fyi.about)
 
-    def config_frames(self) -> None:
-        """Set up frames used to display results.
-        """
-        self.result_frame1.config(borderwidth=3, relief='sunken',
-                                  background=self.frame_bg)
-        self.result_frame2.config(borderwidth=3, relief='sunken',
-                                  background=self.frame_bg)
-
-    def config_pp_section(self) -> None:
-        """
-        Set up wordlist choices, row headers, and default entry values
-        for passphrases.
-        """
-
-        # Configure and set initial values of user entry and control widgets:
-        self.choose_wordlist.configure(width=24)
-        self.choose_wordlist.bind('<<ComboboxSelected>>', self.get_words)
-
-        self.pp_section_head.config(text='Passphrase wordlists',
-                                    font=('default', 12), fg=self.pass_bg,
-                                    bg=self.master_bg)
-        # MacOS needs a larger font
-        if MY_OS == 'dar':
-            self.pp_section_head.config(font=('default', 16))
-
-        # This header spans two columns, but much easier to align with grid
-        #  in the results frame if "pad" it across columns with spaces.
-        self.l_and_h_header.config(text=' L      H', width=10, fg=self.master_fg,
-                                   bg=self.master_bg)
-
-        self.numwords_label.config(text='# words', fg=self.pass_bg, bg=self.master_bg)
-        self.numwords_entry.config(width=2)
-        self.numwords_entry.insert(0, '5')
-
-        self.stubresult = 'Result can be copied and pasted from keyboard.'
-
-        self.pp_raw_head.config(text="Any words", fg=self.master_fg, bg=self.master_bg)
-        self.pp_raw_length.set(0)
-        self.pp_raw_len_lbl.config(width=3)
-        self.pp_raw_h.set(0)
-        self.pp_raw_h_lbl.config(width=3)
-        self.phrase_raw.set(self.stubresult)
-        self.pp_raw_show.config(width=W, font=self.display_font,
-                                fg=self.stubresult_fg, bg=self.pass_bg)
-
-        self.pp_plus_head.config(text="... plus 3 characters", fg=self.master_fg,
-                                 bg=self.master_bg)
-        self.pp_plus_length.set(0)
-        self.pp_plus_len_lbl.config(width=3)
-        self.pp_plus_h.set(0)
-        self.pp_plus_h_lbl.config(width=3)
-        self.phrase_plus.set(self.stubresult)
-        self.pp_plus_show.config(width=W, font=self.display_font,
-                                 fg=self.stubresult_fg, bg=self.pass_bg)
-
-        self.pp_short_head.config(text="...with words of 3 to 8 letters",
-                                  fg=self.master_fg, bg=self.master_bg)
-        self.pp_short_length.set(0)
-        self.pp_short_len_lbl.config(width=3)
-        self.pp_short_h.set(0)
-        self.pp_short_h_lbl.config(width=3)
-        self.phrase_short.set(self.stubresult)
-        self.pp_short_show.config(width=W, font=self.display_font,
-                                  fg=self.stubresult_fg, bg=self.pass_bg)
-
-    def config_pw_section(self) -> None:
-        """
-        Set up row headers and default entry values for passwords.
-        """
-        self.pw_section_head.config(text='Passwords', font=('default', 12),
-                                    fg=self.pass_bg, bg=self.master_bg)
-        if MY_OS == 'dar':
-            self.pw_section_head.config(font=('default', 16))
-
-        self.numchars_label.config(text='# characters', fg=self.pass_bg,
-                                   bg=self.master_bg)
-        self.numchars_entry.config(width=3)
-        self.numchars_entry.insert(0, 0)
-
-        self.pw_any_head.config(text="Any characters", fg=self.master_fg,
-                                bg=self.master_bg)
-        self.pw_any_length.set(0)
-        self.pw_any_len_lbl.config(width=3)
-        self.pw_any_h.set(0)
-        self.pw_any_h_lbl.config(width=3)
-        self.pw_any.set(self.stubresult)
-        self.pw_any_show.config(width=W, font=self.display_font,
-                                fg=self.stubresult_fg, bg=self.pass_bg)
-
-        self.pw_some_head.config(text="More likely usable characters",
-                                 fg=self.master_fg, bg=self.master_bg)
-        self.pw_some_length.set(0)
-        self.pw_some_len_lbl.config(width=3)
-        self.pw_some_h.set(0)
-        self.pw_some_h_lbl.config(width=3)
-        self.pw_some.set(self.stubresult)
-        self.pw_some_show.config(width=W, font=self.display_font,
-                                 fg=self.stubresult_fg, bg=self.pass_bg)
-
-    def config_exclusion(self) -> None:
-        """Set up row headers and entry widgets for character exclusion.
-        """
-        self.exclude_head.config( text='Exclude character(s)',
-                                  fg=self.pass_bg, bg=self.master_bg)
-        self.exclude_entry.config(width=2)
-        self.excluded_show.config(fg='orange', bg=self.master_bg)
-        self.excluded_head.config(text='Currently excluded:',
-                                  fg=self.master_fg, bg=self.master_bg)
-
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
         """
@@ -562,18 +509,18 @@ class PassGenerator:
 
         # Result _shows will maintain equal widths with sticky=tk.EW.
         self.pp_raw_head.grid(    column=0, row=2, pady=(6, 0), sticky=tk.E)
-        self.pp_raw_len_lbl.grid( column=1, row=2, pady=(5, 3), padx=(5, 0))
-        self.pp_raw_h_lbl.grid(   column=2, row=2, pady=(5, 3), padx=(5, 0))
+        self.pp_raw_h_lbl.grid(   column=1, row=2, pady=(5, 3), padx=(5, 0))
+        self.pp_raw_len_lbl.grid( column=2, row=2, pady=(5, 3), padx=(5, 0))
         self.pp_raw_show.grid(    column=3, row=2, pady=(5, 3), padx=5,
                                   ipadx=5, sticky=tk.EW)
         self.pp_plus_head.grid(   column=0, row=3, pady=(3, 0), sticky=tk.E)
-        self.pp_plus_len_lbl.grid(column=1, row=3, pady=(5, 3), padx=(5, 0))
-        self.pp_plus_h_lbl.grid(  column=2, row=3, pady=(5, 3), padx=(5, 0))
+        self.pp_plus_h_lbl.grid(  column=1, row=3, pady=(5, 3), padx=(5, 0))
+        self.pp_plus_len_lbl.grid(column=2, row=3, pady=(5, 3), padx=(5, 0))
         self.pp_plus_show.grid(   column=3, row=3, pady=(5, 3), padx=5,
                                   ipadx=5, sticky=tk.EW)
         self.pp_short_head.grid(  column=0, row=4, pady=(3, 6), sticky=tk.E)
-        self.pp_short_len_lbl.grid(column=1, row=4, pady=3, padx=(5, 0))
-        self.pp_short_h_lbl.grid( column=2, row=4, pady=3, padx=(5, 0))
+        self.pp_short_h_lbl.grid( column=1, row=4, pady=3, padx=(5, 0))
+        self.pp_short_len_lbl.grid(column=2, row=4, pady=3, padx=(5, 0))
         self.pp_short_show.grid(  column=3, row=4, pady=6, padx=5,
                                   ipadx=5, sticky=tk.EW)
 
@@ -597,14 +544,14 @@ class PassGenerator:
 
         self.pw_any_head.grid(    column=0, row=7, pady=(6, 0),
                                   sticky=tk.E)
-        self.pw_any_len_lbl.grid( column=1, row=7, pady=(6, 3), padx=(5, 0))
-        self.pw_any_h_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_h_lbl.grid(   column=1, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_len_lbl.grid( column=2, row=7, pady=(6, 3), padx=(5, 0))
         self.pw_any_show.grid(    column=3, row=7, pady=(6, 3), padx=5,
                                   columnspan=2, ipadx=5, sticky=tk.EW)
         self.pw_some_head.grid(   column=0, row=8, pady=(0, 6), padx=(5, 0),
                                   sticky=tk.E)
-        self.pw_some_len_lbl.grid(column=1, row=8, pady=3, padx=(5, 0))
-        self.pw_some_h_lbl.grid(  column=2, row=8, pady=3, padx=(5, 0))
+        self.pw_some_h_lbl.grid(  column=1, row=8, pady=3, padx=(5, 0))
+        self.pw_some_len_lbl.grid(column=2, row=8, pady=3, padx=(5, 0))
         self.pw_some_show.grid(   column=3, row=8, pady=6, padx=5,
                                   columnspan=2, ipadx=5, sticky=tk.EW)
 
@@ -629,18 +576,10 @@ class PassGenerator:
     def check_files(self) -> None:
         """Confirm whether required files are present, exit if not.
 
-        :return: quit_gui() or get_words().
+        :return: Updated wordlist options based on availability.
         """
 
-        self.wordlist_files = {
-            'System dictionary'         : SYSDICT_PATH,
-            'EFF long wordlist'         : WORDDIR + 'eff_large_wordlist.txt',
-            'US Constitution'           : WORDDIR + 'usconst_wordlist.txt',
-            'Don Quijote'               : WORDDIR + 'don_quijote_wordlist.txt',
-            'Frankenstein'              : WORDDIR + 'frankenstein_wordlist.txt',
-            '此開卷第 Story of the Stone' : WORDDIR + 'red_chamber_wordlist.txt'
-            }
-        all_lists = list(self.wordlist_files.keys())
+        all_lists = list(self.word_files.keys())
         if MY_OS in 'lin, dar':
             self.choose_wordlist['values'] = all_lists
         # Need to remove 'System dictionary' from Windows usage.
@@ -652,51 +591,50 @@ class PassGenerator:
         self.choose_wordlist.current(0)
 
         fnf_msg = ('\nHmmm. Cannot locate system dictionary\n'
-                   ' words nor any custom wordlist files\n'
-                   ' (*_wordlist.txt). Wordlist files should be\n'
-                   ' in a folder called "wordfiles" included\n'
-                   ' with the repository downloaded from:\n'
+                   'words nor any custom wordlist files\n'
+                   '(*_wordlist.txt). Wordlist files should be\n'
+                   'in a folder called "wordlists" included\n'
+                   'with the repository downloaded from:\n'
                    f'{PROJ_URL}\nWill exit program now...')
 
-        wordfiles = glob.glob(WORDDIR + '*_wordlist.txt')
-        # This covers OS with and w/o system dictionary.
+        wordfile_list = glob.glob(WORDDIR + '*_wordlist.txt')
+        # This covers platforms with and w/o system dictionary.
         if Path.is_file(SYSDICT_PATH) is False:
-            if len(wordfiles) == 0:
+            if len(wordfile_list) == 0:
                 print(fnf_msg)
                 messagebox.showinfo(title='Files not found', detail=fnf_msg)
                 quit_gui()
 
-            if len(wordfiles) > 0 and MY_OS != 'win':
+            if len(wordfile_list) > 0 and MY_OS != 'win':
                 notice = ('Hmmm. The system dictionary cannot be found.\n'
                           'Using only custom wordlists ...')
                 # print(notice)
                 messagebox.showinfo(title='File not found', detail=notice)
-                # Need to remove 'System dictionary' from available wordlists.
-                all_lists = list(self.wordlist_files.keys())
+                # Need to remove 'System dictionary' as an option.
+                all_lists = list(self.word_files.keys())
                 all_lists.remove('System dictionary')
                 self.choose_wordlist['values'] = all_lists
-                self.choose_wordlist.current(0)
-                self.get_words()
 
-        elif Path.is_file(SYSDICT_PATH) is True and len(wordfiles) == 0:
+        elif Path.is_file(SYSDICT_PATH) is True and len(wordfile_list) == 0:
             notice = ('Oops! Optional wordlists are missing.\n'
                       'Wordlist files should be in a folder\n'
-                      ' called "wordlists" included with'
-                      ' the repository downloaded from:\n'
+                      'called "wordlists" included with\n'
+                      'the repository downloaded from:\n'
                       f'{PROJ_URL}\n'
                       'Using system dictionary words...\n')
             self.choose_wordlist.config(state='disabled')
             # print(notice)
             messagebox.showinfo(title='File not found', detail=notice)
             self.choose_wordlist['values'] = ('System dictionary',)
-            self.choose_wordlist.current(0)
-            self.get_words()
 
-    def get_words(self, event = None) -> int:
+        self.choose_wordlist.current(0)
+        self.get_words()
+
+    def get_words(self, *args) -> int:
         """
         Populate lists with words to randomize in set_passstrings().
 
-        :param event: optional event is a call from ComboboxSelected.
+        :param args: optional event is a call from ComboboxSelected.
 
         :return: Two lists: all words from file, shorter words from file.
         """
@@ -705,16 +643,18 @@ class PassGenerator:
         #   use set() and split() here to generalize for any text file.
         # Need read_text(encoding) for Windows to read all wordlist fonts.
         choice = self.choose_wordlist.get()
-        wordfile = self.wordlist_files[choice]
+        wordfile = self.word_files[choice]
         all_words = set(Path(wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
-        self.word_list = [word for word in all_words if word.isalpha()]
-        self.short_list = [word for word in self.word_list if 8 >= len(word) >= 3]
+        wl = self.listdata['word_list'] = [
+            word for word in all_words if word.isalpha()]
+        self.listdata['short_list'] = [
+            word for word in wl if 8 >= len(word) >= 3]
 
-        return len(self.word_list)
+        return len(wl)
 
     def set_passstrings(self) -> None:
         """
@@ -744,29 +684,30 @@ class PassGenerator:
 
         # Need to filter words and strings containing characters to be excluded.
         unused = self.exclude_entry.get().strip()
-        # Don't repopulate lists if unchanged between calls.
-        if unused != self.prior_unused:
+        # No need to repopulate lists if unchanged between calls.
+        if unused != self.strdata['prior_unused']:
             if len(unused) > 0:
-                self.word_list = [
-                    word for word in self.word_list if unused not in word]
-                self.short_list = [
-                    word for word in self.short_list if unused not in word]
-                self.symbols = [
-                    char for char in self.symbols if unused not in char]
-                self.digi = [
-                    num for num in self.digi if unused not in num]
-                self.caps = [
-                    letter for letter in self.caps if unused not in letter]
-                self.all_char = [
-                    char for char in self.all_char if unused not in char]
-                self.some_char = [
-                    char for char in self.some_char if unused not in char]
+                self.listdata['word_list'] = [
+                    word for word in self.listdata['word_list'] if unused not in word]
+                self.listdata['short_list'] = [
+                    word for word in self.listdata['short_list'] if unused not in word]
+                self.strdata['symbols'] = [
+                    string for string in self.strdata['symbols'] if unused not in string]
+                self.strdata['digi'] = [
+                    string for string in self.strdata['digi'] if unused not in string]
+                self.strdata['caps'] = [
+                    string for string in self.strdata['caps'] if unused not in string]
+                self.strdata['all_char'] = [
+                    string for string in self.strdata['all_char'] if unused not in string]
+                self.strdata['some_char'] = [
+                    string for string in self.strdata['some_char'] if unused not in string]
 
                 # Display currently excluded characters
-                self.all_unused = self.all_unused + ' ' + unused
-                self.excluded.set(self.all_unused)
+                self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
+                self.tkdata['excluded'].set(self.strdata['all_unused'])
 
-                self.prior_unused = unused
+                self.strdata['prior_unused'] = unused
+
             # Need to reset to default lists if user deletes prior entry.
             elif len(unused) == 0:
                 self.reset_exclusions()
@@ -775,36 +716,35 @@ class PassGenerator:
         if ' ' in unused:
             self.reset_exclusions()
 
-        # Randomly select user-specified number of pp words and pw characters.
-        passphrase = "".join(VERY_RANDOM.choice(self.word_list) for
+        passphrase = "".join(VERY_RANDOM.choice(self.listdata['word_list']) for
                              _ in range(numwords))
-        shortphrase = "".join(VERY_RANDOM.choice(self.short_list) for
+        shortphrase = "".join(VERY_RANDOM.choice(self.listdata['short_list']) for
                               _ in range(numwords))
-        password1 = "".join(VERY_RANDOM.choice(self.all_char) for
+        password1 = "".join(VERY_RANDOM.choice(self.strdata['all_char']) for
                                  _ in range(numchars))
-        password2 = "".join(VERY_RANDOM.choice(self.some_char) for
+        password2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
                             _ in range(numchars))
 
         # Randomly select symbols to append; number is not user-specified.
-        addsymbol = "".join(VERY_RANDOM.choice(self.symbols) for _ in range(1))
-        addnum = "".join(VERY_RANDOM.choice(self.digi) for _ in range(1))
-        addcaps = "".join(VERY_RANDOM.choice(self.caps) for _ in range(1))
+        addsymbol = "".join(VERY_RANDOM.choice(self.strdata['symbols']) for _ in range(1))
+        addnum = "".join(VERY_RANDOM.choice(self.strdata['digi']) for _ in range(1))
+        addcaps = "".join(VERY_RANDOM.choice(self.strdata['caps']) for _ in range(1))
 
         # Build final passphrase alternatives.
         phraseplus = passphrase + addsymbol + addnum + addcaps
         phraseshort = shortphrase + addsymbol + addnum + addcaps
 
         # Set all pass-strings for display in results frames.
-        self.phrase_raw.set(passphrase)
-        self.pp_raw_length.set(len(passphrase))
-        self.phrase_plus.set(phraseplus)
-        self.pp_plus_length.set(len(phraseplus))
-        self.phrase_short.set(phraseshort)
-        self.pp_short_length.set(len(phraseshort))
-        self.pw_any.set(password1)
-        self.pw_any_length.set(len(password1))
-        self.pw_some.set(password2)
-        self.pw_some_length.set(len(password2))
+        self.tkdata['phrase_raw'].set(passphrase)
+        self.tkdata['pp_raw_len'].set(len(passphrase))
+        self.tkdata['phrase_plus'].set(phraseplus)
+        self.tkdata['pp_plus_len'].set(len(phraseplus))
+        self.tkdata['phrase_short'].set(phraseshort)
+        self.tkdata['pp_short_len'].set(len(phraseshort))
+        self.tkdata['pw_any'].set(password1)
+        self.tkdata['pw_any_len'].set(len(password1))
+        self.tkdata['pw_some'].set(password2)
+        self.tkdata['pw_some_len'].set(len(password2))
 
         # Finally, set H values for each pass-string and configure results.
         self.set_entropy(numwords, numchars)
@@ -824,9 +764,9 @@ class PassGenerator:
         # from a set to obtain H, then sum all P.
         # https://en.wikipedia.org/wiki/Entropy_(information_theory)
         # Note that length of these string may reflect excluded characters.
-        h_symbol =  -log(1 / len(self.symbols), 2)
-        h_digit = -log(1 / len(self.digi), 2)
-        h_cap = -log(1 / len(self.caps), 2)
+        h_symbol =  -log(1 / len(self.strdata['symbols']), 2)
+        h_digit = -log(1 / len(self.strdata['digi']), 2)
+        h_cap = -log(1 / len(self.strdata['caps']), 2)
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 11
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
@@ -835,12 +775,14 @@ class PassGenerator:
         #   the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_pstrings().
         # Need to display H as integer, not float.
-        self.pp_raw_h.set(int(numwords * log(len(self.word_list)) / log(2)))
-        self.pp_plus_h.set(self.pp_raw_h.get() + h_add3)
-        h_some = int(numwords * log(len(self.short_list)) / log(2))
-        self.pp_short_h.set(h_some + h_add3)
-        self.pw_any_h.set(int(numchars * log(len(self.all_char)) / log(2)))
-        self.pw_some_h.set(int(numchars * log(len(self.some_char)) / log(2)))
+        self.tkdata['pp_raw_h'].set(int(numwords * log(len(self.listdata['word_list'])) / log(2)))
+        self.tkdata['pp_plus_h'].set(self.tkdata['pp_raw_h'].get() + h_add3)
+        h_some = int(numwords * log(len(self.listdata['short_list'])) / log(2))
+        self.tkdata['pp_short_h'].set(h_some + h_add3)
+        self.tkdata['pw_any_h'].set(
+            int(numchars * log(len(self.strdata['all_char'])) / log(2)))
+        self.tkdata['pw_some_h'].set(
+            int(numchars * log(len(self.strdata['some_char'])) / log(2)))
 
     def config_results(self) -> None:
         """
@@ -865,23 +807,23 @@ class PassGenerator:
         small_font = 'Courier', 10
         if MY_OS == 'dar':
             small_font = 'Courier', 12
-        if self.pp_raw_length.get() > W:
+        if self.tkdata['pp_raw_len'].get() > W:
             self.pp_raw_show.config(font=small_font,
-                                    width=self.pp_raw_length.get())
+                                    width=self.tkdata['pp_raw_len'].get())
             self.pp_plus_show.config(font=small_font)
             self.pp_short_show.config(font=small_font)
 
-        elif self.pp_raw_length.get() <= W:
+        elif self.tkdata['pp_raw_len'].get() <= W:
             self.pp_raw_show.config(font=self.display_font, width=W)
             self.pp_plus_show.config(font=self.display_font, width=W)
             self.pp_short_show.config(font=self.display_font, width=W)
 
-        if self.pw_any_length.get() > W:
+        if self.tkdata['pw_any_len'].get() > W:
             self.pw_any_show.config(font=small_font,
-                                    width=self.pw_any_length.get())
+                                    width=self.tkdata['pw_any_len'].get())
             self.pw_some_show.config(font=small_font)
 
-        elif self.pw_any_length.get() <= W:
+        elif self.tkdata['pw_any_len'].get() <= W:
             self.pw_any_show.config(font=self.display_font, width=W)
             self.pw_some_show.config(font=self.display_font, width=W)
 
@@ -891,13 +833,14 @@ class PassGenerator:
         :return: get_words() method with default values.
         """
         self.exclude_entry.delete(0, 'end')
-        self.excluded.set('')
-        self.all_unused = ''
-        self.symbols = SYMBOLS
-        self.digi = digits
-        self.caps = ascii_uppercase
-        self.all_char = ascii_letters + digits + punctuation
-        self.some_char = ascii_letters + digits + SYMBOLS
+        self.tkdata['excluded'].set('')
+        self.strdata['all_unused'] = ''
+
+        self.strdata['symbols'] = SYMBOLS
+        self.strdata['digi'] = digits
+        self.strdata['caps'] = ascii_uppercase
+        self.strdata['all_char'] = ascii_letters + digits + punctuation
+        self.strdata['some_char'] = ascii_letters + digits + SYMBOLS
 
         self.get_words()
 
