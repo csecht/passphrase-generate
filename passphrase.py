@@ -587,8 +587,6 @@ class PassGenerator:
         elif MY_OS == 'win':
             all_lists.remove('System dictionary')
             self.choose_wordlist['values'] = all_lists
-        # Default is the 1st wordlist in dictionary.
-        self.choose_wordlist.current(0)
 
         fnf_msg = ('\nHmmm. Cannot locate system dictionary\n'
                    'words nor any custom wordlist files\n'
@@ -627,6 +625,7 @@ class PassGenerator:
             messagebox.showinfo(title='File not found', detail=notice)
             self.choose_wordlist['values'] = ('System dictionary',)
 
+        # Default is the 1st wordlist in dictionary.
         self.choose_wordlist.current(0)
         self.get_words()
 
