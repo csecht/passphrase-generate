@@ -565,7 +565,6 @@ class PassGenerator:
         self.exclude_info_b.grid( column=1, row=9, pady=(20, 5), padx=(65, 0),
                                   sticky=tk.W)
         # Need to adjust padding for MacOS b/c of different character widths.
-        # The difference from lin/dar is 9 (for some reason?).
         if MY_OS == 'dar':
             self.exclude_head.grid(padx=(8, 0))
             self.exclude_info_b.grid(padx=(84, 0))
@@ -625,7 +624,7 @@ class PassGenerator:
             messagebox.showinfo(title='File not found', detail=notice)
             self.choose_wordlist['values'] = ('System dictionary',)
 
-        # Default is the 1st wordlist in dictionary.
+        # Default is the 1st available wordlist.
         self.choose_wordlist.current(0)
         self.get_words()
 
@@ -633,9 +632,8 @@ class PassGenerator:
         """
         Populate lists with words to randomize in set_passstrings().
 
-        :param args: optional event is a call from ComboboxSelected.
-
-        :return: Two lists: all words from file, shorter words from file.
+        :param args: a virtual event call from ComboboxSelected.
+        :return: Integer length of active word list (for Fyi.explain())
         """
 
         # The *_wordlist.txt files have only unique words, but...
