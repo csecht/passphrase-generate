@@ -41,5 +41,8 @@ Optional wordlists were derived from texts obtained from these sites:
 
 The `make_wordlist.py` script from https://github.com/csecht/make_wordlist was used to create the custom wordlists used here. That repository also includes source text files for these wordlists.
 
+## Tips:
+The program places no limits on the length of pass-strings, though your system memory might. The program's entry fields have a fixed width, but can accommodate longer entries. The window can be dragged to accommodate longer results up to a limit; results exceeding that limit can still be copied and pasted.
+
 ## Development plans:
 - Make Debian package
