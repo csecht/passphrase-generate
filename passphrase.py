@@ -520,8 +520,8 @@ class PassModeler:
         """
         self.share.exclude_entry.delete(0, 'end')
         self.share.tkdata['excluded'].set('')
-        self.strdata['all_unused'] = ''
 
+        self.strdata['all_unused'] = ''
         self.strdata['symbols'] = SYMBOLS
         self.strdata['digi'] = digits
         self.strdata['caps'] = ascii_uppercase
@@ -592,9 +592,9 @@ class PassViewer(tk.Frame):
         if MY_OS == 'dar':
             self.pp_section_head.config(font=('default', 16))
 
-        self.result_frame1 = tk.Frame(borderwidth=3, relief='sunken',
+        self.result_frame1 = tk.Frame(master, borderwidth=3, relief='sunken',
                                       background=self.dataframe_bg)
-        self.result_frame2 = tk.Frame(borderwidth=3, relief='sunken',
+        self.result_frame2 = tk.Frame(master, borderwidth=3, relief='sunken',
                                       background=self.dataframe_bg)
 
         self.pp_raw_head =   tk.Label(text="Any words",
@@ -737,8 +737,8 @@ class PassViewer(tk.Frame):
 
         # Need pass-string fields to stretch with window drag size.
         self.master.columnconfigure(3, weight=1)
-        self.result_frame1.columnconfigure(2, weight=1)
-        self.result_frame2.columnconfigure(2, weight=1)
+        self.result_frame1.columnconfigure(3, weight=2)
+        self.result_frame2.columnconfigure(3, weight=2)
 
         # Widget configurations are generally listed top to bottom of window.
         self.master.bind("<Escape>", lambda q: quit_gui())
@@ -830,7 +830,7 @@ class PassViewer(tk.Frame):
         self.generate_btn.grid(   column=3, row=5, pady=(10, 5), rowspan=2,
                                   padx=(125, 0), sticky=tk.W)
         if MY_OS == 'dar':
-            self.generate_btn.grid( padx=(50, 0))
+            self.generate_btn.grid( padx=(40, 0))
 
         # Password widgets ####################################################
         self.pw_section_head.grid(column=0, row=5, pady=(12, 6), padx=5,
@@ -865,20 +865,20 @@ class PassViewer(tk.Frame):
         self.share.exclude_entry.grid(
                                  column=0, row=9, pady=(20, 5), padx=(0, 15),
                                  sticky=tk.E)
-        # self.reset_button.grid(  column=1, row=9, pady=(20, 5), padx=(0, 0),
-        #                          sticky=tk.W)
         self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(0, 0),
                                  sticky=tk.W)
+
+        self.excluded_head.grid(column=0, row=10, pady=(0, 8), sticky=tk.E)
+        self.reset_button.grid( column=0, row=10, pady=(0, 12), padx=(20, 0),
+                                sticky=tk.W)
+        self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
 
         # Need to adjust padding for MacOS b/c of different character widths.
         if MY_OS == 'dar':
             self.exclude_head.grid(padx=(8, 0))
-            self.exclude_info_b.grid(padx=(84, 0))
-
-        self.excluded_head.grid(column=0, row=10, pady=(0, 8), sticky=tk.E)
-        self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
-        self.reset_button.grid(  column=0, row=10, pady=(0, 12), padx=(20, 0),
-                                 sticky=tk.W)
+            self.reset_button.grid( columnspan=2, padx=(15, 0))
+            self.excluded_head.grid(columnspan=2, padx=(90, 0), sticky=tk.W)
+            self.excluded_show.grid(column=0, columnspan=2, padx=(218, 0))
 
 
 class PassController(tk.Tk):
@@ -925,8 +925,12 @@ class PassController(tk.Tk):
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    app.minsize(970, 425)
-    app.maxsize(1230, 425)
+    if MY_OS == 'lin':
+        app.minsize(970, 425)
+        app.maxsize(1230, 425)
+    elif MY_OS == 'dar':
+        app.minsize(850, 425)
+        app.maxsize(1230, 425)
     if MY_OS == 'win':
         app.minsize(950, 390)
         app.maxsize(1230, 390)
