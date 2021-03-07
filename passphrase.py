@@ -45,28 +45,33 @@ class RightClickEdit:
     needing the action.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
-    def __init__(self, event):
-        self.event = event
+    def __init__(self, click):
+        self.click = click
         self.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
-        self.right_click_menu.tk_popup(event.x_root + 10, event.y_root + 10)
+        self.right_click_menu.tk_popup(click.x_root + 10, click.y_root + 10)
         self.menu_commands()
 
     def menu_commands(self):
-        """Structured for general use, but using only for Copy."""
+        """
+        Structured for general use; txt is what appears in pull-down
+        menu.
+        """
         # for txt in ('Cut', 'Copy', 'Paste'):
         for txt in ('Copy', 'Paste'):
             self.right_click_menu.add_command(
-                label=txt, command=lambda event=self.event, text=txt:
-                self.right_click_command(event, text))
+                label=txt, command=lambda click=self.click, text=txt:
+                self.right_click_command(click, text))
 
     # @staticmethod
-    def right_click_command(self, event, cmd):
-        """Generate event selected in pop-up menu.
+    def right_click_command(self, click, cmd):
+        """Generate action selected in pop-up menu. Uses a virtual event
+        from the tkinter Universal Widget Method.
 
-        :param event: Right button mouse click (or Trackpad equivalent).
+        :param click: Right button mouse click (or Trackpad equivalent).
         :param cmd: Text editing command selected from menu.
         """
-        self.event.widget.event_generate(f'<<{cmd}>>')
+        # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/universal.html
+        self.click.widget.event_generate(f'<<{cmd}>>')
 
 
 class Fyi:
