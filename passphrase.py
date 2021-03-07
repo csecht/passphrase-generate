@@ -52,7 +52,7 @@ class RightClickCopy:
     def menu_commands(self):
         """Structured for general use, but using only for Copy."""
         # for txt in ('Cut', 'Copy', 'Paste'):
-        for txt in ('Copy',):
+        for txt in ('Copy', 'Paste'):
             self.right_click_menu.add_command(
                 label=txt, command=lambda event=self.event, text=txt:
                 self.right_click_command(event, text))
@@ -405,7 +405,7 @@ class PassModeler:
         shortphrase = "".join(VERY_RANDOM.choice(self.listdata['short_list']) for
                               _ in range(numwords))
         password1 = "".join(VERY_RANDOM.choice(self.strdata['all_char']) for
-                                 _ in range(numchars))
+                            _ in range(numchars))
         password2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
                             _ in range(numchars))
 
@@ -668,7 +668,7 @@ class PassViewer(tk.Frame):
         self.share.numchars_entry.insert(0, 0)
 
         self.l_and_h_header2 =  tk.Label(text=' H      L', width=10,
-                                        fg=self.master_fg, bg=self.master_bg)
+                                         fg=self.master_fg, bg=self.master_bg)
 
         self.pw_any_head = tk.Label(   text="Any characters", fg=self.master_fg,
                                        bg=self.master_bg)
@@ -792,7 +792,7 @@ class PassViewer(tk.Frame):
         self.grid(column=0, row=0, sticky=tk.NSEW, rowspan=11, columnspan=4,
                   padx=3, pady=(3, 4))
 
-        ############## sorted by row number #################
+        # %%%%%%%%%%%%%%%%%%%%%%%% sorted by row number %%%%%%%%%%%%%%%%%%%%%%%
         # Passphrase widgets ##################################################
         self.pp_section_head.grid(column=0, row=0, pady=(10, 5), padx=5,
                                   sticky=tk.W)
@@ -814,14 +814,16 @@ class PassViewer(tk.Frame):
         self.pp_raw_len_lbl.grid( column=2, row=2, pady=(5, 3), padx=(5, 0))
         self.share.pp_raw_show.grid(column=3, row=2, pady=(5, 3), padx=5,
                                     ipadx=5, sticky=tk.EW)
+
         self.pp_plus_head.grid(   column=0, row=3, pady=(3, 0), sticky=tk.E)
         self.pp_plus_h_lbl.grid(  column=1, row=3, pady=(5, 3), padx=(5, 0))
         self.pp_plus_len_lbl.grid(column=2, row=3, pady=(5, 3), padx=(5, 0))
         self.share.pp_plus_show.grid(column=3, row=3, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
-        self.pp_short_head.grid(  column=0, row=4, pady=(3, 6), sticky=tk.E)
-        self.pp_short_h_lbl.grid( column=1, row=4, pady=3, padx=(5, 0))
-        self.pp_short_len_lbl.grid(column=2, row=4, pady=3, padx=(5, 0))
+
+        self.pp_short_head.grid(     column=0, row=4, pady=(3, 6), sticky=tk.E)
+        self.pp_short_h_lbl.grid(    column=1, row=4, pady=3, padx=(5, 0))
+        self.pp_short_len_lbl.grid(  column=2, row=4, pady=3, padx=(5, 0))
         self.share.pp_short_show.grid(column=3, row=4, pady=6, padx=5,
                                       ipadx=5, sticky=tk.EW)
 
@@ -830,7 +832,7 @@ class PassViewer(tk.Frame):
         self.generate_btn.grid(   column=3, row=5, pady=(10, 5), rowspan=2,
                                   padx=(125, 0), sticky=tk.W)
         if MY_OS == 'dar':
-            self.generate_btn.grid( padx=(40, 0))
+            self.generate_btn.grid(padx=(40, 0))
 
         # Password widgets ####################################################
         self.pw_section_head.grid(column=0, row=5, pady=(12, 6), padx=5,
@@ -852,6 +854,7 @@ class PassViewer(tk.Frame):
         self.pw_any_len_lbl.grid( column=2, row=7, pady=(6, 3), padx=(5, 0))
         self.share.pw_any_show.grid(column=3, row=7, pady=(6, 3), padx=5,
                                     columnspan=2, ipadx=5, sticky=tk.EW)
+
         self.pw_some_head.grid(   column=0, row=8, pady=(0, 6), padx=(5, 0),
                                   sticky=tk.E)
         self.pw_some_h_lbl.grid(  column=1, row=8, pady=3, padx=(5, 0))
