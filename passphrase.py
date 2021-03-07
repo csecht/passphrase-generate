@@ -56,7 +56,6 @@ def rightclick_edit(select) -> None:
     """
     select.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
     select.right_click_menu.tk_popup(select.x_root + 10, select.y_root + 10)
-    select.right_click_menu.grab_release()
     for txt in ('Copy', 'Paste'):
         select.right_click_menu.add_command(
             label=txt,
