@@ -40,9 +40,9 @@ W = 65  # Default width of the results display fields.
 
 class RightClickEdit:
     """
-    Right-click pop-up option to copy or paste selected text.
-    Right-click is set as a bind() button action in a Text widget
-    needing the action.
+    Event handler for right-click to present a pop-up menu to copy or
+    paste selected text. Right-click is set as a binding button action
+    in any Text widget ow window needing the action.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, click):
@@ -64,8 +64,7 @@ class RightClickEdit:
 
     # @staticmethod
     def right_click_command(self, click, cmd):
-        """Generate action selected in pop-up menu. Uses a virtual event
-        from the tkinter Universal Widget Method.
+        """Generate action selected in pop-up menu.
 
         :param click: Right button mouse click (or Trackpad equivalent).
         :param cmd: Text editing command selected from menu.
