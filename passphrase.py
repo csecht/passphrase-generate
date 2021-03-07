@@ -38,42 +38,30 @@ VERY_RANDOM = random.Random(random.random())
 W = 65  # Default width of the results display fields.
 
 
-class RightClickEdit:
+def quit_gui() -> None:
+    """Safe and informative exit from the program.
     """
-    Event handler for right-click to present a pop-up menu for copying or
-    pasting selected text. Right-click is set as a binding button action
-    in any Text widget or window needing the action.
+    print('\n  *** User has quit the program. Exiting...\n')
+    app.destroy()
+    sys.exit(0)
+
+
+def rightclick_edit(select) -> None:
     """
-    # Based on: https://stackoverflow.com/questions/57701023/
-    def __init__(self, click):
-        self.click = click
-        self.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
-        try:
-            self.right_click_menu.tk_popup(click.x_root + 10, click.y_root + 10)
-        finally:
-            self.right_click_menu.grab_release()
-        self.menu_commands()
+    Makes on the fly a pop-up edit menu in any Text widget that has a
+    mouse button binding to here; right-click is the expected binding.
 
-    def menu_commands(self):
-        """
-        Structured for general use; txt is what appears in pull-down
-        menu.
-        """
-        # for txt in ('Cut', 'Copy', 'Paste'):
-        for txt in ('Copy', 'Paste'):
-            self.right_click_menu.add_command(
-                label=txt, command=lambda click=self.click, text=txt:
-                self.right_click_command(click, text))
-
-    # @staticmethod
-    def right_click_command(self, click, cmd):
-        """Generate action selected in pop-up menu.
-
-        :param click: Right button mouse click (or Trackpad equivalent).
-        :param cmd: Text editing command selected from menu.
-        """
-        # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/universal.html
-        self.click.widget.event_generate(f'<<{cmd}>>')
+    :param select: local parameter
+    :return: None
+    """
+    select.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
+    select.right_click_menu.tk_popup(select.x_root + 10, select.y_root + 10)
+    select.right_click_menu.grab_release()
+    for txt in ('Copy', 'Paste'):
+        select.right_click_menu.add_command(
+            label=txt,
+            command=lambda event=select, cmd=txt:
+            select.widget.event_generate(f'<<{cmd}>>'))
 
 
 class Fyi:
@@ -142,10 +130,11 @@ equivalent to bits of entropy. For more information see:
                            relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', info)
         infotext.pack()
+
         if MY_OS == 'dar':
-            infotext.bind('<Button-2>', RightClickEdit)
+            infotext.bind('<Button-2>', rightclick_edit)
         elif MY_OS in 'lin, win':
-            infotext.bind('<Button-3>', RightClickEdit)
+            infotext.bind('<Button-3>', rightclick_edit)
 
     @staticmethod
     def about() -> None:
@@ -193,10 +182,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack()
+
         if MY_OS == 'dar':
-            abouttxt.bind('<Button-2>', RightClickEdit)
+            abouttxt.bind('<Button-2>', rightclick_edit)
         elif MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', RightClickEdit)
+            abouttxt.bind('<Button-3>', rightclick_edit)
 
     @staticmethod
     def exclude_msg() -> None:
@@ -225,14 +215,6 @@ between characters will also trigger a reset.
                            relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', msg)
         infotext.pack()
-
-
-def quit_gui() -> None:
-    """Safe and informative exit from the program.
-    """
-    print('\n  *** User has quit the program. Exiting...\n')
-    app.destroy()
-    sys.exit(0)
 
 
 # NOTE: MVC Class order does not matter.
@@ -738,9 +720,9 @@ class PassViewer(tk.Frame):
         self.config(bg=self.master_bg)
 
         if MY_OS == 'dar':
-            self.master.bind('<Button-2>', RightClickEdit)
+            self.master.bind('<Button-2>', rightclick_edit)
         elif MY_OS in 'lin, win':
-            self.master.bind('<Button-3>', RightClickEdit)
+            self.master.bind('<Button-3>', rightclick_edit)
 
         # Need pass-string fields to stretch with window drag size.
         self.master.columnconfigure(3, weight=1)
