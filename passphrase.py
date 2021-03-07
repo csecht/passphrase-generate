@@ -40,15 +40,18 @@ W = 65  # Default width of the results display fields.
 
 class RightClickEdit:
     """
-    Event handler for right-click to present a pop-up menu to copy or
-    paste selected text. Right-click is set as a binding button action
-    in any Text widget ow window needing the action.
+    Event handler for right-click to present a pop-up menu for copying or
+    pasting selected text. Right-click is set as a binding button action
+    in any Text widget or window needing the action.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, click):
         self.click = click
         self.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
-        self.right_click_menu.tk_popup(click.x_root + 10, click.y_root + 10)
+        try:
+            self.right_click_menu.tk_popup(click.x_root + 10, click.y_root + 10)
+        finally:
+            self.right_click_menu.grab_release()
         self.menu_commands()
 
     def menu_commands(self):
