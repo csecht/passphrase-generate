@@ -6,7 +6,7 @@ structured in three main classes of Model, View, and Controller. Based
 on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
 """
 
-__version__ = '0.7.1'
+__version__ = '0.7.2'
 
 import glob
 import random
@@ -308,6 +308,11 @@ class PassModeler:
 
         :param args: a virtual event call from choose_wordlist Combobox.
         """
+
+        # Need to remove displayed excluded characters when a new wordlist
+        #  is selected because no characters are excluded from a new list.
+        self.share.exclude_entry.delete(0, 'end')
+        self.share.tkdata['excluded'].set('')
 
         # The *_wordlist.txt files have only unique words, but...
         #   use set() and split() here to generalize for any text file.
