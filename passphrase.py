@@ -6,7 +6,7 @@ structured in three main classes of Model, View, and Controller. Based
 on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
 """
 
-__version__ = '0.7.0'
+__version__ = '0.7.1'
 
 import glob
 import random
@@ -27,7 +27,7 @@ except (ImportError, ModuleNotFoundError) as error:
 PROJ_URL = 'github.com/csecht/passphrase-generate'
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
-SYMBOLS = "~!@#$%^&*()_-+="
+SYMBOLS = "~!@#$%^&*_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
 SYSDICT_PATH = Path('/usr/share/dict/words')
 WORDDIR = './wordlists/'
@@ -38,9 +38,11 @@ VERY_RANDOM = random.Random(random.random())
 W = 65  # Default width of the results display fields.
 
 
-class RightClickCopy:
+class RightClickEdit:
     """
-    Right-click pop-up option to copy selected text.
+    Right-click pop-up option to copy or paste selected text.
+    Right-click is set as a bind() button action in a Text widget
+    needing the action.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
@@ -57,14 +59,14 @@ class RightClickCopy:
                 label=txt, command=lambda event=self.event, text=txt:
                 self.right_click_command(event, text))
 
-    @staticmethod
-    def right_click_command(event, cmd):
+    # @staticmethod
+    def right_click_command(self, event, cmd):
         """Generate event selected in pop-up menu.
 
         :param event: Right button mouse click (or Trackpad equivalent).
         :param cmd: Text editing command selected from menu.
         """
-        event.widget.event_generate(f'<<{cmd}>>')
+        self.event.widget.event_generate(f'<<{cmd}>>')
 
 
 class Fyi:
@@ -97,9 +99,8 @@ f' from the\ncurrently selected wordlist, {selection}.\n'
 """
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are not
-available nor counted above. You may need to click the Generate! button
-(or use Ctrl G) to update the non-excluded word count. Multiple windows
-can remain open to compare the counts and lists reported above.
+available nor counted above. Multiple windows can remain open to compare
+the counts of different wordlists.
 
 Optional wordfiles were derived from texts obtained from these sites:
     https://www.gutenberg.org
@@ -135,9 +136,9 @@ equivalent to bits of entropy. For more information see:
         infotext.insert('1.0', info)
         infotext.pack()
         if MY_OS == 'dar':
-            infotext.bind('<Button-2>', RightClickCopy)
+            infotext.bind('<Button-2>', RightClickEdit)
         elif MY_OS in 'lin, win':
-            infotext.bind('<Button-3>', RightClickCopy)
+            infotext.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
     def about() -> None:
@@ -186,9 +187,9 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack()
         if MY_OS == 'dar':
-            abouttxt.bind('<Button-2>', RightClickCopy)
+            abouttxt.bind('<Button-2>', RightClickEdit)
         elif MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', RightClickCopy)
+            abouttxt.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
     def exclude_msg() -> None:
@@ -347,7 +348,6 @@ class PassModeler:
 
         # Need to correct invalid user entries for number of words & characters.
         numwords = self.share.numwords_entry.get().strip()
-
         if numwords == '':
             self.share.numwords_entry.insert(0, '0')
         elif numwords.isdigit() is False:
@@ -731,9 +731,9 @@ class PassViewer(tk.Frame):
         self.config(bg=self.master_bg)
 
         if MY_OS == 'dar':
-            self.master.bind('<Button-2>', RightClickCopy)
+            self.master.bind('<Button-2>', RightClickEdit)
         elif MY_OS in 'lin, win':
-            self.master.bind('<Button-3>', RightClickCopy)
+            self.master.bind('<Button-3>', RightClickEdit)
 
         # Need pass-string fields to stretch with window drag size.
         self.master.columnconfigure(3, weight=1)
