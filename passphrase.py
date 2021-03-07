@@ -133,6 +133,8 @@ equivalent to bits of entropy. For more information see:
 
         if MY_OS == 'dar':
             infotext.bind('<Button-2>', rightclick_edit)
+            infotext.configure(font=('default', 14), width=56,
+                               height=num_lines + 5)
         elif MY_OS in 'lin, win':
             infotext.bind('<Button-3>', rightclick_edit)
 
@@ -185,6 +187,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
         if MY_OS == 'dar':
             abouttxt.bind('<Button-2>', rightclick_edit)
+            abouttxt.configure(font=('default', 14), height=num_lines + 5)
         elif MY_OS in 'lin, win':
             abouttxt.bind('<Button-3>', rightclick_edit)
 
@@ -215,6 +218,9 @@ between characters will also trigger a reset.
                            relief='groove', borderwidth=8, padx=20, pady=10)
         infotext.insert('1.0', msg)
         infotext.pack()
+
+        if MY_OS == 'dar':
+            infotext.configure(font=('default', 14), width=42)
 
 
 # NOTE: MVC Class order does not matter.
