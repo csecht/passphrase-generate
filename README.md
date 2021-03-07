@@ -46,3 +46,7 @@ The program places no limits on the length of pass-strings, though your system m
 
 ## Development plans:
 - Make Debian package
+
+## Known issues:
+In version 0.7.1, the right-click copy and paste function does not work in MacOS and Windows, but does in Linux. Right-click copy does works in all systems in 0.6.x versions of passphrase.py. Hope to have it fixed in the next update. 
+Keyboard copy and paste functions do work, as always.
