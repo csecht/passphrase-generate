@@ -37,7 +37,7 @@ VERY_RANDOM = random.Random(random.random())
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
 W = 65  # Default width of the results display fields.
 
-
+# Functions independent of but used by passphrase MVC
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
@@ -46,24 +46,32 @@ def quit_gui() -> None:
     sys.exit(0)
 
 
-def rightclick_edit(select) -> None:
+class RightClickEdit:
     """
-    Makes on the fly a pop-up edit menu in any widget that has a mouse
-    button binding to here; right-click is the expected mouse action.
-
-    :param select: local parameter
-    :return: None
+    Right-click pop-up option to edit selected text; call as a Button-2
+    or Button-3 binding in Text or window that needs the function.
     """
-    # TODO: FIX, not working in Windows or Mac; works in Linux.
-    select.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
-    select.right_click_menu.tk_popup(select.x_root + 10, select.y_root + 10)
-    for txt in ('Copy', 'Paste', 'Cut'):
-        select.right_click_menu.add_command(
-            label=txt,
-            command=lambda event=select, cmd=txt:
-            select.widget.event_generate(f'<<{cmd}>>'))
+    # Based on: https://stackoverflow.com/questions/57701023/
+    def __init__(self, event):
+        right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
+        right_click_menu.add_command(
+            label='Copy', command=lambda event=event, text='Copy':
+            self.right_click_command(event, 'Copy'))
+        right_click_menu.add_command(
+            label='Paste', command=lambda event=event, text='Paste':
+            self.right_click_command(event, 'Paste'))
+        right_click_menu.add_command(
+            label='Cut', command=lambda event=event, text='Cut':
+            self.right_click_command(event, 'Cut'))
+
+        right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
+
+    @staticmethod
+    def right_click_command(event, cmd):
+        event.widget.event_generate(f'<<{cmd}>>')
 
 
+# A supplemental function for use only by passphrase MVC
 class Fyi:
     """Provide pop-up windows to answer user queries.
     """
@@ -132,11 +140,11 @@ equivalent to bits of entropy. For more information see:
         infotext.pack()
 
         if MY_OS == 'dar':
-            infotext.bind('<Button-2>', rightclick_edit)
+            infotext.bind('<Button-2>', RightClickEdit)
             infotext.configure(font=('default', 14), width=56,
                                height=num_lines + 5)
         elif MY_OS in 'lin, win':
-            infotext.bind('<Button-3>', rightclick_edit)
+            infotext.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
     def about() -> None:
@@ -186,10 +194,10 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.pack()
 
         if MY_OS == 'dar':
-            abouttxt.bind('<Button-2>', rightclick_edit)
+            abouttxt.bind('<Button-2>', RightClickEdit)
             abouttxt.configure(font=('default', 14), height=num_lines + 5)
         elif MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', rightclick_edit)
+            abouttxt.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
     def exclude_msg() -> None:
@@ -223,7 +231,7 @@ between characters will also trigger a reset.
             infotext.configure(font=('default', 14), width=42)
 
 
-# NOTE: MVC Class order does not matter.
+# passphrase main MVC classes; order does not matter.
 class PassModeler:
     """The modeler crunches input from viewer, then sends results back, via
     shared 'share' objects that are handled through the controller class.
@@ -731,9 +739,9 @@ class PassViewer(tk.Frame):
         self.config(bg=self.master_bg)
 
         if MY_OS == 'dar':
-            self.master.bind('<Button-2>', rightclick_edit)
+            self.master.bind('<Button-2>', RightClickEdit)
         elif MY_OS in 'lin, win':
-            self.master.bind('<Button-3>', rightclick_edit)
+            self.master.bind('<Button-3>', RightClickEdit)
 
         # Need pass-string fields to stretch with window drag size.
         self.master.columnconfigure(3, weight=1)
@@ -938,29 +946,3 @@ if __name__ == "__main__":
         app.minsize(950, 390)
         app.maxsize(1230, 390)
     app.mainloop()
-
-# Order of code execution relative to sorted code order:
-# physical order: C V M
-# Leaving Controller.
-# Leaving Modeler.
-# Leaving Viewer
-#
-# physical order: V C M
-# Leaving Controller.
-# Leaving Modeler.
-# Leaving Viewer
-#
-# physical order: M V C
-# Leaving Modeler.
-# Leaving Controller.
-# Leaving Viewer
-#
-# physical order: V M C
-# Leaving Modeler.
-# Leaving Controller.
-# Leaving Viewer.
-#
-# physical order: M C V
-# Leaving Modeler.
-# Leaving Controller.
-# Leaving Viewer.
