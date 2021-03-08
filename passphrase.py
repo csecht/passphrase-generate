@@ -112,7 +112,6 @@ class PassModeler:
         if MY_OS in 'lin, dar':
             self.share.choose_wordlist['values'] = all_lists
         # Need to remove 'System dictionary' from Windows usage.
-        # 'System dictionary' also removed in missing_syswords().
         elif MY_OS == 'win':
             all_lists.remove('System dictionary')
             self.share.choose_wordlist['values'] = all_lists
@@ -154,7 +153,7 @@ class PassModeler:
             messagebox.showinfo(title='File not found', detail=notice)
             self.share.choose_wordlist['values'] = ('System dictionary',)
 
-        # Default is the 1st available wordlist.
+        # Default in combobox is the 1st available wordlist.
         self.share.choose_wordlist.current(0)
 
     def get_words(self, *args) -> None:
