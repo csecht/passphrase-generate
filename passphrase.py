@@ -73,7 +73,7 @@ class RightClickEdit:
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-# Main MVC Classes. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Main MVC Classes. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 class PassModeler:
     """The modeler crunches input from viewer, then sends results back, via
     shared 'share' objects that are handled through the controller class.
@@ -952,7 +952,7 @@ if __name__ == "__main__":
     elif MY_OS == 'dar':
         app.minsize(850, 425)
         app.maxsize(1230, 425)
-    if MY_OS == 'win':
+    elif MY_OS == 'win':
         app.minsize(950, 390)
         app.maxsize(1230, 390)
     app.mainloop()
