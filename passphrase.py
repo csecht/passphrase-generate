@@ -6,7 +6,7 @@ structured in three main classes of Model, View, and Controller. Based
 on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
 """
 
-__version__ = '0.7.4'
+__version__ = '0.7.5'
 
 import glob
 import random
@@ -38,7 +38,7 @@ VERY_RANDOM = random.Random(random.random())
 W = 65  # Default width of the results display fields.
 
 
-# Functions independent of but used by passphrase MVC %%%%%%%%%%%%%%%%%%%%%%%%%
+# Functions independent of, but used by, passphrase MVC %%%%%%%%%%%%%%%%%%%%%%%
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
@@ -72,167 +72,8 @@ class RightClickEdit:
         event.widget.event_generate(f'<<{cmd}>>')
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# A supplemental class for use only by passphrase MVC %%%%%%%%%%%%%%%%%%%%%%%%%
-class Fyi:
-    """Provide pop-up windows to answer user queries.
-    """
 
-    @staticmethod
-    def explain(selection, wordcount) -> None:
-        """Provide information about words used to create passphrases.
-
-        :param selection: User selected wordlist name.
-        :param wordcount: Length of full selected wordlist list.
-        :return: An text window notice with current wordlist data.
-        """
-
-        info = (
-"""A passphrase is a random string of words that can be more secure and
-easier to remember than a password of random characters. For more
-information on passphrases, see, for example, a discussion of word lists
-and word selection at the Electronic Frontier Foundation (EFF):
-https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
-
-On MacOS and Linux systems, the system dictionary wordlist is used by
-default to provide words, though optional wordfiles are available.
-Windows users can use only the optional wordfiles.
-
-"""
-f'There are {wordcount} words available to construct passphrases'
-f' from the\ncurrently selected wordlist, {selection}.\n'
-"""
-There is an option to exclude any character or string of characters
-from passphrase words and passwords. Words with excluded letters are not
-available nor counted above. Multiple windows can remain open to compare
-the counts of different wordlists.
-
-Optional wordfiles were derived from texts obtained from these sites:
-    https://www.gutenberg.org
-    https://www.archives.gov/founding-docs/constitution-transcript
-    https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
-Although the EFF list contains 7776 selected words, only 7772 are used
-here because hyphenated words are excluded from all wordfiles.
-
-Words with less than 3 letters are not used in any wordlist.
-
-To accommodate some password requirements, a choice is provided that
-adds three characters : 1 symbol, 1 number, and 1 upper case letter.
-"""
-f'The symbols used are: {SYMBOLS}\n'
-"""
-In the results fields, L is the character length of each pass-string.
-H, as used here, is for comparing relative pass-string strengths.
-Higher is better; each increase of 1 doubles the relative strength.
-H is actually the information entropy (Shannon entropy) value and is
-equivalent to bits of entropy. For more information see:
-    https://explainxkcd.com/wiki/index.php/936:_Password_Strength
-    https://en.wikipedia.org/wiki/Password_strength
-    https://en.wikipedia.org/wiki/Entropy_(information_theory)
-"""
-)
-        infowin = tk.Toplevel()
-        infowin.title('A word about words and characters')
-
-        num_lines = info.count('\n')
-        infotext = tk.Text(infowin, width=75, height=num_lines + 1,
-                           background='grey40', foreground='grey98',
-                           relief='groove', borderwidth=8, padx=20, pady=10)
-        infotext.insert('1.0', info)
-        infotext.pack()
-
-        if MY_OS == 'dar':
-            infotext.bind('<Button-2>', RightClickEdit)
-            infotext.configure(font=('default', 14), width=56,
-                               height=num_lines + 5)
-        elif MY_OS in 'lin, win':
-            infotext.bind('<Button-3>', RightClickEdit)
-
-    @staticmethod
-    def about() -> None:
-        """Basic information about the script; called from GUI Help menu.
-
-        :return: Information window.
-        """
-        # msg separators use em dashes.
-        boilerplate = ("""
-passphrase.py and its stand-alones generate passphrases and passwords.
-Download the most recent version from:
-"""
-f'{PROJ_URL}'
-"""
-————————————————————————————————————————————————————————————————————
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.\n
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details.\n
-You should have received a copy of the GNU General Public License
-along with this program. If not, see https://www.gnu.org/licenses/
-————————————————————————————————————————————————————————————————————\n
-                   Author:     cecht
-                   Copyright:  Copyright (C) 2021 C.S. Echt
-                   Development Status: 4 - Beta
-                   Version:    """)  # __version__ is appended here.
-
-        num_lines = boilerplate.count('\n')
-        aboutwin = tk.Toplevel()
-        aboutwin.title('About Passphrase')
-        colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
-                  'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
-                  'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
-                  'DarkOrchid4']
-        bkg = random.choice(colour)
-        abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
-                           background=bkg, foreground='grey98',
-                           relief='groove', borderwidth=8, padx=5)
-        abouttxt.insert('0.0', boilerplate + __version__)
-        # Center text preceding the Author, etc. details.
-        abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
-        abouttxt.tag_configure('text1', justify='center')
-        abouttxt.pack()
-
-        if MY_OS == 'dar':
-            abouttxt.bind('<Button-2>', RightClickEdit)
-            abouttxt.configure(font=('default', 14), height=num_lines + 5)
-        elif MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', RightClickEdit)
-
-    @staticmethod
-    def exclude_msg() -> None:
-        """A pop-up describing how to use excluded characters.
-        Called only from a Button.
-
-        :return: A message text window.
-        """
-        msg = (
-"""
-Any character(s) you enter will not appear in passphrase
-words or passwords. Multiple characters are treated as a
-unit. For example, "es" will exclude "trees", not "eye"
-and  "says". To exclude everything having "e" and "s",
-enter "e", click Generate!, then enter "s" and Generate!
-
-The Reset button removes all exclusions. A space entered
-between characters will also trigger a reset.
-"""
-)
-        exclwin = tk.Toplevel()
-        exclwin.title('Exclude from what?')
-        num_lines = msg.count('\n')
-        infotext = tk.Text(exclwin, width=60, height=num_lines + 1,
-                           background='grey40', foreground='grey98',
-                           relief='groove', borderwidth=8, padx=20, pady=10)
-        infotext.insert('1.0', msg)
-        infotext.pack()
-
-        if MY_OS == 'dar':
-            infotext.configure(font=('default', 14), width=42)
-
-
-# passphrase main MVC classes. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Main MVC Classes. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 class PassModeler:
     """The modeler crunches input from viewer, then sends results back, via
     shared 'share' objects that are handled through the controller class.
@@ -344,8 +185,8 @@ class PassModeler:
         self.listdata['short_list'] = [
             word for word in longlist if 8 >= len(word) >= 3]
 
-        # This is used only as a Fyi.explain() parameter, which is called only
-        #   from the PassViewer.config_master Help menu.
+        # This is used only as a PassFyi.explain() parameter, which is called
+        #   only from the PassViewer.config_master Help menu.
         self.share.longlist_len = len(longlist)
 
     def make_pass(self) -> None:
@@ -552,7 +393,7 @@ class PassViewer(tk.Frame):
         self.master_fg =    'LightCyan2'  # Used for row headers.
         self.master_bg =    'SkyBlue4'  # Also used for some labels.
         self.dataframe_bg = 'grey40'  # Also background for data labels.
-        self.stubresult_fg = 'grey60'  # For initial pass-string stub, result uses pass_fg.
+        self.stubresult_fg = 'grey60'  # For initial pass-string stub.
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
@@ -768,9 +609,8 @@ class PassViewer(tk.Frame):
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(     label="Help", menu=help_menu)
         help_menu.add_command(label="What's going on here?",
-                              command=lambda: Fyi.explain(self.share.choose_wordlist.get(),
-                                                          self.share.longlist_len))
-        help_menu.add_command(label="About", command=Fyi.about)
+                              command=self.share.explain)
+        help_menu.add_command(label="About", command=self.share.about)
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -792,7 +632,7 @@ class PassViewer(tk.Frame):
                                       command=self.share.reset)
         self.exclude_info_b.configure(style="G.TButton", text="?",
                                       width=0,
-                                      command=Fyi.exclude_msg)
+                                      command=self.share.excludemsg)
 
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
@@ -931,6 +771,176 @@ class PassController(tk.Tk):
         """Is called only in response to reset button from the Viewer.
         """
         PassModeler(share=self).reset_exclusions()
+
+    def explain(self):
+        PassFyi(share=self).explain(self.choose_wordlist.get(), self.longlist_len)
+
+    def about(self):
+        PassFyi(share=self).about()
+
+    def excludemsg(self):
+        PassFyi(share=self).exclude_msg()
+
+
+class PassFyi:
+    """Provide pop-up windows to answer user queries.
+    """
+    def __init__(self, share):
+        self.share = share
+
+    @staticmethod
+    def explain(selection, wordcount) -> None:
+        """Provide information about words used to create passphrases.
+
+        :param selection: User selected wordlist name.
+        :param wordcount: Length of full selected wordlist list.
+        :return: An text window notice with current wordlist data.
+        """
+
+        info = (
+"""A passphrase is a random string of words that can be more secure and
+easier to remember than a password of random characters. For more
+information on passphrases, see, for example, a discussion of word lists
+and word selection at the Electronic Frontier Foundation (EFF):
+https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
+
+On MacOS and Linux systems, the system dictionary wordlist is used by
+default to provide words, though optional wordfiles are available.
+Windows users can use only the optional wordfiles.
+
+"""
+f'There are {wordcount} words available to construct passphrases'
+f' from the\ncurrently selected wordlist, {selection}.\n'
+"""
+There is an option to exclude any character or string of characters
+from passphrase words and passwords. Words with excluded letters are not
+available nor counted above. Multiple windows can remain open to compare
+the counts of different wordlists.
+
+Optional wordfiles were derived from texts obtained from these sites:
+    https://www.gutenberg.org
+    https://www.archives.gov/founding-docs/constitution-transcript
+    https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
+Although the EFF list contains 7776 selected words, only 7772 are used
+here because hyphenated words are excluded from all wordfiles.
+
+Words with less than 3 letters are not used in any wordlist.
+
+To accommodate some password requirements, a choice is provided that
+adds three characters : 1 symbol, 1 number, and 1 upper case letter.
+"""
+f'The symbols used are: {SYMBOLS}\n'
+"""
+In the results fields, L is the character length of each pass-string.
+H, as used here, is for comparing relative pass-string strengths.
+Higher is better; each increase of 1 doubles the relative strength.
+H is actually the information entropy (Shannon entropy) value and is
+equivalent to bits of entropy. For more information see:
+    https://explainxkcd.com/wiki/index.php/936:_Password_Strength
+    https://en.wikipedia.org/wiki/Password_strength
+    https://en.wikipedia.org/wiki/Entropy_(information_theory)
+"""
+)
+        infowin = tk.Toplevel()
+        infowin.title('A word about words and characters')
+
+        num_lines = info.count('\n')
+        infotext = tk.Text(infowin, width=75, height=num_lines + 1,
+                           background='grey40', foreground='grey98',
+                           relief='groove', borderwidth=8, padx=20, pady=10)
+        infotext.insert('1.0', info)
+        infotext.pack()
+
+        if MY_OS == 'dar':
+            infotext.bind('<Button-2>', RightClickEdit)
+            infotext.configure(font=('default', 14), width=56,
+                               height=num_lines + 5)
+        elif MY_OS in 'lin, win':
+            infotext.bind('<Button-3>', RightClickEdit)
+
+    @staticmethod
+    def about() -> None:
+        """Basic information about the script; called from GUI Help menu.
+
+        :return: Information window.
+        """
+        # msg separators use em dashes.
+        boilerplate = ("""
+passphrase.py and its stand-alones generate passphrases and passwords.
+Download the most recent version from:
+"""
+f'{PROJ_URL}'
+"""
+————————————————————————————————————————————————————————————————————
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.\n
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.\n
+You should have received a copy of the GNU General Public License
+along with this program. If not, see https://www.gnu.org/licenses/
+————————————————————————————————————————————————————————————————————\n
+                   Author:     cecht
+                   Copyright:  Copyright (C) 2021 C.S. Echt
+                   Development Status: 4 - Beta
+                   Version:    """)  # __version__ is appended here.
+
+        num_lines = boilerplate.count('\n')
+        aboutwin = tk.Toplevel()
+        aboutwin.title('About Passphrase')
+        colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
+                  'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
+                  'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
+                  'DarkOrchid4']
+        bkg = random.choice(colour)
+        abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
+                           background=bkg, foreground='grey98',
+                           relief='groove', borderwidth=8, padx=5)
+        abouttxt.insert('0.0', boilerplate + __version__)
+        # Center text preceding the Author, etc. details.
+        abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
+        abouttxt.tag_configure('text1', justify='center')
+        abouttxt.pack()
+
+        if MY_OS == 'dar':
+            abouttxt.bind('<Button-2>', RightClickEdit)
+            abouttxt.configure(font=('default', 14), height=num_lines + 5)
+        elif MY_OS in 'lin, win':
+            abouttxt.bind('<Button-3>', RightClickEdit)
+
+    @staticmethod
+    def exclude_msg() -> None:
+        """A pop-up describing how to use excluded characters.
+        Called only from a Button.
+
+        :return: A message text window.
+        """
+        msg = (
+"""
+Any character(s) you enter will not appear in passphrase
+words or passwords. Multiple characters are treated as a
+unit. For example, "es" will exclude "trees", not "eye"
+and  "says". To exclude everything having "e" and "s",
+enter "e", click Generate!, then enter "s" and Generate!
+
+The Reset button removes all exclusions. A space entered
+between characters will also trigger a reset.
+"""
+)
+        exclwin = tk.Toplevel()
+        exclwin.title('Exclude from what?')
+        num_lines = msg.count('\n')
+        infotext = tk.Text(exclwin, width=60, height=num_lines + 1,
+                           background='grey40', foreground='grey98',
+                           relief='groove', borderwidth=8, padx=20, pady=10)
+        infotext.insert('1.0', msg)
+        infotext.pack()
+
+        if MY_OS == 'dar':
+            infotext.configure(font=('default', 14), width=42)
 
 
 if __name__ == "__main__":
