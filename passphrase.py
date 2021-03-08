@@ -2,7 +2,7 @@
 
 """
 A passphrase and password generator using MVC architecture, which is
-structured in three main classes of Model, View, and Controller. Based
+structured in three main classes of Model, View, and Controller; based
 on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
 """
 
@@ -75,8 +75,8 @@ class RightClickEdit:
 
 # Main MVC Classes. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 class PassModeler:
-    """The modeler crunches input from viewer, then sends results back, via
-    shared 'share' objects that are handled through the controller class.
+    """The modeler crunches input from Viewer, then sends results back, via
+    shared 'share' objects that are handled through the Controller class.
     """
     # Need Class variables here so they aren't reset in __init__ each time
     #   make_pass() is called.
@@ -384,8 +384,8 @@ class PassModeler:
 
 class PassViewer(tk.Frame):
     """
-    The viewer communicates with modeler via 'share' objects handled
-    through the controller class. All GUI widgets go here.
+    The Viewer communicates with modeler via 'share' objects handled
+    through the Controller class. All GUI widgets go here.
     """
     def __init__(self, master, share):
         super().__init__(master)
@@ -738,7 +738,7 @@ class PassViewer(tk.Frame):
 
 class PassController(tk.Tk):
     """
-    The controller through which the viewer and the modeler interact.
+    The Controller through which other Classes can interact.
     """
     def __init__(self):
         super().__init__()
@@ -775,12 +775,19 @@ class PassController(tk.Tk):
         PassModeler(share=self).reset_exclusions()
 
     def explain(self):
+        """Is called from Viewer Help menu. Parameters are live data
+        feeds to the pop-up window.
+        """
         PassFyi(share=self).explain(self.choose_wordlist.get(), self.longlist_len)
 
     def about(self):
+        """Is called only from Viewer Help menu.
+        """
         PassFyi(share=self).about()
 
     def excludemsg(self):
+        """Is called only from the Viewer "?" button in exclude section.
+        """
         PassFyi(share=self).exclude_msg()
 
 
