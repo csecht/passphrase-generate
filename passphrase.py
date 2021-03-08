@@ -6,7 +6,7 @@ structured in three main classes of Model, View, and Controller. Based
 on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
 """
 
-__version__ = '0.7.5'
+__version__ = '0.7.6'
 
 import glob
 import random
@@ -179,10 +179,13 @@ class PassModeler:
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
+        # NOTE that all wordfiles were constructed with make_wordlist,
+        # https://github.com/csecht/make_wordlist, and so contain only words
+        # of 3 or more characters.
         longlist = self.listdata['word_list'] = [
             word for word in all_words if word.isalpha()]
         self.listdata['short_list'] = [
-            word for word in longlist if 8 >= len(word) >= 3]
+            word for word in longlist if len(word) <= 8]
 
         # This is used only as a PassFyi.explain() parameter, which is called
         #   only from the PassViewer.config_master Help menu.
@@ -446,11 +449,11 @@ class PassViewer(tk.Frame):
         self.result_frame2 = tk.Frame(master, borderwidth=3, relief='sunken',
                                       background=self.dataframe_bg)
 
-        self.pp_raw_head =   tk.Label(text="Any words",
+        self.pp_raw_head =   tk.Label(text="Any word from list",
                                       fg=self.master_fg, bg=self.master_bg)
         self.pp_plus_head =  tk.Label(text="... plus 3 characters",
                                       fg=self.master_fg, bg=self.master_bg)
-        self.pp_short_head = tk.Label(text="...with words of 3 to 8 letters",
+        self.pp_short_head = tk.Label(text="...but fewer than 9 letters",
                                       fg=self.master_fg, bg=self.master_bg)
 
         self.share.tkdata['pp_raw_len'].set(0)
