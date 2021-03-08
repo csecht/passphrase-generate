@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.6'
+__version__ = '0.7.7'
 
 import glob
 import random
@@ -34,6 +34,7 @@ try:
     import tkinter as tk
     import tkinter.ttk as ttk
     from tkinter import messagebox
+    from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
     print('GUI requires tkinter, which is included with Python 3.7 and higher'
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
@@ -399,7 +400,7 @@ class PassModeler:
 
 class PassViewer(tk.Frame):
     """
-    The Viewer communicates with modeler via 'share' objects handled
+    The Viewer communicates with Modeler via 'share' objects handled
     through the Controller class. All GUI widgets go here.
     """
     def __init__(self, master, share):
@@ -656,6 +657,7 @@ class PassViewer(tk.Frame):
         """
         # This self.grid fills out the inherited tk.Frame, padding gives border.
         # Padding depends on app.minsize/maxsize in if __name__ == "__main__"
+        # Frame background color, self.master_bg, is set in config_master().
         self.grid(column=0, row=0, sticky=tk.NSEW, rowspan=11, columnspan=4,
                   padx=3, pady=(3, 4))
 
@@ -676,15 +678,15 @@ class PassViewer(tk.Frame):
                                   columnspan=3, rowspan=3, sticky=tk.EW)
 
         # Result _shows will maintain equal widths with sticky=tk.EW.
-        self.pp_raw_head.grid(    column=0, row=2, pady=(6, 0), sticky=tk.E)
-        self.pp_raw_h_lbl.grid(   column=1, row=2, pady=(5, 3), padx=(5, 0))
-        self.pp_raw_len_lbl.grid( column=2, row=2, pady=(5, 3), padx=(5, 0))
+        self.pp_raw_head.grid(      column=0, row=2, pady=(6, 0), sticky=tk.E)
+        self.pp_raw_h_lbl.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
+        self.pp_raw_len_lbl.grid(   column=2, row=2, pady=(5, 3), padx=(5, 0))
         self.share.pp_raw_show.grid(column=3, row=2, pady=(5, 3), padx=5,
                                     ipadx=5, sticky=tk.EW)
 
-        self.pp_plus_head.grid(   column=0, row=3, pady=(3, 0), sticky=tk.E)
-        self.pp_plus_h_lbl.grid(  column=1, row=3, pady=(5, 3), padx=(5, 0))
-        self.pp_plus_len_lbl.grid(column=2, row=3, pady=(5, 3), padx=(5, 0))
+        self.pp_plus_head.grid(      column=0, row=3, pady=(3, 0), sticky=tk.E)
+        self.pp_plus_h_lbl.grid(     column=1, row=3, pady=(5, 3), padx=(5, 0))
+        self.pp_plus_len_lbl.grid(   column=2, row=3, pady=(5, 3), padx=(5, 0))
         self.share.pp_plus_show.grid(column=3, row=3, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
 
@@ -790,8 +792,9 @@ class PassController(tk.Tk):
         PassModeler(share=self).reset_exclusions()
 
     def explain(self):
-        """Is called from Viewer Help menu. Parameters are live data
-        feeds to the pop-up window.
+        """
+        Is called from Viewer Help menu. Parameters are live data feeds
+        to the pop-up window.
         """
         PassFyi(share=self).explain(self.choose_wordlist.get(), self.longlist_len)
 
@@ -869,11 +872,15 @@ equivalent to bits of entropy. For more information see:
         infowin.title('A word about words and characters')
 
         num_lines = info.count('\n')
-        infotext = tk.Text(infowin, width=75, height=num_lines + 1,
-                           background='grey40', foreground='grey98',
-                           relief='groove', borderwidth=8, padx=20, pady=10)
+        # infotext = tk.Text(infowin, width=75, height=num_lines + 1,
+        #                    background='grey40', foreground='grey98',
+        #                    relief='groove', borderwidth=8, padx=20, pady=10)
+        infotext = ScrolledText(infowin, width=75, height=25,
+                                background='SkyBlue4', foreground='grey98',
+                                relief='groove', borderwidth=8,
+                                padx=20, pady=10)
         infotext.insert('1.0', info)
-        infotext.pack()
+        infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS == 'dar':
             infotext.bind('<Button-2>', RightClickEdit)
