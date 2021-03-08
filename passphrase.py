@@ -6,7 +6,7 @@ structured in three main classes of Model, View, and Controller. Based
 on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
 """
 
-__version__ = '0.7.3'
+__version__ = '0.7.4'
 
 import glob
 import random
@@ -37,7 +37,8 @@ VERY_RANDOM = random.Random(random.random())
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
 W = 65  # Default width of the results display fields.
 
-# Functions independent of but used by passphrase MVC
+
+# Functions independent of but used by passphrase MVC %%%%%%%%%%%%%%%%%%%%%%%%%
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
@@ -69,9 +70,9 @@ class RightClickEdit:
     @staticmethod
     def right_click_command(event, cmd):
         event.widget.event_generate(f'<<{cmd}>>')
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-# A supplemental function for use only by passphrase MVC
+# A supplemental class for use only by passphrase MVC %%%%%%%%%%%%%%%%%%%%%%%%%
 class Fyi:
     """Provide pop-up windows to answer user queries.
     """
@@ -231,7 +232,7 @@ between characters will also trigger a reset.
             infotext.configure(font=('default', 14), width=42)
 
 
-# passphrase main MVC classes; order does not matter.
+# passphrase main MVC classes. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 class PassModeler:
     """The modeler crunches input from viewer, then sends results back, via
     shared 'share' objects that are handled through the controller class.
@@ -263,7 +264,7 @@ class PassModeler:
     def check_files(self) -> None:
         """
         Confirm whether required files are present, exit if not.
-        Updates wordlist options based on availability.
+        Update wordlist options based on availability.
         """
 
         all_lists = list(self.share.word_files.keys())
@@ -317,7 +318,7 @@ class PassModeler:
 
     def get_words(self, *args) -> None:
         """
-        Populates lists with words to randomize in make_pass(); needs to
+        Populate lists with words to randomize in make_pass(); needs to
         run at start and each time a new wordlist is selected by user.
 
         :param args: a virtual event call from choose_wordlist Combobox.
@@ -374,14 +375,12 @@ class PassModeler:
         # Need to filter words and strings containing characters to be excluded.
         unused = self.share.exclude_entry.get().strip()
         # No need to repopulate lists or duplicate display of excluded characters
-        #    if unchanged between calls.
+        #   if unchanged between calls.
         if unused != self.strdata['prior_unused']:
             if len(unused) > 0:
                 self.listdata['word_list'] = [
-                    # word for word in longlist if unused not in word]
                     word for word in self.listdata['word_list'] if unused not in word]
                 self.listdata['short_list'] = [
-                    # word for word in shortlist if unused not in word]
                     word for word in self.listdata['short_list'] if unused not in word]
                 self.strdata['symbols'] = [
                     string for string in self.strdata['symbols'] if unused not in string]
@@ -408,6 +407,7 @@ class PassModeler:
         if ' ' in unused:
             self.reset_exclusions()
 
+        # Build pass-strings.
         passphrase = "".join(VERY_RANDOM.choice(self.listdata['word_list']) for
                              _ in range(numwords))
         shortphrase = "".join(VERY_RANDOM.choice(self.listdata['short_list']) for
@@ -417,7 +417,7 @@ class PassModeler:
         password2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
                             _ in range(numchars))
 
-        # Randomly select symbols to append; number is not user-specified.
+        # Randomly select 1 of each symbol to append; length not user-specified.
         addsymbol = "".join(VERY_RANDOM.choice(self.strdata['symbols']) for _ in range(1))
         addnum = "".join(VERY_RANDOM.choice(self.strdata['digi']) for _ in range(1))
         addcaps = "".join(VERY_RANDOM.choice(self.strdata['caps']) for _ in range(1))
@@ -493,20 +493,20 @@ class PassModeler:
         # Need to reduce font size of long pass-string length to keep
         #   window on screen, then reset to default font size when pass-string
         #   length is shortened.
-        # Use phraseplus, the likely longest passstring, to trigger font change.
+        # Use pp_plus_len, the likely longest passstring, to trigger font change.
         # B/c 'width' is character units, not pixels, length may change
         #   as font sizes and string lengths change.
         small_font = 'Courier', 10
         if MY_OS == 'dar':
             small_font = 'Courier', 12
-        if self.share.tkdata['pp_raw_len'].get() > W:
+        if self.share.tkdata['pp_plus_len'].get() > W:
             self.share.pp_raw_show.config(
                 font=small_font,
-                width=self.share.tkdata['pp_raw_len'].get())
+                width=self.share.tkdata['pp_plus_len'].get())
             self.share.pp_plus_show.config(font=small_font)
             self.share.pp_short_show.config(font=small_font)
 
-        elif self.share.tkdata['pp_raw_len'].get() <= W:
+        elif self.share.tkdata['pp_plus_len'].get() <= W:
             self.share.pp_raw_show.config(font=self.share.display_font, width=W)
             self.share.pp_plus_show.config(font=self.share.display_font, width=W)
             self.share.pp_short_show.config(font=self.share.display_font, width=W)
@@ -552,18 +552,15 @@ class PassViewer(tk.Frame):
         self.master_fg =    'LightCyan2'  # Used for row headers.
         self.master_bg =    'SkyBlue4'  # Also used for some labels.
         self.dataframe_bg = 'grey40'  # Also background for data labels.
-        # Use Courier b/c TKFixedFont does not monospace symbol characters.
-        self.share.display_font =  'Courier', 12  # Used for pass-string results.
-        if MY_OS == 'dar':
-            self.share.display_font = 'Courier', 14
         self.stubresult_fg = 'grey60'  # For initial pass-string stub, result uses pass_fg.
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
+        # Use Courier b/c TKFixedFont does not monospace symbol characters.
+        self.share.display_font =  'Courier', 12  # Used for pass-string results.
+        if MY_OS == 'dar':
+            self.share.display_font = 'Courier', 14
         self.stubresult = 'Result can be copied and pasted from keyboard.'
-
-        self.share.choose_wordlist = ttk.Combobox(state='readonly', width=24)
-        self.share.choose_wordlist.bind('<<ComboboxSelected>>', self.share.getwords)
 
         # All data variables that are passed(shared) between Modeler and Viewer.
         self.share.tkdata = {
@@ -585,7 +582,11 @@ class PassViewer(tk.Frame):
             "excluded"      : tk.StringVar()
         }
 
-        # Passphrase section ##################################################
+        # Passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        #  Generally sorted by row order.
+        self.share.choose_wordlist = ttk.Combobox(state='readonly', width=24)
+        self.share.choose_wordlist.bind('<<ComboboxSelected>>', self.share.getwords)
+
         self.numwords_label = tk.Label(text='# words',
                                        fg=self.pass_bg, bg=self.master_bg)
         self.share.numwords_entry = tk.Entry(width=2)
@@ -659,17 +660,16 @@ class PassViewer(tk.Frame):
                                             fg=self.stubresult_fg,
                                             bg=self.pass_bg,
                                             font=self.share.display_font)
-        # End passphrase section ##############################################
+        # End passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         self.generate_btn = ttk.Button()
 
-        # Password section ####################################################
+        # Password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pw_section_head = tk.Label(text='Passwords', font=('default', 12),
                                         fg=self.pass_bg, bg=self.master_bg)
         if MY_OS == 'dar':
             self.pw_section_head.config(font=('default', 16))
 
-        # There are problems of tk.Button text showing up on MacOS, so ttk.
         self.numchars_label = tk.Label(text='# characters', fg=self.pass_bg,
                                        bg=self.master_bg)
         self.share.numchars_entry = tk.Entry(width=3)
@@ -712,8 +712,9 @@ class PassViewer(tk.Frame):
                                             'pw_some'],
                                            width=W, font=self.share.display_font,
                                            fg=self.stubresult_fg, bg=self.pass_bg)
-        # End password section ################################################
-        # Begin exclude character section #####################################
+        # End password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        # Begin exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.exclude_head =   tk.Label(text='Exclude character(s)',
                                        fg=self.pass_bg, bg=self.master_bg)
         self.share.exclude_entry = tk.Entry(width=2)
@@ -724,7 +725,7 @@ class PassViewer(tk.Frame):
         self.excluded_show =  tk.Label(textvariable=self.share.tkdata[
                                             'excluded'],
                                        fg='orange', bg=self.master_bg)
-        # End exclude character section #######################################
+        # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         self.config_master()
         self.config_buttons()
@@ -774,6 +775,7 @@ class PassViewer(tk.Frame):
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
         """
+        # There are problems of tk.Button text showing up on MacOS, so ttk.
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
         style = ttk.Style()
@@ -795,13 +797,13 @@ class PassViewer(tk.Frame):
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
         """
-        # This self grid fills out the inherited tk.Frame, padding gives border.
-        # Padding depends on app.minsize/maxsize in if __name__
+        # This self.grid fills out the inherited tk.Frame, padding gives border.
+        # Padding depends on app.minsize/maxsize in if __name__ == "__main__"
         self.grid(column=0, row=0, sticky=tk.NSEW, rowspan=11, columnspan=4,
                   padx=3, pady=(3, 4))
 
         # %%%%%%%%%%%%%%%%%%%%%%%% sorted by row number %%%%%%%%%%%%%%%%%%%%%%%
-        # Passphrase widgets ##################################################
+        # Passphrase widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pp_section_head.grid(column=0, row=0, pady=(10, 5), padx=5,
                                   sticky=tk.W)
         self.share.choose_wordlist.grid(
@@ -842,7 +844,7 @@ class PassViewer(tk.Frame):
         if MY_OS == 'dar':
             self.generate_btn.grid(padx=(40, 0))
 
-        # Password widgets ####################################################
+        # Password widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pw_section_head.grid(column=0, row=5, pady=(12, 6), padx=5,
                                   sticky=tk.W)
         self.numchars_label.grid( column=0, row=6, pady=0, padx=5,
@@ -870,7 +872,7 @@ class PassViewer(tk.Frame):
         self.share.pw_some_show.grid(column=3, row=8, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
-        # Excluded character widgets ##########################################
+        # Excluded character widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.exclude_head.grid(  column=0, row=9, pady=(20, 0), padx=(17, 0),
                                  sticky=tk.W)
         self.share.exclude_entry.grid(
@@ -900,35 +902,33 @@ class PassController(tk.Tk):
         super().__init__()
 
         container = tk.Frame(self).grid(sticky=tk.NSEW)
-
         PassViewer(master=container, share=self)
 
     def checkfiles(self):
         """
-        Is called from the Viewer at program launch, which should be
-        the only call to check_files(). Exits if needed files not found,
+        Is called from the Viewer __init__, which should be the only
+        call to check_files(). Exits if needed files not found,
         otherwise populates choose_wordlist Combobox.
         """
         PassModeler(share=self).check_files()
 
     def getwords(self, *args):
-        """Populate lists with words to randomize in make_pass().
+        """Is called from the Viewer __init__.
+        Populate lists with words to randomize in make_pass().
 
         :param args: a virtual event call from choose_wordlist Combobox.
         """
         PassModeler(share=self).get_words()
 
     def makepass(self) -> None:
-        """Is called from the viewer and sends results back to viewer.
-        make_pass() creates random pass-strings, then calls
-        set_entropy() and config_results(). It is called only in response
-        to button or keybind commands.
+        """Is called only from the Viewer for "Generate" commands.
+        make_pass() creates random pass-strings, which then calls
+        set_entropy() and config_results().
         """
         PassModeler(share=self).make_pass()
 
     def reset(self) -> None:
-        """It is called only in response to reset button. Removes all
-        excluded characters.
+        """Is called only in response to reset button from the Viewer.
         """
         PassModeler(share=self).reset_exclusions()
 
