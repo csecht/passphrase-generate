@@ -48,15 +48,16 @@ def quit_gui() -> None:
 
 def rightclick_edit(select) -> None:
     """
-    Makes on the fly a pop-up edit menu in any Text widget that has a
-    mouse button binding to here; right-click is the expected binding.
+    Makes on the fly a pop-up edit menu in any widget that has a mouse
+    button binding to here; right-click is the expected mouse action.
 
     :param select: local parameter
     :return: None
     """
+    # TODO: FIX, not working in Windows or Mac; works in Linux.
     select.right_click_menu = tk.Menu(tearoff=0, takefocus=0)
     select.right_click_menu.tk_popup(select.x_root + 10, select.y_root + 10)
-    for txt in ('Copy', 'Paste'):
+    for txt in ('Copy', 'Paste', 'Cut'):
         select.right_click_menu.add_command(
             label=txt,
             command=lambda event=select, cmd=txt:
