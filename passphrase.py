@@ -462,11 +462,11 @@ class PassViewer(tk.Frame):
         self.result_frame2 = tk.Frame(master, borderwidth=3, relief='sunken',
                                       background=self.dataframe_bg)
 
-        self.pp_raw_head =   tk.Label(text="Any word from list",
+        self.pp_raw_head =   tk.Label(text="Any words from list",
                                       fg=self.master_fg, bg=self.master_bg)
         self.pp_plus_head =  tk.Label(text="... plus 3 characters",
                                       fg=self.master_fg, bg=self.master_bg)
-        self.pp_short_head = tk.Label(text="...but fewer than 9 letters",
+        self.pp_short_head = tk.Label(text="...words less than 9 letters",
                                       fg=self.master_fg, bg=self.master_bg)
 
         self.share.tkdata['pp_raw_len'].set(0)
