@@ -871,10 +871,6 @@ equivalent to bits of entropy. For more information see:
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
 
-        num_lines = info.count('\n')
-        # infotext = tk.Text(infowin, width=75, height=num_lines + 1,
-        #                    background='grey40', foreground='grey98',
-        #                    relief='groove', borderwidth=8, padx=20, pady=10)
         infotext = ScrolledText(infowin, width=75, height=25,
                                 background='SkyBlue4', foreground='grey98',
                                 relief='groove', borderwidth=8,
@@ -883,10 +879,13 @@ equivalent to bits of entropy. For more information see:
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS == 'dar':
+            infowin.geometry('575x500')
+            infowin.minsize(575, 200)
+            infotext.configure(font=('default', 14))
             infotext.bind('<Button-2>', RightClickEdit)
-            infotext.configure(font=('default', 14), width=56,
-                               height=num_lines + 5)
         elif MY_OS in 'lin, win':
+            infowin.geometry('650x470')
+            infowin.minsize(650, 200)
             infotext.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
