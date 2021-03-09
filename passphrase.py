@@ -29,11 +29,12 @@ import sys
 from math import log
 from pathlib import Path
 from string import digits, punctuation, ascii_letters, ascii_uppercase
+from typing import Dict, List, Any, Union
 
 try:
     import tkinter as tk
     import tkinter.ttk as ttk
-    from tkinter import messagebox
+    from tkinter import messagebox, IntVar, StringVar
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
     print('GUI requires tkinter, which is included with Python 3.7 and higher'
@@ -93,7 +94,7 @@ class PassModeler:
     """
     # Need Class variables here so they aren't reset in __init__ each time
     #   make_pass() is called.
-    strdata = {
+    strdata: Dict[str, Any] = {
         'symbols'     : SYMBOLS,
         'digi'        : digits,
         'caps'        : ascii_uppercase,
@@ -103,7 +104,7 @@ class PassModeler:
         'prior_unused': ''
     }
 
-    listdata = {'word_list': [], 'short_list': []}
+    listdata: Dict[str, List[Any]] = {'word_list': [], 'short_list': []}
 
     def __init__(self, share):
         self.share = share
@@ -397,6 +398,7 @@ class PassModeler:
         self.get_words()
 
 
+# noinspection PyTypeHints
 class PassViewer(tk.Frame):
     """
     The Viewer communicates with Modeler via 'share' objects handled
@@ -423,7 +425,7 @@ class PassViewer(tk.Frame):
         self.stubresult = 'Result can be copied and pasted from keyboard.'
 
         # All data variables that are passed(shared) between Modeler and Viewer.
-        self.share.tkdata = {
+        self.share.tkdata: Dict[str, Union[IntVar, StringVar]] = {
             'pp_raw_len'  : tk.IntVar(),
             'pp_plus_len' : tk.IntVar(),
             'pp_short_len': tk.IntVar(),
