@@ -875,15 +875,21 @@ equivalent to bits of entropy. For more information see:
         infotext.insert('1.0', info)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-        if MY_OS == 'dar':
+        if MY_OS in 'win':
+            infowin.geometry('575x470')
+            infowin.minsize(575, 200)
+            infotext.configure(font=('default', 11))
+            infotext.bind('<Button-3>', RightClickEdit)
+        elif MY_OS == 'dar':
             infowin.geometry('575x500')
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 14))
             infotext.bind('<Button-2>', RightClickEdit)
-        elif MY_OS in 'lin, win':
+        elif MY_OS in 'lin':
             infowin.geometry('650x470')
             infowin.minsize(650, 200)
             infotext.bind('<Button-3>', RightClickEdit)
+
 
     @staticmethod
     def about() -> None:
@@ -898,7 +904,7 @@ Download the most recent version from:
 """
 f'{PROJ_URL}'
 """
-————————————————————————————————————————————————————————————————————
+————————————————————————————————————————
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -909,7 +915,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.\n
 You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
-————————————————————————————————————————————————————————————————————\n
+————————————————————————————————————————\n
                    Author:     cecht
                    Copyright:  Copyright (C) 2021 C.S. Echt
                    Development Status: 4 - Beta
@@ -935,7 +941,10 @@ along with this program. If not, see https://www.gnu.org/licenses/
         if MY_OS == 'dar':
             abouttxt.bind('<Button-2>', RightClickEdit)
             abouttxt.configure(font=('default', 14), height=num_lines + 5)
-        elif MY_OS in 'lin, win':
+        elif MY_OS == 'win':
+            abouttxt.configure(font=('default', 10))
+
+        if MY_OS in 'lin, win':
             abouttxt.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
@@ -968,6 +977,8 @@ between characters will also trigger a reset.
 
         if MY_OS == 'dar':
             infotext.configure(font=('default', 14), width=42)
+        elif MY_OS == 'win':
+            infotext.configure(font=('default', 10), width=50)
 
 
 if __name__ == "__main__":
