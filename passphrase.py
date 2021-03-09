@@ -100,7 +100,8 @@ class PassModeler:
         'all_char'    : ascii_letters + digits + punctuation,
         'some_char'   : ascii_letters + digits + SYMBOLS,
         'all_unused'  : '',
-        'prior_unused': ''}
+        'prior_unused': ''
+    }
 
     listdata = {'word_list': [], 'short_list': []}
 
@@ -113,7 +114,8 @@ class PassModeler:
             'US Constitution'        : WORDDIR + 'usconst_wordlist.txt',
             'Don Quijote'            : WORDDIR + 'don_quijote_wordlist.txt',
             'Frankenstein'           : WORDDIR + 'frankenstein_wordlist.txt',
-            '此開卷第 Story of the Stone': WORDDIR + 'red_chamber_wordlist.txt'}
+            '此開卷第 Story of the Stone': WORDDIR + 'red_chamber_wordlist.txt'
+        }
 
     def check_files(self) -> None:
         """
@@ -363,9 +365,9 @@ class PassModeler:
             self.share.pp_short_show.config(font=small_font)
 
         elif self.share.tkdata['pp_plus_len'].get() <= W:
-            self.share.pp_raw_show.config(font=self.share.display_font, width=W)
-            self.share.pp_plus_show.config(font=self.share.display_font, width=W)
-            self.share.pp_short_show.config(font=self.share.display_font, width=W)
+            self.share.pp_raw_show.config(font=self.share.result_font, width=W)
+            self.share.pp_plus_show.config(font=self.share.result_font, width=W)
+            self.share.pp_short_show.config(font=self.share.result_font, width=W)
 
         if self.share.tkdata['pw_any_len'].get() > W:
             self.share.pw_any_show.config(
@@ -374,8 +376,8 @@ class PassModeler:
             self.share.pw_some_show.config(font=small_font)
 
         elif self.share.tkdata['pw_any_len'].get() <= W:
-            self.share.pw_any_show.config(font=self.share.display_font, width=W)
-            self.share.pw_some_show.config(font=self.share.display_font, width=W)
+            self.share.pw_any_show.config(font=self.share.result_font, width=W)
+            self.share.pw_some_show.config(font=self.share.result_font, width=W)
 
     def reset_exclusions(self) -> None:
         """
@@ -413,29 +415,31 @@ class PassViewer(tk.Frame):
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
         # Use Courier b/c TKFixedFont does not monospace symbol characters.
-        self.share.display_font =  'Courier', 12  # Used for pass-string results.
+        self.share.result_font = 'Courier', 12
+        # MacOS needs larger fonts for easy readability.
         if MY_OS == 'dar':
-            self.share.display_font = 'Courier', 14
+            self.share.result_font = 'Courier', 14
+
         self.stubresult = 'Result can be copied and pasted from keyboard.'
 
         # All data variables that are passed(shared) between Modeler and Viewer.
         self.share.tkdata = {
-            "pp_raw_len"    : tk.IntVar(),
-            "pp_plus_len"   : tk.IntVar(),
-            "pp_short_len"  : tk.IntVar(),
-            "pp_raw_h"      : tk.IntVar(),
-            "pp_plus_h"     : tk.IntVar(),
-            "pp_short_h"    : tk.IntVar(),
-            "phrase_raw"    : tk.StringVar(),
-            "phrase_plus"   : tk.StringVar(),
-            "phrase_short"  : tk.StringVar(),
-            "pw_any_len"    : tk.IntVar(),
-            "pw_some_len"   : tk.IntVar(),
-            "pw_any_h"      : tk.IntVar(),
-            "pw_some_h"     : tk.IntVar(),
-            "pw_any"        : tk.StringVar(),
-            "pw_some"       : tk.StringVar(),
-            "excluded"      : tk.StringVar()
+            'pp_raw_len'  : tk.IntVar(),
+            'pp_plus_len' : tk.IntVar(),
+            'pp_short_len': tk.IntVar(),
+            'pp_raw_h'    : tk.IntVar(),
+            'pp_plus_h'   : tk.IntVar(),
+            'pp_short_h'  : tk.IntVar(),
+            'phrase_raw'  : tk.StringVar(),
+            'phrase_plus' : tk.StringVar(),
+            'phrase_short': tk.StringVar(),
+            'pw_any_len'  : tk.IntVar(),
+            'pw_some_len' : tk.IntVar(),
+            'pw_any_h'    : tk.IntVar(),
+            'pw_some_h'   : tk.IntVar(),
+            'pw_any'      : tk.StringVar(),
+            'pw_some'     : tk.StringVar(),
+            'excluded'    : tk.StringVar()
         }
 
         # Passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -446,6 +450,7 @@ class PassViewer(tk.Frame):
         self.numwords_label = tk.Label(text='# words',
                                        fg=self.pass_bg, bg=self.master_bg)
         self.share.numwords_entry = tk.Entry(width=2)
+        # Use 5 words as default passphrase length.
         self.share.numwords_entry.insert(0, '5')
 
         self.l_and_h_header =  tk.Label(text=' H      L', width=10,
@@ -504,18 +509,18 @@ class PassViewer(tk.Frame):
                                           textvariable=self.share.tkdata[
                                               'phrase_raw'],
                                           fg=self.stubresult_fg, bg=self.pass_bg,
-                                          font=self.share.display_font)
+                                          font=self.share.result_font)
         self.share.pp_plus_show = tk.Entry(self.result_frame1, width=W,
                                            textvariable=self.share.tkdata[
                                                'phrase_plus'],
                                            fg=self.stubresult_fg, bg=self.pass_bg,
-                                           font=self.share.display_font)
+                                           font=self.share.result_font)
         self.share.pp_short_show = tk.Entry(self.result_frame1, width=W,
                                             textvariable=self.share.tkdata[
                                                 'phrase_short'],
                                             fg=self.stubresult_fg,
                                             bg=self.pass_bg,
-                                            font=self.share.display_font)
+                                            font=self.share.result_font)
         # End passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         self.generate_btn = ttk.Button()
@@ -561,12 +566,12 @@ class PassViewer(tk.Frame):
         self.share.pw_any_show = tk.Entry(self.result_frame2,
                                           textvariable=self.share.tkdata[
                                             'pw_any'],
-                                          width=W, font=self.share.display_font,
+                                          width=W, font=self.share.result_font,
                                           fg=self.stubresult_fg, bg=self.pass_bg)
         self.share.pw_some_show = tk.Entry(self.result_frame2,
                                            textvariable=self.share.tkdata[
                                             'pw_some'],
-                                           width=W, font=self.share.display_font,
+                                           width=W, font=self.share.result_font,
                                            fg=self.stubresult_fg, bg=self.pass_bg)
         # End password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
