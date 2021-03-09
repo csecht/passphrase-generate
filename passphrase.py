@@ -818,7 +818,7 @@ class PassFyi:
         self.share = share
 
     @staticmethod
-    def explain(selection, wordcount) -> None:
+    def explain(selection: str, wordcount: int) -> None:
         """Provide information about words used to create passphrases.
 
         :param selection: User selected wordlist name.
