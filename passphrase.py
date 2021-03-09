@@ -239,15 +239,15 @@ class PassModeler:
                 self.listdata['short_list'] = [
                     word for word in self.listdata['short_list'] if unused not in word]
                 self.strdata['symbols'] = [
-                    string for string in self.strdata['symbols'] if unused not in string]
+                    _s for _s in self.strdata['symbols'] if unused not in _s]
                 self.strdata['digi'] = [
-                    string for string in self.strdata['digi'] if unused not in string]
+                    _d for _d in self.strdata['digi'] if unused not in _d]
                 self.strdata['caps'] = [
-                    string for string in self.strdata['caps'] if unused not in string]
+                    _uc for _uc in self.strdata['caps'] if unused not in _uc]
                 self.strdata['all_char'] = [
-                    string for string in self.strdata['all_char'] if unused not in string]
+                    _ch for _ch in self.strdata['all_char'] if unused not in _ch]
                 self.strdata['some_char'] = [
-                    string for string in self.strdata['some_char'] if unused not in string]
+                    _ch for _ch in self.strdata['some_char'] if unused not in _ch]
 
                 # Display all currently excluded characters
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
