@@ -72,14 +72,11 @@ class RightClickEdit:
     def __init__(self, event):
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
         right_click_menu.add_command(
-            label='Copy', command=lambda select=event, text='Copy':
-            self.right_click_command(select, 'Copy'))
+            label='Copy', command=lambda: self.right_click_command(event, 'Copy'))
         right_click_menu.add_command(
-            label='Paste', command=lambda select=event, text='Paste':
-            self.right_click_command(select, 'Paste'))
+            label='Paste', command=lambda: self.right_click_command(event, 'Paste'))
         right_click_menu.add_command(
-            label='Cut', command=lambda select=event, text='Cut':
-            self.right_click_command(select, 'Cut'))
+            label='Cut', command=lambda: self.right_click_command(event, 'Cut'))
 
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
