@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.9'
+__version__ = '0.7.10'
 
 import glob
 import random
@@ -62,6 +62,24 @@ def quit_gui() -> None:
     print('\n  *** User has quit the program. Exiting...\n')
     app.destroy()
     sys.exit(0)
+
+
+def rand_bkg() -> str:
+    """Selects a random color; intended for TopLevel window backgrounds.
+
+    :return: A color name from the tkinter color chart:
+    http://www.science.smith.edu/dftwiki/index.php/Color_Charts_for_TKinter
+    :rtype: str
+    """
+
+    colour: List[str] = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4',
+                         'DarkOrange4', 'grey40', 'blue4', 'navy',
+                         'DeepSkyBlue4', 'dark slate grey', 'dark olive green',
+                         'grey2', 'grey25', 'DodgerBlue4', 'DarkOrchid4',
+                         'OrangeRed4', 'purple4', 'MediumPurple4', 'saddle brown',
+                         'firebrick4', 'MediumOrchid4'
+                         ]
+    return random.choice(colour)
 
 
 class RightClickEdit:
@@ -203,8 +221,9 @@ class PassModeler:
         self.listdata['short_list'] = [
             word for word in longlist if len(word) < 7]
 
-        # This is used only as a PassFyi.explain() parameter, which is called
-        #   only from the PassViewer.config_master Help menu.
+        # This is used as a PassFyi.explain() parameter, which is called
+        #   only from the PassViewer.config_master Help menu. It is re-
+        #   defined if the user has excluded characters from passphrases.
         self.share.longlist_len = len(longlist)
 
     def make_pass(self) -> None:
@@ -251,6 +270,8 @@ class PassModeler:
                     _ch for _ch in self.strdata['all_char'] if unused not in _ch]
                 self.strdata['some_char'] = [
                     _ch for _ch in self.strdata['some_char'] if unused not in _ch]
+
+                self.share.longlist_len = len(self.listdata['word_list'])
 
                 # Display all currently excluded characters
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
@@ -840,13 +861,14 @@ default to provide words, though optional wordfiles are available.
 Windows users can use only the optional wordfiles.
 
 """
-f'There are {wordcount} words available to construct passphrases'
-f' from the\ncurrently selected wordlist, {selection}.\n'
+f'   From the current selected wordlist, {selection},\n'
+'   after subtracting words with excluded letters, if any,\n'
+f'   there are {wordcount} words available to construct passphrases.\n'
 """
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are not
-available nor counted above. Multiple windows can remain open to compare
-the counts of different wordlists.
+used nor counted above. Multiple windows can remain open to compare
+counts among different wordlists and exclusions.
 
 Optional wordfiles were derived from texts obtained from these sites:
     https://www.gutenberg.org
@@ -874,26 +896,25 @@ equivalent to bits of entropy. For more information see:
 )
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
-
         infotext = ScrolledText(infowin, width=75, height=25,
-                                background='SkyBlue4', foreground='grey98',
+                                background=rand_bkg(), foreground='grey98',
                                 relief='groove', borderwidth=8,
                                 padx=20, pady=10)
         infotext.insert('1.0', info)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'win':
-            infowin.geometry('575x470')
+            infowin.geometry('575x490')
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 11))
             infotext.bind('<Button-3>', RightClickEdit)
         elif MY_OS == 'dar':
-            infowin.geometry('575x500')
+            infowin.geometry('575x520')
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 14))
             infotext.bind('<Button-2>', RightClickEdit)
         elif MY_OS in 'lin':
-            infowin.geometry('650x470')
+            infowin.geometry('650x490')
             infowin.minsize(650, 200)
             infotext.bind('<Button-3>', RightClickEdit)
 
@@ -931,13 +952,8 @@ along with this program. If not, see https://www.gnu.org/licenses/
         num_lines = boilerplate.count('\n')
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
-        colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
-                  'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
-                  'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
-                  'DarkOrchid4']
-        bkg = random.choice(colour)
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
-                           background=bkg, foreground='grey98',
+                           background=rand_bkg(), foreground='grey98',
                            relief='groove', borderwidth=8, padx=5)
         abouttxt.insert('0.0', boilerplate + __version__)
         # Center text preceding the Author, etc. details.
