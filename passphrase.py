@@ -981,6 +981,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
         if MY_OS in 'lin, win':
             abouttxt.bind('<Button-3>', RightClickEdit)
+            aboutwin.resizable(width=False, height=False)
 
     @staticmethod
     def exclude_msg() -> None:
