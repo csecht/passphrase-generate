@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.8'
+__version__ = '0.7.9'
 
 import glob
 import random
@@ -201,7 +201,7 @@ class PassModeler:
         longlist = self.listdata['word_list'] = [
             word for word in all_words if word.isalpha()]
         self.listdata['short_list'] = [
-            word for word in longlist if len(word) <= 8]
+            word for word in longlist if len(word) < 7]
 
         # This is used only as a PassFyi.explain() parameter, which is called
         #   only from the PassViewer.config_master Help menu.
@@ -473,7 +473,7 @@ class PassViewer(tk.Frame):
                                       fg=self.master_fg, bg=self.master_bg)
         self.pp_plus_head =  tk.Label(text="... plus 3 characters",
                                       fg=self.master_fg, bg=self.master_bg)
-        self.pp_short_head = tk.Label(text="...words less than 9 letters",
+        self.pp_short_head = tk.Label(text="...words less than 7 letters",
                                       fg=self.master_fg, bg=self.master_bg)
 
         self.share.tkdata['pp_raw_len'].set(0)
