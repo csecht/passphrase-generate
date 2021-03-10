@@ -962,6 +962,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         num_lines = boilerplate.count('\n')
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
+
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
                            background=rand_bkg(), foreground='grey98',
                            relief='groove', borderwidth=8, padx=5)
@@ -969,11 +970,12 @@ along with this program. If not, see https://www.gnu.org/licenses/
         # Center text preceding the Author, etc. details.
         abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
-        abouttxt.pack()
+        abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=False)
 
         if MY_OS == 'dar':
-            abouttxt.bind('<Button-2>', RightClickEdit)
+            aboutwin.minsize(520, 475)
             abouttxt.configure(font=('default', 14))
+            abouttxt.bind('<Button-2>', RightClickEdit)
         elif MY_OS == 'win':
             abouttxt.configure(font=('default', 10))
 
