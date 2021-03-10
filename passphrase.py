@@ -963,7 +963,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
         if MY_OS == 'dar':
             abouttxt.bind('<Button-2>', RightClickEdit)
-            abouttxt.configure(font=('default', 14), height=num_lines + 5)
+            abouttxt.configure(font=('default', 14))
         elif MY_OS == 'win':
             abouttxt.configure(font=('default', 10))
 
