@@ -41,21 +41,31 @@ except (ImportError, ModuleNotFoundError) as error:
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
-PROJ_URL = 'github.com/csecht/passphrase-generate'
+if sys.version_info < (3, 6):
+    print('passphrase.py requires at least Python 3.6.')
+    sys.exit(1)
+
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
+
+PROJ_URL = 'github.com/csecht/passphrase-generate'
+
 SYMBOLS = "~!@#$%^&*_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
+
 SYSDICT_PATH = Path('/usr/share/dict/words')
-WORDDIR = './wordlists/'
-# Note: The optional wordlist files are referenced in PassModeler().
+
 VERY_RANDOM = random.Random(random.random())
 # VERY_RANDOM = random.Random(time.time())  # Use epoch timestamp seed.
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
+
+# Note: The optional wordlist files are referenced in PassModeler().
+WORDDIR = './wordlists/'
+
 W = 65  # Default width of the results display fields.
 
 
-# Functions independent of, but used by, passphrase MVC %%%%%%%%%%%%%%%%%%%%%%%
+# Functions used by passphrase, but not part of MVC structure %%%%%%%%%%%%%%%%%
 def quit_gui() -> None:
     """Safe and informative exit from the program.
     """
@@ -65,19 +75,21 @@ def quit_gui() -> None:
 
 
 def rand_bkg() -> str:
-    """Selects a random color; intended for TopLevel window backgrounds.
+    """Selects a random color; intended for Toplevel window backgrounds
+    with a white or light grey foreground.
 
-    :return: A color name from the tkinter color chart:
+    :return: A color name, as used in the tkinter color chart:
     http://www.science.smith.edu/dftwiki/index.php/Color_Charts_for_TKinter
     :rtype: str
     """
 
-    colour: List[str] = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4',
-                         'DarkOrange4', 'grey40', 'blue4', 'navy',
-                         'DeepSkyBlue4', 'dark slate grey', 'dark olive green',
-                         'grey2', 'grey25', 'DodgerBlue4', 'DarkOrchid4',
-                         'OrangeRed4', 'purple4', 'MediumPurple4', 'saddle brown',
-                         'firebrick4', 'MediumOrchid4'
+    colour: List[str] = ['blue4', 'dark olive green', 'dark slate grey',
+                         'DarkGoldenrod4', 'DarkOrange4', 'DarkOrchid4',
+                         'DarkSeaGreen4', 'DeepSkyBlue4', 'DodgerBlue4',
+                         'firebrick4', 'grey2', 'grey25', 'grey40',
+                         'MediumOrchid4', 'MediumPurple4', 'navy',
+                         'OrangeRed4', 'purple4', 'saddle brown',
+                         'SkyBlue4'
                          ]
     return random.choice(colour)
 
@@ -91,21 +103,21 @@ class RightClickEdit:
     def __init__(self, event):
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
         right_click_menu.add_command(
-            label='Copy', command=lambda: self.right_click_command(event, 'Copy'))
+            label='Copy', command=lambda: self.right_click_cmd(event, 'Copy'))
         right_click_menu.add_command(
-            label='Paste', command=lambda: self.right_click_command(event, 'Paste'))
+            label='Paste', command=lambda: self.right_click_cmd(event, 'Paste'))
         right_click_menu.add_command(
-            label='Cut', command=lambda: self.right_click_command(event, 'Cut'))
+            label='Cut', command=lambda: self.right_click_cmd(event, 'Cut'))
 
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
-    def right_click_command(event, cmd):
-        event.widget.event_generate(f'<<{cmd}>>')
+    def right_click_cmd(event, command):
+        event.widget.event_generate(f'<<{command}>>')
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-# Main MVC Classes. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# MVC Classes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 class PassModeler:
     """The modeler crunches input from Viewer, then sends results back, via
     shared 'share' objects that are handled through the Controller class.
@@ -257,9 +269,9 @@ class PassModeler:
         if unused != self.strdata['prior_unused']:
             if len(unused) > 0:
                 self.listdata['word_list'] = [
-                    word for word in self.listdata['word_list'] if unused not in word]
+                    _w for _w in self.listdata['word_list'] if unused not in _w]
                 self.listdata['short_list'] = [
-                    word for word in self.listdata['short_list'] if unused not in word]
+                    _w for _w in self.listdata['short_list'] if unused not in _w]
                 self.strdata['symbols'] = [
                     _s for _s in self.strdata['symbols'] if unused not in _s]
                 self.strdata['digi'] = [
@@ -302,7 +314,7 @@ class PassModeler:
         addnum = "".join(VERY_RANDOM.choice(self.strdata['digi']) for _ in range(1))
         addcaps = "".join(VERY_RANDOM.choice(self.strdata['caps']) for _ in range(1))
 
-        # Build final passphrase alternatives.
+        # Build passphrase alternatives.
         phraseplus = passphrase + addsymbol + addnum + addcaps
         phraseshort = shortphrase + addsymbol + addnum + addcaps
 
@@ -419,7 +431,6 @@ class PassModeler:
         self.get_words()
 
 
-# noinspection PyTypeHints
 class PassViewer(tk.Frame):
     """
     The Viewer communicates with Modeler via 'share' objects handled
@@ -446,7 +457,7 @@ class PassViewer(tk.Frame):
         self.stubresult = 'Result can be copied and pasted from keyboard.'
 
         # All data variables that are passed(shared) between Modeler and Viewer.
-        self.share.tkdata: Dict[str, Union[IntVar, StringVar]] = {
+        self.share.tkdata = {
             'pp_raw_len'  : tk.IntVar(),
             'pp_plus_len' : tk.IntVar(),
             'pp_short_len': tk.IntVar(),
@@ -900,7 +911,7 @@ equivalent to bits of entropy. For more information see:
                                 background=rand_bkg(), foreground='grey98',
                                 relief='groove', borderwidth=8,
                                 padx=20, pady=10)
-        infotext.insert('1.0', info)
+        infotext.insert('0.0', info)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'win':
@@ -917,7 +928,6 @@ equivalent to bits of entropy. For more information see:
             infowin.geometry('650x490')
             infowin.minsize(650, 200)
             infotext.bind('<Button-3>', RightClickEdit)
-
 
     @staticmethod
     def about() -> None:
@@ -947,7 +957,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
                    Author:     cecht
                    Copyright:  Copyright (C) 2021 C.S. Echt
                    Development Status: 4 - Beta
-                   Version:    """)  # __version__ is appended here.
+                   Version:    """)  # __version__ is inserted here.
 
         num_lines = boilerplate.count('\n')
         aboutwin = tk.Toplevel()
