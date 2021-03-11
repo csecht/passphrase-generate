@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.11'
+__version__ = '0.7.12'
 
 import glob
 import random
@@ -29,12 +29,12 @@ import sys
 from math import log
 from pathlib import Path
 from string import digits, punctuation, ascii_letters, ascii_uppercase
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Union
 
 try:
     import tkinter as tk
     import tkinter.ttk as ttk
-    from tkinter import messagebox
+    from tkinter import messagebox, IntVar, StringVar
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
     print('GUI requires tkinter, which is included with Python 3.7 and higher'
@@ -145,6 +145,7 @@ class PassModeler:
             'US Constitution'        : WORDDIR + 'usconst_wordlist.txt',
             'Don Quijote'            : WORDDIR + 'don_quijote_wordlist.txt',
             'Frankenstein'           : WORDDIR + 'frankenstein_wordlist.txt',
+            'Les Misérables'         : WORDDIR + 'les_miserables.txt',
             '此開卷第 Story of the Stone': WORDDIR + 'red_chamber_wordlist.txt'
         }
 
@@ -679,6 +680,7 @@ class PassViewer(tk.Frame):
                               ('active', self.pass_bg)])
         self.generate_btn.configure(  style="G.TButton", text='Generate!',
                                       command=self.share.makepass)
+
         self.generate_btn.focus()
         self.reset_button.configure(  style="G.TButton", text='Reset',
                                       width=0,
@@ -741,7 +743,6 @@ class PassViewer(tk.Frame):
         # Password widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pw_section_head.grid(column=0, row=5, pady=(12, 6), padx=5,
                                   sticky=tk.W)
-
         self.numchars_label.grid( column=0, row=6, pady=0, padx=5,
                                   sticky=tk.W)
         self.share.numchars_entry.grid(
@@ -750,20 +751,20 @@ class PassViewer(tk.Frame):
         self.l_and_h_header2.grid(column=1, row=6, pady=0, padx=0,
                                   sticky=tk.W)
 
-        self.result_frame2.grid(    column=1, row=7, padx=(5, 10),
-                                    columnspan=3, rowspan=2, sticky=tk.EW)
+        self.result_frame2.grid(  column=1, row=7, padx=(5, 10),
+                                  columnspan=3, rowspan=2, sticky=tk.EW)
 
-        self.pw_any_head.grid(      column=0, row=7, pady=(6, 0),
-                                    sticky=tk.E)
-        self.pw_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
-        self.pw_any_len_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_head.grid(    column=0, row=7, pady=(6, 0),
+                                  sticky=tk.E)
+        self.pw_any_h_lbl.grid(   column=1, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_len_lbl.grid( column=2, row=7, pady=(6, 3), padx=(5, 0))
         self.share.pw_any_show.grid(column=3, row=7, pady=(6, 3), padx=5,
                                     columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.pw_some_head.grid(      column=0, row=8, pady=(0, 6), padx=(5, 0),
-                                     sticky=tk.E)
-        self.pw_some_h_lbl.grid(     column=1, row=8, pady=3, padx=(5, 0))
-        self.pw_some_len_lbl.grid(   column=2, row=8, pady=3, padx=(5, 0))
+        self.pw_some_head.grid(   column=0, row=8, pady=(0, 6), padx=(5, 0),
+                                  sticky=tk.E)
+        self.pw_some_h_lbl.grid(  column=1, row=8, pady=3, padx=(5, 0))
+        self.pw_some_len_lbl.grid(column=2, row=8, pady=3, padx=(5, 0))
         self.share.pw_some_show.grid(column=3, row=8, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
@@ -981,7 +982,6 @@ along with this program. If not, see https://www.gnu.org/licenses/
 
         if MY_OS in 'lin, win':
             abouttxt.bind('<Button-3>', RightClickEdit)
-            aboutwin.resizable(width=False, height=False)
 
     @staticmethod
     def exclude_msg() -> None:
