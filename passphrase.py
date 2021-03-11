@@ -145,7 +145,7 @@ class PassModeler:
             'US Constitution'        : WORDDIR + 'usconst_wordlist.txt',
             'Don Quijote'            : WORDDIR + 'don_quijote_wordlist.txt',
             'Frankenstein'           : WORDDIR + 'frankenstein_wordlist.txt',
-            'Les Misérables'         : WORDDIR + 'les_miserables.txt',
+            'Les Miserables'         : WORDDIR + 'les_miserables.txt',
             '此開卷第 Story of the Stone': WORDDIR + 'red_chamber_wordlist.txt'
         }
 
