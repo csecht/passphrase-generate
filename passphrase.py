@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.13'
+__version__ = '0.7.14'
 
 import glob
 import random
@@ -664,6 +664,30 @@ class PassViewer(tk.Frame):
                          accelerator="Ctrl+G")
         file.add_command(label="Quit", command=quit_gui,
                          accelerator="Ctrl+Q")
+
+        edit = tk.Menu(self.master, tearoff=0)
+        menu.add_cascade(label='Edit', menu=edit)
+        # Need to display as accelerator the native system's key bindings.
+        if MY_OS in 'lin, win':
+            edit.add_command(label='Copy',
+                             command=lambda: app.focus_get().event_generate('<<Copy>>'),
+                             accelerator="Ctrl+C")
+            edit.add_command(label='Paste',
+                             command=lambda: app.focus_get().event_generate('<<Paste>>'),
+                             accelerator="Ctrl+V")
+            edit.add_command(label='Cut',
+                             command=lambda: app.focus_get().event_generate('<<Cut>>'),
+                             accelerator="Ctrl+X")
+        elif MY_OS == 'dar':
+            edit.add_command(label='Copy',
+                             command=lambda: app.focus_get().event_generate('<<Copy>>'),
+                             accelerator="Command+C")
+            edit.add_command(label='Paste',
+                             command=lambda: app.focus_get().event_generate('<<Paste>>'),
+                             accelerator="Command+V")
+            edit.add_command(label='Cut',
+                             command=lambda: app.focus_get().event_generate('<<Cut>>'),
+                             accelerator="Command+X")
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(     label="Help", menu=help_menu)
