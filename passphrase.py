@@ -74,7 +74,7 @@ def quit_gui() -> None:
     sys.exit(0)
 
 
-def rand_bkg() -> str:
+def random_bkg() -> str:
     """Selects a random color; intended for Toplevel window backgrounds
     with a white or light grey foreground.
 
@@ -649,7 +649,6 @@ class PassViewer(tk.Frame):
         self.result_frame1.columnconfigure(3, weight=2)
         self.result_frame2.columnconfigure(3, weight=2)
 
-        # Widget configurations are generally listed top to bottom of window.
         self.master.bind("<Escape>", lambda q: quit_gui())
         self.master.bind("<Control-q>", lambda q: quit_gui())
         self.master.bind("<Control-g>", lambda q: self.share.makepass())
@@ -937,7 +936,7 @@ equivalent to bits of entropy. For more information see:
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
         infotext = ScrolledText(infowin, width=75, height=25,
-                                background=rand_bkg(), foreground='grey98',
+                                background=random_bkg(), foreground='grey98',
                                 relief='groove', borderwidth=8,
                                 padx=20, pady=10)
         infotext.insert('0.0', info)
@@ -993,7 +992,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin.title('About Passphrase')
 
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
-                           background=rand_bkg(), foreground='grey98',
+                           background=random_bkg(), foreground='grey98',
                            relief='groove', borderwidth=8, padx=5)
         abouttxt.insert('0.0', boilerplate + __version__)
         # Center text preceding the Author, etc. details.
