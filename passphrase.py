@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.14'
+__version__ = '0.7.15'
 
 import glob
 import random
@@ -238,6 +238,7 @@ class PassModeler:
         #   only from the PassViewer.config_master Help menu. It is re-
         #   defined if the user has excluded characters from passphrases.
         self.share.longlist_len = len(longlist)
+        self.share.tkdata['available'].set(len(longlist))
 
     def make_pass(self) -> None:
         """
@@ -264,7 +265,7 @@ class PassModeler:
         numchars = int(self.share.numchars_entry.get())
 
         # Need to filter words and strings containing characters to be excluded.
-        unused = self.share.exclude_entry.get().strip()
+        unused = self.share.exclude_entry.get().strip(' ')
         # No need to repopulate lists or duplicate display of excluded characters
         #   if unchanged between calls.
         if unused != self.strdata['prior_unused']:
@@ -285,6 +286,7 @@ class PassModeler:
                     _ch for _ch in self.strdata['some_char'] if unused not in _ch]
 
                 self.share.longlist_len = len(self.listdata['word_list'])
+                self.share.tkdata['available'].set(self.share.longlist_len)
 
                 # Display all currently excluded characters
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
@@ -463,6 +465,7 @@ class PassViewer(tk.Frame):
 
         # All data variables that are passed(shared) between Modeler and Viewer.
         self.share.tkdata = {
+            'available'   : tk.IntVar(),
             'pp_raw_len'  : tk.IntVar(),
             'pp_plus_len' : tk.IntVar(),
             'pp_short_len': tk.IntVar(),
@@ -485,6 +488,12 @@ class PassViewer(tk.Frame):
         #  Generally sorted by row order.
         self.share.choose_wordlist = ttk.Combobox(state='readonly', width=24)
         self.share.choose_wordlist.bind('<<ComboboxSelected>>', self.share.getwords)
+
+        self.share.available_head = tk.Label(text='# available words:',
+                                             fg=self.pass_bg, bg=self.master_bg)
+        self.share.available_show = tk.Label(textvariable=self.share.tkdata[
+                                             'available'],
+                                             fg=self.pass_bg, bg=self.master_bg)
 
         self.numwords_label = tk.Label(text='# words',
                                        fg=self.pass_bg, bg=self.master_bg)
@@ -732,6 +741,11 @@ class PassViewer(tk.Frame):
         self.share.choose_wordlist.grid(
                                   column=1, row=0, pady=(10, 5), padx=5,
                                   columnspan=2, sticky=tk.W)
+
+        self.share.available_head.grid(column=3, row=0, pady=(10, 0), padx=(5, 0),
+                                       sticky=tk.W)
+        self.share.available_show.grid(column=3, row=0, pady=(10, 0), padx=(125, 0),
+                                       sticky=tk.W)
 
         self.numwords_label.grid( column=0, row=1, padx=5, sticky=tk.W)
         self.share.numwords_entry.grid(
