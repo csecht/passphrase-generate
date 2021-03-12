@@ -682,7 +682,7 @@ class PassViewer(tk.Frame):
 
         edit = tk.Menu(self.master, tearoff=0)
         menu.add_cascade(label='Edit', menu=edit)
-        # Need to display as accelerator the native system's key bindings.
+        # Need to display the native system's key bindings as the accelerator.
         if MY_OS in 'lin, win':
             edit.add_command(label='Copy',
                              command=lambda: app.focus_get().event_generate('<<Copy>>'),
@@ -723,7 +723,6 @@ class PassViewer(tk.Frame):
                               ('active', self.pass_bg)])
         self.generate_btn.configure(  style="G.TButton", text='Generate!',
                                       command=self.share.makepass)
-
         self.generate_btn.focus()
         self.reset_button.configure(  style="G.TButton", text='Reset',
                                       width=0,
