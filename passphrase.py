@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.16'
+__version__ = '0.7.17'
 
 import glob
 import random
@@ -29,7 +29,7 @@ import sys
 from math import log
 from pathlib import Path
 from string import digits, punctuation, ascii_letters, ascii_uppercase
-from typing import Dict, List, Any, Union
+from typing import Dict, List, Any
 
 try:
     import tkinter as tk
@@ -212,15 +212,21 @@ class PassModeler:
 
         # Need to reset excluded characters and prior pass-strings when a new
         #   wordlist is selected.
-        self.strdata['all_unused'] = ''
+        self.share.tkdata['pp_raw_h'].set(0)
+        self.share.tkdata['pp_plus_h'].set(0)
+        self.share.tkdata['pp_short_h'].set(0)
+        self.share.tkdata['pp_raw_len'].set(0)
+        self.share.tkdata['pp_plus_len'].set(0)
+        self.share.tkdata['pp_short_len'].set(0)
         self.share.exclude_entry.delete(0, 'end')
         self.share.tkdata['excluded'].set('')
-        self.share.tkdata['phrase_raw'].set('')
-        self.share.tkdata['pp_raw_len'].set(len(''))
-        self.share.tkdata['phrase_plus'].set('')
-        self.share.tkdata['pp_plus_len'].set(len(''))
-        self.share.tkdata['phrase_short'].set('')
-        self.share.tkdata['pp_short_len'].set(len(''))
+        self.strdata['all_unused'] = ''
+        # Need to retain stub result only for startup, otherwise delete
+        #   the entries each time get_words() or share.getwords() is called.
+        if self.share.tkdata['phrase_raw'].get() not in self.share.stubresult:
+            self.share.tkdata['phrase_raw'].set('')
+            self.share.tkdata['phrase_plus'].set('')
+            self.share.tkdata['phrase_short'].set('')
 
         # The *_wordlist.txt files have only unique words, but...
         #   use set() and split() here to generalize for any text file.
@@ -462,7 +468,7 @@ class PassViewer(tk.Frame):
         if MY_OS == 'dar':
             self.share.result_font = 'Courier', 14
 
-        self.stubresult = 'Result can be copied and pasted from keyboard.'
+        self.share.stubresult = 'Result can be copied and pasted.'
 
         # All data variables that are passed(shared) between Modeler and Viewer.
         self.share.tkdata = {
@@ -549,9 +555,9 @@ class PassViewer(tk.Frame):
                                        textvariable=self.share.tkdata[
                                            'pp_short_h'])
 
-        self.share.tkdata['phrase_raw'].set(self.stubresult)
-        self.share.tkdata['phrase_plus'].set(self.stubresult)
-        self.share.tkdata['phrase_short'].set(self.stubresult)
+        self.share.tkdata['phrase_raw'].set(self.share.stubresult)
+        self.share.tkdata['phrase_plus'].set(self.share.stubresult)
+        self.share.tkdata['phrase_short'].set(self.share.stubresult)
         # Results are displayed in Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
         self.share.pp_raw_show = tk.Entry(self.result_frame1, width=W,
@@ -610,8 +616,8 @@ class PassViewer(tk.Frame):
                                         textvariable=self.share.tkdata[
                                             'pw_some_h'])
 
-        self.share.tkdata['pw_any'].set(self.stubresult)
-        self.share.tkdata['pw_some'].set(self.stubresult)
+        self.share.tkdata['pw_any'].set(self.share.stubresult)
+        self.share.tkdata['pw_some'].set(self.share.stubresult)
         self.share.pw_any_show = tk.Entry(self.result_frame2,
                                           textvariable=self.share.tkdata[
                                             'pw_any'],
