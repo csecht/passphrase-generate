@@ -303,9 +303,9 @@ class PassModeler:
             self.share.longlist_len = len(self.listdata['word_list'])
             self.share.tkdata['available'].set(self.share.longlist_len)
 
-            # On Generate, display all currently excluded characters, but not
-            #   if already excluded.
-            if unused not in self.strdata['all_unused']:
+            # Display all currently excluded characters,
+            #   but not if already excluded.
+            if unused not in self.strdata['all_unused'] and ' ' not in unused:
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
                 self.share.tkdata['excluded'].set(self.strdata['all_unused'])
 
@@ -605,27 +605,22 @@ class PassViewer(tk.Frame):
                                         textvariable=self.share.tkdata[
                                             'pw_any_len'])
         self.pw_some_len_lbl = tk.Label(self.result_frame2, width=3,
-                                        textvariable=self.share.tkdata[
-                                            'pw_some_len'])
+                                        textvariable=self.share.tkdata['pw_some_len'])
         self.share.tkdata['pw_any_h'].set(0)
         self.share.tkdata['pw_some_h'].set(0)
         self.pw_any_h_lbl =    tk.Label(self.result_frame2, width=3,
-                                        textvariable=self.share.tkdata[
-                                            'pw_any_h'])
+                                        textvariable=self.share.tkdata['pw_any_h'])
         self.pw_some_h_lbl =   tk.Label(self.result_frame2, width=3,
-                                        textvariable=self.share.tkdata[
-                                            'pw_some_h'])
+                                        textvariable=self.share.tkdata['pw_some_h'])
 
         self.share.tkdata['pw_any'].set(self.share.stubresult)
         self.share.tkdata['pw_some'].set(self.share.stubresult)
         self.share.pw_any_show = tk.Entry(self.result_frame2,
-                                          textvariable=self.share.tkdata[
-                                            'pw_any'],
+                                          textvariable=self.share.tkdata['pw_any'],
                                           width=W, font=self.share.result_font,
                                           fg=self.stubresult_fg, bg=self.pass_bg)
         self.share.pw_some_show = tk.Entry(self.result_frame2,
-                                           textvariable=self.share.tkdata[
-                                            'pw_some'],
+                                           textvariable=self.share.tkdata['pw_some'],
                                            width=W, font=self.share.result_font,
                                            fg=self.stubresult_fg, bg=self.pass_bg)
         # End password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -638,8 +633,7 @@ class PassViewer(tk.Frame):
         self.reset_button =   ttk.Button()
         self.excluded_head =  tk.Label(text='Currently excluded:',
                                        fg=self.master_fg, bg=self.master_bg)
-        self.excluded_show =  tk.Label(textvariable=self.share.tkdata[
-                                            'excluded'],
+        self.excluded_show =  tk.Label(textvariable=self.share.tkdata['excluded'],
                                        fg='orange', bg=self.master_bg)
         # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
