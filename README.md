@@ -19,7 +19,7 @@ To get started, download the repository package by clicking on the Code download
 
 ### System-specific Implementations
 #### passphrase.py
-The passphrase.py script is generally launched from a Terminal command line. Running the script brings up an interactive graphics window to generate passphrases and password strings. On **MacOS** and **Linux** there is an option to create passphrases using either the system dictionary or different wordlists. On **Windows**, only the system dictionary is not available. The number of words available for each wordlist can be seen from the pulldown menu: `Help -> What's going on here?`. 
+The passphrase.py script is generally launched from a Terminal command line. Running the script brings up an interactive graphics window to generate passphrases and password strings. On **MacOS** and **Linux** there is an option to create passphrases using either the system dictionary or different wordlists. On **Windows**, only the system dictionary is not available. The number of words available for each wordlist can be seen to the right of the selected wordlist and from the pulldown menu: `Help -> What's going on here?`.
 
 For **Windows**, the folder, `wordlists`, included in this distribution, must be kept in the passphrase-generate-master folder. Launching the program by double-clicking on the passphrase.py icon may work if .py is in your PATH list. Otherwise, launch a Terminal window opened from the passphrases-master folder and enter the command ```python3 passphrase.py``` or ```python passphrase.py``` or ```py passphrase.py```, depending on your system environment. 
 
