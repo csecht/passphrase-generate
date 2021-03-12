@@ -130,8 +130,7 @@ class PassModeler:
         'caps'        : ascii_uppercase,
         'all_char'    : ascii_letters + digits + punctuation,
         'some_char'   : ascii_letters + digits + SYMBOLS,
-        'all_unused'  : '',
-        'prior_unused': ''
+        'all_unused'  : ''
     }
 
     listdata: Dict[str, List[Any]] = {'word_list': [], 'short_list': []}
