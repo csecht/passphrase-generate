@@ -906,12 +906,10 @@ class PassFyi:
 easier to remember than a password of random characters. For more
 information on passphrases, see, for example, a discussion of word lists
 and word selection at the Electronic Frontier Foundation (EFF):
-https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
-
+https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases\n
 On MacOS and Linux systems, the system dictionary wordlist is used by
 default to provide words, though optional wordfiles are available.
-Windows users can use only the optional wordfiles.
-
+Windows users can use only the optional wordfiles.\n
 """
 f'   From the current selected wordlist, {selection},\n'
 '   after subtracting words with excluded letters, if any,\n'
@@ -920,17 +918,14 @@ f'   there are {wordcount} words available to construct passphrases.\n'
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are not
 used nor counted above. Multiple windows can remain open to compare
-counts among different wordlists and exclusions.
-
+counts among different wordlists and exclusions.\n
 Optional wordfiles were derived from texts obtained from these sites:
     https://www.gutenberg.org
     https://www.archives.gov/founding-docs/constitution-transcript
     https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used
-here because hyphenated words are excluded from all wordfiles.
-
-Words with less than 3 letters are not used in any wordlist.
-
+here because hyphenated words are excluded from all wordfiles.\n
+Words with less than 3 letters are not used in any wordlist.\n
 To accommodate some password requirements, a choice is provided that
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
 """
