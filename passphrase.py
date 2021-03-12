@@ -222,7 +222,7 @@ class PassModeler:
         self.share.tkdata['excluded'].set('')
         self.strdata['all_unused'] = ''
         # Need to retain stub result only for startup, otherwise delete
-        #   the entries each time get_words() or share.getwords() is called.
+        #   the results each time get_words() or share.getwords() is called.
         if self.share.tkdata['phrase_raw'].get() not in self.share.stubresult:
             self.share.tkdata['phrase_raw'].set('')
             self.share.tkdata['phrase_plus'].set('')
@@ -238,7 +238,7 @@ class PassModeler:
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
-        # NOTE that all wordfiles were constructed with make_wordlist,
+        # NOTE that all wordfiles were constructed with parser.py from
         # https://github.com/csecht/make_wordlist, and so contain only words
         # of 3 or more characters.
         longlist = self.listdata['word_list'] = [
@@ -247,8 +247,8 @@ class PassModeler:
             word for word in longlist if len(word) < 7]
 
         # This is used as a PassFyi.explain() parameter, which is called
-        #   only from the PassViewer.config_master Help menu. It is re-
-        #   defined if the user has excluded characters from passphrases.
+        #   only from the PassViewer.config_master Help menu. It is redefined
+        #   in make_pass() if user excludes characters from passphrases.
         self.share.longlist_len = len(longlist)
         self.share.tkdata['available'].set(len(longlist))
 
@@ -374,8 +374,7 @@ class PassModeler:
         self.share.tkdata['pp_plus_h'].set(
             self.share.tkdata['pp_raw_h'].get() + h_add3)
         h_some = int(numwords * log(len(self.listdata['short_list'])) / log(2))
-        self.share.tkdata['pp_short_h'].set(
-            h_some + h_add3)
+        self.share.tkdata['pp_short_h'].set(h_some + h_add3)
         self.share.tkdata['pw_any_h'].set(
             int(numchars * log(len(self.strdata['all_char'])) / log(2)))
         self.share.tkdata['pw_some_h'].set(
