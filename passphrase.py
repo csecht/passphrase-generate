@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.15'
+__version__ = '0.7.16'
 
 import glob
 import random
@@ -210,14 +210,21 @@ class PassModeler:
         :param args: a virtual event call from choose_wordlist Combobox.
         """
 
-        # Need to remove displayed excluded characters when a new wordlist
-        #  is selected because no characters are excluded from a new list.
+        # Need to reset excluded characters and prior pass-strings when a new
+        #   wordlist is selected.
+        self.strdata['all_unused'] = ''
         self.share.exclude_entry.delete(0, 'end')
         self.share.tkdata['excluded'].set('')
+        self.share.tkdata['phrase_raw'].set('')
+        self.share.tkdata['pp_raw_len'].set(len(''))
+        self.share.tkdata['phrase_plus'].set('')
+        self.share.tkdata['pp_plus_len'].set(len(''))
+        self.share.tkdata['phrase_short'].set('')
+        self.share.tkdata['pp_short_len'].set(len(''))
 
         # The *_wordlist.txt files have only unique words, but...
         #   use set() and split() here to generalize for any text file.
-        # Need read_text(encoding) for Windows to read all wordlist fonts.
+        # Need read_text(encoding) so Windows can read all wordlist fonts.
         choice = self.share.choose_wordlist.get()
         wordfile = self.share.word_files[choice]
         all_words = set(Path(wordfile).read_text(encoding='utf-8').split())
@@ -265,6 +272,10 @@ class PassModeler:
 
         # Need to filter words and strings containing characters to be excluded.
         unused = self.share.exclude_entry.get().strip()
+        # Do not accept entries with space between characters.
+        # Need to reset to default values if user deletes the prior entry.
+        if ' ' in unused or len(unused) == 0:
+            self.reset_exclusions()
 
         if len(unused) > 0:
             self.listdata['word_list'] = [
@@ -291,14 +302,6 @@ class PassModeler:
             if unused not in self.strdata['all_unused']:
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
                 self.share.tkdata['excluded'].set(self.strdata['all_unused'])
-
-        # Need to reset to default values if user deletes prior entry.
-        elif len(unused) == 0:
-            self.reset_exclusions()
-
-        # Do not accept entries with space between characters.
-        if ' ' in unused:
-            self.reset_exclusions()
 
         # Build pass-strings.
         passphrase = "".join(VERY_RANDOM.choice(self.listdata['word_list']) for
