@@ -513,9 +513,10 @@ class PassViewer(tk.Frame):
         self.pp_section_head = tk.Label(text='Passphrase wordlists',
                                         font=('default', 12),
                                         fg=self.pass_bg, bg=self.master_bg)
-        # MacOS needs a larger font
+        # MacOS needs a larger font and altered spacing
         if MY_OS == 'dar':
             self.pp_section_head.config(font=('default', 16))
+            self.l_and_h_header.config(text='H       L')
 
         self.result_frame1 = tk.Frame(master, borderwidth=3, relief='sunken',
                                       background=self.dataframe_bg)
@@ -583,8 +584,6 @@ class PassViewer(tk.Frame):
         # Password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pw_section_head = tk.Label(text='Passwords', font=('default', 12),
                                         fg=self.pass_bg, bg=self.master_bg)
-        if MY_OS == 'dar':
-            self.pw_section_head.config(font=('default', 16))
 
         self.numchars_label = tk.Label(text='# characters', fg=self.pass_bg,
                                        bg=self.master_bg)
@@ -593,6 +592,10 @@ class PassViewer(tk.Frame):
 
         self.l_and_h_header2 =  tk.Label(text=' H      L', width=10,
                                          fg=self.master_fg, bg=self.master_bg)
+        # MacOS needs a larger font and altered spacing
+        if MY_OS == 'dar':
+            self.pw_section_head.config(font=('default', 16))
+            self.l_and_h_header2.config(text='H       L')
 
         self.pw_any_head = tk.Label(   text="Any characters", fg=self.master_fg,
                                        bg=self.master_bg)
