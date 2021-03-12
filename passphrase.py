@@ -744,7 +744,7 @@ class PassViewer(tk.Frame):
         self.share.available_head.grid( column=3, row=0, pady=(10, 0),
                                         padx=(5, 0), sticky=tk.W)
         self.share.available_show.grid( column=3, row=0, pady=(10, 0),
-                                        padx=(135, 0), sticky=tk.W)
+                                        padx=(130, 0), sticky=tk.W)
 
         self.numwords_label.grid( column=0, row=1, padx=5, sticky=tk.W)
         self.share.numwords_entry.grid(
