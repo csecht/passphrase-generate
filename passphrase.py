@@ -266,38 +266,36 @@ class PassModeler:
 
         # Need to filter words and strings containing characters to be excluded.
         unused = self.share.exclude_entry.get().strip()
-        # No need to repopulate lists or duplicate display of excluded characters
-        #   if unchanged between calls.
-        if unused != self.strdata['prior_unused']:
-            if len(unused) > 0:
-                self.listdata['word_list'] = [
-                    word for word in self.listdata['word_list'] if unused not in word]
-                self.listdata['short_list'] = [
-                    word for word in self.listdata['short_list'] if unused not in word]
-                self.strdata['symbols'] = [
-                    _s for _s in self.strdata['symbols'] if unused not in _s]
-                self.strdata['digi'] = [
-                    _d for _d in self.strdata['digi'] if unused not in _d]
-                self.strdata['caps'] = [
-                    _uc for _uc in self.strdata['caps'] if unused not in _uc]
-                self.strdata['all_char'] = [
-                    _ch for _ch in self.strdata['all_char'] if unused not in _ch]
-                self.strdata['some_char'] = [
-                    _ch for _ch in self.strdata['some_char'] if unused not in _ch]
 
-                # Display # of currently available words (in different places).
-                self.share.longlist_len = len(self.listdata['word_list'])
-                self.share.tkdata['available'].set(self.share.longlist_len)
+        if len(unused) > 0:
+            self.listdata['word_list'] = [
+                _w for _w in self.listdata['word_list'] if unused not in _w]
+            self.listdata['short_list'] = [
+                _w for _w in self.listdata['short_list'] if unused not in _w]
+            self.strdata['symbols'] = [
+                _s for _s in self.strdata['symbols'] if unused not in _s]
+            self.strdata['digi'] = [
+                _d for _d in self.strdata['digi'] if unused not in _d]
+            self.strdata['caps'] = [
+                _uc for _uc in self.strdata['caps'] if unused not in _uc]
+            self.strdata['all_char'] = [
+                _ch for _ch in self.strdata['all_char'] if unused not in _ch]
+            self.strdata['some_char'] = [
+                _ch for _ch in self.strdata['some_char'] if unused not in _ch]
 
-                # Display all currently excluded characters
+            # Display # of currently available words (in different places).
+            self.share.longlist_len = len(self.listdata['word_list'])
+            self.share.tkdata['available'].set(self.share.longlist_len)
+
+            # On Generate, display all currently excluded characters, but not
+            #   if already excluded.
+            if unused not in self.strdata['all_unused']:
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
                 self.share.tkdata['excluded'].set(self.strdata['all_unused'])
 
-                self.strdata['prior_unused'] = unused
-
-            # Need to reset to default values if user deletes prior entry.
-            elif len(unused) == 0:
-                self.reset_exclusions()
+        # Need to reset to default values if user deletes prior entry.
+        elif len(unused) == 0:
+            self.reset_exclusions()
 
         # Do not accept entries with space between characters.
         if ' ' in unused:
@@ -482,7 +480,7 @@ class PassViewer(tk.Frame):
             'pw_some_h'   : tk.IntVar(),
             'pw_any'      : tk.StringVar(),
             'pw_some'     : tk.StringVar(),
-            'excluded'    : tk.StringVar()
+            'excluded'    : tk.StringVar(),
         }
 
         # Passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
