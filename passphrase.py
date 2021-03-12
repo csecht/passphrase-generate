@@ -212,7 +212,6 @@ class PassModeler:
 
         # Need to reset excluded characters and prior pass-strings when a new
         #   wordlist is selected.
-        self.strdata['all_unused'] = ''
         self.share.exclude_entry.delete(0, 'end')
         self.share.tkdata['excluded'].set('')
         self.share.tkdata['phrase_raw'].set('')
@@ -221,6 +220,7 @@ class PassModeler:
         self.share.tkdata['pp_plus_len'].set(len(''))
         self.share.tkdata['phrase_short'].set('')
         self.share.tkdata['pp_short_len'].set(len(''))
+        self.strdata['all_unused'] = ''
 
         # The *_wordlist.txt files have only unique words, but...
         #   use set() and split() here to generalize for any text file.
