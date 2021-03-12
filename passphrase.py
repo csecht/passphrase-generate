@@ -299,8 +299,10 @@ class PassModeler:
             self.strdata['some_char'] = [
                 _ch for _ch in self.strdata['some_char'] if unused not in _ch]
 
-            # Display # of currently available words (in different places).
+            # Display # of currently available words (in two different places).
+            #   Used as arg in explain()
             self.share.longlist_len = len(self.listdata['word_list'])
+            #   Used for live update in main window via share.available_show
             self.share.tkdata['available'].set(self.share.longlist_len)
 
             # Display all currently excluded characters,
@@ -496,11 +498,12 @@ class PassViewer(tk.Frame):
         self.share.choose_wordlist = ttk.Combobox(state='readonly', width=24)
         self.share.choose_wordlist.bind('<<ComboboxSelected>>', self.share.getwords)
 
-        self.share.available_head = tk.Label(text='# available words:',
-                                             fg=self.pass_bg, bg=self.master_bg)
-        self.share.available_show = tk.Label(textvariable=self.share.tkdata[
-                                             'available'],
-                                             fg=self.pass_bg, bg=self.master_bg)
+        self.share.available_head = tk.Label(
+            text='# available words:',
+            fg=self.pass_bg, bg=self.master_bg)
+        self.share.available_show = tk.Label(
+            textvariable=self.share.tkdata['available'],
+            fg=self.pass_bg, bg=self.master_bg)
 
         self.numwords_label = tk.Label(text='# words',
                                        fg=self.pass_bg, bg=self.master_bg)
