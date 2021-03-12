@@ -265,15 +265,15 @@ class PassModeler:
         numchars = int(self.share.numchars_entry.get())
 
         # Need to filter words and strings containing characters to be excluded.
-        unused = self.share.exclude_entry.get().strip(' ')
+        unused = self.share.exclude_entry.get().strip()
         # No need to repopulate lists or duplicate display of excluded characters
         #   if unchanged between calls.
         if unused != self.strdata['prior_unused']:
             if len(unused) > 0:
                 self.listdata['word_list'] = [
-                    _w for _w in self.listdata['word_list'] if unused not in _w]
+                    word for word in self.listdata['word_list'] if unused not in word]
                 self.listdata['short_list'] = [
-                    _w for _w in self.listdata['short_list'] if unused not in _w]
+                    word for word in self.listdata['short_list'] if unused not in word]
                 self.strdata['symbols'] = [
                     _s for _s in self.strdata['symbols'] if unused not in _s]
                 self.strdata['digi'] = [
@@ -285,6 +285,7 @@ class PassModeler:
                 self.strdata['some_char'] = [
                     _ch for _ch in self.strdata['some_char'] if unused not in _ch]
 
+                # Display # of currently available words (in different places).
                 self.share.longlist_len = len(self.listdata['word_list'])
                 self.share.tkdata['available'].set(self.share.longlist_len)
 
@@ -736,16 +737,14 @@ class PassViewer(tk.Frame):
 
         # %%%%%%%%%%%%%%%%%%%%%%%% sorted by row number %%%%%%%%%%%%%%%%%%%%%%%
         # Passphrase widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pp_section_head.grid(column=0, row=0, pady=(10, 5), padx=5,
-                                  sticky=tk.W)
-        self.share.choose_wordlist.grid(
-                                  column=1, row=0, pady=(10, 5), padx=5,
-                                  columnspan=2, sticky=tk.W)
-
-        self.share.available_head.grid(column=3, row=0, pady=(10, 0), padx=(5, 0),
-                                       sticky=tk.W)
-        self.share.available_show.grid(column=3, row=0, pady=(10, 0), padx=(125, 0),
-                                       sticky=tk.W)
+        self.pp_section_head.grid(      column=0, row=0, pady=(10, 5), padx=5,
+                                        sticky=tk.W)
+        self.share.choose_wordlist.grid(column=1, row=0, pady=(10, 5), padx=5,
+                                        columnspan=2, sticky=tk.W)
+        self.share.available_head.grid( column=3, row=0, pady=(10, 0),
+                                        padx=(5, 0), sticky=tk.W)
+        self.share.available_show.grid( column=3, row=0, pady=(10, 0),
+                                        padx=(135, 0), sticky=tk.W)
 
         self.numwords_label.grid( column=0, row=1, padx=5, sticky=tk.W)
         self.share.numwords_entry.grid(
@@ -755,7 +754,7 @@ class PassViewer(tk.Frame):
         self.result_frame1.grid(  column=1, row=2, padx=(5, 10),
                                   columnspan=3, rowspan=3, sticky=tk.EW)
 
-        # Result _shows will maintain equal widths with sticky=tk.EW.
+        # Result _show will maintain equal widths with sticky=tk.EW.
         self.pp_raw_head.grid(      column=0, row=2, pady=(6, 0), sticky=tk.E)
         self.pp_raw_h_lbl.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
         self.pp_raw_len_lbl.grid(   column=2, row=2, pady=(5, 3), padx=(5, 0))
@@ -769,8 +768,8 @@ class PassViewer(tk.Frame):
                                      ipadx=5, sticky=tk.EW)
 
         self.pp_short_head.grid(     column=0, row=4, pady=(3, 6), sticky=tk.E)
-        self.pp_short_h_lbl.grid(    column=1, row=4, pady=3, padx=(5, 0))
-        self.pp_short_len_lbl.grid(  column=2, row=4, pady=3, padx=(5, 0))
+        self.pp_short_h_lbl.grid(     column=1, row=4, pady=3, padx=(5, 0))
+        self.pp_short_len_lbl.grid(   column=2, row=4, pady=3, padx=(5, 0))
         self.share.pp_short_show.grid(column=3, row=4, pady=6, padx=5,
                                       ipadx=5, sticky=tk.EW)
 
@@ -792,20 +791,20 @@ class PassViewer(tk.Frame):
         self.l_and_h_header2.grid(column=1, row=6, pady=0, padx=0,
                                   sticky=tk.W)
 
-        self.result_frame2.grid(  column=1, row=7, padx=(5, 10),
-                                  columnspan=3, rowspan=2, sticky=tk.EW)
+        self.result_frame2.grid(    column=1, row=7, padx=(5, 10),
+                                    columnspan=3, rowspan=2, sticky=tk.EW)
 
-        self.pw_any_head.grid(    column=0, row=7, pady=(6, 0),
-                                  sticky=tk.E)
-        self.pw_any_h_lbl.grid(   column=1, row=7, pady=(6, 3), padx=(5, 0))
-        self.pw_any_len_lbl.grid( column=2, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_head.grid(      column=0, row=7, pady=(6, 0),
+                                    sticky=tk.E)
+        self.pw_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
+        self.pw_any_len_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
         self.share.pw_any_show.grid(column=3, row=7, pady=(6, 3), padx=5,
                                     columnspan=2, ipadx=5, sticky=tk.EW)
 
-        self.pw_some_head.grid(   column=0, row=8, pady=(0, 6), padx=(5, 0),
-                                  sticky=tk.E)
-        self.pw_some_h_lbl.grid(  column=1, row=8, pady=3, padx=(5, 0))
-        self.pw_some_len_lbl.grid(column=2, row=8, pady=3, padx=(5, 0))
+        self.pw_some_head.grid(      column=0, row=8, pady=(0, 6), padx=(5, 0),
+                                     sticky=tk.E)
+        self.pw_some_h_lbl.grid(     column=1, row=8, pady=3, padx=(5, 0))
+        self.pw_some_len_lbl.grid(   column=2, row=8, pady=3, padx=(5, 0))
         self.share.pw_some_show.grid(column=3, row=8, pady=6, padx=5,
                                      columnspan=2, ipadx=5, sticky=tk.EW)
 
