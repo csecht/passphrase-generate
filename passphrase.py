@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.20'
+__version__ = '0.8.0'
 
 import glob
 import random
@@ -34,7 +34,7 @@ from typing import Dict, List, Any
 try:
     import tkinter as tk
     import tkinter.ttk as ttk
-    from tkinter import messagebox, IntVar, StringVar
+    from tkinter import messagebox
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
     print('GUI requires tkinter, which is included with Python 3.7 and higher'
@@ -660,10 +660,11 @@ class PassViewer(tk.Frame):
         """
         self.config(bg=self.master_bg)
 
-        if MY_OS == 'dar':
-            self.master.bind('<Button-2>', RightClickEdit)
-        elif MY_OS in 'lin, win':
+        # Need to specify OS-specific right-click mouse button
+        if MY_OS in 'lin, win':
             self.master.bind('<Button-3>', RightClickEdit)
+        elif MY_OS == 'dar':
+            self.master.bind('<Button-2>', RightClickEdit)
 
         # Need pass-string fields to stretch with window drag size.
         self.master.columnconfigure(3, weight=1)
@@ -674,48 +675,47 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-q>', lambda q: quit_gui())
         self.master.bind('<Control-g>', lambda q: self.share.makepass())
         self.master.bind('<Return>', lambda q: self.share.makepass())
-        # TODO: unbind Control-a from <<LineStart>> and bind to <<SelectAll>>
-        # for Mac unbind Command-a?
-        # self.master.bind('<Control-a>', lambda: self.event_generate('<<SelectAll>>'))
+
+        # Need to specify Ctrl-A for Linux b/c in master window that key is
+        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
+        def select_all():
+            app.focus_get().event_generate('<<SelectAll>>')
+        if MY_OS in 'lin':
+            self.master.bind('<Control-a>', lambda q: select_all())
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
         self.master.config(menu=menu)
 
+        # Need to display the native system's key bindings as the accelerator.
+        native_cmdkey = ''
+        if MY_OS in 'lin, win':
+            native_cmdkey = 'Ctrl'
+        elif MY_OS == 'dar':
+            native_cmdkey = 'Command'
+
         file = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="File", menu=file)
-        file.add_command(label="Generate", command=self.share.makepass,
-                         accelerator="Ctrl+G")
-        file.add_command(label="Quit", command=quit_gui,
-                         accelerator="Ctrl+Q")
+        menu.add_cascade(label='File', menu=file)
+        file.add_command(label='Generate', command=self.share.makepass,
+                         accelerator='Ctrl+G')
+        file.add_command(label='Quit', command=quit_gui,
+                         accelerator=f'{native_cmdkey}+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
         menu.add_cascade(label='Edit', menu=edit)
-        # Need to display the native system's key bindings as the accelerator.
-        if MY_OS in 'lin, win':
-            edit.add_command(label='Copy',
-                             command=lambda: app.focus_get().event_generate('<<Copy>>'),
-                             accelerator="Ctrl+C")
-            edit.add_command(label='Paste',
-                             command=lambda: app.focus_get().event_generate('<<Paste>>'),
-                             accelerator="Ctrl+V")
-            edit.add_command(label='Cut',
-                             command=lambda: app.focus_get().event_generate('<<Cut>>'),
-                             accelerator="Ctrl+X")
-            edit.add_command(label='Select all',
-                             command=lambda: app.focus_get().event_generate('<<SelectAll>>'))
-        elif MY_OS == 'dar':
-            edit.add_command(label='Copy',
-                             command=lambda: app.focus_get().event_generate('<<Copy>>'),
-                             accelerator="Command+C")
-            edit.add_command(label='Paste',
-                             command=lambda: app.focus_get().event_generate('<<Paste>>'),
-                             accelerator="Command+V")
-            edit.add_command(label='Cut',
-                             command=lambda: app.focus_get().event_generate('<<Cut>>'),
-                             accelerator="Command+X")
-            edit.add_command(label='Select all',
-                             command=lambda: app.focus_get().event_generate('<<SelectAll>>'))
+
+        edit.add_command(label='Copy',
+                         command=lambda: app.focus_get().event_generate(
+                             '<<Copy>>'), accelerator=f'{native_cmdkey}+C')
+        edit.add_command(label='Paste',
+                         command=lambda: app.focus_get().event_generate(
+                             '<<Paste>>'), accelerator=f'{native_cmdkey}+V')
+        edit.add_command(label='Cut',
+                         command=lambda: app.focus_get().event_generate(
+                             '<<Cut>>'), accelerator=f'{native_cmdkey}+X')
+        edit.add_command(label='Select all',
+                         command=lambda: app.focus_get().event_generate(
+                             '<<SelectAll>>'), accelerator=f'{native_cmdkey}+A')
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(     label="Help", menu=help_menu)
@@ -761,8 +761,16 @@ class PassViewer(tk.Frame):
                                         columnspan=2, sticky=tk.W)
         self.share.available_head.grid( column=3, row=0, pady=(10, 0),
                                         padx=(5, 0), sticky=tk.W)
-        self.share.available_show.grid( column=3, row=0, pady=(10, 0),
-                                        padx=(130, 0), sticky=tk.W)
+        # Need separate Label spacing for each OS:
+        if MY_OS == 'lin':
+            self.share.available_show.grid( column=3, row=0, pady=(10, 0),
+                                            padx=(130, 0), sticky=tk.W)
+        elif MY_OS == 'win':
+            self.share.available_show.grid(column=3, row=0, pady=(10, 0),
+                                           padx=(117, 0), sticky=tk.W)
+        elif MY_OS == 'dar':
+            self.share.available_show.grid( column=3, row=0, pady=(10, 0),
+                                            padx=(124, 0), sticky=tk.W)
 
         self.numwords_label.grid( column=0, row=1, padx=5, sticky=tk.W)
         self.share.numwords_entry.grid(
