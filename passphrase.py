@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.0'
+__version__ = '0.8.1'
 
 import glob
 import random
@@ -411,19 +411,15 @@ class PassModeler:
                 width=self.share.tkdata['pp_plus_len'].get())
             self.share.pp_plus_show.config(font=small_font)
             self.share.pp_short_show.config(font=small_font)
-            # Need to show right-most of string when length exceeds entry width.
-            self.share.pp_raw_show.xview_moveto(1)
-            self.share.pp_plus_show.xview_moveto(1)
-            self.share.pp_short_show.xview_moveto(1)
         elif self.share.tkdata['pp_plus_len'].get() <= W:
             self.share.pp_raw_show.config(font=self.share.result_font, width=W)
             self.share.pp_plus_show.config(font=self.share.result_font, width=W)
             self.share.pp_short_show.config(font=self.share.result_font, width=W)
-            # Because of wider Chinese characters, show right-most regardless.
-            if self.share.choose_wordlist.get() == '此開卷第 Story of the Stone':
-                self.share.pp_raw_show.xview_moveto(1)
-                self.share.pp_plus_show.xview_moveto(1)
-                self.share.pp_short_show.xview_moveto(1)
+
+        # Need to show right-most of string when length exceeds entry width.
+        self.share.pp_raw_show.xview_moveto(1)
+        self.share.pp_plus_show.xview_moveto(1)
+        self.share.pp_short_show.xview_moveto(1)
 
         if self.share.tkdata['pw_any_len'].get() > W:
             self.share.pw_any_show.config(
