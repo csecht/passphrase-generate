@@ -660,12 +660,6 @@ class PassViewer(tk.Frame):
         """
         self.config(bg=self.master_bg)
 
-        # Need to specify OS-specific right-click mouse button
-        if MY_OS in 'lin, win':
-            self.master.bind('<Button-3>', RightClickEdit)
-        elif MY_OS == 'dar':
-            self.master.bind('<Button-2>', RightClickEdit)
-
         # Need pass-string fields to stretch with window drag size.
         self.master.columnconfigure(3, weight=1)
         self.result_frame1.columnconfigure(3, weight=2)
@@ -675,6 +669,12 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-q>', lambda q: quit_gui())
         self.master.bind('<Control-g>', lambda q: self.share.makepass())
         self.master.bind('<Return>', lambda q: self.share.makepass())
+
+        # Need to specify OS-specific right-click mouse button
+        if MY_OS in 'lin, win':
+            self.master.bind('<Button-3>', RightClickEdit)
+        elif MY_OS == 'dar':
+            self.master.bind('<Button-2>', RightClickEdit)
 
         # Need to specify Ctrl-A for Linux b/c in master window that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -687,7 +687,7 @@ class PassViewer(tk.Frame):
         menu = tk.Menu(self.master)
         self.master.config(menu=menu)
 
-        # Need to display the native system's key bindings as the accelerator.
+        # Need to display the native system's key binding the as menu accelerator.
         native_cmdkey = ''
         if MY_OS in 'lin, win':
             native_cmdkey = 'Ctrl'
@@ -721,7 +721,8 @@ class PassViewer(tk.Frame):
         menu.add_cascade(     label="Help", menu=help_menu)
         help_menu.add_command(label="What's going on here?",
                               command=self.share.explain)
-        help_menu.add_command(label="About", command=self.share.about)
+        help_menu.add_command(label="About",
+                              command=self.share.about)
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -763,14 +764,14 @@ class PassViewer(tk.Frame):
                                         padx=(5, 0), sticky=tk.W)
         # Need separate Label spacing for each OS:
         if MY_OS == 'lin':
-            self.share.available_show.grid( column=3, row=0, pady=(10, 0),
-                                            padx=(130, 0), sticky=tk.W)
+            self.share.available_show.grid(column=3, row=0, pady=(10, 0),
+                                           padx=(130, 0), sticky=tk.W)
         elif MY_OS == 'win':
             self.share.available_show.grid(column=3, row=0, pady=(10, 0),
                                            padx=(117, 0), sticky=tk.W)
         elif MY_OS == 'dar':
-            self.share.available_show.grid( column=3, row=0, pady=(10, 0),
-                                            padx=(124, 0), sticky=tk.W)
+            self.share.available_show.grid(column=3, row=0, pady=(10, 0),
+                                           padx=(124, 0), sticky=tk.W)
 
         self.numwords_label.grid( column=0, row=1, padx=5, sticky=tk.W)
         self.share.numwords_entry.grid(
@@ -779,8 +780,7 @@ class PassViewer(tk.Frame):
 
         self.result_frame1.grid(  column=1, row=2, padx=(5, 10),
                                   columnspan=3, rowspan=3, sticky=tk.EW)
-
-        # Result _show will maintain equal widths with sticky=tk.EW.
+        # Results' _show will maintain equal widths with sticky=tk.EW.
         self.pp_raw_head.grid(      column=0, row=2, pady=(6, 0), sticky=tk.E)
         self.pp_raw_h_lbl.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
         self.pp_raw_len_lbl.grid(   column=2, row=2, pady=(5, 3), padx=(5, 0))
@@ -809,6 +809,7 @@ class PassViewer(tk.Frame):
         # Password widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pw_section_head.grid(column=0, row=5, pady=(12, 6), padx=5,
                                   sticky=tk.W)
+
         self.numchars_label.grid( column=0, row=6, pady=0, padx=5,
                                   sticky=tk.W)
         self.share.numchars_entry.grid(
@@ -819,7 +820,6 @@ class PassViewer(tk.Frame):
 
         self.result_frame2.grid(    column=1, row=7, padx=(5, 10),
                                     columnspan=3, rowspan=2, sticky=tk.EW)
-
         self.pw_any_head.grid(      column=0, row=7, pady=(6, 0),
                                     sticky=tk.E)
         self.pw_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
@@ -983,15 +983,15 @@ equivalent to bits of entropy. For more information see:
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 11))
             infotext.bind('<Button-3>', RightClickEdit)
+        elif MY_OS in 'lin':
+            infowin.geometry('650x490')
+            infowin.minsize(650, 200)
+            infotext.bind('<Button-3>', RightClickEdit)
         elif MY_OS == 'dar':
             infowin.geometry('575x520')
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 14))
             infotext.bind('<Button-2>', RightClickEdit)
-        elif MY_OS in 'lin':
-            infowin.geometry('650x490')
-            infowin.minsize(650, 200)
-            infotext.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
     def about() -> None:
@@ -1036,12 +1036,12 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=False)
 
-        if MY_OS == 'dar':
+        if MY_OS == 'win':
+            abouttxt.configure(font=('default', 10))
+        elif MY_OS == 'dar':
             aboutwin.minsize(520, 475)
             abouttxt.configure(font=('default', 14))
             abouttxt.bind('<Button-2>', RightClickEdit)
-        elif MY_OS == 'win':
-            abouttxt.configure(font=('default', 10))
 
         if MY_OS in 'lin, win':
             abouttxt.bind('<Button-3>', RightClickEdit)
@@ -1086,10 +1086,10 @@ if __name__ == "__main__":
     if MY_OS == 'lin':
         app.minsize(970, 425)
         app.maxsize(1230, 425)
-    elif MY_OS == 'dar':
-        app.minsize(850, 425)
-        app.maxsize(1230, 425)
     elif MY_OS == 'win':
         app.minsize(950, 390)
         app.maxsize(1230, 390)
+    elif MY_OS == 'dar':
+        app.minsize(850, 425)
+        app.maxsize(1230, 425)
     app.mainloop()
