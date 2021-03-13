@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.7.19'
+__version__ = '0.7.20'
 
 import glob
 import random
@@ -108,6 +108,9 @@ class RightClickEdit:
             label='Paste', command=lambda: self.right_click_cmd(event, 'Paste'))
         right_click_menu.add_command(
             label='Cut', command=lambda: self.right_click_cmd(event, 'Cut'))
+        right_click_menu.add_command(
+            label='Select all',
+            command=lambda: self.right_click_cmd(event, 'SelectAll'))
 
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
@@ -671,6 +674,10 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-q>', lambda q: quit_gui())
         self.master.bind('<Control-g>', lambda q: self.share.makepass())
         self.master.bind('<Return>', lambda q: self.share.makepass())
+        # TODO: unbind Control-a from <<LineStart>> and bind to <<SelectAll>>
+        # for Mac unbind Command-a??
+        self.master.bind('<Control-a>', lambda: self.event_generate('<<SelectAll>>'))
+
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -696,6 +703,8 @@ class PassViewer(tk.Frame):
             edit.add_command(label='Cut',
                              command=lambda: app.focus_get().event_generate('<<Cut>>'),
                              accelerator="Ctrl+X")
+            edit.add_command(label='Select all',
+                             command=lambda: app.focus_get().event_generate('<<SelectAll>>'))
         elif MY_OS == 'dar':
             edit.add_command(label='Copy',
                              command=lambda: app.focus_get().event_generate('<<Copy>>'),
@@ -706,6 +715,9 @@ class PassViewer(tk.Frame):
             edit.add_command(label='Cut',
                              command=lambda: app.focus_get().event_generate('<<Cut>>'),
                              accelerator="Command+X")
+            edit.add_command(label='Select all',
+                             command=lambda: app.focus_get().event_generate('<<SelectAll>>'),
+                             accelerator="Command+A")
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(     label="Help", menu=help_menu)
