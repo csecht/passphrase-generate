@@ -774,8 +774,8 @@ class PassViewer(tk.Frame):
                                   column=0, row=1, padx=(5, 100), sticky=tk.E)
         self.l_and_h_header.grid( column=1, row=1, padx=0, sticky=tk.W)
 
-        self.result_frame1.grid(  column=1, row=2, padx=(5, 10),
-                                  columnspan=3, rowspan=3, sticky=tk.EW)
+        self.result_frame1.grid(    column=1, row=2, padx=(5, 10),
+                                    columnspan=3, rowspan=3, sticky=tk.EW)
         # Results' _show will maintain equal widths with sticky=tk.EW.
         self.pp_raw_head.grid(      column=0, row=2, pady=(6, 0), sticky=tk.E)
         self.pp_raw_h_lbl.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
@@ -789,7 +789,7 @@ class PassViewer(tk.Frame):
         self.share.pp_plus_show.grid(column=3, row=3, pady=(5, 3), padx=5,
                                      ipadx=5, sticky=tk.EW)
 
-        self.pp_short_head.grid(     column=0, row=4, pady=(3, 6), sticky=tk.E)
+        self.pp_short_head.grid(      column=0, row=4, pady=(3, 6), sticky=tk.E)
         self.pp_short_h_lbl.grid(     column=1, row=4, pady=3, padx=(5, 0))
         self.pp_short_len_lbl.grid(   column=2, row=4, pady=3, padx=(5, 0))
         self.share.pp_short_show.grid(column=3, row=4, pady=6, padx=5,
@@ -930,15 +930,15 @@ information on passphrases, see, for example, a discussion of word lists
 and word selection at the Electronic Frontier Foundation (EFF):
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases\n
 On MacOS and Linux systems, the system dictionary wordlist is used by
-default to provide words, though optional wordfiles are available.
-Windows users can use only the optional wordfiles.\n
+default to provide words, though optional wordlists are available.
+Windows users can use only the optional wordlists.\n
 """
 f'   From the current selected wordlist, {selection},\n'
 '   after subtracting words with excluded letters, if any,\n'
 f'   there are {wordcount} words available to construct passphrases.\n'
 """
 Passphrases and passwords (pass-strings) are made by clicking the 
-Generate! button or pressing Return or from File on the menubar.\n
+Generate! button or pressing Return or from File on the menu bar.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are not
 used nor counted above. Multiple windows can remain open to compare
@@ -948,7 +948,7 @@ Optional wordfiles were derived from texts obtained from these sites:
     https://www.archives.gov/founding-docs/constitution-transcript
     https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used
-here because hyphenated words are excluded from all wordfiles.\n
+here because hyphenated words are excluded from all wordlists.\n
 Words with less than 3 letters are not used in any wordlist.\n
 To accommodate some password requirements, a choice is provided that
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
