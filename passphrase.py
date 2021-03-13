@@ -699,11 +699,11 @@ class PassViewer(tk.Frame):
         file.add_command(label='Generate', command=self.share.makepass,
                          accelerator='Ctrl+G')
         file.add_command(label='Quit', command=quit_gui,
-                         accelerator=f'{native_cmdkey}+Q')
+                         # MacOS doesn't recognize 'Command+Q' as an accelerator.
+                         accelerator='Ctrl+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
         menu.add_cascade(label='Edit', menu=edit)
-
         edit.add_command(label='Copy',
                          command=lambda: app.focus_get().event_generate(
                              '<<Copy>>'), accelerator=f'{native_cmdkey}+C')
