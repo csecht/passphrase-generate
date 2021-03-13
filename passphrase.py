@@ -675,9 +675,8 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-g>', lambda q: self.share.makepass())
         self.master.bind('<Return>', lambda q: self.share.makepass())
         # TODO: unbind Control-a from <<LineStart>> and bind to <<SelectAll>>
-        # for Mac unbind Command-a??
-        self.master.bind('<Control-a>', lambda: self.event_generate('<<SelectAll>>'))
-
+        # for Mac unbind Command-a?
+        # self.master.bind('<Control-a>', lambda: self.event_generate('<<SelectAll>>'))
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -716,8 +715,7 @@ class PassViewer(tk.Frame):
                              command=lambda: app.focus_get().event_generate('<<Cut>>'),
                              accelerator="Command+X")
             edit.add_command(label='Select all',
-                             command=lambda: app.focus_get().event_generate('<<SelectAll>>'),
-                             accelerator="Command+A")
+                             command=lambda: app.focus_get().event_generate('<<SelectAll>>'))
 
         help_menu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(     label="Help", menu=help_menu)
