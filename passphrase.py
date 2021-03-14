@@ -421,7 +421,7 @@ class PassModeler:
             self.share.pp_plus_show.config(font=self.share.result_font, width=W)
             self.share.pp_short_show.config(font=self.share.result_font, width=W)
 
-        # Need to show right-most of string when length exceeds entry width.
+        # Need to show right-most of string in case length exceeds field width.
         self.share.pp_raw_show.xview_moveto(1)
         self.share.pp_plus_show.xview_moveto(1)
         self.share.pp_short_show.xview_moveto(1)
