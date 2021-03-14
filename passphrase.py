@@ -205,7 +205,7 @@ class PassModeler:
             messagebox.showinfo(title='File not found', detail=notice)
             self.share.choose_wordlist['values'] = ('System dictionary',)
 
-        # Default in combobox is the 1st available wordlist.
+        # Need to have default .get() in combobox be the 1st available wordlist.
         self.share.choose_wordlist.current(0)
 
     def get_words(self, *args) -> None:
@@ -256,6 +256,8 @@ class PassModeler:
         #   only from the PassViewer.config_master Help menu. It is redefined
         #   in make_pass() if user excludes characters from passphrases.
         self.share.longlist_len = len(longlist)
+        # This is used for live updates in the main window of selected wordlist
+        #   length.
         self.share.tkdata['available'].set(len(longlist))
 
     def make_pass(self) -> None:
