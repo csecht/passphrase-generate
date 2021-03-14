@@ -938,7 +938,10 @@ f'   From the current selected wordlist, {selection},\n'
 f'   there are {wordcount} words available to construct passphrases.\n'
 """
 Passphrases and passwords (pass-strings) are made by clicking the 
-Generate! button or pressing Return or from File on the menu bar.\n
+Generate! button, or pressing Enter or Ctrl-G, or from the File pull-
+down menu on the menu bar. The pass-string you want can be cut and 
+pasted using standard keyboard commands, or by right-clicking on the 
+text, or by using the pull-down Edit menu.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are not
 used nor counted above. Multiple windows can remain open to compare
