@@ -96,18 +96,21 @@ def random_bkg() -> str:
 
 class RightClickEdit:
     """
-    Right-click pop-up option to edit selected text; call as a Button-2
+    Right-click pop-up option to edit text; call as a Button-2
     or Button-3 binding in Text or window that needs the function.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
         right_click_menu.add_command(
-            label='Copy', command=lambda: self.right_click_cmd(event, 'Copy'))
+            label='Copy',
+            command=lambda: self.right_click_cmd(event, 'Copy'))
         right_click_menu.add_command(
-            label='Paste', command=lambda: self.right_click_cmd(event, 'Paste'))
+            label='Paste',
+            command=lambda: self.right_click_cmd(event, 'Paste'))
         right_click_menu.add_command(
-            label='Cut', command=lambda: self.right_click_cmd(event, 'Cut'))
+            label='Cut',
+            command=lambda: self.right_click_cmd(event, 'Cut'))
         right_click_menu.add_command(
             label='Select all',
             command=lambda: self.right_click_cmd(event, 'SelectAll'))
@@ -695,7 +698,9 @@ class PassViewer(tk.Frame):
         file.add_command(label='Generate', command=self.share.makepass,
                          accelerator='Ctrl+G')
         file.add_command(label='Quit', command=quit_gui,
-                         # MacOS doesn't recognize 'Command+Q' as an accelerator.
+                         # MacOS doesn't recognize 'Command+Q' as an accelerator
+                         #   b/c can't override that system's native Command+Q,
+                         #   so use Ctrl+Q to show something in the MacOS menu.
                          accelerator='Ctrl+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
@@ -977,14 +982,14 @@ equivalent to bits of entropy. For more information see:
         infotext.insert('0.0', info)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-        if MY_OS in 'win':
+        if MY_OS in 'lin':
+            infowin.geometry('650x490')
+            infowin.minsize(650, 200)
+            infotext.bind('<Button-3>', RightClickEdit)
+        elif MY_OS in 'win':
             infowin.geometry('575x490')
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 11))
-            infotext.bind('<Button-3>', RightClickEdit)
-        elif MY_OS in 'lin':
-            infowin.geometry('650x490')
-            infowin.minsize(650, 200)
             infotext.bind('<Button-3>', RightClickEdit)
         elif MY_OS == 'dar':
             infowin.geometry('575x520')
@@ -1035,15 +1040,15 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=False)
 
+        if MY_OS in 'lin, win':
+            abouttxt.bind('<Button-3>', RightClickEdit)
+
         if MY_OS == 'win':
             abouttxt.configure(font=('default', 10))
         elif MY_OS == 'dar':
             aboutwin.minsize(520, 475)
             abouttxt.configure(font=('default', 14))
             abouttxt.bind('<Button-2>', RightClickEdit)
-
-        if MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', RightClickEdit)
 
     @staticmethod
     def exclude_msg() -> None:
@@ -1073,10 +1078,10 @@ between characters will also trigger a reset.
         infotext.insert('1.0', msg)
         infotext.pack()
 
-        if MY_OS == 'dar':
-            infotext.configure(font=('default', 14), width=42)
-        elif MY_OS == 'win':
+        if MY_OS == 'win':
             infotext.configure(font=('default', 10), width=50)
+        elif MY_OS == 'dar':
+            infotext.configure(font=('default', 14), width=42)
 
 
 if __name__ == "__main__":
