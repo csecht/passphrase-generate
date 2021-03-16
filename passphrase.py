@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.1'
+__version__ = '0.8.2'
 
 import glob
 import random
@@ -670,6 +670,7 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-q>', lambda q: quit_gui())
         self.master.bind('<Control-g>', lambda q: self.share.makepass())
         self.master.bind('<Return>', lambda q: self.share.makepass())
+        self.master.bind('<Control-o>', lambda q: self.share.scratch())
 
         # Need to specify OS-specific right-click mouse button
         if MY_OS in 'lin, win':
@@ -688,7 +689,7 @@ class PassViewer(tk.Frame):
         menu = tk.Menu(self.master)
         self.master.config(menu=menu)
 
-        # Need to display the native system's key binding the as menu accelerator.
+        # Need to show the system's native key binding the as menu accelerator.
         native_cmdkey = ''
         if MY_OS in 'lin, win':
             native_cmdkey = 'Ctrl'
@@ -699,6 +700,8 @@ class PassViewer(tk.Frame):
         menu.add_cascade(label='File', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
                          accelerator='Ctrl+G')
+        file.add_command(label='Open scratchpad', command=self.share.scratch,
+                         accelerator='Ctrl+O')
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
@@ -726,6 +729,7 @@ class PassViewer(tk.Frame):
                               command=self.share.explain)
         help_menu.add_command(label="About",
                               command=self.share.about)
+
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -851,7 +855,7 @@ class PassViewer(tk.Frame):
                                 sticky=tk.W)
         self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
 
-        # Need to adjust padding for MacOS b/c of different character widths.
+        # Need to adjust padding for MacOS b/c of different spacing.
         if MY_OS == 'dar':
             self.exclude_head.grid(padx=(8, 0))
             self.reset_button.grid( columnspan=2, padx=(15, 0))
@@ -914,12 +918,53 @@ class PassController(tk.Tk):
         """
         PassFyi(share=self).exclude_msg()
 
+    def scratch(self):
+        """Is called only from the Viewer File menu.
+        """
+        PassFyi(share=self).scratchpad()
+
 
 class PassFyi:
     """Provide pop-up windows to answer user queries.
     """
     def __init__(self, share):
         self.share = share
+
+    @staticmethod
+    def scratchpad() -> None:
+        """
+        A text window for user to temporarily save results;
+        called from File menu.
+        """
+        # msg separators use em dashes.
+        instruction = """
+Paste here passstrings or passwords that you are thinking of using.
+You can then compare them, test typing them out, whatever, to see
+whether any work for you. Anything you enter here is DELETED when the
+program or this window is closed, so save your favorite somewhere else.
+————————————————————————————————————————————————
+\n\n\n\n\n\n\n\n\n\n
+"""
+        aboutwin = tk.Toplevel()
+        aboutwin.title('Scratch Pad')
+
+        abouttxt = tk.Text(aboutwin, width=75, height=24,
+                           background='grey95', foreground='grey5',
+                           relief='groove', borderwidth=8, padx=5)
+        abouttxt.insert('0.0', instruction)
+        # Center all text in the window
+        abouttxt.tag_add('text1', '0.0', tk.END)
+        abouttxt.tag_configure('text1', justify='center')
+        abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+
+        if MY_OS in 'lin, win':
+            abouttxt.bind('<Button-3>', RightClickEdit)
+
+        if MY_OS == 'win':
+            abouttxt.configure(font=('default', 10))
+        elif MY_OS == 'dar':
+            abouttxt.configure(font=('default', 14))
+            abouttxt.bind('<Button-2>', RightClickEdit)
 
     @staticmethod
     def explain(selection: str, wordcount: int) -> None:
