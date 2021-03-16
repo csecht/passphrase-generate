@@ -936,21 +936,21 @@ class PassFyi:
         A text window for user to temporarily save results;
         called from File menu.
         """
-        # msg separators use em dashes.
-        instruction = """
-Paste here passstrings or passwords that you are thinking of using.
+        # Separator uses em dashes.
+        instruction = (
+"""Paste here passphrases or passwords that you are thinking of using.
 You can then compare them, test typing them out, whatever, to see
 whether any work for you. Anything you enter here is DELETED when the
 program or this window is closed, so save your favorite somewhere else.
-————————————————————————————————————————————————
-\n\n\n\n\n\n\n\n\n\n
-"""
+————————————————————————————————————————————
+\n\n\n\n\n\n\n\n\n\n\n""")
+
         aboutwin = tk.Toplevel()
         aboutwin.title('Scratch Pad')
 
-        abouttxt = tk.Text(aboutwin, width=75, height=24,
+        abouttxt = tk.Text(aboutwin, width=70, height=18,
                            background='grey95', foreground='grey5',
-                           relief='groove', borderwidth=8, padx=5)
+                           borderwidth=5, padx=5)
         abouttxt.insert('0.0', instruction)
         # Center all text in the window
         abouttxt.tag_add('text1', '0.0', tk.END)
