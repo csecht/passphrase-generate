@@ -939,16 +939,16 @@ class PassFyi:
         # Separator uses em dashes.
         instruction = (
 """Paste here passphrases or passwords that you are thinking of using.
-You can then compare them, test typing them out, whatever, to see
-whether any work for you. Anything you enter here is DELETED when the
-program or this window is closed, so save your favorite somewhere else.
-————————————————————————————————————————————
+You can then compare them, test typing them out, or whatever, to see
+whether any work for you. Anything you paste or edit here is DELETED when
+the program or this window is closed, so save your favorite somewhere else.
+————————————————————————————————————————
 \n\n\n\n\n\n\n\n\n\n\n""")
 
         aboutwin = tk.Toplevel()
         aboutwin.title('Scratch Pad')
 
-        abouttxt = tk.Text(aboutwin, width=72, height=18,
+        abouttxt = tk.Text(aboutwin, width=75, height=18,
                            background='grey95', foreground='grey5',
                            borderwidth=5, padx=5)
         abouttxt.insert('0.0', instruction)
