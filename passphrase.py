@@ -933,8 +933,8 @@ class PassFyi:
     @staticmethod
     def scratchpad() -> None:
         """
-        A text window for user to temporarily save results;
-        called from File menu.
+        A text window for user to temporarily save results.
+        Is called from File menu or keybinding.
         """
         # Separator uses em dashes.
         instruction = (
