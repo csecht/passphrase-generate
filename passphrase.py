@@ -948,7 +948,7 @@ program or this window is closed, so save your favorite somewhere else.
         aboutwin = tk.Toplevel()
         aboutwin.title('Scratch Pad')
 
-        abouttxt = tk.Text(aboutwin, width=70, height=18,
+        abouttxt = tk.Text(aboutwin, width=72, height=18,
                            background='grey95', foreground='grey5',
                            borderwidth=5, padx=5)
         abouttxt.insert('0.0', instruction)
