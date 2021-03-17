@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.2'
+__version__ = '0.8.3'
 
 import glob
 import random
@@ -949,10 +949,12 @@ this window is closed, so save what you want to keep somewhere else.
 
         aboutwin = tk.Toplevel()
         aboutwin.title('Scratch Pad')
+        aboutwin.minsize(300, 250)
 
         abouttxt = tk.Text(aboutwin, width=75, height=18,
                            background='grey85', foreground='grey5',
-                           relief='groove', borderwidth=4, padx=5)
+                           relief='groove', borderwidth=4, padx=5,
+                           wrap=tk.WORD)
         abouttxt.insert('0.0', instruction)
         # Center all text in the window
         abouttxt.tag_add('text1', '0.0', tk.END)
@@ -1080,10 +1082,12 @@ along with this program. If not, see https://www.gnu.org/licenses/
         num_lines = boilerplate.count('\n')
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
+        aboutwin.minsize(300, 300)
 
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
                            background=random_bkg(), foreground='grey98',
-                           relief='groove', borderwidth=8, padx=5)
+                           relief='groove', borderwidth=8, padx=5,
+                           wrap=tk.WORD)
         abouttxt.insert('0.0', boilerplate + __version__)
         # Center text preceding the Author, etc. details.
         abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
@@ -1121,10 +1125,12 @@ between characters will also trigger a reset.
 )
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
-        num_lines = msg.count('\n')
-        infotext = tk.Text(exclwin, width=60, height=num_lines + 1,
+        exclwin.minsize(300, 200)
+        # num_lines = msg.count('\n')
+        infotext = tk.Text(exclwin, width=60, #height=num_lines + 1,
                            background='grey40', foreground='grey98',
-                           relief='groove', borderwidth=8, padx=20, pady=10)
+                           relief='groove', borderwidth=8, padx=20, pady=10,
+                           wrap=tk.WORD)
         infotext.insert('1.0', msg)
         infotext.pack()
 
