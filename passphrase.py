@@ -1126,8 +1126,8 @@ between characters will also trigger a reset.
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 200)
-        # num_lines = msg.count('\n')
-        infotext = tk.Text(exclwin, width=60, #height=num_lines + 1,
+        num_lines = msg.count('\n')
+        infotext = tk.Text(exclwin, width=60, height=num_lines + 1,
                            background='grey40', foreground='grey98',
                            relief='groove', borderwidth=8, padx=20, pady=10,
                            wrap=tk.WORD)
