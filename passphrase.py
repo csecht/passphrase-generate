@@ -958,6 +958,7 @@ this window is closed, so save what you want to keep somewhere else.
         abouttxt.tag_add('text1', '0.0', tk.END)
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        abouttxt.focus_set()
 
         if MY_OS in 'lin, win':
             abouttxt.bind('<Button-3>', RightClickEdit)
