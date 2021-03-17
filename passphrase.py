@@ -730,7 +730,6 @@ class PassViewer(tk.Frame):
         help_menu.add_command(label="About",
                               command=self.share.about)
 
-
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
         """
@@ -941,23 +940,24 @@ class PassFyi:
         """
         # Separator uses em dashes.
         instruction = (
-"""Paste here passphrases or passwords that you are thinking of using.
-You can then compare them, test typing them out, or whatever, to see
-whether any work for you. Anything you paste or edit here is GONE when
-this window is closed, so save what you want to keep somewhere else.
-————————————————————————————————————————\n\n""")
+            'Paste here passphrases or passwords that you are thinking of' 
+            ' using. You can then compare them, test typing them out, or whatever,'
+            ' to see whether any work for you. Anything you paste or edit here' 
+            ' is GONE when this window is closed, so save what you want to keep' 
+            ' somewhere else.'
+            '\n————————————————————————————————————————\n\n')
 
         aboutwin = tk.Toplevel()
         aboutwin.title('Scratch Pad')
         aboutwin.minsize(300, 250)
 
-        abouttxt = tk.Text(aboutwin, width=75, height=18,
+        abouttxt = tk.Text(aboutwin, width=75,  # height=18,
                            background='grey85', foreground='grey5',
-                           relief='groove', borderwidth=4, padx=5,
-                           wrap=tk.WORD)
+                           relief='groove', borderwidth=4,
+                           padx=10, pady=10, wrap=tk.WORD)
         abouttxt.insert('0.0', instruction)
         # Center all text in the window
-        abouttxt.tag_add('text1', '0.0', tk.END)
+        abouttxt.tag_add('text1', '1.0', tk.END)
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         abouttxt.focus_set()
