@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.3'
+__version__ = '0.8.4'
 
 import glob
 import random
@@ -671,6 +671,7 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-g>', lambda q: self.share.makepass())
         self.master.bind('<Return>', lambda q: self.share.makepass())
         self.master.bind('<Control-o>', lambda q: self.share.scratch())
+        self.master.bind('<Control-r>', lambda q: self.share.reset())
 
         # Need to specify Ctrl-A for Linux b/c in master window that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -700,8 +701,11 @@ class PassViewer(tk.Frame):
         menu.add_cascade(label='File', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
                          accelerator='Ctrl+G')
+        file.add_command(label='Reset', command=self.share.reset,
+                         accelerator='Ctrl+R')
         file.add_command(label='Open scratchpad', command=self.share.scratch,
                          accelerator='Ctrl+O')
+        file.add(tk.SEPARATOR)
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
@@ -1119,15 +1123,15 @@ unit. For example, "es" will exclude "trees", not "eye"
 and  "says". To exclude everything having "e" and "s",
 enter "e", click Generate!, then enter "s" and Generate!
 
-The Reset button removes all exclusions. A space entered
-between characters will also trigger a reset.
+The Reset button (or Ctrl+R) removes all exclusions. A 
+space entered between characters will also do a reset.
 """
 )
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 200)
         num_lines = msg.count('\n')
-        infotext = tk.Text(exclwin, width=60, height=num_lines + 1,
+        infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
                            background='grey40', foreground='grey98',
                            relief='groove', borderwidth=8, padx=20, pady=10,
                            wrap=tk.WORD)
