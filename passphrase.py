@@ -890,16 +890,23 @@ class PassController(tk.Tk):
         PassModeler(share=self).get_words()
 
     def makepass(self) -> None:
-        """Is called only from the Viewer for "Generate" commands.
-        make_pass() creates random pass-strings, which then calls
-        set_entropy() and config_results().
+        """
+        Is called from the Viewer with "Generate" widgets and key
+        bindings. make_pass() creates random pass-strings, which then
+        calls set_entropy() and config_results().
         """
         PassModeler(share=self).make_pass()
 
     def reset(self) -> None:
-        """Is called only in response to reset button from the Viewer.
+        """
+        Is called only in response to reset button in exclude section.
         """
         PassModeler(share=self).reset_exclusions()
+
+    def scratch(self):
+        """Is called from the Viewer File menu or key binding.
+        """
+        PassFyi(share=self).scratchpad()
 
     def explain(self):
         """
@@ -918,14 +925,10 @@ class PassController(tk.Tk):
         """
         PassFyi(share=self).exclude_msg()
 
-    def scratch(self):
-        """Is called only from the Viewer File menu.
-        """
-        PassFyi(share=self).scratchpad()
-
 
 class PassFyi:
-    """Provide pop-up windows to answer user queries.
+    """
+    Provide pop-up windows to provide usage information and offer help.
     """
     def __init__(self, share):
         self.share = share
