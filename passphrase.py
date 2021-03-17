@@ -672,18 +672,18 @@ class PassViewer(tk.Frame):
         self.master.bind('<Return>', lambda q: self.share.makepass())
         self.master.bind('<Control-o>', lambda q: self.share.scratch())
 
+        # Need to specify Ctrl-A for Linux b/c in master window that key is
+        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
+        if MY_OS in 'lin':
+            def select_all():
+                app.focus_get().event_generate('<<SelectAll>>')
+            self.master.bind('<Control-a>', lambda q: select_all())
+
         # Need to specify OS-specific right-click mouse button
         if MY_OS in 'lin, win':
             self.master.bind('<Button-3>', RightClickEdit)
         elif MY_OS == 'dar':
             self.master.bind('<Button-2>', RightClickEdit)
-
-        # Need to specify Ctrl-A for Linux b/c in master window that key is
-        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
-        def select_all():
-            app.focus_get().event_generate('<<SelectAll>>')
-        if MY_OS in 'lin':
-            self.master.bind('<Control-a>', lambda q: select_all())
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -705,7 +705,7 @@ class PassViewer(tk.Frame):
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
-                         #   so use Ctrl+Q to show something in the MacOS menu.
+                         #   so use Ctrl+Q to show something in the File menu.
                          accelerator='Ctrl+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
