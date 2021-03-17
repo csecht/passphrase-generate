@@ -959,7 +959,7 @@ class PassFyi:
                            background='grey85', foreground='grey5',
                            relief='groove', borderwidth=4,
                            padx=10, pady=10, wrap=tk.WORD)
-        abouttxt.insert('0.0', instruction)
+        abouttxt.insert('1.0', instruction)
         # Center all text in the window
         abouttxt.tag_add('text1', '1.0', tk.END)
         abouttxt.tag_configure('text1', justify='center')
@@ -1035,7 +1035,7 @@ equivalent to bits of entropy. For more information see:
                                 background=random_bkg(), foreground='grey98',
                                 relief='groove', borderwidth=8,
                                 padx=20, pady=10)
-        infotext.insert('0.0', info)
+        infotext.insert('1.0', info)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'lin':
@@ -1092,11 +1092,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
                            background=random_bkg(), foreground='grey98',
                            relief='groove', borderwidth=8, padx=5,
                            wrap=tk.WORD)
-        abouttxt.insert('0.0', boilerplate + __version__)
+        abouttxt.insert('1.0', boilerplate + __version__)
         # Center text preceding the Author, etc. details.
-        abouttxt.tag_add('text1', '0.0', float(num_lines - 3))
+        abouttxt.tag_add('text1', '1.0', float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
-        abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=False)
+        abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'lin, win':
             abouttxt.bind('<Button-3>', RightClickEdit)
@@ -1136,7 +1136,7 @@ space entered between characters will also do a reset.
                            relief='groove', borderwidth=8, padx=20, pady=10,
                            wrap=tk.WORD)
         infotext.insert('1.0', msg)
-        infotext.pack()
+        infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS == 'win':
             infotext.configure(font=('default', 10), width=50)
