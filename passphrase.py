@@ -568,7 +568,7 @@ class PassViewer(tk.Frame):
         self.share.tkdata['phrase_raw'].set(self.share.stubresult)
         self.share.tkdata['phrase_plus'].set(self.share.stubresult)
         self.share.tkdata['phrase_short'].set(self.share.stubresult)
-        # Results are displayed in Entry() instead of Text() b/c
+        # Results are displayed as Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
         self.share.pp_raw_show = tk.Entry(self.result_frame1, width=W,
                                           textvariable=self.share.tkdata[
@@ -940,17 +940,16 @@ class PassFyi:
         instruction = (
 """Paste here passphrases or passwords that you are thinking of using.
 You can then compare them, test typing them out, or whatever, to see
-whether any work for you. Anything you paste or edit here is DELETED when
-the program or this window is closed, so save your favorite somewhere else.
-————————————————————————————————————————
-\n\n\n\n\n\n\n\n\n\n\n""")
+whether any work for you. Anything you paste or edit here is GONE when
+this window is closed, so save what you want to keep somewhere else.
+————————————————————————————————————————\n\n""")
 
         aboutwin = tk.Toplevel()
         aboutwin.title('Scratch Pad')
 
         abouttxt = tk.Text(aboutwin, width=75, height=18,
-                           background='grey95', foreground='grey5',
-                           borderwidth=5, padx=5)
+                           background='grey85', foreground='grey5',
+                           relief='groove', borderwidth=4, padx=5)
         abouttxt.insert('0.0', instruction)
         # Center all text in the window
         abouttxt.tag_add('text1', '0.0', tk.END)
