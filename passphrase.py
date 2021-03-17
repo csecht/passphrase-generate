@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.4'
+__version__ = '0.8.5'
 
 import glob
 import random
@@ -102,6 +102,7 @@ class RightClickEdit:
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
+
         right_click_menu.add_command(
             label='Copy',
             command=lambda: self.right_click_cmd(event, 'Copy'))
@@ -114,12 +115,28 @@ class RightClickEdit:
         right_click_menu.add_command(
             label='Select all',
             command=lambda: self.right_click_cmd(event, 'SelectAll'))
-
+        right_click_menu.add(tk.SEPARATOR)
+        right_click_menu.add_command(
+            label='Close window',
+            command=lambda: self.close_window())
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
     def right_click_cmd(event, command):
         event.widget.event_generate(f'<<{command}>>')
+
+    @staticmethod
+    def close_window():
+        """
+        Close the Toplevel window where mouse has right-clicked.
+        Should not close the main (app) window.
+        """
+        # https://stackoverflow.com/questions/66384144/
+        # Need to not affect the main window, which has child button widgets.
+        for widget in app.winfo_children():
+            if str(app.focus_get()) in str(widget) and '.!button' not in str(widget):
+                widget.destroy()
+
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -1138,10 +1155,14 @@ space entered between characters will also do a reset.
         infotext.insert('1.0', msg)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
+        if MY_OS in 'lin, win':
+            infotext.bind('<Button-3>', RightClickEdit)
+
         if MY_OS == 'win':
             infotext.configure(font=('default', 10), width=50)
         elif MY_OS == 'dar':
             infotext.configure(font=('default', 14), width=42)
+            infotext.bind('<Button-2>', RightClickEdit)
 
 
 if __name__ == "__main__":
