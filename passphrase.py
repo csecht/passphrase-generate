@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.8'
+__version__ = '0.8.9'
 
 import glob
 import random
@@ -116,10 +116,16 @@ class RightClickEdit:
         right_click_menu.add_command(
             label='Select all',
             command=lambda: self.right_click_cmd(event, 'SelectAll'))
-        right_click_menu.add(tk.SEPARATOR)
-        right_click_menu.add_command(
-            label='Close window',
-            command=lambda: self.close_window())
+        # Need to suppress close_window() option for app window, show only for
+        #  Toplevel windows and their children.
+        if isinstance(app.focus_get(), tk.Toplevel) or \
+                '.!text' in str(app.focus_get()) or \
+                '.!frame' in str(app.focus_get()):
+            right_click_menu.add(tk.SEPARATOR)
+            right_click_menu.add_command(
+                label='Close window',
+                command=lambda: self.close_window())
+
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
@@ -130,17 +136,15 @@ class RightClickEdit:
     def close_window():
         """
         Close the Toplevel window where mouse has right-clicked.
-        Should not close the main (app) window.
         """
         # Based on https://stackoverflow.com/questions/66384144/
-        # The main window has no Toplevel instances, so it will not close.
         # Need to cover all cases when the focus in the toplevel window,
         #  or is a child of that window, i.e. text, frame, etc.
         # There are many children in app and any toplevel window will be
         #   listed at or toward the end, so read child list in reverse,
         #   then stop the loop when the focus toplevel parent is found.
         for widget in reversed(app.winfo_children()):
-            if isinstance(widget, tk.Toplevel) and app.focus_get() == widget:
+            if widget == app.focus_get():
                 widget.destroy()
                 break
             elif '.!text' in str(app.focus_get()):
