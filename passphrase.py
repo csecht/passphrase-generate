@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.9'
+__version__ = '0.8.10'
 
 import glob
 import random
@@ -715,7 +715,7 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-o>', lambda q: self.share.scratch())
         self.master.bind('<Control-r>', lambda q: self.share.reset())
 
-        # Need to specify Ctrl-A for Linux b/c in master window that key is
+        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
             def select_all():
@@ -997,6 +997,13 @@ class PassFyi:
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
 
+        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
+        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
+        if MY_OS in 'lin':
+            def select_all():
+                app.focus_get().event_generate('<<SelectAll>>')
+            scratchwin.bind('<Control-a>', lambda q: select_all())
+
         scratchtxt = tk.Text(scratchwin, width=75,  # height=18,
                              background='grey85', foreground='grey5',
                              relief='groove', borderwidth=4,
@@ -1073,6 +1080,14 @@ equivalent to bits of entropy. For more information see:
 )
         infowin = tk.Toplevel()
         infowin.title('A word about words and characters')
+        
+        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
+        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
+        if MY_OS in 'lin':
+            def select_all():
+                app.focus_get().event_generate('<<SelectAll>>')
+            infowin.bind('<Control-a>', lambda q: select_all())
+            
         infotext = ScrolledText(infowin, width=75, height=25,
                                 background=random_bkg(), foreground='grey98',
                                 relief='groove', borderwidth=8,
@@ -1129,6 +1144,13 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
         aboutwin.minsize(300, 300)
+        
+        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
+        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
+        if MY_OS in 'lin':
+            def select_all():
+                app.focus_get().event_generate('<<SelectAll>>')
+            aboutwin.bind('<Control-a>', lambda q: select_all())
 
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
                            background=random_bkg(), foreground='grey98',
@@ -1172,6 +1194,14 @@ space entered between characters will also do a reset.
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 200)
+        
+        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
+        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
+        if MY_OS in 'lin':
+            def select_all():
+                app.focus_get().event_generate('<<SelectAll>>')
+            exclwin.bind('<Control-a>', lambda q: select_all())
+            
         num_lines = msg.count('\n')
         infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
                            background='grey40', foreground='grey98',
