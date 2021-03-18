@@ -116,7 +116,7 @@ class RightClickEdit:
         right_click_menu.add_command(
             label='Select all',
             command=lambda: self.right_click_cmd(event, 'SelectAll'))
-        # Need to suppress close_window() option for app window, show only for
+        # Need to suppress close_window() option for app window; show only for
         #  Toplevel windows and their children.
         if isinstance(app.focus_get(), tk.Toplevel) or \
                 '.!text' in str(app.focus_get()) or \
@@ -138,8 +138,8 @@ class RightClickEdit:
         Close the Toplevel window where mouse has right-clicked.
         """
         # Based on https://stackoverflow.com/questions/66384144/
-        # Need to cover all cases when the focus in the toplevel window,
-        #  or is a child of that window, i.e. text, frame, etc.
+        # Need to cover all cases when the focus is on the toplevel window,
+        #  or on a child of that window, i.e. text, frame, etc.
         # There are many children in app and any toplevel window will be
         #   listed at or toward the end, so read child list in reverse,
         #   then stop the loop when the focus toplevel parent is found.
