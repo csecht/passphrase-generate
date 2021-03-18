@@ -37,7 +37,7 @@ try:
     from tkinter import messagebox
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
-    print('GUI requires tkinter, which is included with Python 3.7 and higher'
+    print('Passphrase.py requires tkinter, which is included with Python 3.7+'
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
@@ -94,7 +94,7 @@ def random_bkg() -> str:
     return random.choice(colour)
 
 
-class RightClickEdit:
+class RightClickCmds:
     """
     Right-click pop-up option to edit text or close window;
     call as a Button-2 or Button-3 binding in Text or window
@@ -106,17 +106,17 @@ class RightClickEdit:
 
         right_click_menu.add_command(
             label='Copy',
-            command=lambda: self.right_click_cmd(event, 'Copy'))
+            command=lambda: self.right_click_edit(event, 'Copy'))
         right_click_menu.add_command(
             label='Paste',
-            command=lambda: self.right_click_cmd(event, 'Paste'))
+            command=lambda: self.right_click_edit(event, 'Paste'))
         right_click_menu.add_command(
             label='Cut',
-            command=lambda: self.right_click_cmd(event, 'Cut'))
+            command=lambda: self.right_click_edit(event, 'Cut'))
         right_click_menu.add_command(
             label='Select all',
-            command=lambda: self.right_click_cmd(event, 'SelectAll'))
-        # Need to suppress close_window() option for app window; show only for
+            command=lambda: self.right_click_edit(event, 'SelectAll'))
+        # Need to suppress 'Close window' option for app window; show only for
         #  Toplevel windows and their children.
         if isinstance(app.focus_get(), tk.Toplevel) or \
                 '.!text' in str(app.focus_get()) or \
@@ -129,13 +129,12 @@ class RightClickEdit:
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
-    def right_click_cmd(event, command):
+    def right_click_edit(event, command):
         event.widget.event_generate(f'<<{command}>>')
 
     @staticmethod
     def close_window():
-        """
-        Close the Toplevel window where mouse has right-clicked.
+        """Close the Toplevel window where mouse has right-clicked.
         """
         # Based on https://stackoverflow.com/questions/66384144/
         # Need to cover all cases when the focus is on the toplevel window,
@@ -725,9 +724,9 @@ class PassViewer(tk.Frame):
 
         # Need to specify OS-specific right-click mouse button
         if MY_OS in 'lin, win':
-            self.master.bind('<Button-3>', RightClickEdit)
+            self.master.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
-            self.master.bind('<Button-2>', RightClickEdit)
+            self.master.bind('<Button-2>', RightClickCmds)
 
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
@@ -1010,13 +1009,13 @@ class PassFyi:
         # scratchtxt.focus_set()
 
         if MY_OS in 'lin, win':
-            scratchtxt.bind('<Button-3>', RightClickEdit)
+            scratchtxt.bind('<Button-3>', RightClickCmds)
 
         if MY_OS == 'win':
             scratchtxt.configure(font=('default', 10))
         elif MY_OS == 'dar':
             scratchtxt.configure(font=('default', 14))
-            scratchtxt.bind('<Button-2>', RightClickEdit)
+            scratchtxt.bind('<Button-2>', RightClickCmds)
 
     @staticmethod
     def explain(selection: str, wordcount: int) -> None:
@@ -1084,17 +1083,17 @@ equivalent to bits of entropy. For more information see:
         if MY_OS in 'lin':
             infowin.geometry('650x490')
             infowin.minsize(650, 200)
-            infotext.bind('<Button-3>', RightClickEdit)
+            infotext.bind('<Button-3>', RightClickCmds)
         elif MY_OS in 'win':
             infowin.geometry('575x490')
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 11))
-            infotext.bind('<Button-3>', RightClickEdit)
+            infotext.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
             infowin.geometry('575x520')
             infowin.minsize(575, 200)
             infotext.configure(font=('default', 14))
-            infotext.bind('<Button-2>', RightClickEdit)
+            infotext.bind('<Button-2>', RightClickCmds)
 
     @staticmethod
     def about() -> None:
@@ -1142,14 +1141,14 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', RightClickEdit)
+            abouttxt.bind('<Button-3>', RightClickCmds)
 
         if MY_OS == 'win':
             abouttxt.configure(font=('default', 10))
         elif MY_OS == 'dar':
             aboutwin.minsize(520, 475)
             abouttxt.configure(font=('default', 14))
-            abouttxt.bind('<Button-2>', RightClickEdit)
+            abouttxt.bind('<Button-2>', RightClickCmds)
 
     @staticmethod
     def exclude_msg() -> None:
@@ -1182,13 +1181,13 @@ space entered between characters will also do a reset.
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'lin, win':
-            infotext.bind('<Button-3>', RightClickEdit)
+            infotext.bind('<Button-3>', RightClickCmds)
 
         if MY_OS == 'win':
             infotext.configure(font=('default', 10), width=50)
         elif MY_OS == 'dar':
             infotext.configure(font=('default', 14), width=42)
-            infotext.bind('<Button-2>', RightClickEdit)
+            infotext.bind('<Button-2>', RightClickCmds)
 
 
 if __name__ == "__main__":
