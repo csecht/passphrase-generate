@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.7'
+__version__ = '0.8.8'
 
 import glob
 import random
@@ -96,8 +96,9 @@ def random_bkg() -> str:
 
 class RightClickEdit:
     """
-    Right-click pop-up option to edit text; call as a Button-2
-    or Button-3 binding in Text or window that needs the function.
+    Right-click pop-up option to edit text or close window;
+    call as a Button-2 or Button-3 binding in Text or window
+    that needs the function.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
@@ -132,22 +133,28 @@ class RightClickEdit:
         Should not close the main (app) window.
         """
         # Based on https://stackoverflow.com/questions/66384144/
-        # The main window has no Toplevel widgets, so it will not close.
+        # The main window has no Toplevel instances, so it will not close.
         # Need to cover all cases when the focus in the toplevel window,
-        #  is on a child of that window, i.e. text, frame, etc.
-        for widget in app.winfo_children():
+        #  or is a child of that window, i.e. text, frame, etc.
+        # There are many children in app and any toplevel window will be
+        #   listed at or toward the end, so read child list in reverse,
+        #   then stop the loop when the focus toplevel parent is found.
+        for widget in reversed(app.winfo_children()):
             if isinstance(widget, tk.Toplevel) and app.focus_get() == widget:
                 widget.destroy()
+                break
             elif '.!text' in str(app.focus_get()):
                 parent = str(app.focus_get())[:-6]
                 if parent in str(widget):
                     widget.destroy()
+                    break
             elif '.!frame' in str(app.focus_get()):
                 parent = str(app.focus_get())[:-7]
                 if parent in str(widget):
                     widget.destroy()
+                    break
 
-        # This closes ALL open Toplevel windows.
+        # This closes ALL open Toplevel windows. Use as command?
         # for widget in app.winfo_children():
         #     if isinstance(widget, tk.Toplevel):
         #         widget.destroy()
