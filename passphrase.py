@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.5'
+__version__ = '0.8.6'
 
 import glob
 import random
@@ -131,11 +131,16 @@ class RightClickEdit:
         Close the Toplevel window where mouse has right-clicked.
         Should not close the main (app) window.
         """
-        # https://stackoverflow.com/questions/66384144/
-        # Need to not affect the main window, which has child button widgets.
+        # Based on https://stackoverflow.com/questions/66384144/
+        # The main window has non-Toplevel child widgets, so it doesn't close.
         for widget in app.winfo_children():
-            if str(app.focus_get()) in str(widget) and '.!button' not in str(widget):
+            if isinstance(widget, tk.Toplevel) and app.focus_get() == widget:
                 widget.destroy()
+
+        # This closes ALL open Toplevel windows.
+        # for widget in app.winfo_children():
+        #     if isinstance(widget, tk.Toplevel):
+        #         widget.destroy()
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -968,29 +973,29 @@ class PassFyi:
             ' somewhere else.'
             '\n————————————————————————————————————————\n\n')
 
-        aboutwin = tk.Toplevel()
-        aboutwin.title('Scratch Pad')
-        aboutwin.minsize(300, 250)
+        scratchwin = tk.Toplevel()
+        scratchwin.title('Scratch Pad')
+        scratchwin.minsize(300, 250)
 
-        abouttxt = tk.Text(aboutwin, width=75,  # height=18,
-                           background='grey85', foreground='grey5',
-                           relief='groove', borderwidth=4,
-                           padx=10, pady=10, wrap=tk.WORD)
-        abouttxt.insert('1.0', instruction)
+        scratchtxt = tk.Text(scratchwin, width=75,  # height=18,
+                             background='grey85', foreground='grey5',
+                             relief='groove', borderwidth=4,
+                             padx=10, pady=10, wrap=tk.WORD)
+        scratchtxt.insert('1.0', instruction)
         # Center all text in the window
-        abouttxt.tag_add('text1', '1.0', tk.END)
-        abouttxt.tag_configure('text1', justify='center')
-        abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        abouttxt.focus_set()
+        scratchtxt.tag_add('text1', '1.0', tk.END)
+        scratchtxt.tag_configure('text1', justify='center')
+        scratchtxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        # scratchtxt.focus_set()
 
         if MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', RightClickEdit)
+            scratchtxt.bind('<Button-3>', RightClickEdit)
 
         if MY_OS == 'win':
-            abouttxt.configure(font=('default', 10))
+            scratchtxt.configure(font=('default', 10))
         elif MY_OS == 'dar':
-            abouttxt.configure(font=('default', 14))
-            abouttxt.bind('<Button-2>', RightClickEdit)
+            scratchtxt.configure(font=('default', 14))
+            scratchtxt.bind('<Button-2>', RightClickEdit)
 
     @staticmethod
     def explain(selection: str, wordcount: int) -> None:
