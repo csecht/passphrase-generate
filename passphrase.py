@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.6'
+__version__ = '0.8.7'
 
 import glob
 import random
@@ -132,10 +132,20 @@ class RightClickEdit:
         Should not close the main (app) window.
         """
         # Based on https://stackoverflow.com/questions/66384144/
-        # The main window has non-Toplevel child widgets, so it doesn't close.
+        # The main window has no Toplevel widgets, so it will not close.
+        # Need to cover all cases when the focus in the toplevel window,
+        #  is on a child of that window, i.e. text, frame, etc.
         for widget in app.winfo_children():
             if isinstance(widget, tk.Toplevel) and app.focus_get() == widget:
                 widget.destroy()
+            elif '.!text' in str(app.focus_get()):
+                parent = str(app.focus_get())[:-6]
+                if parent in str(widget):
+                    widget.destroy()
+            elif '.!frame' in str(app.focus_get()):
+                parent = str(app.focus_get())[:-7]
+                if parent in str(widget):
+                    widget.destroy()
 
         # This closes ALL open Toplevel windows.
         # for widget in app.winfo_children():
