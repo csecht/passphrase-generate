@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.10'
+__version__ = '0.8.11'
 
 import glob
 import random
@@ -104,8 +104,6 @@ class RightClickCmds:
     def __init__(self, event):
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
 
-        print('INIT FOCUS:', app.focus_get())  # DEBUG
-
         right_click_menu.add_command(
             label='Copy',
             command=lambda: self.right_click_edit(event, 'Copy'))
@@ -118,11 +116,10 @@ class RightClickCmds:
         right_click_menu.add_command(
             label='Select all',
             command=lambda: self.right_click_edit(event, 'SelectAll'))
-        # Need to suppress 'Close window' option for app window, which does not
-        #   have .!text children instances.
+        # Need to suppress 'Close window' option for main(app) window, which does not
+        #   have .!toplevel instances.
         #   Show only for Toplevel windows and their children.
-        if isinstance(app.focus_get(), tk.Toplevel) or \
-                '.!text' in str(app.focus_get()):
+        if '.!toplevel' in str(app.focus_get()):
             right_click_menu.add(tk.SEPARATOR)
             right_click_menu.add_command(
                 label='Close window',
