@@ -116,8 +116,8 @@ class RightClickCmds:
         right_click_menu.add_command(
             label='Select all',
             command=lambda: self.right_click_edit(event, 'SelectAll'))
-        # Need to suppress 'Close window' option for main(app) window, which does not
-        #   have .!toplevel instances.
+        # Need to suppress 'Close window' option for master (app) window,
+        #   which does not have .!toplevel instances.
         #   Show only for Toplevel windows and their children.
         if '.!toplevel' in str(app.focus_get()):
             right_click_menu.add(tk.SEPARATOR)
