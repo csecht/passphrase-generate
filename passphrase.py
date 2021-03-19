@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.11'
+__version__ = '0.8.12'
 
 import glob
 import random
@@ -62,7 +62,7 @@ VERY_RANDOM = random.Random(random.random())
 # Note: The optional wordlist files are referenced in PassModeler().
 WORDDIR = './wordlists/'
 
-W = 65  # Default width of the results display fields.
+W = 52  # Default width of the results display fields.
 
 
 # Functions used by passphrase, but not part of MVC structure %%%%%%%%%%%%%%%%%
@@ -556,7 +556,7 @@ class PassViewer(tk.Frame):
                                        fg=self.pass_bg, bg=self.master_bg)
         self.share.numwords_entry = tk.Entry(width=2)
         # Use 5 words as default passphrase length.
-        self.share.numwords_entry.insert(0, '5')
+        self.share.numwords_entry.insert(0, '4')
 
         self.l_and_h_header =  tk.Label(text=' H      L', width=10,
                                         fg=self.master_fg, bg=self.master_bg)
@@ -852,14 +852,14 @@ class PassViewer(tk.Frame):
 
         # Need to pad and span to center the button between two results frames.
         #   ...with different padding to keep it aligned in MacOS.
-        self.generate_btn.grid(   column=3, row=5, pady=(10, 5), rowspan=2,
-                                  padx=(125, 0), sticky=tk.W)
+        self.generate_btn.grid(    column=3, row=5, pady=(10, 5), rowspan=2,
+                                   padx=(65, 0), sticky=tk.W)
         if MY_OS == 'dar':
-            self.generate_btn.grid(padx=(40, 0))
+            self.generate_btn.grid(padx=(0, 0))
 
         # Password widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pw_section_head.grid(column=0, row=5, pady=(12, 6), padx=5,
-                                  sticky=tk.W)
+        self.pw_section_head.grid( column=0, row=5, pady=(12, 6), padx=5,
+                                   sticky=tk.W)
 
         self.numchars_label.grid( column=0, row=6, pady=0, padx=5,
                                   sticky=tk.W)
@@ -1222,13 +1222,9 @@ space entered between characters will also do a reset.
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    if MY_OS == 'lin':
-        app.minsize(970, 425)
-        app.maxsize(1230, 425)
-    elif MY_OS == 'win':
-        app.minsize(950, 390)
-        app.maxsize(1230, 390)
-    elif MY_OS == 'dar':
-        app.minsize(850, 425)
-        app.maxsize(1230, 425)
+    app.minsize(650, 425)
+    app.maxsize(1200, 425)
+    if MY_OS == 'win':
+        app.minsize(650, 390)
+        app.maxsize(1200, 390)
     app.mainloop()
