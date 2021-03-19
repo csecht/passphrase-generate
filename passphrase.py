@@ -104,6 +104,8 @@ class RightClickCmds:
     def __init__(self, event):
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
 
+        print('INIT FOCUS:', app.focus_get())  # DEBUG
+
         right_click_menu.add_command(
             label='Copy',
             command=lambda: self.right_click_edit(event, 'Copy'))
@@ -116,11 +118,11 @@ class RightClickCmds:
         right_click_menu.add_command(
             label='Select all',
             command=lambda: self.right_click_edit(event, 'SelectAll'))
-        # Need to suppress 'Close window' option for app window; show only for
-        #  Toplevel windows and their children.
+        # Need to suppress 'Close window' option for app window, which does not
+        #   have .!text children instances.
+        #   Show only for Toplevel windows and their children.
         if isinstance(app.focus_get(), tk.Toplevel) or \
-                '.!text' in str(app.focus_get()) or \
-                '.!frame' in str(app.focus_get()):
+                '.!text' in str(app.focus_get()):
             right_click_menu.add(tk.SEPARATOR)
             right_click_menu.add_command(
                 label='Close window',
@@ -138,9 +140,9 @@ class RightClickCmds:
         """
         # Based on https://stackoverflow.com/questions/66384144/
         # Need to cover all cases when the focus is on the toplevel window,
-        #  or on a child of that window, i.e. text, frame, etc.
+        #  or on a child of that window, i.e. .!text or .!frame.
         # There are many children in app and any toplevel window will be
-        #   listed at or toward the end, so read child list in reverse,
+        #   listed at or toward the end, so read children list in reverse,
         #   then stop the loop when the focus toplevel parent is found.
         for widget in reversed(app.winfo_children()):
             if widget == app.focus_get():
