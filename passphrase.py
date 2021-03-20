@@ -34,6 +34,7 @@ from typing import Dict, List, Any
 try:
     import tkinter as tk
     import tkinter.ttk as ttk
+    import tkinter.font
     from tkinter import messagebox
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
@@ -1007,12 +1008,11 @@ class PassFyi:
                              background='grey85', foreground='grey5',
                              relief='groove', borderwidth=4,
                              padx=10, pady=10, wrap=tk.WORD)
-        scratchtxt.insert('1.0', instruction)
+        scratchtxt.insert(1.0, instruction)
         # Center all text in the window
-        scratchtxt.tag_add('text1', '1.0', tk.END)
+        scratchtxt.tag_add('text1', 1.0, tk.END)
         scratchtxt.tag_configure('text1', justify='center')
         scratchtxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        # scratchtxt.focus_set()
 
         if MY_OS in 'lin, win':
             scratchtxt.bind('<Button-3>', RightClickCmds)
@@ -1022,6 +1022,9 @@ class PassFyi:
         elif MY_OS == 'dar':
             scratchtxt.configure(font=('default', 14))
             scratchtxt.bind('<Button-2>', RightClickCmds)
+
+        # current_font = tk.font.Font(font=scratchtxt['font'])
+        # print(current_font.actual())
 
     @staticmethod
     def explain(selection: str, wordcount: int) -> None:
@@ -1091,7 +1094,7 @@ equivalent to bits of entropy. For more information see:
                                 background=random_bkg(), foreground='grey98',
                                 relief='groove', borderwidth=8,
                                 padx=20, pady=10)
-        infotext.insert('1.0', info)
+        infotext.insert(1.0, info)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'lin':
@@ -1155,9 +1158,9 @@ along with this program. If not, see https://www.gnu.org/licenses/
                            background=random_bkg(), foreground='grey98',
                            relief='groove', borderwidth=8, padx=5,
                            wrap=tk.WORD)
-        abouttxt.insert('1.0', boilerplate + __version__)
+        abouttxt.insert(1.0, boilerplate + __version__)
         # Center text preceding the Author, etc. details.
-        abouttxt.tag_add('text1', '1.0', float(num_lines - 3))
+        abouttxt.tag_add('text1', 1.0, float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
@@ -1206,7 +1209,7 @@ space entered between characters will also do a reset.
                            background='grey40', foreground='grey98',
                            relief='groove', borderwidth=8, padx=20, pady=10,
                            wrap=tk.WORD)
-        infotext.insert('1.0', msg)
+        infotext.insert(1.0, msg)
         infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS in 'lin, win':
