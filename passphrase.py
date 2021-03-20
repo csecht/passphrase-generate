@@ -746,6 +746,9 @@ class PassViewer(tk.Frame):
         elif MY_OS == 'dar':
             self.master.bind('<Button-2>', RightClickCmds)
 
+        self.bind('<F1>', lambda q: self.share.growfont())
+        self.bind('<F2>', lambda q: self.share.shrinkfont())
+
         # Create menu instance and add pull-down menus
         menu = tk.Menu(self.master)
         self.master.config(menu=menu)
@@ -1277,23 +1280,23 @@ class PassFonts:
         """Make the font 2 points bigger"""
         size = self.share.text_font['size']
         self.share.text_font.configure(size=size + 2)
-        # size = self.custom_font['size']
-        # self.custom_font.configure(size=size + 2)
+        size2 = self.share.result_font['size']
+        self.share.result_font.configure(size=size2 + 2)
 
     def shrink_font(self):
         """Make the font 2 points smaller"""
         size = self.share.text_font['size']
         self.share.text_font.configure(size=size - 2)
-        # size = self.custom_font['size']
-        # self.custom_font.configure(size=size - 2)
+        size2 = self.share.result_font['size']
+        self.share.result_font.configure(size=size2 - 2)
 
 
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
     app.minsize(650, 425)
-    app.maxsize(1200, 425)
+    app.maxsize(1200, 600)
     if MY_OS == 'win':
         app.minsize(650, 390)
-        app.maxsize(1200, 390)
+        app.maxsize(1200, 600)
     app.mainloop()
