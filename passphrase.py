@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.8.12'
+__version__ = '0.9.0'
 
 import glob
 import random
@@ -140,8 +140,8 @@ class RightClickCmds:
         # Need to cover all cases when the focus is on the toplevel window,
         #  or on a child of that window, i.e. .!text or .!frame.
         # There are many children in app and any toplevel window will be
-        #   listed at or toward the end, so read children list in reverse,
-        #   then stop the loop when the focus toplevel parent is found.
+        #   listed at or toward the end, so read children list in reverse
+        #   and stop the loop when the focus toplevel parent is found.
         for widget in reversed(app.winfo_children()):
             if widget == app.focus_get():
                 widget.destroy()
@@ -161,6 +161,7 @@ class RightClickCmds:
         # for widget in app.winfo_children():
         #     if isinstance(widget, tk.Toplevel):
         #         widget.destroy()
+
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -512,11 +513,26 @@ class PassViewer(tk.Frame):
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
-        # Use Courier b/c TKFixedFont does not monospace symbol characters.
-        self.share.result_font = 'Courier', 12
-        # MacOS needs larger fonts for easy readability.
-        if MY_OS == 'dar':
-            self.share.result_font = 'Courier', 14
+        # DejaVu Sans Mono is the PyCharm default font for Text() widgets (used
+        #   in PassFyi()).
+        # For results Entry fields, use Courier because TKFixedFont does not
+        #   monospace symbol characters.
+        # MacOS needs larger fonts for easier readability.
+        if MY_OS == 'lin':
+            self.share.text_font = tk.font.Font(family='DejaVu Sans Mono',
+                                                size=10)
+            self.share.result_font = tk.font.Font(family='Courier',
+                                                  size=12)
+        elif MY_OS == 'win':
+            self.share.text_font = tk.font.Font(family='DejaVu Sans Mono',
+                                                size=11)
+            self.share.result_font = tk.font.Font(family='Courier',
+                                                  size=12)
+        elif MY_OS == 'dar':
+            self.share.text_font = tk.font.Font(family='DejaVu Sans Mono',
+                                                size=14)
+            self.share.result_font = tk.font.Font(family='Courier',
+                                                  size=14)
 
         self.share.stubresult = 'Result can be copied and pasted.'
 
@@ -714,6 +730,8 @@ class PassViewer(tk.Frame):
         self.master.bind('<Return>', lambda q: self.share.makepass())
         self.master.bind('<Control-o>', lambda q: self.share.scratch())
         self.master.bind('<Control-r>', lambda q: self.share.reset())
+        self.master.bind('<F1>', lambda q: self.share.growfont())
+        self.master.bind('<F2>', lambda q: self.share.shrinkfont())
 
         # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -775,6 +793,7 @@ class PassViewer(tk.Frame):
                               command=self.share.explain)
         help_menu.add_command(label="About",
                               command=self.share.about)
+        help_menu.add_command(label="Font size: F1 & F2 keys")
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -970,6 +989,12 @@ class PassController(tk.Tk):
         """
         PassFyi(share=self).exclude_msg()
 
+    def growfont(self):
+        PassFonts(share=self).grow_font()
+
+    def shrinkfont(self):
+        PassFonts(share=self).shrink_font()
+
 
 class PassFyi:
     """
@@ -978,8 +1003,7 @@ class PassFyi:
     def __init__(self, share):
         self.share = share
 
-    @staticmethod
-    def scratchpad() -> None:
+    def scratchpad(self) -> None:
         """
         A text window for user to temporarily save results.
         Is called from File menu or keybinding.
@@ -997,6 +1021,14 @@ class PassFyi:
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
 
+        scratchwin.bind('<F1>', lambda q: self.share.growfont())
+        scratchwin.bind('<F2>', lambda q: self.share.shrinkfont())
+
+        if MY_OS in 'lin, win':
+            scratchwin.bind('<Button-3>', RightClickCmds)
+        elif MY_OS == 'dar':
+            scratchwin.bind('<Button-2>', RightClickCmds)
+
         # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
@@ -1004,30 +1036,26 @@ class PassFyi:
                 app.focus_get().event_generate('<<SelectAll>>')
             scratchwin.bind('<Control-a>', lambda q: select_all())
 
-        scratchtxt = tk.Text(scratchwin, width=75,  # height=18,
+        scratchtxt = tk.Text(scratchwin, width=75,
                              background='grey85', foreground='grey5',
                              relief='groove', borderwidth=4,
-                             padx=10, pady=10, wrap=tk.WORD)
+                             padx=10, pady=10, wrap=tk.WORD,
+                             font=self.share.text_font)
         scratchtxt.insert(1.0, instruction)
         # Center all text in the window
         scratchtxt.tag_add('text1', 1.0, tk.END)
         scratchtxt.tag_configure('text1', justify='center')
         scratchtxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-        if MY_OS in 'lin, win':
-            scratchtxt.bind('<Button-3>', RightClickCmds)
+        # if MY_OS in 'lin, win':
+        #     scratchtxt.bind('<Button-3>', RightClickCmds)
+        # elif MY_OS == 'dar':
+        #     scratchtxt.bind('<Button-2>', RightClickCmds)
 
-        if MY_OS == 'win':
-            scratchtxt.configure(font=('default', 10))
-        elif MY_OS == 'dar':
-            scratchtxt.configure(font=('default', 14))
-            scratchtxt.bind('<Button-2>', RightClickCmds)
+        # font_specs = tk.font.Font(font=scratchtxt['font'])
+        # print(font_specs)
 
-        # current_font = tk.font.Font(font=scratchtxt['font'])
-        # print(current_font.actual())
-
-    @staticmethod
-    def explain(selection: str, wordcount: int) -> None:
+    def explain(self, selection: str, wordcount: int) -> None:
         """Provide information about words used to create passphrases.
 
         :param selection: User selected wordlist name.
@@ -1035,7 +1063,7 @@ class PassFyi:
         :return: An text window notice with current wordlist data.
         """
 
-        info = (
+        explanation = (
 """A passphrase is a random string of words that can be more secure and
 easier to remember than a password of random characters. For more
 information on passphrases, see, for example, a discussion of word lists
@@ -1057,7 +1085,7 @@ text, or by using the pull-down Edit menu.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are not
 used nor counted above. Multiple windows can remain open to compare
-counts among different wordlists and exclusions.\n
+counts among different wordlists and exclusions. (cont...)\n
 Optional wordfiles were derived from texts obtained from these sites:
     https://www.gutenberg.org
     https://www.archives.gov/founding-docs/constitution-transcript
@@ -1078,42 +1106,44 @@ equivalent to bits of entropy. For more information see:
     https://explainxkcd.com/wiki/index.php/936:_Password_Strength
     https://en.wikipedia.org/wiki/Password_strength
     https://en.wikipedia.org/wiki/Entropy_(information_theory)
+
+In any window, font size can be changed with the F1 and F2 keys.
 """
 )
-        infowin = tk.Toplevel()
-        infowin.title('A word about words and characters')
-        
+        explainwin = tk.Toplevel()
+        explainwin.title('A word about words and characters')
+        if MY_OS in 'lin':
+            # explainwin.geometry('650x490')
+            explainwin.minsize(650, 200)
+            explainwin.bind('<Button-3>', RightClickCmds)
+        elif MY_OS in 'win':
+            # explainwin.geometry('575x490')
+            explainwin.minsize(575, 200)
+            explainwin.bind('<Button-3>', RightClickCmds)
+        elif MY_OS == 'dar':
+            # explainwin.geometry('575x520')
+            explainwin.minsize(575, 200)
+            explainwin.bind('<Button-2>', RightClickCmds)
+
+        explainwin.bind('<F1>', lambda q: self.share.growfont())
+        explainwin.bind('<F2>', lambda q: self.share.shrinkfont())
+
         # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
             def select_all():
                 app.focus_get().event_generate('<<SelectAll>>')
-            infowin.bind('<Control-a>', lambda q: select_all())
+            explainwin.bind('<Control-a>', lambda q: select_all())
             
-        infotext = ScrolledText(infowin, width=75, height=25,
-                                background=random_bkg(), foreground='grey98',
-                                relief='groove', borderwidth=8,
-                                padx=20, pady=10)
-        infotext.insert(1.0, info)
-        infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        explaintext = ScrolledText(explainwin, width=75, height=25,
+                                   background=random_bkg(), foreground='grey98',
+                                   relief='groove', borderwidth=8,
+                                   padx=20, pady=10, wrap=tk.WORD,
+                                   font=self.share.text_font)
+        explaintext.insert(1.0, explanation)
+        explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-        if MY_OS in 'lin':
-            infowin.geometry('650x490')
-            infowin.minsize(650, 200)
-            infotext.bind('<Button-3>', RightClickCmds)
-        elif MY_OS in 'win':
-            infowin.geometry('575x490')
-            infowin.minsize(575, 200)
-            infotext.configure(font=('default', 11))
-            infotext.bind('<Button-3>', RightClickCmds)
-        elif MY_OS == 'dar':
-            infowin.geometry('575x520')
-            infowin.minsize(575, 200)
-            infotext.configure(font=('default', 14))
-            infotext.bind('<Button-2>', RightClickCmds)
-
-    @staticmethod
-    def about() -> None:
+    def about(self) -> None:
         """Basic information about the script; called from GUI Help menu.
 
         :return: Information window.
@@ -1145,8 +1175,17 @@ along with this program. If not, see https://www.gnu.org/licenses/
         num_lines = boilerplate.count('\n')
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
-        aboutwin.minsize(300, 300)
-        
+
+        if MY_OS in 'lin, win':
+            aboutwin.minsize(300, 300)
+            aboutwin.bind('<Button-3>', RightClickCmds)
+        elif MY_OS == 'dar':
+            aboutwin.minsize(520, 475)
+            aboutwin.bind('<Button-2>', RightClickCmds)
+
+        aboutwin.bind('<F1>', lambda q: self.share.growfont())
+        aboutwin.bind('<F2>', lambda q: self.share.shrinkfont())
+
         # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
@@ -1157,25 +1196,14 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
                            background=random_bkg(), foreground='grey98',
                            relief='groove', borderwidth=8, padx=5,
-                           wrap=tk.WORD)
+                           wrap=tk.WORD, font=self.share.text_font)
         abouttxt.insert(1.0, boilerplate + __version__)
         # Center text preceding the Author, etc. details.
         abouttxt.tag_add('text1', 1.0, float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-        if MY_OS in 'lin, win':
-            abouttxt.bind('<Button-3>', RightClickCmds)
-
-        if MY_OS == 'win':
-            abouttxt.configure(font=('default', 10))
-        elif MY_OS == 'dar':
-            aboutwin.minsize(520, 475)
-            abouttxt.configure(font=('default', 14))
-            abouttxt.bind('<Button-2>', RightClickCmds)
-
-    @staticmethod
-    def exclude_msg() -> None:
+    def exclude_msg(self) -> None:
         """A pop-up describing how to use excluded characters.
         Called only from a Button.
 
@@ -1196,7 +1224,15 @@ space entered between characters will also do a reset.
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 200)
-        
+
+        if MY_OS in 'lin, win':
+            exclwin.bind('<Button-3>', RightClickCmds)
+        elif MY_OS == 'dar':
+            exclwin.bind('<Button-2>', RightClickCmds)
+
+        exclwin.bind('<F1>', lambda q: self.share.growfont())
+        exclwin.bind('<F2>', lambda q: self.share.shrinkfont())
+
         # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
@@ -1205,21 +1241,51 @@ space entered between characters will also do a reset.
             exclwin.bind('<Control-a>', lambda q: select_all())
             
         num_lines = msg.count('\n')
-        infotext = tk.Text(exclwin, width=62, height=num_lines + 1,
+        excltext = tk.Text(exclwin, width=62, height=num_lines + 1,
                            background='grey40', foreground='grey98',
                            relief='groove', borderwidth=8, padx=20, pady=10,
-                           wrap=tk.WORD)
-        infotext.insert(1.0, msg)
-        infotext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-
-        if MY_OS in 'lin, win':
-            infotext.bind('<Button-3>', RightClickCmds)
+                           wrap=tk.WORD, font=self.share.text_font)
+        excltext.insert(1.0, msg)
+        excltext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         if MY_OS == 'win':
-            infotext.configure(font=('default', 10), width=50)
+            excltext.configure(font=('default', 10), width=50)
         elif MY_OS == 'dar':
-            infotext.configure(font=('default', 14), width=42)
-            infotext.bind('<Button-2>', RightClickCmds)
+            excltext.configure(font=('default', 14), width=42)
+
+
+class PassFonts:
+    def __init__(self, share):
+        self.share = share
+
+        # Create a custom Font, must include size keyword. Other keywords are:
+        # weight: 'normal'/'bold', underline: 0/1, and overstrike : 0/1.
+        # For tk.Text, family default is DejaVu Sans mono (set by PyCharm?).
+        # family of "Courier" is Nimbus Mono PS, "Helvetica": Nimbus Sans,
+        #    "Times": Nimbus Roman
+        # if MY_OS in 'lin, win':
+        #     self.share.text_font = tk.font.Font(size=10)
+        # elif MY_OS == 'dar':
+        #     self.share.text_font = tk.font.Font(size=14)
+
+    # def current_font(self):
+    #     size = int(self.share.text_font['size'])
+    #     print(size)
+    #     return size
+
+    def grow_font(self):
+        """Make the font 2 points bigger"""
+        size = self.share.text_font['size']
+        self.share.text_font.configure(size=size + 2)
+        # size = self.custom_font['size']
+        # self.custom_font.configure(size=size + 2)
+
+    def shrink_font(self):
+        """Make the font 2 points smaller"""
+        size = self.share.text_font['size']
+        self.share.text_font.configure(size=size - 2)
+        # size = self.custom_font['size']
+        # self.custom_font.configure(size=size - 2)
 
 
 if __name__ == "__main__":
