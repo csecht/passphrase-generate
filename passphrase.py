@@ -519,21 +519,22 @@ class PassViewer(tk.Frame):
         # .actual() family of "Courier" is Nimbus Mono PS, "Helvetica": Nimbus Sans,
         #    "Times": Nimbus Roman
         # For tk.Text, the family default is DejaVu Sans mono (set by PyCharm?).
-        # For results Entry fields, use Courier because TKFixedFont does not
-        #   monospace symbol characters.
+        # Not specifying family, or using 'default' or 'TkTextFont' will all
+        #   default to the default tkinter/Python/OS text font.
+        # For results Entry fields, use Courier family because TKFixedFont does
+        #   not monospace symbol characters.
         # MacOS needs larger fonts for easier readability.
         if MY_OS == 'lin':
-            self.share.text_font = tk.font.Font(family='DejaVu Sans Mono',
-                                                size=10)
+            self.share.text_font = tk.font.Font(size=11)
             self.share.result_font = tk.font.Font(family='Courier',
                                                   size=12)
         elif MY_OS == 'win':
-            self.share.text_font = tk.font.Font(family='DejaVu Sans Mono',
+            self.share.text_font = tk.font.Font(family='default',
                                                 size=11)
             self.share.result_font = tk.font.Font(family='Courier',
                                                   size=12)
         elif MY_OS == 'dar':
-            self.share.text_font = tk.font.Font(family='DejaVu Sans Mono',
+            self.share.text_font = tk.font.Font(family='default',
                                                 size=14)
             self.share.result_font = tk.font.Font(family='Courier',
                                                   size=14)
@@ -1035,12 +1036,13 @@ class PassFyi:
         """
         # Separator uses em dashes.
         instruction = (
-            'Paste here passphrases or passwords that you are thinking of' 
-            ' using. You can then compare them, test typing them out, or whatever,'
-            ' to see whether any work for you. Anything you paste or edit here' 
-            ' is GONE when this window is closed, so save what you want to keep' 
-            ' somewhere else.'
-            '\n————————————————————————————————————————\n\n')
+            'Paste here passphrases or passwords that you are thinking of'
+            ' using. You can then compare them, test typing them out, etc.'
+            ' and see whether any work for you. Anything you paste or edit here'
+            ' is GONE when this window is closed, so save what you want to keep'
+            ' somewhere else.\n'
+            '──────────────────────────────────────────────────────────────\n\n'
+        )
 
         scratchwin = tk.Toplevel()
         scratchwin.title('Scratch Pad')
@@ -1091,10 +1093,10 @@ f'   From the current selected wordlist, {selection},\n'
 '   after subtracting words with excluded letters, if any,\n'
 f'   there are {wordcount} words available to construct passphrases.\n'
 """
-Passphrases and passwords (pass-strings) are made by clicking the 
+Passphrases and passwords (pass-strings) are made by clicking the
 Generate! button, or pressing Enter or Ctrl-G, or from the File pull-
-down menu on the menu bar. The pass-string you want can be cut and 
-pasted using standard keyboard commands, or by right-clicking on the 
+down menu on the menu bar. The pass-string you want can be cut and
+pasted using standard keyboard commands, or by right-clicking on the
 text, or by using the pull-down Edit menu.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are not
@@ -1127,7 +1129,7 @@ Font size can be changed with the F1 and F2 keys or from the menubar.
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
         if MY_OS in 'lin':
-            explainwin.minsize(650, 200)
+            explainwin.minsize(560, 200)
             explainwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS in 'win':
             explainwin.minsize(575, 200)
@@ -1135,11 +1137,11 @@ Font size can be changed with the F1 and F2 keys or from the menubar.
         elif MY_OS == 'dar':
             explainwin.minsize(575, 200)
             explainwin.bind('<Button-2>', RightClickCmds)
-            
-        explaintext = ScrolledText(explainwin, width=75, height=25,
-                                   background=random_bkg(), foreground='grey98',
+
+        explaintext = ScrolledText(explainwin, width=62, height=25,
+                                   background=random_bkg(), foreground='grey90',
                                    relief='groove', borderwidth=8,
-                                   padx=20, pady=10, wrap=tk.WORD,
+                                   padx=30, pady=20, wrap=tk.WORD,
                                    font=self.share.text_font)
         explaintext.insert(1.0, explanation)
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
@@ -1153,14 +1155,15 @@ Font size can be changed with the F1 and F2 keys or from the menubar.
 
         :return: Information window.
         """
-        # msg separators use em dashes.
-        boilerplate = ("""
+        # msg separator dashes from https://coolsymbol.com/line-symbols.html.
+        boilerplate = (
+"""
 passphrase.py and its stand-alones generate passphrases and passwords.
 Download the most recent version from:
 """
 f'{PROJ_URL}'
 """
-————————————————————————————————————————
+──────────────────────────────────────────────────────────────
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -1171,12 +1174,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.\n
 You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
-————————————————————————————————————————\n
+──────────────────────────────────────────────────────────────\n
                    Author:     cecht
-                   Copyright:  Copyright (C) 2021 C.S. Echt
+                   Copyright: Copyright (C) 2021 C.S. Echt
                    Development Status: 4 - Beta
-                   Version:    """)  # __version__ is inserted here.
-
+                   Version:    """  # __version__ is inserted here.
+        )
         num_lines = boilerplate.count('\n')
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
@@ -1188,8 +1191,8 @@ along with this program. If not, see https://www.gnu.org/licenses/
             aboutwin.minsize(520, 475)
             aboutwin.bind('<Button-2>', RightClickCmds)
 
-        abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
-                           background=random_bkg(), foreground='grey98',
+        abouttxt = tk.Text(aboutwin, width=65, height=num_lines + 2,
+                           background=random_bkg(), foreground='grey95',
                            relief='groove', borderwidth=8, padx=5,
                            wrap=tk.WORD, font=self.share.text_font)
         abouttxt.insert(1.0, boilerplate + __version__)
@@ -1213,22 +1216,22 @@ unit. For example, "es" will exclude "trees", not "eye"
 and  "says". To exclude everything having "e" and "s",
 enter "e", click Generate!, then enter "s" and Generate!
 
-The Reset button (or Ctrl+R) removes all exclusions. A 
+The Reset button (or Ctrl+R) removes all exclusions. A
 space entered between characters will also do a reset.
 """
 )
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
-        exclwin.minsize(300, 200)
+        exclwin.minsize(300, 100)
 
         if MY_OS in 'lin, win':
             exclwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
             exclwin.bind('<Button-2>', RightClickCmds)
-            
+
         num_lines = msg.count('\n')
-        excltext = tk.Text(exclwin, width=62, height=num_lines + 1,
-                           background='grey40', foreground='grey98',
+        excltext = tk.Text(exclwin, width=48, height=num_lines + 1,
+                           background='grey40', foreground='grey95',
                            relief='groove', borderwidth=8, padx=20, pady=10,
                            wrap=tk.WORD, font=self.share.text_font)
         excltext.insert(1.0, msg)
