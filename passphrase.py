@@ -1130,7 +1130,7 @@ Font size can be changed with the F1 and F2 keys or from the menubar."""
             explainwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
             explainwin.minsize(595, 200)
-            os_width = 59
+            os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
