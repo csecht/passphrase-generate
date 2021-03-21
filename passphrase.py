@@ -524,13 +524,8 @@ class PassViewer(tk.Frame):
         # For results Entry fields, use Courier family because TKFixedFont does
         #   not monospace symbol characters.
         # MacOS needs larger fonts for easier readability.
-        if MY_OS == 'lin':
+        if MY_OS in 'lin, win':
             self.share.text_font = tk.font.Font(size=11)
-            self.share.result_font = tk.font.Font(family='Courier',
-                                                  size=12)
-        elif MY_OS == 'win':
-            self.share.text_font = tk.font.Font(family='default',
-                                                size=11)
             self.share.result_font = tk.font.Font(family='Courier',
                                                   size=12)
         elif MY_OS == 'dar':
@@ -1038,10 +1033,10 @@ class PassFyi:
         instruction = (
             'Paste here passphrases or passwords that you are thinking of'
             ' using. You can then compare them, test typing them out, etc.'
-            ' and see whether any work for you. Anything you paste or edit here'
+            ' and see whether any work for you.\nAnything you paste or edit here'
             ' is GONE when this window is closed, so save what you want to keep'
             ' somewhere else.\n'
-            '──────────────────────────────────────────────────────────────\n\n'
+            '──────────────────────────────────────────────────────\n\n'
         )
 
         scratchwin = tk.Toplevel()
@@ -1128,11 +1123,8 @@ Font size can be changed with the F1 and F2 keys or from the menubar.
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
-        if MY_OS in 'lin':
+        if MY_OS in 'lin, win':
             explainwin.minsize(560, 200)
-            explainwin.bind('<Button-3>', RightClickCmds)
-        elif MY_OS in 'win':
-            explainwin.minsize(575, 200)
             explainwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
             explainwin.minsize(575, 200)
@@ -1163,7 +1155,7 @@ Download the most recent version from:
 """
 f'{PROJ_URL}'
 """
-──────────────────────────────────────────────────────────────
+──────────────────────────────────────────────
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -1174,7 +1166,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.\n
 You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
-──────────────────────────────────────────────────────────────\n
+──────────────────────────────────────────────\n
                    Author:     cecht
                    Copyright: Copyright (C) 2021 C.S. Echt
                    Development Status: 4 - Beta
