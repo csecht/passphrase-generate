@@ -750,9 +750,6 @@ class PassViewer(tk.Frame):
         elif MY_OS == 'dar':
             self.master.bind('<Button-2>', RightClickCmds)
 
-        self.bind('<F1>', lambda q: self.share.growfont())
-        self.bind('<F2>', lambda q: self.share.shrinkfont())
-
         # Create menu instance and add pull-down menus
         menubar = tk.Menu(self.master)
         self.master.config(menu=menubar)
@@ -1037,9 +1034,6 @@ class PassFyi:
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
 
-        scratchwin.bind('<F1>', lambda q: self.share.growfont())
-        scratchwin.bind('<F2>', lambda q: self.share.shrinkfont())
-
         if MY_OS in 'lin, win':
             scratchwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
@@ -1062,14 +1056,6 @@ class PassFyi:
         scratchtxt.tag_add('text1', 1.0, tk.END)
         scratchtxt.tag_configure('text1', justify='center')
         scratchtxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-
-        # if MY_OS in 'lin, win':
-        #     scratchtxt.bind('<Button-3>', RightClickCmds)
-        # elif MY_OS == 'dar':
-        #     scratchtxt.bind('<Button-2>', RightClickCmds)
-
-        # font_specs = tk.font.Font(font=scratchtxt['font'])
-        # print(font_specs)
 
     def explain(self, selection: str, wordcount: int) -> None:
         """Provide information about words used to create passphrases.
@@ -1129,27 +1115,14 @@ In any window, font size can be changed with the F1 and F2 keys.
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
         if MY_OS in 'lin':
-            # explainwin.geometry('650x490')
             explainwin.minsize(650, 200)
             explainwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS in 'win':
-            # explainwin.geometry('575x490')
             explainwin.minsize(575, 200)
             explainwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
-            # explainwin.geometry('575x520')
             explainwin.minsize(575, 200)
             explainwin.bind('<Button-2>', RightClickCmds)
-
-        explainwin.bind('<F1>', lambda q: self.share.growfont())
-        explainwin.bind('<F2>', lambda q: self.share.shrinkfont())
-
-        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
-        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
-        if MY_OS in 'lin':
-            def select_all():
-                app.focus_get().event_generate('<<SelectAll>>')
-            explainwin.bind('<Control-a>', lambda q: select_all())
             
         explaintext = ScrolledText(explainwin, width=75, height=25,
                                    background=random_bkg(), foreground='grey98',
@@ -1158,6 +1131,10 @@ In any window, font size can be changed with the F1 and F2 keys.
                                    font=self.share.text_font)
         explaintext.insert(1.0, explanation)
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        # Can't bind font size keys to text b/c odd characters are inserted,
+        #   so just use the master window and menu to control font size.
+        #   This prevents all key actions.
+        explaintext.bind("<Key>", lambda e: "break")
 
     def about(self) -> None:
         """Basic information about the script; called from GUI Help menu.
@@ -1199,16 +1176,6 @@ along with this program. If not, see https://www.gnu.org/licenses/
             aboutwin.minsize(520, 475)
             aboutwin.bind('<Button-2>', RightClickCmds)
 
-        aboutwin.bind('<F1>', lambda q: self.share.growfont())
-        aboutwin.bind('<F2>', lambda q: self.share.shrinkfont())
-
-        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
-        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
-        if MY_OS in 'lin':
-            def select_all():
-                app.focus_get().event_generate('<<SelectAll>>')
-            aboutwin.bind('<Control-a>', lambda q: select_all())
-
         abouttxt = tk.Text(aboutwin, width=75, height=num_lines + 2,
                            background=random_bkg(), foreground='grey98',
                            relief='groove', borderwidth=8, padx=5,
@@ -1218,6 +1185,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.tag_add('text1', 1.0, float(num_lines - 3))
         abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        abouttxt.bind("<Key>", lambda e: "break")
 
     def exclude_msg(self) -> None:
         """A pop-up describing how to use excluded characters.
@@ -1245,16 +1213,6 @@ space entered between characters will also do a reset.
             exclwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
             exclwin.bind('<Button-2>', RightClickCmds)
-
-        exclwin.bind('<F1>', lambda q: self.share.growfont())
-        exclwin.bind('<F2>', lambda q: self.share.shrinkfont())
-
-        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
-        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
-        if MY_OS in 'lin':
-            def select_all():
-                app.focus_get().event_generate('<<SelectAll>>')
-            exclwin.bind('<Control-a>', lambda q: select_all())
             
         num_lines = msg.count('\n')
         excltext = tk.Text(exclwin, width=62, height=num_lines + 1,
@@ -1263,11 +1221,7 @@ space entered between characters will also do a reset.
                            wrap=tk.WORD, font=self.share.text_font)
         excltext.insert(1.0, msg)
         excltext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-
-        if MY_OS == 'win':
-            excltext.configure(font=('default', 10), width=50)
-        elif MY_OS == 'dar':
-            excltext.configure(font=('default', 14), width=42)
+        excltext.bind("<Key>", lambda e: "break")
 
 
 class PassFonts:
@@ -1277,24 +1231,23 @@ class PassFonts:
     def __init__(self, share):
         self.share = share
 
-    # def current_font(self):
-    #     size = int(self.share.text_font['size'])
-    #     print(size)
-    #     return size
-
     def grow_font(self):
         """Make the font 2 points bigger"""
         size = self.share.text_font['size']
-        self.share.text_font.configure(size=size + 2)
+        if size < 32:
+            self.share.text_font.configure(size=size + 2)
         size2 = self.share.result_font['size']
-        self.share.result_font.configure(size=size2 + 2)
+        if size < 32:
+            self.share.result_font.configure(size=size2 + 2)
 
     def shrink_font(self):
         """Make the font 2 points smaller"""
         size = self.share.text_font['size']
-        self.share.text_font.configure(size=size - 2)
+        if size > 6:
+            self.share.text_font.configure(size=size - 2)
         size2 = self.share.result_font['size']
-        self.share.result_font.configure(size=size2 - 2)
+        if size > 6:
+            self.share.result_font.configure(size=size2 - 2)
 
 
 if __name__ == "__main__":
