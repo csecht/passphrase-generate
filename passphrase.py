@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.0'
+__version__ = '0.9.1'
 
 import glob
 import random
@@ -513,8 +513,12 @@ class PassViewer(tk.Frame):
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
-        # DejaVu Sans Mono is the PyCharm default font for Text() widgets (used
-        #   in PassFyi()).
+        # Create a custom Font, must include size keyword. Other keywords are:
+        # family: 'a named font', weight: 'normal'/'bold', underline: 0/1,
+        # and overstrike : 0/1.
+        # .actual() family of "Courier" is Nimbus Mono PS, "Helvetica": Nimbus Sans,
+        #    "Times": Nimbus Roman
+        # For tk.Text, the family default is DejaVu Sans mono (set by PyCharm?).
         # For results Entry fields, use Courier because TKFixedFont does not
         #   monospace symbol characters.
         # MacOS needs larger fonts for easier readability.
@@ -750,8 +754,8 @@ class PassViewer(tk.Frame):
         self.bind('<F2>', lambda q: self.share.shrinkfont())
 
         # Create menu instance and add pull-down menus
-        menu = tk.Menu(self.master)
-        self.master.config(menu=menu)
+        menubar = tk.Menu(self.master)
+        self.master.config(menu=menubar)
 
         # Need to show the system's native key binding the as menu accelerator.
         native_cmdkey = ''
@@ -760,8 +764,8 @@ class PassViewer(tk.Frame):
         elif MY_OS == 'dar':
             native_cmdkey = 'Command'
 
-        file = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label='File', menu=file)
+        file = tk.Menu(self.master, tearoff=0)
+        menubar.add_cascade(label='File', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
                          accelerator='Ctrl+G')
         file.add_command(label='Reset', command=self.share.reset,
@@ -776,7 +780,7 @@ class PassViewer(tk.Frame):
                          accelerator='Ctrl+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
-        menu.add_cascade(label='Edit', menu=edit)
+        menubar.add_cascade(label='Edit', menu=edit)
         edit.add_command(label='Copy',
                          command=lambda: app.focus_get().event_generate(
                              '<<Copy>>'), accelerator=f'{native_cmdkey}+C')
@@ -790,8 +794,17 @@ class PassViewer(tk.Frame):
                          command=lambda: app.focus_get().event_generate(
                              '<<SelectAll>>'), accelerator=f'{native_cmdkey}+A')
 
-        help_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(     label="Help", menu=help_menu)
+        view = tk.Menu(self.master, tearoff=0)
+        fontsize = tk.Menu(self.master, tearoff=0)
+        menubar.add_cascade(label="View", menu=view)
+        view.add_cascade(label='Font size', menu=fontsize)
+        fontsize.add_command(label='Bigger font', command=self.share.growfont,
+                             accelerator='F1')
+        fontsize.add_command(label='Smaller font', command=self.share.shrinkfont,
+                             accelerator='F2')
+
+        help_menu = tk.Menu(self.master, tearoff=0)
+        menubar.add_cascade(     label="Help", menu=help_menu)
         help_menu.add_command(label="What's going on here?",
                               command=self.share.explain)
         help_menu.add_command(label="About",
@@ -826,7 +839,7 @@ class PassViewer(tk.Frame):
         # Padding depends on app.minsize/maxsize in if __name__ == "__main__"
         # Frame background color, self.master_bg, is set in config_master().
         self.grid(column=0, row=0, sticky=tk.NSEW, rowspan=11, columnspan=4,
-                  padx=3, pady=(3, 4))
+                  padx=4, pady=4)
 
         # %%%%%%%%%%%%%%%%%%%%%%%% sorted by row number %%%%%%%%%%%%%%%%%%%%%%%
         # Passphrase widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1258,18 +1271,11 @@ space entered between characters will also do a reset.
 
 
 class PassFonts:
+    """
+    Change, through keybindings or menu commands, shared font parameters.
+    """
     def __init__(self, share):
         self.share = share
-
-        # Create a custom Font, must include size keyword. Other keywords are:
-        # weight: 'normal'/'bold', underline: 0/1, and overstrike : 0/1.
-        # For tk.Text, family default is DejaVu Sans mono (set by PyCharm?).
-        # family of "Courier" is Nimbus Mono PS, "Helvetica": Nimbus Sans,
-        #    "Times": Nimbus Roman
-        # if MY_OS in 'lin, win':
-        #     self.share.text_font = tk.font.Font(size=10)
-        # elif MY_OS == 'dar':
-        #     self.share.text_font = tk.font.Font(size=14)
 
     # def current_font(self):
     #     size = int(self.share.text_font['size'])
@@ -1294,7 +1300,7 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    app.minsize(650, 425)
+    app.minsize(650, 400)
     app.maxsize(1200, 600)
     if MY_OS == 'win':
         app.minsize(650, 390)
