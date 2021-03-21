@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.1'
+__version__ = '0.9.2'
 
 import glob
 import random
@@ -723,10 +723,13 @@ class PassViewer(tk.Frame):
         """
         self.config(bg=self.master_bg)
 
-        # Need pass-string fields to stretch with window drag size.
+        # Need fields to stretch with window drag size and for the master
+        #   frame to properly fill the app window.
         self.master.columnconfigure(3, weight=1)
-        self.result_frame1.columnconfigure(3, weight=2)
-        self.result_frame2.columnconfigure(3, weight=2)
+        for _row in range(10):
+            self.master.rowconfigure(_row, weight=1)
+        self.result_frame1.columnconfigure(3, weight=1)
+        self.result_frame2.columnconfigure(3, weight=1)
 
         self.master.bind('<Escape>', lambda q: quit_gui())
         self.master.bind('<Control-q>', lambda q: quit_gui())
@@ -744,11 +747,20 @@ class PassViewer(tk.Frame):
                 app.focus_get().event_generate('<<SelectAll>>')
             self.master.bind('<Control-a>', lambda q: select_all())
 
-        # Need to specify OS-specific right-click mouse button
+        # Need to specify OS-specific right-click mouse button only in results
+        #   fields of master window.
         if MY_OS in 'lin, win':
-            self.master.bind('<Button-3>', RightClickCmds)
+            self.share.pp_raw_show.bind('<Button-3>', RightClickCmds)
+            self.share.pp_plus_show.bind('<Button-3>', RightClickCmds)
+            self.share.pp_short_show.bind('<Button-3>', RightClickCmds)
+            self.share.pw_any_show.bind('<Button-3>', RightClickCmds)
+            self.share.pw_some_show.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
-            self.master.bind('<Button-2>', RightClickCmds)
+            self.share.pp_raw_show.bind('<Button-2>', RightClickCmds)
+            self.share.pp_plus_show.bind('<Button-2>', RightClickCmds)
+            self.share.pp_short_show.bind('<Button-2>', RightClickCmds)
+            self.share.pw_any_show.bind('<Button-2>', RightClickCmds)
+            self.share.pw_some_show.bind('<Button-2>', RightClickCmds)
 
         # Create menu instance and add pull-down menus
         menubar = tk.Menu(self.master)
@@ -773,7 +785,7 @@ class PassViewer(tk.Frame):
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
-                         #   so use Ctrl+Q to show something in the File menu.
+                         #   so add Ctrl+Q to show something in the File menu.
                          accelerator='Ctrl+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
@@ -835,8 +847,8 @@ class PassViewer(tk.Frame):
         # This self.grid fills out the inherited tk.Frame, padding gives border.
         # Padding depends on app.minsize/maxsize in if __name__ == "__main__"
         # Frame background color, self.master_bg, is set in config_master().
-        self.grid(column=0, row=0, sticky=tk.NSEW, rowspan=11, columnspan=4,
-                  padx=4, pady=4)
+        self.grid(column=0, row=0, sticky=tk.NSEW, rowspan=12, columnspan=4,
+                  padx=3, pady=3)
 
         # %%%%%%%%%%%%%%%%%%%%%%%% sorted by row number %%%%%%%%%%%%%%%%%%%%%%%
         # Passphrase widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1109,7 +1121,7 @@ equivalent to bits of entropy. For more information see:
     https://en.wikipedia.org/wiki/Password_strength
     https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
-In any window, font size can be changed with the F1 and F2 keys.
+Font size can be changed with the F1 and F2 keys or from the menubar.
 """
 )
         explainwin = tk.Toplevel()
