@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 
 import glob
 import random
@@ -506,23 +506,25 @@ class PassViewer(tk.Frame):
         self.share = share
 
         # Colors and fonts:
-        self.master_fg =    'LightCyan2'  # Used for row headers.
-        self.master_bg =    'SkyBlue4'  # Also used for some labels.
+        # self.master_fg =    'LightCyan2'  # Used for row headers.
+        # self.master_bg =    'SkyBlue4'  # Also used for some labels.
+        self.master_fg =    'grey90'  # Used for row headers.
+        self.master_bg =    'LightSteelBlue4'  # Also used for some labels.
         self.dataframe_bg = 'grey40'  # Also background for data labels.
         self.stubresult_fg = 'grey60'  # For initial pass-string stub.
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
-        # Create a custom Font, must include size keyword. Other keywords are:
+        # Custom font.Font must include size keyword. Other keywords are:
         # family: 'a named font', weight: 'normal'/'bold', underline: 0/1,
         # and overstrike : 0/1.
         # .actual() family of "Courier" is Nimbus Mono PS, "Helvetica": Nimbus Sans,
         #    "Times": Nimbus Roman
         # For tk.Text, the family default is DejaVu Sans mono (set by PyCharm?).
-        # Not specifying family, or using 'default' or 'TkTextFont' will all
-        #   default to the default tkinter/Python/OS text font.
-        # For results Entry fields, use Courier family because TKFixedFont does
-        #   not monospace symbol characters.
+        # By not specifying family, or using 'default' or 'TkTextFont', family
+        #   becomes the default tkinter/Python/OS text font.
+        # For results Entry fields, need to use Courier family because
+        #   TKFixedFont does not monospace symbol characters.
         # MacOS needs larger fonts for easier readability.
         if MY_OS in 'lin, win':
             self.share.text_font = tk.font.Font(size=11)
@@ -801,7 +803,7 @@ class PassViewer(tk.Frame):
 
         view = tk.Menu(self.master, tearoff=0)
         fontsize = tk.Menu(self.master, tearoff=0)
-        menubar.add_cascade(label="View", menu=view)
+        menubar.add_cascade(label='View', menu=view)
         view.add_cascade(label='Font size', menu=fontsize)
         fontsize.add_command(label='Bigger font', command=self.share.growfont,
                              accelerator='F1')
@@ -809,12 +811,19 @@ class PassViewer(tk.Frame):
                              accelerator='F2')
 
         help_menu = tk.Menu(self.master, tearoff=0)
-        menubar.add_cascade(     label="Help", menu=help_menu)
+        tips = tk.Menu(self.master, tearoff=0)
+        menubar.add_cascade(label='Help', menu=help_menu)
+        help_menu.add_cascade(label='Tips', menu=tips)
         help_menu.add_command(label="What's going on here?",
                               command=self.share.explain)
-        help_menu.add_command(label="About",
+        help_menu.add_command(label='About',
                               command=self.share.about)
-        help_menu.add_command(label="Font size: F1 & F2 keys")
+        tips.add_command(label='Use F1 & F2 keys to change font size.')
+        tips.add_command(label='Mouse right-click does stuff!')
+        tips.add_command(label='Use Return/Enter key to Generate!')
+        tips.add_command(label='Use File>Scratchpad as a scratch pad.')
+        tips.add_command(label='LONG pass-things are allowed.')
+        tips.add_command(label='Use Esc key to exit.')
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -1090,20 +1099,22 @@ f'     there are {wordcount} words available to construct passphrases.\n'
 """
 Passphrases and passwords (pass-strings) are made by clicking the
 Generate! button, or pressing Enter or Ctrl-G, or from the File pull-
-down menu on the menu bar. The pass-string you want can be cut and
-pasted using standard keyboard commands, or by right-clicking on the
-text, or by using the pull-down Edit menu.\n
+down menu on the menu bar. The result you want can be cut and pasted
+using standard keyboard commands, or right-clicking, or using Edit
+from the menu bar.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are
-not used or counted. Multiple windows can remain open to compare counts
-among different wordlists and exclusions. (cont...)\n
+not available to use. Multiple windows can remain open to compare
+counts among different wordlists and exclusions. (cont...)\n
 Optional wordfiles were derived from texts obtained from these sites:
       https://www.gutenberg.org
       https://www.archives.gov/founding-docs/constitution-transcript
       https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used
 here because hyphenated words are excluded from all wordlists.\n
-Words with less than 3 letters are not used in any wordlist.\n
+Words with less than 3 letters are not used in any wordlist.
+All wordlists except EFF were made with parser.py from the Project at
+https://github.com/csecht/make_wordlist\n
 To accommodate some password requirements, a choice is provided that
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
 """
@@ -1118,7 +1129,8 @@ equivalent to bits of entropy. For more information see:
       https://en.wikipedia.org/wiki/Password_strength
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
-Font size can be changed with the F1 and F2 keys or from the menubar."""
+Font size can be changed with the F1 and F2 keys or from the menu bar.
+A mouse right-click will open edit options in the pop-up windows."""
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
@@ -1154,7 +1166,7 @@ Font size can be changed with the F1 and F2 keys or from the menubar."""
         # msg separator dashes from https://coolsymbol.com/line-symbols.html.
         boilerplate = (
 """
-passphrase.py and its stand-alones generate passphrases and passwords.
+passphrase.py and Passphrase generate random passphrases and passwords.
 """
 f'Download the most recent version from: {PROJ_URL}'
 """
