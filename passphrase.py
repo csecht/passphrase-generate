@@ -1123,11 +1123,12 @@ Font size can be changed with the F1 and F2 keys or from the menubar."""
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
 
-        os_width = 0
-        if MY_OS in 'lin, win':
+        os_width = 62
+        explainwin.bind('<Button-3>', RightClickCmds)
+        if MY_OS == 'lin':
             explainwin.minsize(650, 200)
-            os_width = 62
-            explainwin.bind('<Button-3>', RightClickCmds)
+        elif MY_OS == 'win':
+            explainwin.minsize(595, 200)
         elif MY_OS == 'dar':
             explainwin.minsize(595, 200)
             os_width = 55
