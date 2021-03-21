@@ -1029,14 +1029,14 @@ class PassFyi:
         A text window for user to temporarily save results.
         Is called from File menu or keybinding.
         """
-        # Separator uses em dashes.
+        # Separator dashes from https://coolsymbol.com/line-symbols.html.
         instruction = (
             'Paste here passphrases or passwords that you are thinking of'
             ' using. You can then compare them, test typing them out, etc.'
             ' and see whether any work for you.\nAnything you paste or edit here'
             ' is GONE when this window is closed, so save what you want to keep'
             ' somewhere else.\n'
-            '──────────────────────────────────────────────────────\n\n'
+            '───────────────────────────────────────────────\n\n'
         )
 
         scratchwin = tk.Toplevel()
@@ -1048,8 +1048,8 @@ class PassFyi:
         elif MY_OS == 'dar':
             scratchwin.bind('<Button-2>', RightClickCmds)
 
-        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
-        #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
+        # Need to specify Control-a for Linux b/c in tkinter windows that key
+        #   is bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
             def select_all():
                 app.focus_get().event_generate('<<SelectAll>>')
@@ -1084,9 +1084,9 @@ On MacOS and Linux systems, the system dictionary wordlist is used by
 default to provide words, though optional wordlists are available.
 Windows users can use only the optional wordlists.\n
 """
-f'   From the current selected wordlist, {selection},\n'
-'   after subtracting words with excluded letters, if any,\n'
-f'   there are {wordcount} words available to construct passphrases.\n'
+f'     From the current selected wordlist, {selection},\n'
+'     after subtracting words with excluded letters, if any,\n'
+f'     there are {wordcount} words available to construct passphrases.\n'
 """
 Passphrases and passwords (pass-strings) are made by clicking the
 Generate! button, or pressing Enter or Ctrl-G, or from the File pull-
@@ -1094,13 +1094,13 @@ down menu on the menu bar. The pass-string you want can be cut and
 pasted using standard keyboard commands, or by right-clicking on the
 text, or by using the pull-down Edit menu.\n
 There is an option to exclude any character or string of characters
-from passphrase words and passwords. Words with excluded letters are not
-used nor counted above. Multiple windows can remain open to compare
-counts among different wordlists and exclusions. (cont...)\n
+from passphrase words and passwords. Words with excluded letters are
+not used or counted. Multiple windows can remain open to compare counts
+among different wordlists and exclusions. (cont...)\n
 Optional wordfiles were derived from texts obtained from these sites:
-    https://www.gutenberg.org
-    https://www.archives.gov/founding-docs/constitution-transcript
-    https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
+      https://www.gutenberg.org
+      https://www.archives.gov/founding-docs/constitution-transcript
+      https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 Although the EFF list contains 7776 selected words, only 7772 are used
 here because hyphenated words are excluded from all wordlists.\n
 Words with less than 3 letters are not used in any wordlist.\n
@@ -1114,32 +1114,35 @@ H, as used here, is for comparing relative pass-string strengths.
 Higher is better; each increase of 1 doubles the relative strength.
 H is actually the information entropy (Shannon entropy) value and is
 equivalent to bits of entropy. For more information see:
-    https://explainxkcd.com/wiki/index.php/936:_Password_Strength
-    https://en.wikipedia.org/wiki/Password_strength
-    https://en.wikipedia.org/wiki/Entropy_(information_theory)
+      https://explainxkcd.com/wiki/index.php/936:_Password_Strength
+      https://en.wikipedia.org/wiki/Password_strength
+      https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
-Font size can be changed with the F1 and F2 keys or from the menubar.
-"""
+Font size can be changed with the F1 and F2 keys or from the menubar."""
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
+
+        os_width = 0
         if MY_OS in 'lin, win':
-            explainwin.minsize(560, 200)
+            explainwin.minsize(650, 200)
+            os_width = 62
             explainwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
-            explainwin.minsize(575, 200)
+            explainwin.minsize(595, 200)
+            os_width = 59
             explainwin.bind('<Button-2>', RightClickCmds)
 
-        explaintext = ScrolledText(explainwin, width=62, height=25,
-                                   background=random_bkg(), foreground='grey90',
+        explaintext = ScrolledText(explainwin, width=os_width, height=25,
+                                   bg='dark slate grey', fg='grey95',
                                    relief='groove', borderwidth=8,
-                                   padx=30, pady=20, wrap=tk.WORD,
+                                   padx=30, pady=30, wrap=tk.WORD,
                                    font=self.share.text_font)
         explaintext.insert(1.0, explanation)
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        # Can't bind font size keys to text b/c odd characters are inserted,
-        #   so just use the master window and menu to control font size.
-        #   This prevents all key actions.
+        # Can't bind font-size keys to text b/c odd characters are inserted,
+        #   so just use the master bindings and menu to control font size.
+        #   Therefore, prevent all key actions.
         explaintext.bind("<Key>", lambda e: "break")
 
     def about(self) -> None:
@@ -1151,11 +1154,10 @@ Font size can be changed with the F1 and F2 keys or from the menubar.
         boilerplate = (
 """
 passphrase.py and its stand-alones generate passphrases and passwords.
-Download the most recent version from:
 """
-f'{PROJ_URL}'
+f'Download the most recent version from: {PROJ_URL}'
 """
-──────────────────────────────────────────────
+─────────────────────────────────────
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -1166,7 +1168,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.\n
 You should have received a copy of the GNU General Public License
 along with this program. If not, see https://www.gnu.org/licenses/
-──────────────────────────────────────────────\n
+─────────────────────────────────────\n
                    Author:     cecht
                    Copyright: Copyright (C) 2021 C.S. Echt
                    Development Status: 4 - Beta
@@ -1175,22 +1177,22 @@ along with this program. If not, see https://www.gnu.org/licenses/
         num_lines = boilerplate.count('\n')
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
+        aboutwin.minsize(400, 200)
 
+        os_width = 0
         if MY_OS in 'lin, win':
-            aboutwin.minsize(300, 300)
+            os_width = 68
             aboutwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
-            aboutwin.minsize(520, 475)
+            os_width = 60
             aboutwin.bind('<Button-2>', RightClickCmds)
 
-        abouttxt = tk.Text(aboutwin, width=65, height=num_lines + 2,
-                           background=random_bkg(), foreground='grey95',
-                           relief='groove', borderwidth=8, padx=5,
-                           wrap=tk.WORD, font=self.share.text_font)
+        abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
+                           bg=random_bkg(), fg='grey95',
+                           relief='groove', borderwidth=8,
+                           padx=30, pady=10, wrap=tk.WORD,
+                           font=self.share.text_font)
         abouttxt.insert(1.0, boilerplate + __version__)
-        # Center text preceding the Author, etc. details.
-        abouttxt.tag_add('text1', 1.0, float(num_lines - 3))
-        abouttxt.tag_configure('text1', justify='center')
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         abouttxt.bind("<Key>", lambda e: "break")
 
@@ -1216,16 +1218,20 @@ space entered between characters will also do a reset.
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 100)
 
+        os_width = 0
         if MY_OS in 'lin, win':
+            os_width = 48
             exclwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
+            os_width = 42
             exclwin.bind('<Button-2>', RightClickCmds)
 
         num_lines = msg.count('\n')
-        excltext = tk.Text(exclwin, width=48, height=num_lines + 1,
-                           background='grey40', foreground='grey95',
-                           relief='groove', borderwidth=8, padx=20, pady=10,
-                           wrap=tk.WORD, font=self.share.text_font)
+        excltext = tk.Text(exclwin, width=os_width, height=num_lines + 1,
+                           bg='grey40', fg='grey95',
+                           relief='groove', borderwidth=8,
+                           padx=20, pady=10, wrap=tk.WORD,
+                           font=self.share.text_font)
         excltext.insert(1.0, msg)
         excltext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         excltext.bind("<Key>", lambda e: "break")
