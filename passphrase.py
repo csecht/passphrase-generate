@@ -777,7 +777,7 @@ class PassViewer(tk.Frame):
                          accelerator='Ctrl+G')
         file.add_command(label='Reset', command=self.share.reset,
                          accelerator='Ctrl+R')
-        file.add_command(label='Open scratchpad', command=self.share.scratch,
+        file.add_command(label='Open a scratch pad', command=self.share.scratch,
                          accelerator='Ctrl+O')
         file.add(tk.SEPARATOR)
         file.add_command(label='Quit', command=quit_gui,
