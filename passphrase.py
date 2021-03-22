@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.4'
+__version__ = '0.9.5'
 
 import glob
 import random
@@ -445,32 +445,40 @@ class PassModeler:
         self.share.pw_any_show.config(  fg=self.share.pass_fg)
         self.share.pw_some_show.config( fg=self.share.pass_fg)
 
-        # Need to indicate when pass-string exceeds length of field,
+        # Need to indicate when passphrases exceeds length of result field,
         #  then reset to default when pass-string length is shortened.
         #  So use a foreground color change, thus preserving font size controls.
-        # Use pp_plus_len, the likely longest passstring, to trigger font change.
-        if self.share.tkdata['pp_plus_len'].get() > W:
-            self.share.pp_raw_show.config(
-                width=self.share.tkdata['pp_plus_len'].get(), fg='blue')
+        # Use pp_plus_len, the likely longest passphrase, to trigger change.
+        # Need a special case for wider Chinese characters; 34 equivalent to 52.
+        _W = W
+        if self.share.choose_wordlist.get() == '此開卷第 Story of the Stone' \
+                and self.share.tkdata['pp_plus_len'].get() > 34:
+            _W = 34
+
+        if self.share.tkdata['pp_plus_len'].get() > _W:
+            self.share.pp_raw_show.config(fg='blue')
             self.share.pp_plus_show.config(fg='blue')
             self.share.pp_short_show.config(fg='blue')
-        elif self.share.tkdata['pp_plus_len'].get() <= W:
-            self.share.pp_raw_show.config(width=W, fg=self.share.pass_fg)
-            self.share.pp_plus_show.config(width=W, fg=self.share.pass_fg)
-            self.share.pp_short_show.config(width=W, fg=self.share.pass_fg)
+        elif self.share.tkdata['pp_plus_len'].get() <= _W:
+            self.share.pp_raw_show.config(fg=self.share.pass_fg)
+            self.share.pp_plus_show.config(fg=self.share.pass_fg)
+            self.share.pp_short_show.config(fg=self.share.pass_fg)
 
         # Need to show right-most of string in case length exceeds field width.
         self.share.pp_raw_show.xview_moveto(1)
         self.share.pp_plus_show.xview_moveto(1)
         self.share.pp_short_show.xview_moveto(1)
 
-        if self.share.tkdata['pw_any_len'].get() > W:
-            self.share.pw_any_show.config(
-                width=self.share.tkdata['pw_any_len'].get(), fg='blue')
+        # Need to also flag long passwords.
+        pwlength = int(self.share.numchars_entry.get())
+        print(self.share.numchars_entry.get())
+        print(pwlength)
+        if pwlength > W:
+            self.share.pw_any_show.config(fg='blue')
             self.share.pw_some_show.config(fg='blue')
-        elif self.share.tkdata['pw_any_len'].get() <= W:
-            self.share.pw_any_show.config(width=W, fg=self.share.pass_fg)
-            self.share.pw_some_show.config(width=W, fg=self.share.pass_fg)
+        elif pwlength <= W:
+            self.share.pw_any_show.config(fg=self.share.pass_fg)
+            self.share.pw_some_show.config(fg=self.share.pass_fg)
 
     def reset_exclusions(self) -> None:
         """
@@ -515,13 +523,11 @@ class PassViewer(tk.Frame):
         # MacOS needs larger default fonts for easier readability.
         # 'default' is not a named font, therefore uses system default.
         if MY_OS in 'lin, win':
-            self.share.text_font = tk.font.Font(font='TkDefaultFont')
+            self.share.text_font = tk.font.Font(  font='TkDefaultFont')
             self.share.result_font = tk.font.Font(font='Courier')
         elif MY_OS == 'dar':
-            self.share.text_font = tk.font.Font(family='default',
-                                                size=14)
-            self.share.result_font = tk.font.Font(family='Courier',
-                                                  size=14)
+            self.share.text_font = tk.font.Font(  family='default', size=14)
+            self.share.result_font = tk.font.Font(family='Courier', size=14)
 
         self.share.stubresult = 'Result can be copied and pasted.'
 
@@ -873,19 +879,19 @@ class PassViewer(tk.Frame):
         self.pp_raw_h_lbl.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
         self.pp_raw_len_lbl.grid(   column=2, row=2, pady=(5, 3), padx=(5, 0))
         self.share.pp_raw_show.grid(column=3, row=2, pady=(5, 3), padx=5,
-                                    ipadx=5, sticky=tk.EW)
+                                    sticky=tk.EW)
 
         self.pp_plus_head.grid(      column=0, row=3, pady=(3, 0), sticky=tk.E)
         self.pp_plus_h_lbl.grid(     column=1, row=3, pady=(5, 3), padx=(5, 0))
         self.pp_plus_len_lbl.grid(   column=2, row=3, pady=(5, 3), padx=(5, 0))
         self.share.pp_plus_show.grid(column=3, row=3, pady=(5, 3), padx=5,
-                                     ipadx=5, sticky=tk.EW)
+                                     sticky=tk.EW)
 
         self.pp_short_head.grid(      column=0, row=4, pady=(3, 6), sticky=tk.E)
         self.pp_short_h_lbl.grid(     column=1, row=4, pady=3, padx=(5, 0))
         self.pp_short_len_lbl.grid(   column=2, row=4, pady=3, padx=(5, 0))
         self.share.pp_short_show.grid(column=3, row=4, pady=6, padx=5,
-                                      ipadx=5, sticky=tk.EW)
+                                      sticky=tk.EW)
 
         # Need to pad and span to center the button between two results frames.
         #   ...with different padding to keep it aligned in MacOS.
@@ -913,14 +919,14 @@ class PassViewer(tk.Frame):
         self.pw_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
         self.pw_any_len_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
         self.share.pw_any_show.grid(column=3, row=7, pady=(6, 3), padx=5,
-                                    columnspan=2, ipadx=5, sticky=tk.EW)
+                                    columnspan=2, sticky=tk.EW)
 
         self.pw_some_head.grid(      column=0, row=8, pady=(0, 6), padx=(5, 0),
                                      sticky=tk.E)
         self.pw_some_h_lbl.grid(     column=1, row=8, pady=3, padx=(5, 0))
         self.pw_some_len_lbl.grid(   column=2, row=8, pady=3, padx=(5, 0))
         self.share.pw_some_show.grid(column=3, row=8, pady=6, padx=5,
-                                     columnspan=2, ipadx=5, sticky=tk.EW)
+                                     columnspan=2, sticky=tk.EW)
 
         # Excluded character widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.exclude_head.grid(  column=0, row=9, pady=(20, 0), padx=(17, 0),
@@ -1121,8 +1127,9 @@ equivalent to bits of entropy. For more information see:
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
 Font size can be changed with the F1 and F2 keys or from the menu bar.
-Pass-string color changes when its length is longer than results cell.
-Mouse right-click opens edit options in results and pop-up windows."""
+Mouse right-click opens edit options in results and pop-up windows.
+Pass-string color is BLUE when it cannot all fit in the results cell.
+"""
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
