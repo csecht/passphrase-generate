@@ -1280,7 +1280,4 @@ if __name__ == "__main__":
     app.title("Passphrase Generator")
     app.minsize(650, 400)
     app.maxsize(1200, 600)
-    if MY_OS == 'win':
-        app.minsize(650, 390)
-        app.maxsize(1200, 600)
     app.mainloop()
