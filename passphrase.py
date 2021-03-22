@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.5'
+__version__ = '0.9.6'
 
 import glob
 import random
@@ -459,6 +459,8 @@ class PassModeler:
             self.share.pp_raw_show.config(fg='blue')
             self.share.pp_plus_show.config(fg='blue')
             self.share.pp_short_show.config(fg='blue')
+            app.resizable(width=True, height=False)
+            app.minsize(600, 100)
         elif self.share.tkdata['pp_plus_len'].get() <= _W:
             self.share.pp_raw_show.config(fg=self.share.pass_fg)
             self.share.pp_plus_show.config(fg=self.share.pass_fg)
@@ -471,11 +473,11 @@ class PassModeler:
 
         # Need to also flag long passwords.
         pwlength = int(self.share.numchars_entry.get())
-        print(self.share.numchars_entry.get())
-        print(pwlength)
         if pwlength > W:
             self.share.pw_any_show.config(fg='blue')
             self.share.pw_some_show.config(fg='blue')
+            app.resizable(width=True, height=False)
+            app.minsize(600, 100)
         elif pwlength <= W:
             self.share.pw_any_show.config(fg=self.share.pass_fg)
             self.share.pw_some_show.config(fg=self.share.pass_fg)
@@ -1128,20 +1130,18 @@ equivalent to bits of entropy. For more information see:
 
 Font size can be changed with the F1 and F2 keys or from the menu bar.
 Mouse right-click opens edit options in results and pop-up windows.
-Pass-string color is BLUE when it cannot all fit in the results cell.
+Pass-string color is BLUE when it does not all fit in the results cell; 
+  try dragging the window wider to see the full result.
 """
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
+        explainwin.minsize(595, 200)
 
         os_width = 62
-        explainwin.bind('<Button-3>', RightClickCmds)
-        if MY_OS == 'lin':
-            explainwin.minsize(650, 200)
-        elif MY_OS == 'win':
-            explainwin.minsize(595, 200)
-        elif MY_OS == 'dar':
-            explainwin.minsize(595, 200)
+        if MY_OS in 'lin, win':
+            explainwin.bind('<Button-3>', RightClickCmds)
+        if MY_OS == 'dar':
             os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
 
@@ -1279,6 +1279,5 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    app.minsize(650, 400)
-    app.maxsize(1200, 600)
+    app.resizable(width=False, height=False)
     app.mainloop()
