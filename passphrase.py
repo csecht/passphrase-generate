@@ -141,7 +141,8 @@ class RightClickCmds:
         #  or on a child of that window, i.e. .!text or .!frame.
         # There are many children in app and any toplevel window will be
         #   listed at or toward the end, so read children list in reverse
-        #   and stop the loop when the focus toplevel parent is found.
+        #   Stop loop when the focus toplevel parent is found to prevent all
+        #   toplevel windows from closing.
         for widget in reversed(app.winfo_children()):
             if widget == app.focus_get():
                 widget.destroy()
@@ -515,21 +516,14 @@ class PassViewer(tk.Frame):
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
-        # Custom font.Font must include size keyword. Other keywords are:
-        # family: 'a named font', weight: 'normal'/'bold', underline: 0/1,
-        # and overstrike : 0/1.
-        # .actual() family of "Courier" is Nimbus Mono PS, "Helvetica": Nimbus Sans,
-        #    "Times": Nimbus Roman
-        # For tk.Text, the family default is DejaVu Sans mono (set by PyCharm?).
-        # By not specifying family, or using 'default' or 'TkTextFont', family
-        #   becomes the default tkinter/Python/OS text font.
+        # Need to define as font.Font to configure in PassFonts().
         # For results Entry fields, need to use Courier family because
         #   TKFixedFont does not monospace symbol characters.
-        # MacOS needs larger fonts for easier readability.
+        # MacOS needs larger default fonts for easier readability.
+        # 'default' is not a named font, therefore uses system default.
         if MY_OS in 'lin, win':
-            self.share.text_font = tk.font.Font(size=11)
-            self.share.result_font = tk.font.Font(family='Courier',
-                                                  size=12)
+            self.share.text_font = tk.font.Font(font='default')
+            self.share.result_font = tk.font.Font(font='Courier')
         elif MY_OS == 'dar':
             self.share.text_font = tk.font.Font(family='default',
                                                 size=14)
@@ -959,7 +953,7 @@ class PassViewer(tk.Frame):
 
 class PassController(tk.Tk):
     """
-    The Controller through which other Classes can interact.
+    The Controller through which other MVC Classes can interact.
     """
     def __init__(self):
         super().__init__()
@@ -1020,9 +1014,13 @@ class PassController(tk.Tk):
         PassFyi(share=self).exclude_msg()
 
     def growfont(self):
+        """Is called from keybinding or View menu.
+        """
         PassFonts(share=self).grow_font()
 
     def shrinkfont(self):
+        """Is called from keybinding or View menu.
+        """
         PassFonts(share=self).shrink_font()
 
 
@@ -1100,12 +1098,12 @@ f'     there are {wordcount} words available to construct passphrases.\n'
 Passphrases and passwords (pass-strings) are made by clicking the
 Generate! button, or pressing Enter or Ctrl-G, or from the File pull-
 down menu on the menu bar. The result you want can be cut and pasted
-using standard keyboard commands, or right-clicking, or using Edit
-from the menu bar.\n
+using standard keyboard commands, or right-clicking, or using Edit from
+the menu bar.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passwords. Words with excluded letters are
 not available to use. Multiple windows can remain open to compare
-counts among different wordlists and exclusions. (cont...)\n
+counts among different wordlists and exclusions.  (continued.........)\n
 Optional wordfiles were derived from texts obtained from these sites:
       https://www.gutenberg.org
       https://www.archives.gov/founding-docs/constitution-transcript
@@ -1130,7 +1128,7 @@ equivalent to bits of entropy. For more information see:
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
 Font size can be changed with the F1 and F2 keys or from the menu bar.
-A mouse right-click will open edit options in the pop-up windows."""
+Mouse right-click opens edit options in results and pop-up windows."""
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
@@ -1252,8 +1250,9 @@ space entered between characters will also do a reset.
 
 class PassFonts:
     """
-    Change, through keybindings or menu commands, shared font parameters.
+    Change MVC font parameters through keybindings or menu commands.
     """
+    # font.Font keywords are: family, font, size, weight, underline, overstrike.
     def __init__(self, share):
         self.share = share
 
