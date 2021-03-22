@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.3'
+__version__ = '0.9.4'
 
 import glob
 import random
@@ -445,25 +445,19 @@ class PassModeler:
         self.share.pw_any_show.config(  fg=self.share.pass_fg)
         self.share.pw_some_show.config( fg=self.share.pass_fg)
 
-        # Need to reduce font size of long pass-string length to keep
-        #   window on screen, then reset to default font size when pass-string
-        #   length is shortened.
+        # Need to indicate when pass-string exceeds length of field,
+        #  then reset to default when pass-string length is shortened.
+        #  So use a foreground color change, thus preserving font size controls.
         # Use pp_plus_len, the likely longest passstring, to trigger font change.
-        # B/c 'width' is character units, not pixels, length may change
-        #   as font sizes and string lengths change.
-        small_font = 'Courier', 10
-        if MY_OS == 'dar':
-            small_font = 'Courier', 12
         if self.share.tkdata['pp_plus_len'].get() > W:
             self.share.pp_raw_show.config(
-                font=small_font,
-                width=self.share.tkdata['pp_plus_len'].get())
-            self.share.pp_plus_show.config(font=small_font)
-            self.share.pp_short_show.config(font=small_font)
+                width=self.share.tkdata['pp_plus_len'].get(), fg='blue')
+            self.share.pp_plus_show.config(fg='blue')
+            self.share.pp_short_show.config(fg='blue')
         elif self.share.tkdata['pp_plus_len'].get() <= W:
-            self.share.pp_raw_show.config(font=self.share.result_font, width=W)
-            self.share.pp_plus_show.config(font=self.share.result_font, width=W)
-            self.share.pp_short_show.config(font=self.share.result_font, width=W)
+            self.share.pp_raw_show.config(width=W, fg=self.share.pass_fg)
+            self.share.pp_plus_show.config(width=W, fg=self.share.pass_fg)
+            self.share.pp_short_show.config(width=W, fg=self.share.pass_fg)
 
         # Need to show right-most of string in case length exceeds field width.
         self.share.pp_raw_show.xview_moveto(1)
@@ -472,12 +466,11 @@ class PassModeler:
 
         if self.share.tkdata['pw_any_len'].get() > W:
             self.share.pw_any_show.config(
-                font=small_font,
-                width=self.share.tkdata['pw_any_len'].get())
-            self.share.pw_some_show.config(font=small_font)
+                width=self.share.tkdata['pw_any_len'].get(), fg='blue')
+            self.share.pw_some_show.config(fg='blue')
         elif self.share.tkdata['pw_any_len'].get() <= W:
-            self.share.pw_any_show.config(font=self.share.result_font, width=W)
-            self.share.pw_some_show.config(font=self.share.result_font, width=W)
+            self.share.pw_any_show.config(width=W, fg=self.share.pass_fg)
+            self.share.pw_some_show.config(width=W, fg=self.share.pass_fg)
 
     def reset_exclusions(self) -> None:
         """
@@ -522,7 +515,7 @@ class PassViewer(tk.Frame):
         # MacOS needs larger default fonts for easier readability.
         # 'default' is not a named font, therefore uses system default.
         if MY_OS in 'lin, win':
-            self.share.text_font = tk.font.Font(font='default')
+            self.share.text_font = tk.font.Font(font='TkDefaultFont')
             self.share.result_font = tk.font.Font(font='Courier')
         elif MY_OS == 'dar':
             self.share.text_font = tk.font.Font(family='default',
@@ -816,7 +809,7 @@ class PassViewer(tk.Frame):
         tips.add_command(label='Mouse right-click does stuff!')
         tips.add_command(label='Use Return/Enter key to Generate!')
         tips.add_command(label='Use File>Scratchpad as a scratch pad.')
-        tips.add_command(label='LONG pass-things are allowed.')
+        tips.add_command(label='Results longer than cell turn blue.')
         tips.add_command(label='Use Esc key to exit.')
 
     def config_buttons(self) -> None:
@@ -1128,6 +1121,7 @@ equivalent to bits of entropy. For more information see:
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
 Font size can be changed with the F1 and F2 keys or from the menu bar.
+Pass-string color changes when its length is longer than results cell.
 Mouse right-click opens edit options in results and pop-up windows."""
 )
         explainwin = tk.Toplevel()
