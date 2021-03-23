@@ -460,7 +460,7 @@ class PassModeler:
             self.share.pp_plus_show.config(fg='blue')
             self.share.pp_short_show.config(fg='blue')
             app.resizable(width=True, height=False)
-            app.minsize(600, 100)
+            app.minsize(650, 400)
         elif self.share.tkdata['pp_plus_len'].get() <= _W:
             self.share.pp_raw_show.config(fg=self.share.pass_fg)
             self.share.pp_plus_show.config(fg=self.share.pass_fg)
@@ -477,7 +477,7 @@ class PassModeler:
             self.share.pw_any_show.config(fg='blue')
             self.share.pw_some_show.config(fg='blue')
             app.resizable(width=True, height=False)
-            app.minsize(600, 100)
+            app.minsize(650, 400)
         elif pwlength <= W:
             self.share.pw_any_show.config(fg=self.share.pass_fg)
             self.share.pw_some_show.config(fg=self.share.pass_fg)
@@ -813,12 +813,12 @@ class PassViewer(tk.Frame):
                               command=self.share.explain)
         help_menu.add_command(label='About',
                               command=self.share.about)
-        tips.add_command(label='Use F1 & F2 keys to change font size.')
+        tips.add_command(label='F1 & F2 keys change font size.')
         tips.add_command(label='Mouse right-click does stuff!')
-        tips.add_command(label='Use Return/Enter key to Generate!')
-        tips.add_command(label='Use File>Scratchpad as a scratch pad.')
-        tips.add_command(label='Results longer than cell turn blue.')
-        tips.add_command(label='Use Esc key to exit.')
+        tips.add_command(label='Return/Enter key also Generates!')
+        tips.add_command(label='Menu File>Open.. opens a scratch pad.')
+        tips.add_command(label=f'Long results (L > {W}) turn blue.')
+        tips.add_command(label='Esc key exits the program.')
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -1130,9 +1130,9 @@ equivalent to bits of entropy. For more information see:
 
 Font size can be changed with the F1 and F2 keys or from the menu bar.
 Mouse right-click opens edit options in results and pop-up windows.
-Pass-string color is BLUE when it does not all fit in the results cell; 
-  try dragging the window wider to see the full result.
 """
+f'Pass-string color is BLUE when it is longer than {W} characters;\n'
+'    so try dragging the window wider to see the full result.\n'
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
