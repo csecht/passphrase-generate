@@ -448,6 +448,8 @@ class PassModeler:
         # Need to indicate when passphrases exceeds length of result field,
         #   then reset to default when pass-string length is shortened.
         # Use pp_plus_len, the likely longest passphrase, to trigger change.
+        
+
         passphrase_len = self.share.tkdata['pp_plus_len'].get()
 
         # Need a special case for wider Chinese characters; 34 equivalent to 52
@@ -916,9 +918,11 @@ class PassViewer(tk.Frame):
                                       sticky=tk.EW)
 
         # Need to pad and span to center the button between two results frames.
-        #   ...with different padding to keep it aligned in MacOS.
-        self.generate_btn.grid(    column=3, row=5, pady=(10, 5), rowspan=2,
+        #   ...with different x padding to keep it aligned in different platforms.
+        self.generate_btn.grid(    column=3, row=5, rowspan=2, pady=(10, 5),
                                    padx=(65, 0), sticky=tk.W)
+        if MY_OS == 'win':
+            self.generate_btn.grid(padx=(30, 0))
         if MY_OS == 'dar':
             self.generate_btn.grid(padx=(0, 0))
 
