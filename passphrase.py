@@ -878,7 +878,7 @@ class PassViewer(tk.Frame):
 
         # %%%%%%%%%%%%%%%%%%%%%%%% sorted by row number %%%%%%%%%%%%%%%%%%%%%%%
         # Passphrase widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pp_section_head.grid(      column=0, row=0, pady=(10, 5), padx=5,
+        self.pp_section_head.grid(      column=0, row=0, pady=(10, 5), padx=(10, 5),
                                         sticky=tk.W)
         self.share.choose_wordlist.grid(column=1, row=0, pady=(10, 5), padx=5,
                                         columnspan=2, sticky=tk.W)
@@ -895,27 +895,30 @@ class PassViewer(tk.Frame):
             self.share.available_show.grid(column=3, row=0, pady=(10, 0),
                                            padx=(124, 0), sticky=tk.W)
 
-        self.numwords_label.grid( column=0, row=1, padx=5, sticky=tk.W)
+        self.numwords_label.grid( column=0, row=1, padx=(10, 5), sticky=tk.W)
         self.share.numwords_entry.grid(
-                                  column=0, row=1, padx=(5, 100), sticky=tk.E)
+                                  column=0, row=1, padx=(10, 100), sticky=tk.E)
         self.l_and_h_header.grid( column=1, row=1, padx=0, sticky=tk.W)
 
         self.result_frame1.grid(    column=1, row=2, padx=(5, 10),
                                     columnspan=3, rowspan=3, sticky=tk.EW)
         # Results' _show will maintain equal widths with sticky=tk.EW.
-        self.pp_raw_head.grid(      column=0, row=2, pady=(6, 0), sticky=tk.E)
+        self.pp_raw_head.grid(      column=0, row=2, pady=(6, 0), padx=(10, 0),
+                                    sticky=tk.E)
         self.pp_raw_h_lbl.grid(     column=1, row=2, pady=(5, 3), padx=(5, 0))
         self.pp_raw_len_lbl.grid(   column=2, row=2, pady=(5, 3), padx=(5, 0))
         self.share.pp_raw_show.grid(column=3, row=2, pady=(5, 3), padx=5,
                                     sticky=tk.EW)
 
-        self.pp_plus_head.grid(      column=0, row=3, pady=(3, 0), sticky=tk.E)
+        self.pp_plus_head.grid(      column=0, row=3, pady=(3, 0), padx=(10, 0),
+                                     sticky=tk.E)
         self.pp_plus_h_lbl.grid(     column=1, row=3, pady=(5, 3), padx=(5, 0))
         self.pp_plus_len_lbl.grid(   column=2, row=3, pady=(5, 3), padx=(5, 0))
         self.share.pp_plus_show.grid(column=3, row=3, pady=(5, 3), padx=5,
                                      sticky=tk.EW)
 
-        self.pp_short_head.grid(      column=0, row=4, pady=(3, 6), sticky=tk.E)
+        self.pp_short_head.grid(      column=0, row=4, pady=(3, 6), padx=(10, 0),
+                                      sticky=tk.E)
         self.pp_short_h_lbl.grid(     column=1, row=4, pady=3, padx=(5, 0))
         self.pp_short_len_lbl.grid(   column=2, row=4, pady=3, padx=(5, 0))
         self.share.pp_short_show.grid(column=3, row=4, pady=6, padx=5,
@@ -931,10 +934,10 @@ class PassViewer(tk.Frame):
             self.generate_btn.grid(padx=(0, 0))
 
         # Password widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pw_section_head.grid( column=0, row=5, pady=(12, 6), padx=5,
+        self.pw_section_head.grid( column=0, row=5, pady=(12, 6), padx=(10, 5),
                                    sticky=tk.W)
 
-        self.numchars_label.grid( column=0, row=6, pady=0, padx=5,
+        self.numchars_label.grid( column=0, row=6, pady=0, padx=(10, 5),
                                   sticky=tk.W)
         self.share.numchars_entry.grid(
                                   column=0, row=6, pady=0, padx=(0, 65),
@@ -944,14 +947,14 @@ class PassViewer(tk.Frame):
 
         self.result_frame2.grid(    column=1, row=7, padx=(5, 10),
                                     columnspan=3, rowspan=2, sticky=tk.EW)
-        self.pw_any_head.grid(      column=0, row=7, pady=(6, 0),
+        self.pw_any_head.grid(      column=0, row=7, pady=(6, 0), padx=(10, 0),
                                     sticky=tk.E)
         self.pw_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
         self.pw_any_len_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
         self.share.pw_any_show.grid(column=3, row=7, pady=(6, 3), padx=5,
                                     columnspan=2, sticky=tk.EW)
 
-        self.pw_some_head.grid(      column=0, row=8, pady=(0, 6), padx=(5, 0),
+        self.pw_some_head.grid(      column=0, row=8, pady=(0, 6), padx=(10, 0),
                                      sticky=tk.E)
         self.pw_some_h_lbl.grid(     column=1, row=8, pady=3, padx=(5, 0))
         self.pw_some_len_lbl.grid(   column=2, row=8, pady=3, padx=(5, 0))
@@ -964,20 +967,21 @@ class PassViewer(tk.Frame):
         self.share.exclude_entry.grid(
                                  column=0, row=9, pady=(20, 5), padx=(0, 15),
                                  sticky=tk.E)
-        self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(0, 0),
+        self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(10, 0),
                                  sticky=tk.W)
 
-        self.excluded_head.grid(column=0, row=10, pady=(0, 8), sticky=tk.E)
-        self.reset_button.grid( column=0, row=10, pady=(0, 12), padx=(20, 0),
+        self.excluded_head.grid(column=0, row=10, pady=(0, 8), padx=(5, 0),
+                                sticky=tk.E)
+        self.reset_button.grid( column=0, row=10, pady=(0, 18), padx=(20, 0),
                                 sticky=tk.W)
         self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
 
         # Need to adjust padding for MacOS b/c of different spacing.
         if MY_OS == 'dar':
-            self.exclude_head.grid(padx=(8, 0))
-            self.reset_button.grid( columnspan=2, padx=(15, 0))
-            self.excluded_head.grid(columnspan=2, padx=(90, 0), sticky=tk.W)
-            self.excluded_show.grid(column=0, columnspan=2, padx=(218, 0))
+            self.exclude_head.grid(padx=(13, 0))
+            self.reset_button.grid( columnspan=2, padx=(20, 0))
+            self.excluded_head.grid(columnspan=2, padx=(95, 0), sticky=tk.W)
+            self.excluded_show.grid(column=0, columnspan=2, padx=(223, 0))
 
 
 class PassController(tk.Tk):
