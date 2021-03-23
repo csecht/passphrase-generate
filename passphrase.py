@@ -482,17 +482,18 @@ class PassModeler:
             self.share.pw_some_show.config(fg=self.share.pass_fg)
 
         # Need to allow user to resize window for long strings.
-        # Allow default resizing only for Windows.
-        # TODO: Figure out why .resizable() causes noticeable window redraw in Windows
-        #  Consider not switching between yes/no window resize.
+        # Full-time resizing only for Windows; non-Windows start-up
+        #   resize possible, but not after Generate! for short length.
+        # TODO: Figure out why .resizable() causes noticeable window redraw in Windows.
+        #  Consider allowing full-time window resize for all OS.
         if MY_OS != 'win':
+            app.resizable(0, 0)
             if passphrase_len > _W or password_len > W:
                 app.resizable(width=True, height=False)
-            # Need to reset window to default size and state for short strings.
+            # Need to reset window to default size and state for shorter strings.
             if passphrase_len <= _W and password_len <= W:
                 app.update_idletasks()
                 app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
-                app.resizable(0, 0)
 
     def reset_exclusions(self) -> None:
         """
@@ -1305,5 +1306,5 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    app.minsize(600, 400)
+    app.minsize(650, 400)
     app.mainloop()
