@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.7'
+__version__ = '0.9.8'
 
 import glob
 import random
@@ -448,7 +448,6 @@ class PassModeler:
         # Need to indicate when passphrases exceeds length of result field,
         #   then reset to default when pass-string length is shortened.
         # Use pp_plus_len, the likely longest passphrase, to trigger change.
-        
 
         passphrase_len = self.share.tkdata['pp_plus_len'].get()
 
@@ -483,14 +482,17 @@ class PassModeler:
             self.share.pw_some_show.config(fg=self.share.pass_fg)
 
         # Need to allow user to resize window for long strings.
-        if passphrase_len > _W or password_len > W:
-            app.resizable(width=True, height=False)
-            app.minsize(600, 100)
-        # Need to reset window to default size and state for short strings.
-        if passphrase_len <= _W and password_len <= W:
-            app.update_idletasks()
-            app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
-            app.resizable(0, 0)
+        # Allow default resizing only for Windows.
+        # TODO: Figure out why .resizable() causes noticeable window redraw in Windows
+        #  Consider not switching between yes/no window resize.
+        if MY_OS != 'win':
+            if passphrase_len > _W or password_len > W:
+                app.resizable(width=True, height=False)
+            # Need to reset window to default size and state for short strings.
+            if passphrase_len <= _W and password_len <= W:
+                app.update_idletasks()
+                app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
+                app.resizable(0, 0)
 
     def reset_exclusions(self) -> None:
         """
@@ -1303,5 +1305,5 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    app.resizable(width=False, height=False)
+    app.minsize(600, 400)
     app.mainloop()
