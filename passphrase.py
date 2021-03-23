@@ -457,21 +457,20 @@ class PassModeler:
         # Need to indicate when passphrases exceeds length of result field,
         #   then reset to default when pass-string length is shortened.
         # Use pp_plus_len, the likely longest passphrase, to trigger change.
-
         passphrase_len = self.share.tkdata['pp_plus_len'].get()
 
         # Need a special case for wider Chinese characters; 34 equivalent to 52
         #    Use 64% to generalize in case W changes.
-        _W = W
+        _w = W
         if self.share.choose_wordlist.get() == '此開卷第 Story of the Stone' \
                 and passphrase_len > W * 0.64:
-            _W = W * 0.64
+            _w = W * 0.64
 
-        if passphrase_len > _W:
+        if passphrase_len > _w:
             self.share.pp_raw_show.config(fg=self.share.long_fg)
             self.share.pp_plus_show.config(fg=self.share.long_fg)
             self.share.pp_short_show.config(fg=self.share.long_fg)
-        elif passphrase_len <= _W:
+        elif passphrase_len <= _w:
             self.share.pp_raw_show.config(fg=self.share.pass_fg)
             self.share.pp_plus_show.config(fg=self.share.pass_fg)
             self.share.pp_short_show.config(fg=self.share.pass_fg)
@@ -481,7 +480,7 @@ class PassModeler:
         self.share.pp_plus_show.xview_moveto(1)
         self.share.pp_short_show.xview_moveto(1)
 
-        # Need to also flag long passwords.
+        # Need to also indicate long passwords.
         password_len = int(self.share.numchars_entry.get())
         if password_len > W:
             self.share.pw_any_show.config(fg=self.share.long_fg)
@@ -497,10 +496,10 @@ class PassModeler:
         #  Consider allowing full-time window resize for all OS.
         if MY_OS != 'win':
             app.resizable(0, 0)
-            if passphrase_len > _W or password_len > W:
+            if passphrase_len > _w or password_len > W:
                 app.resizable(width=True, height=False)
             # Need to reset window to default size and state for shorter strings.
-            if passphrase_len <= _W and password_len <= W:
+            if passphrase_len <= _w and password_len <= W:
                 app.update_idletasks()
                 app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
 
