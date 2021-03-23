@@ -728,8 +728,9 @@ class PassViewer(tk.Frame):
         self.share.checkfiles()
         self.share.getwords()
 
-        # Need to set window position here so it doesn't shift when
-        #   PassModeler.config_results() is called b/c different from app position.
+        # Need to set window position here (not in config_master),so it doesn't
+        #    shift when PassModeler.config_results() is called b/c different
+        #    from app position.
         self.master.geometry('+120+100')
         # Need to get original/default window size to restore after size change.
         self.master.update_idletasks()
@@ -737,7 +738,7 @@ class PassViewer(tk.Frame):
         self.share.app_winhigh = self.master.winfo_height()
 
     def config_master(self) -> None:
-        """Set up main window geometry, keybindings, menus.
+        """Set up main window configuration, keybindings, & menus.
         """
         self.config(bg=self.master_bg)
 
