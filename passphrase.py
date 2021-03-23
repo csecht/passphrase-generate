@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.8'
+__version__ = '0.9.9'
 
 import glob
 import random
@@ -1083,6 +1083,8 @@ class PassFyi:
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
 
+        scratchwin.bind('<F1>', lambda q: self.share.growfont())
+        scratchwin.bind('<F2>', lambda q: self.share.shrinkfont())
         if MY_OS in 'lin, win':
             scratchwin.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
@@ -1169,6 +1171,8 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
         explainwin.minsize(595, 200)
+        explainwin.bind('<F1>', lambda q: self.share.growfont())
+        explainwin.bind('<F2>', lambda q: self.share.shrinkfont())
 
         os_width = 62
         if MY_OS in 'lin, win':
@@ -1184,10 +1188,9 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
                                    font=self.share.text_font)
         explaintext.insert(1.0, explanation)
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        # Can't bind font-size keys to text b/c odd characters are inserted,
-        #   so just use the master bindings and menu to control font size.
-        #   Therefore, prevent all key actions.
-        explaintext.bind("<Key>", lambda e: "break")
+        # If need to prevent all key actions:
+        # explaintext.bind("<Key>", lambda e: "break")
+
 
     def about(self) -> None:
         """Basic information about the script; called from GUI Help menu.
@@ -1222,6 +1225,8 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
         aboutwin.minsize(400, 200)
+        aboutwin.bind('<F1>', lambda q: self.share.growfont())
+        aboutwin.bind('<F2>', lambda q: self.share.shrinkfont())
 
         os_width = 0
         if MY_OS in 'lin, win':
@@ -1238,7 +1243,9 @@ along with this program. If not, see https://www.gnu.org/licenses/
                            font=self.share.text_font)
         abouttxt.insert(1.0, boilerplate + __version__)
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        abouttxt.bind("<Key>", lambda e: "break")
+
+        # If need to prevent all key actions:
+        # abouttxt.bind("<Key>", lambda e: "break")
 
     def exclude_msg(self) -> None:
         """A pop-up describing how to use excluded characters.
@@ -1261,6 +1268,8 @@ space entered between characters will also do a reset.
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 100)
+        exclwin.bind('<F1>', lambda q: self.share.growfont())
+        exclwin.bind('<F2>', lambda q: self.share.shrinkfont())
 
         os_width = 0
         if MY_OS in 'lin, win':
@@ -1278,12 +1287,13 @@ space entered between characters will also do a reset.
                            font=self.share.text_font)
         excltext.insert(1.0, msg)
         excltext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-        excltext.bind("<Key>", lambda e: "break")
+        # If need to prevent all key actions:
+        # excltext.bind("<Key>", lambda e: "break")
 
 
 class PassFonts:
     """
-    Change MVC font parameters through keybindings or menu commands.
+    Change MVC font settings. Call with keybindings or menu commands.
     """
     # font.Font keywords are: family, font, size, weight, underline, overstrike.
     def __init__(self, share):
@@ -1293,19 +1303,19 @@ class PassFonts:
         """Make the font 2 points bigger"""
         size = self.share.text_font['size']
         if size < 32:
-            self.share.text_font.configure(size=size + 2)
+            self.share.text_font.configure(size=size + 1)
         size2 = self.share.result_font['size']
         if size < 32:
-            self.share.result_font.configure(size=size2 + 2)
+            self.share.result_font.configure(size=size2 + 1)
 
     def shrink_font(self):
         """Make the font 2 points smaller"""
         size = self.share.text_font['size']
         if size > 6:
-            self.share.text_font.configure(size=size - 2)
+            self.share.text_font.configure(size=size - 1)
         size2 = self.share.result_font['size']
         if size > 6:
-            self.share.result_font.configure(size=size2 - 2)
+            self.share.result_font.configure(size=size2 - 1)
 
 
 if __name__ == "__main__":
