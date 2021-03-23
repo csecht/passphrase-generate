@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.6'
+__version__ = '0.9.7'
 
 import glob
 import random
@@ -446,41 +446,49 @@ class PassModeler:
         self.share.pw_some_show.config( fg=self.share.pass_fg)
 
         # Need to indicate when passphrases exceeds length of result field,
-        #  then reset to default when pass-string length is shortened.
-        #  So use a foreground color change, thus preserving font size controls.
+        #   then reset to default when pass-string length is shortened.
         # Use pp_plus_len, the likely longest passphrase, to trigger change.
-        # Need a special case for wider Chinese characters; 34 equivalent to 52.
+        passphrase_len = self.share.tkdata['pp_plus_len'].get()
+
+        # Need a special case for wider Chinese characters; 34 equivalent to 52
+        #    Use 64% to generalize in case W changes.
         _W = W
         if self.share.choose_wordlist.get() == '此開卷第 Story of the Stone' \
-                and self.share.tkdata['pp_plus_len'].get() > 34:
-            _W = 34
+                and passphrase_len > W * 0.64:
+            _W = W * 0.64
 
-        if self.share.tkdata['pp_plus_len'].get() > _W:
+        if passphrase_len > _W:
             self.share.pp_raw_show.config(fg=self.share.long_fg)
             self.share.pp_plus_show.config(fg=self.share.long_fg)
             self.share.pp_short_show.config(fg=self.share.long_fg)
-            app.resizable(width=True, height=False)
-            app.minsize(600, 100)
-        elif self.share.tkdata['pp_plus_len'].get() <= _W:
+        elif passphrase_len <= _W:
             self.share.pp_raw_show.config(fg=self.share.pass_fg)
             self.share.pp_plus_show.config(fg=self.share.pass_fg)
             self.share.pp_short_show.config(fg=self.share.pass_fg)
 
-        # Need to show right-most of string in case length exceeds field width.
+        # Need to show right-most of phrase in case length exceeds field width.
         self.share.pp_raw_show.xview_moveto(1)
         self.share.pp_plus_show.xview_moveto(1)
         self.share.pp_short_show.xview_moveto(1)
 
         # Need to also flag long passwords.
-        pwlength = int(self.share.numchars_entry.get())
-        if pwlength > W:
+        password_len = int(self.share.numchars_entry.get())
+        if password_len > W:
             self.share.pw_any_show.config(fg=self.share.long_fg)
             self.share.pw_some_show.config(fg=self.share.long_fg)
-            app.resizable(width=True, height=False)
-            app.minsize(600, 100)
-        elif pwlength <= W:
+        elif password_len <= W:
             self.share.pw_any_show.config(fg=self.share.pass_fg)
             self.share.pw_some_show.config(fg=self.share.pass_fg)
+
+        # Need to allow user to resize window for long strings.
+        if passphrase_len > _W or password_len > W:
+            app.resizable(width=True, height=False)
+            app.minsize(600, 100)
+        # Need to reset window to default size and state for short strings.
+        if passphrase_len <= _W and password_len <= W:
+            app.update_idletasks()
+            app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
+            app.resizable(0, 0)
 
     def reset_exclusions(self) -> None:
         """
@@ -711,6 +719,14 @@ class PassViewer(tk.Frame):
 
         self.share.checkfiles()
         self.share.getwords()
+
+        # Need to set window position here so it doesn't shift when
+        #   PassModeler.config_results() is called b/c different from app position.
+        self.master.geometry('+120+100')
+        # Need to get original/default window size to restore after size change.
+        self.master.update_idletasks()
+        self.share.app_winwide = self.master.winfo_width()
+        self.share.app_winhigh = self.master.winfo_height()
 
     def config_master(self) -> None:
         """Set up main window geometry, keybindings, menus.
