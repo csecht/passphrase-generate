@@ -34,6 +34,7 @@ from typing import Dict, List, Any
 try:
     import tkinter as tk
     import tkinter.ttk as ttk
+    # pylint: disable=unused-import
     import tkinter.font
     from tkinter import messagebox
     from tkinter.scrolledtext import ScrolledText
@@ -124,12 +125,18 @@ class RightClickCmds:
             right_click_menu.add(tk.SEPARATOR)
             right_click_menu.add_command(
                 label='Close window',
+                # pylint: disable=unnecessary-lambda
                 command=lambda: self.close_window())
 
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
     def right_click_edit(event, command):
+        """
+        Sets menu command to the selected predefined virtual event.
+        Event is a unifying binding across multiple platforms.
+        https://www.tcl.tk/man/tcl8.6/TkCmd/event.htm#M7
+        """
         event.widget.event_generate(f'<<{command}>>')
 
     @staticmethod
@@ -144,6 +151,7 @@ class RightClickCmds:
         #   Stop loop when the focus toplevel parent is found to prevent all
         #   toplevel windows from closing.
         for widget in reversed(app.winfo_children()):
+            # pylint: disable=no-else-break
             if widget == app.focus_get():
                 widget.destroy()
                 break
@@ -252,6 +260,7 @@ class PassModeler:
         # Need to have default .get() in combobox be the 1st available wordlist.
         self.share.choose_wordlist.current(0)
 
+    # pylint: disable=unused-argument
     def get_words(self, *args) -> None:
         """
         Populate lists with words to randomize in make_pass(); needs to
@@ -991,6 +1000,7 @@ class PassController(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        # pylint: disable=assignment-from-no-return
         container = tk.Frame(self).grid(sticky=tk.NSEW)
         PassViewer(master=container, share=self)
 
@@ -1002,6 +1012,7 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).check_files()
 
+    #pylint: disable=unused-argument
     def getwords(self, *args):
         """Is called from the Viewer __init__.
         Populate lists with words to randomize in make_pass().
