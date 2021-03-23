@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.6'
+__version__ = '0.9.7'
 
 import glob
 import random
@@ -524,11 +524,14 @@ class PassViewer(tk.Frame):
         #   TKFixedFont does not monospace symbol characters.
         # MacOS needs larger default fonts for easier readability.
         # 'default' is not a named font, therefore uses system default.
-        if MY_OS in 'lin, win':
-            self.share.text_font = tk.font.Font(  font='TkDefaultFont')
+        if MY_OS == 'lin':
+            self.share.text_font = tk.font.Font(font='TkDefaultFont')
             self.share.result_font = tk.font.Font(font='Courier')
+        elif MY_OS == 'win':
+            self.share.text_font = tk.font.Font(font='TkDefaultFont')
+            self.share.result_font = tk.font.Font(family='Courier', size=10)
         elif MY_OS == 'dar':
-            self.share.text_font = tk.font.Font(  family='default', size=14)
+            self.share.text_font = tk.font.Font(family='default', size=14)
             self.share.result_font = tk.font.Font(family='Courier', size=14)
 
         self.share.stubresult = 'Result can be copied and pasted.'
@@ -1044,7 +1047,7 @@ class PassFyi:
             ' and see whether any work for you.\nAnything you paste or edit here'
             ' is GONE when this window is closed, so save what you want to keep'
             ' somewhere else.\n'
-            '───────────────────────────────────────────────\n\n'
+            '────────────────────────────────────────\n\n'
         )
 
         scratchwin = tk.Toplevel()
