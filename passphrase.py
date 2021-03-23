@@ -533,11 +533,14 @@ class PassViewer(tk.Frame):
         #   TKFixedFont does not monospace symbol characters.
         # MacOS needs larger default fonts for easier readability.
         # 'default' is not a named font, therefore uses system default.
-        if MY_OS in 'lin, win':
-            self.share.text_font = tk.font.Font(  font='TkDefaultFont')
+        if MY_OS == 'lin':
+            self.share.text_font = tk.font.Font(font='TkDefaultFont')
             self.share.result_font = tk.font.Font(font='Courier')
+        elif MY_OS == 'win':
+            self.share.text_font = tk.font.Font(font='TkDefaultFont')
+            self.share.result_font = tk.font.Font(family='Courier', size=10)
         elif MY_OS == 'dar':
-            self.share.text_font = tk.font.Font(  family='default', size=14)
+            self.share.text_font = tk.font.Font(family='default', size=14)
             self.share.result_font = tk.font.Font(family='Courier', size=14)
 
         self.share.stubresult = 'Result can be copied and pasted.'
@@ -830,12 +833,12 @@ class PassViewer(tk.Frame):
                               command=self.share.explain)
         help_menu.add_command(label='About',
                               command=self.share.about)
-        tips.add_command(label='Use F1 & F2 keys to change font size.')
+        tips.add_command(label='F1 & F2 keys change font size.')
         tips.add_command(label='Mouse right-click does stuff!')
-        tips.add_command(label='Use Return/Enter key to Generate!')
-        tips.add_command(label='Use File>Scratchpad as a scratch pad.')
-        tips.add_command(label='Results longer than cell turn blue.')
-        tips.add_command(label='Use Esc key to exit.')
+        tips.add_command(label='Return/Enter key also Generates!')
+        tips.add_command(label='Menu File>Open.. opens a scratch pad.')
+        tips.add_command(label=f'Long results (L > {W}) turn blue.')
+        tips.add_command(label='Esc key exits the program.')
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -1061,7 +1064,7 @@ class PassFyi:
             ' and see whether any work for you.\nAnything you paste or edit here'
             ' is GONE when this window is closed, so save what you want to keep'
             ' somewhere else.\n'
-            '───────────────────────────────────────────────\n\n'
+            '────────────────────────────────────────\n\n'
         )
 
         scratchwin = tk.Toplevel()
@@ -1147,9 +1150,9 @@ equivalent to bits of entropy. For more information see:
 
 Font size can be changed with the F1 and F2 keys or from the menu bar.
 Mouse right-click opens edit options in results and pop-up windows.
-Pass-string color is BLUE when it does not all fit in the results cell; 
-  try dragging the window wider to see the full result.
 """
+f'Pass-string color is BLUE when it is longer than {W} characters;\n'
+'    so try dragging the window wider to see the full result.\n'
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
