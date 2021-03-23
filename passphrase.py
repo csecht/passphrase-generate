@@ -435,7 +435,7 @@ class PassModeler:
     def config_results(self) -> None:
         """
         Configure fonts and display widths in results frames to provide
-        a more readable display of results.
+        a more readable display of results. Called from make_pass().
         """
         # Change font colors of results from the initial self.passstub_fg.
         # pass_fg does not change after first call to set_pstrings().
@@ -456,9 +456,9 @@ class PassModeler:
             _W = 34
 
         if self.share.tkdata['pp_plus_len'].get() > _W:
-            self.share.pp_raw_show.config(fg='blue')
-            self.share.pp_plus_show.config(fg='blue')
-            self.share.pp_short_show.config(fg='blue')
+            self.share.pp_raw_show.config(fg=self.share.long_fg)
+            self.share.pp_plus_show.config(fg=self.share.long_fg)
+            self.share.pp_short_show.config(fg=self.share.long_fg)
             app.resizable(width=True, height=False)
             app.minsize(600, 100)
         elif self.share.tkdata['pp_plus_len'].get() <= _W:
@@ -474,8 +474,8 @@ class PassModeler:
         # Need to also flag long passwords.
         pwlength = int(self.share.numchars_entry.get())
         if pwlength > W:
-            self.share.pw_any_show.config(fg='blue')
-            self.share.pw_some_show.config(fg='blue')
+            self.share.pw_any_show.config(fg=self.share.long_fg)
+            self.share.pw_some_show.config(fg=self.share.long_fg)
             app.resizable(width=True, height=False)
             app.minsize(600, 100)
         elif pwlength <= W:
@@ -515,8 +515,9 @@ class PassViewer(tk.Frame):
         self.master_fg =    'grey90'  # Used for row headers.
         self.master_bg =    'LightSteelBlue4'  # Also used for some labels.
         self.dataframe_bg = 'grey40'  # Also background for data labels.
-        self.stubresult_fg = 'grey60'  # For initial pass-string stub.
+        self.stubpass_fg = 'grey60'  # For initial pass-string stub.
         self.share.pass_fg = 'brown4'  # Pass-string font color.
+        self.share.long_fg = 'blue'  # Long pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
         # Need to define as font.Font to configure in PassFonts().
@@ -628,17 +629,17 @@ class PassViewer(tk.Frame):
         self.share.pp_raw_show = tk.Entry(self.result_frame1, width=W,
                                           textvariable=self.share.tkdata[
                                               'phrase_raw'],
-                                          fg=self.stubresult_fg, bg=self.pass_bg,
+                                          fg=self.stubpass_fg, bg=self.pass_bg,
                                           font=self.share.result_font)
         self.share.pp_plus_show = tk.Entry(self.result_frame1, width=W,
                                            textvariable=self.share.tkdata[
                                                'phrase_plus'],
-                                           fg=self.stubresult_fg, bg=self.pass_bg,
+                                           fg=self.stubpass_fg, bg=self.pass_bg,
                                            font=self.share.result_font)
         self.share.pp_short_show = tk.Entry(self.result_frame1, width=W,
                                             textvariable=self.share.tkdata[
                                                 'phrase_short'],
-                                            fg=self.stubresult_fg,
+                                            fg=self.stubpass_fg,
                                             bg=self.pass_bg,
                                             font=self.share.result_font)
         # End passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -685,11 +686,11 @@ class PassViewer(tk.Frame):
         self.share.pw_any_show = tk.Entry(self.result_frame2,
                                           textvariable=self.share.tkdata['pw_any'],
                                           width=W, font=self.share.result_font,
-                                          fg=self.stubresult_fg, bg=self.pass_bg)
+                                          fg=self.stubpass_fg, bg=self.pass_bg)
         self.share.pw_some_show = tk.Entry(self.result_frame2,
                                            textvariable=self.share.tkdata['pw_some'],
                                            width=W, font=self.share.result_font,
-                                           fg=self.stubresult_fg, bg=self.pass_bg)
+                                           fg=self.stubpass_fg, bg=self.pass_bg)
         # End password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         # Begin exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
