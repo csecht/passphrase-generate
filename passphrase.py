@@ -490,8 +490,8 @@ class PassModeler:
             self.share.pw_some_show.config(fg=self.share.pass_fg)
 
         # Need to allow user to resize window for long strings.
-        # Full-time resizing only for Windows; non-Windows start-up
-        #   resize possible, but not after Generate! for short length.
+        # Full-time resizing only for Windows. Resizing non-Windows at start-up
+        #   is possible, but not after Generate! when length is "normal".
         # TODO: Figure out why .resizable() causes noticeable window redraw in Windows.
         #  Consider allowing full-time window resize for all OS.
         if MY_OS != 'win':

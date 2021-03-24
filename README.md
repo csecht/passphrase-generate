@@ -17,6 +17,8 @@ Running from the command line requires Python 3.6 or later, preferably 3.7 or la
 ## Usage
 To get started, download the repository package by clicking on the Code download button and select the Download ZIP option, or use git commands if you are comfortable with that. Unzipping (extracting) the zip file will create a passphrases-master directory. Once the program is launched (see below), click Generate! to make passphrases and passwords. Results can be copied. Passphrase and password lengths are set by the user. Usage details for different operating systems are outlined below.
 
+Quick start: Run the Python script passphrase.py from the same folder as the 'wordlists' directory.
+
 ### System-specific Implementations
 #### passphrase.py
 The passphrase.py script is generally launched from a Terminal command line. Running the script brings up an interactive graphics window to generate passphrases and password strings. On **MacOS** and **Linux** there is an option to create passphrases using either the system dictionary or different wordlists. On **Windows**, only the system dictionary is not available. The number of words available for each wordlist can be seen to the right of the selected wordlist and from the pulldown menu: `Help -> What's going on here?`.
@@ -42,8 +44,9 @@ Optional wordlists were derived from texts obtained from these sites:
 The `parser.py` script from https://github.com/csecht/make_wordlist was used to create the custom wordlists used here. That repository also includes source text files for these wordlists.
 
 ## Tips:
-The program places no limits on the length of pass-strings, though your system memory might. The program's entry fields have a fixed width, but can accommodate longer entries. The window can be dragged to accommodate longer results up to a limit; results exceeding that limit can still be copied and pasted.
+The program places no limits on the length of pass-strings, though your system memory might. The window can be dragged to view longer results up to a limit; results exceeding that limit can still be copied and pasted.
 
 ## Development plans:
+- Use Windows system dictionary
 - Make Debian package
 - Make Windows installer
