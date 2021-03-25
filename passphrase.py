@@ -1092,7 +1092,7 @@ class PassFyi:
         scratchwin = tk.Toplevel()
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
-
+        # TODO: MacOS, F1 in any Toplevel inserts a "?"/unknown character, F2 does not.
         scratchwin.bind('<F1>', lambda q: self.share.growfont())
         scratchwin.bind('<F2>', lambda q: self.share.shrinkfont())
         if MY_OS in 'lin, win':

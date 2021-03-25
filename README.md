@@ -30,10 +30,12 @@ For **Linux** or **MacOS**, the `wordlists` directory also needs to be in the pa
 
 ### Stand-alone versions (no Python installation needed!)
 #### Passphrase.app - MacOS
-A **MacOS** standalone of passphrase.py. Download an extract the GitHub distribution package as outlined above. Inside passphrase-generate-master/Standalone_distributables folder is `Passphrase_mac.app.zip`. Unzip that (just double click and follow prompts) to install the `Passphrase.app`, which you can place where ever you like. Alternatively, the distributable app can also be downloaded directly from https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase_mac.app.zip. The first time you double-click on the app, however, you will most likely get a message saying it can't be opened. Click 'OK' and go into System Preferences > Security & Privacy > General and allow the app to open. It does not open initially because it was not downloaded from the Apple Store or from a recognized Apple developer. `Passphrase.app` was created with `py2app` from https://pypi.org/project/py2app/
+A **MacOS** standalone of passphrase.py. Download an extract the GitHub distribution package as outlined above. Inside passphrase-generate-master/Standalone_distributables folder is `Passphrase_mac.app.zip`. Unzip that (just double click and follow prompts) to install the `Passphrase.app`, which you can place where ever you like. Alternatively, the distributable app can also be downloaded directly from https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase_mac.app.zip. The first time you try to open then app, however, you will get a message saying it can't be opened. Go into System Preferences > Security & Privacy and click the "Open anyway" button, then "OK". It does not open initially because it was not downloaded from the Apple Store or from a recognized Apple developer. `Passphrase.app` was created with `py2app` from https://pypi.org/project/py2app/
 
 #### Passphrase.exe - Windows
-A **Windows** standalone of passphrase.py. Download an extract the GitHub distribution package as outlined above. Inside the `passphrase-generate-master/Standalone_distributables` folder is `Passphrase_win.zip`, an archived folder of files necessary for running the Windows executable. This distributable archive can be downloaded directly from  https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase_win.zip. Select Extract All for that ZIP file. Within the extracted Passphrase_win folder is the executable, `Passphrase.exe` (the .exe extension may not show, depending on your system view settings). Double-click `Passphrase.exe` to launch. You will likely first need to permit Windows to open it: from the pop-up warning, click on "more info", then follow the prompts to open the program. The `Passphrase` folder can be placed anywhere, but you may want to create an alias of `Passphrase.exe` and move it to a convenient location for easy access. The `Passphrase_win` distributable was created with `py2exe` from https://pypi.org/project/py2exe/
+A **Windows** standalone of passphrase.py. Download an extract the GitHub distribution package as outlined above. Inside the `passphrase-generate-master/Standalone_distributables` folder is `Passphrase_win.zip`, an archived folder of files necessary for running the Windows executable. This distributable archive can be downloaded directly from  https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase_win.zip. Select Extract All for that ZIP file. Within the extracted Passphrase_win folder is the executable, `Passphrase.exe` (the .exe extension may not show, depending on your system view settings). Double-click `Passphrase.exe` to launch. You will likely first need to permit Windows to open it: from the pop-up warning, click on "more info", then follow the prompts to open the program. The `Passphrase` folder can be placed anywhere, but you may want to create an alias of `Passphrase.exe` and move it to a convenient location for easy access. The `Passphrase_win` distributable was created with `py2exe` from https://pypi.org/project/py2exe/   
+
+Instructions for how to create your own stand-alone from the passphrase.py script are in Standalone_distributables/setup_README.txt.
 
 ## Wordlist sources:
 Optional wordlists were derived from texts obtained from these sites:
@@ -45,6 +47,9 @@ The `parser.py` script from https://github.com/csecht/make_wordlist was used to 
 
 ## Tips:
 The program places no limits on the length of pass-strings, though your system memory might. The window can be dragged to view longer results up to a limit; results exceeding that limit can still be copied and pasted.
+
+## Known issues:
+In MacOS, using F1 to increase font size in any pop-up window inserts a "?"/unknown character in the text. 
 
 ## Development plans:
 - Use Windows system dictionary
