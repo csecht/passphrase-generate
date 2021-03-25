@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-A passphrase and password generator using MVC architecture, which is
+A passphrase and passcode generator using MVC architecture, which is
 structured in three main classes of Model, View, and Controller; based
 on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
 
@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.9'
+__version__ = '0.9.10'
 
 import glob
 import random
@@ -377,9 +377,9 @@ class PassModeler:
                              _ in range(numwords))
         shortphrase = "".join(VERY_RANDOM.choice(self.listdata['short_list']) for
                               _ in range(numwords))
-        password1 = "".join(VERY_RANDOM.choice(self.strdata['all_char']) for
+        passcode1 = "".join(VERY_RANDOM.choice(self.strdata['all_char']) for
                             _ in range(numchars))
-        password2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
+        passcode2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
                             _ in range(numchars))
 
         # Randomly select 1 of each symbol to append; length not user-specified.
@@ -398,10 +398,10 @@ class PassModeler:
         self.share.tkdata['pp_plus_len'].set(len(phraseplus))
         self.share.tkdata['phrase_short'].set(phraseshort)
         self.share.tkdata['pp_short_len'].set(len(phraseshort))
-        self.share.tkdata['pw_any'].set(password1)
-        self.share.tkdata['pw_any_len'].set(len(password1))
-        self.share.tkdata['pw_some'].set(password2)
-        self.share.tkdata['pw_some_len'].set(len(password2))
+        self.share.tkdata['pw_any'].set(passcode1)
+        self.share.tkdata['pw_any_len'].set(len(passcode1))
+        self.share.tkdata['pw_some'].set(passcode2)
+        self.share.tkdata['pw_some_len'].set(len(passcode2))
 
         # Finally, set H values for each pass-string and configure results.
         self.set_entropy(numwords, numchars)
@@ -411,7 +411,7 @@ class PassModeler:
         """Calculate and set values for information entropy, H.
 
         :param numwords: User-defined number of passphrase words.
-        :param numchars: User-defined number of password characters.
+        :param numchars: User-defined number of passcode characters.
         """
         # https://en.wikipedia.org/wiki/Password_strength
         # For +3 characters, we use only 1 character each from each set of
@@ -480,12 +480,12 @@ class PassModeler:
         self.share.pp_plus_show.xview_moveto(1)
         self.share.pp_short_show.xview_moveto(1)
 
-        # Need to also indicate long passwords.
-        password_len = int(self.share.numchars_entry.get())
-        if password_len > W:
+        # Need to also indicate long passcodes.
+        passcode_len = int(self.share.numchars_entry.get())
+        if passcode_len > W:
             self.share.pw_any_show.config(fg=self.share.long_fg)
             self.share.pw_some_show.config(fg=self.share.long_fg)
-        elif password_len <= W:
+        elif passcode_len <= W:
             self.share.pw_any_show.config(fg=self.share.pass_fg)
             self.share.pw_some_show.config(fg=self.share.pass_fg)
 
@@ -496,10 +496,10 @@ class PassModeler:
         #  Consider allowing full-time window resize for all OS.
         if MY_OS != 'win':
             app.resizable(0, 0)
-            if passphrase_len > _w or password_len > W:
+            if passphrase_len > _w or passcode_len > W:
                 app.resizable(width=True, height=False)
             # Need to reset window to default size and state for shorter strings.
-            if passphrase_len <= _w and password_len <= W:
+            if passphrase_len <= _w and passcode_len <= W:
                 app.update_idletasks()
                 app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
 
@@ -670,8 +670,8 @@ class PassViewer(tk.Frame):
 
         self.generate_btn = ttk.Button()
 
-        # Password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pw_section_head = tk.Label(text='Passwords', font=('default', 12),
+        # Passcode section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        self.pw_section_head = tk.Label(text='Passcodes', font=('default', 12),
                                         fg=self.pass_bg, bg=self.master_bg)
 
         self.numchars_label = tk.Label(text='# characters', fg=self.pass_bg,
@@ -715,7 +715,7 @@ class PassViewer(tk.Frame):
                                            textvariable=self.share.tkdata['pw_some'],
                                            width=W, font=self.share.result_font,
                                            fg=self.stubpass_fg, bg=self.pass_bg)
-        # End password section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # End passcode section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         # Begin exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.exclude_head =   tk.Label(text='Exclude character(s)',
@@ -941,7 +941,7 @@ class PassViewer(tk.Frame):
         if MY_OS == 'dar':
             self.generate_btn.grid(padx=(0, 0))
 
-        # Password widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # Passcode widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pw_section_head.grid( column=0, row=5, pady=(12, 6), padx=(10, 5),
                                    sticky=tk.W)
 
@@ -1081,7 +1081,7 @@ class PassFyi:
         """
         # Separator dashes from https://coolsymbol.com/line-symbols.html.
         instruction = (
-            'Paste here passphrases or passwords that you are thinking of'
+            'Paste here passphrases or passcodes that you are thinking of'
             ' using. You can then compare them, test typing them out, etc.'
             ' and see whether any work for you.\nAnything you paste or edit here'
             ' is GONE when this window is closed, so save what you want to keep'
@@ -1128,7 +1128,7 @@ class PassFyi:
 
         explanation = (
 """A passphrase is a random string of words that can be more secure and
-easier to remember than a password of random characters. For more
+easier to remember than a passcode of random characters. For more
 information on passphrases, see, for example, a discussion of word lists
 and word selection at the Electronic Frontier Foundation (EFF):
 https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases\n
@@ -1140,13 +1140,13 @@ f'     From the current selected wordlist, {selection},\n'
 '     after subtracting words with excluded letters, if any,\n'
 f'     there are {wordcount} words available to construct passphrases.\n'
 """
-Passphrases and passwords (pass-strings) are made by clicking the
+Passphrases and passcodes (pass-strings) are made by clicking the
 Generate! button, or pressing Enter or Ctrl-G, or from the File pull-
 down menu on the menu bar. The result you want can be cut and pasted
 using standard keyboard commands, or right-clicking, or using Edit from
 the menu bar.\n
 There is an option to exclude any character or string of characters
-from passphrase words and passwords. Words with excluded letters are
+from passphrase words and passcodes. Words with excluded letters are
 not available to use. Multiple windows can remain open to compare
 counts among different wordlists and exclusions.  (continued.........)\n
 Optional wordfiles were derived from texts obtained from these sites:
@@ -1158,7 +1158,7 @@ here because hyphenated words are excluded from all wordlists.\n
 Words with less than 3 letters are not used in any wordlist.
 All wordlists except EFF were made with parser.py from the Project at
 https://github.com/csecht/make_wordlist\n
-To accommodate some password requirements, a choice is provided that
+To accommodate some passcode requirements, a choice is provided that
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
 """
 f'The symbols used are: {SYMBOLS}\n'
@@ -1210,7 +1210,7 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         # msg separator dashes from https://coolsymbol.com/line-symbols.html.
         boilerplate = (
 """
-passphrase.py and Passphrase generate random passphrases and passwords.
+passphrase.py and Passphrase generate random passphrases and passcodes.
 """
 f'Download the most recent version from: {PROJ_URL}'
 """
@@ -1266,7 +1266,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         msg = (
 """
 Any character(s) you enter will not appear in passphrase
-words or passwords. Multiple characters are treated as a
+words or passcodes. Multiple characters are treated as a
 unit. For example, "es" will exclude "trees", not "eye"
 and  "says". To exclude everything having "e" and "s",
 enter "e", click Generate!, then enter "s" and Generate!
