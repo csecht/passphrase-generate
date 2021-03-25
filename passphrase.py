@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.10'
+__version__ = '0.9.11'
 
 import glob
 import random
@@ -489,19 +489,19 @@ class PassModeler:
             self.share.pw_any_show.config(fg=self.share.pass_fg)
             self.share.pw_some_show.config(fg=self.share.pass_fg)
 
-        # Need to allow user to resize window for long strings.
+        # Allow user to resize window for long strings.
         # Full-time resizing only for Windows. Resizing non-Windows at start-up
         #   is possible, but not after Generate! when length is "normal".
         # TODO: Figure out why .resizable() causes noticeable window redraw in Windows.
-        #  Consider allowing full-time window resize for all OS.
-        if MY_OS != 'win':
-            app.resizable(0, 0)
-            if passphrase_len > _w or passcode_len > W:
-                app.resizable(width=True, height=False)
-            # Need to reset window to default size and state for shorter strings.
-            if passphrase_len <= _w and passcode_len <= W:
-                app.update_idletasks()
-                app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
+        # Comment out to allow default full-tim window resize on all OS.
+        # if MY_OS != 'win':
+        #     app.resizable(0, 0)
+        #     if passphrase_len > _w or passcode_len > W:
+        #         app.resizable(width=True, height=False)
+        #     # Need to reset window to default size and state for shorter strings.
+        #     if passphrase_len <= _w and passcode_len <= W:
+        #         app.update_idletasks()
+        #         app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
 
     def reset_exclusions(self) -> None:
         """
@@ -757,6 +757,11 @@ class PassViewer(tk.Frame):
             self.master.rowconfigure(_row, weight=1)
         self.result_frame1.columnconfigure(3, weight=1)
         self.result_frame2.columnconfigure(3, weight=1)
+        self.result_frame1.rowconfigure(2, weight=1)
+        self.result_frame1.rowconfigure(3, weight=1)
+        self.result_frame1.rowconfigure(4, weight=1)
+        self.result_frame2.rowconfigure(7, weight=1)
+        self.result_frame2.rowconfigure(8, weight=1)
 
         self.master.bind('<Escape>', lambda q: quit_gui())
         self.master.bind('<Control-q>', lambda q: quit_gui())
@@ -909,7 +914,7 @@ class PassViewer(tk.Frame):
         self.l_and_h_header.grid( column=1, row=1, padx=0, sticky=tk.W)
 
         self.result_frame1.grid(    column=1, row=2, padx=(5, 10),
-                                    columnspan=3, rowspan=3, sticky=tk.EW)
+                                    columnspan=3, rowspan=3, sticky=tk.NSEW)
         # Results' _show will maintain equal widths with sticky=tk.EW.
         self.pp_raw_head.grid(      column=0, row=2, pady=(6, 0), padx=(10, 0),
                                     sticky=tk.E)
@@ -954,7 +959,7 @@ class PassViewer(tk.Frame):
                                   sticky=tk.W)
 
         self.result_frame2.grid(    column=1, row=7, padx=(5, 10),
-                                    columnspan=3, rowspan=2, sticky=tk.EW)
+                                    columnspan=3, rowspan=2, sticky=tk.NSEW)
         self.pw_any_head.grid(      column=0, row=7, pady=(6, 0), padx=(10, 0),
                                     sticky=tk.E)
         self.pw_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
@@ -1331,5 +1336,5 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    app.minsize(650, 400)
+    app.minsize(650, 410)
     app.mainloop()
