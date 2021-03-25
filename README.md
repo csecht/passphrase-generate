@@ -1,7 +1,7 @@
 # Passphrases Project
-Python GUI scripts and cross-platform executables to easily make secure passphrases and passwords.
+Python GUI scripts and cross-platform executables to easily make secure passphrases and passcodes.
 
-A potential problem with some on-line password and passphrase generators is that they are on-line. Here is something that can be run locally and privately either as a standalone program on **Windows** and **MacOS** or as a Python script from a Terminal window in **Windows**, **MacOS**, or **Linux**. 
+A potential problem with some on-line passcode and passphrase generators is that they are on-line. Here is something that can be run locally and privately either as a standalone program on **Windows** and **MacOS** or as a Python script from a Terminal window in **Windows**, **MacOS**, or **Linux**. 
 
 Words and character strings are randomized with Python's Random class using a random seed: random.Random(random.random()). For more information, see https://docs.python.org/3/library/random.html#random.random
 
@@ -15,13 +15,13 @@ Developed with Python 3.8-3.9, under Ubuntu 20.04, Windows 10, and MacOS 10.13.6
 Running from the command line requires Python 3.6 or later, preferably 3.7 or later. A recent tkinter graphics module of Python is required, which is included in Python 3.7+; earlier versions will require installation of Tk/Tcl. Recent Python packages can be downloaded from https://www.python.org/downloads/.
 
 ## Usage
-To get started, download the repository package by clicking on the Code download button and select the Download ZIP option, or use git commands if you are comfortable with that. Unzipping (extracting) the zip file will create a passphrases-master directory. Once the program is launched (see below), click Generate! to make passphrases and passwords. Results can be copied. Passphrase and password lengths are set by the user. Usage details for different operating systems are outlined below.
+To get started, download the repository package by clicking on the Code download button and select the Download ZIP option, or use git commands if you are comfortable with that. Unzipping (extracting) the zip file will create a passphrases-master directory. Once the program is launched (see below), click Generate! to make passphrases and passcodes. Results can be copied. Passphrase and passcode lengths are set by the user. Usage details for different operating systems are outlined below.
 
 Quick start: Run the Python script passphrase.py from the same folder as the 'wordlists' directory.
 
 ### System-specific Implementations
 #### passphrase.py
-The passphrase.py script is generally launched from a Terminal command line. Running the script brings up an interactive graphics window to generate passphrases and password strings. On **MacOS** and **Linux** there is an option to create passphrases using either the system dictionary or different wordlists. On **Windows**, only the system dictionary is not available. The number of words available for each wordlist can be seen to the right of the selected wordlist and from the pulldown menu: `Help -> What's going on here?`.
+The passphrase.py script is generally launched from a Terminal command line. Running the script brings up an interactive graphics window to generate passphrases and passcode strings. On **MacOS** and **Linux** there is an option to create passphrases using either the system dictionary or different wordlists. On **Windows**, only the system dictionary is not available. The number of words available for each wordlist can be seen to the right of the selected wordlist and from the pulldown menu: `Help -> What's going on here?`.
 
 For **Windows**, the folder, `wordlists`, included in this distribution, must be kept in the passphrase-generate-master folder. Launching the program by double-clicking on the passphrase.py icon may work if .py is in your PATH list. Otherwise, launch a Terminal window opened from the passphrases-master folder and enter the command ```python3 passphrase.py``` or ```python passphrase.py``` or ```py passphrase.py```, depending on your system environment. 
 
@@ -49,7 +49,7 @@ The `parser.py` script from https://github.com/csecht/make_wordlist was used to 
 The program places no limits on the length of pass-strings, though your system memory might. The window can be dragged to view longer results up to a limit; results exceeding that limit can still be copied and pasted.
 
 ## Known issues:
-In MacOS, using F1 to increase font size in any pop-up window inserts a "?"/unknown character in the text. 
+In MacOS, using F1 to increase font size in any pop-up window inserts a "?"/unknown character in the text when cursor in in the text field. 
 
 ## Development plans:
 - Use Windows system dictionary
