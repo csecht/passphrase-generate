@@ -71,6 +71,9 @@ W = 52  # Default width of the results display fields.
 # pylint: disable=unused-argument
 def quit_gui(event=None) -> None:
     """Safe and informative exit from the program.
+
+    :param event: optional
+    :type event: direct call from binding.
     """
     print('\n  *** User has quit the program. Exiting...\n')
     app.destroy()
@@ -334,6 +337,8 @@ class PassModeler:
         Generate and set random pass-strings.
         Called through Controller from keybinding, menu, or button.
         Calls set_entropy() and config_results().
+
+        :type event: direct call from binding
         """
 
         # Need to correct invalid user entries for number of words & characters.
@@ -509,6 +514,8 @@ class PassModeler:
         """
         Restore original word and character lists with default values.
         Call get_words() to restore full word lists.
+
+        :type event: direct call from binding
         """
         self.share.tkdata['pc_any'].set('')
         self.share.tkdata['pc_any_len'].set(0)
@@ -1063,6 +1070,7 @@ class PassController(tk.Tk):
         Populate lists with words to randomize in make_pass().
 
         :param args: a virtual event call from choose_wordlist Combobox.
+        :type event: direct call from binding
         """
         PassModeler(share=self).get_words()
 
@@ -1072,11 +1080,15 @@ class PassController(tk.Tk):
         Is called from the Viewer with "Generate" widgets and key
         bindings. make_pass() creates random pass-strings, which then
         calls set_entropy() and config_results().
+
+        :type event: direct call from binding
         """
         PassModeler(share=self).make_pass()
 
     def scratch(self, event=None):
         """Is called from the Viewer Passphrase menu or key binding.
+
+        :type event: direct call from binding
         """
         PassFyi(share=self).scratchpad()
 
@@ -1101,6 +1113,8 @@ class PassController(tk.Tk):
     def reset(self, event=None) -> None:
         """
         Is called only in response to reset button in exclude section.
+
+        :type event: direct call from binding
         """
         PassModeler(share=self).reset_exclusions()
 
@@ -1113,6 +1127,8 @@ class PassController(tk.Tk):
     #pylint: disable=unused-argument
     def shrinkfont(self, event=None):
         """Is called from keybinding or View menu.
+
+        :type event: direct call from binding
         """
         PassFonts(share=self).shrink_font()
 
@@ -1129,6 +1145,8 @@ class PassFyi:
         """
         A text window for user to temporarily save results.
         Is called from Passphrase menu or keybinding.
+
+        :type event: direct call from binding
         """
         # Separator dashes from https://coolsymbol.com/line-symbols.html.
         instruction = (
@@ -1374,7 +1392,10 @@ class PassFonts:
 
     #pylint: disable=unused-argument
     def grow_font(self, event=None):
-        """Make the font size larger"""
+        """ Make the font size larger.
+
+        :type event: direct call from binding
+        """
         size = self.share.text_font['size']
         if size < 32:
             self.share.text_font.configure(size=size + 1)
@@ -1384,7 +1405,10 @@ class PassFonts:
 
     #pylint: disable=unused-argument
     def shrink_font(self, event=None):
-        """Make the font size smaller"""
+        """ Make the font size smaller.
+
+        :type event: direct call from binding
+        """
         size = self.share.text_font['size']
         if size > 6:
             self.share.text_font.configure(size=size - 1)
