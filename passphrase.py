@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.14'
+__version__ = '0.9.15'
 
 import glob
 import random
@@ -1109,6 +1109,7 @@ class PassFyi:
         scratchwin = tk.Toplevel()
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
+        scratchwin.focus_set()
         # TODO: MacOS, F1 (shrinkfont()) in any Toplevel inserts a "?" Unicode
         #  F704 character in the text at the cursor; F2 does not.
         scratchwin.bind('<F1>', lambda q: self.share.growfont())
@@ -1202,6 +1203,7 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
         explainwin.minsize(595, 200)
+        explainwin.focus_set()
         explainwin.bind('<F1>', lambda q: self.share.growfont())
         explainwin.bind('<F2>', lambda q: self.share.shrinkfont())
 
@@ -1257,6 +1259,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
         aboutwin.minsize(400, 200)
+        aboutwin.focus_set()
         aboutwin.bind('<F1>', lambda q: self.share.growfont())
         aboutwin.bind('<F2>', lambda q: self.share.shrinkfont())
 
@@ -1302,6 +1305,7 @@ space entered between characters will also do a reset.
         exclwin = tk.Toplevel()
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 100)
+        exclwin.focus_set()
         exclwin.bind('<F1>', lambda q: self.share.growfont())
         exclwin.bind('<F2>', lambda q: self.share.shrinkfont())
 
