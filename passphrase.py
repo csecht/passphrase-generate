@@ -868,11 +868,14 @@ class PassViewer(tk.Frame):
         fontsize = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='View', menu=view)
         view.add_cascade(label='Font size', menu=fontsize)
-        fontsize.add_command(label='Bigger font', command=self.share.growfont,
-                             accelerator='Ctrl+Shift+Up-arrow')
-        fontsize.add_command(label='Smaller font', command=self.share.shrinkfont,
-                             accelerator='Ctrl+Shift+Down-arrow')
-        if MY_OS == 'dar':
+        if MY_OS in 'lin, win':
+            fontsize.add_command(label='Bigger font',
+                                 command=self.share.growfont,
+                                 accelerator='Ctrl+Shift+Up-arrow')
+            fontsize.add_command(label='Smaller font',
+                                 command=self.share.shrinkfont,
+                                 accelerator='Ctrl+Shift+Down-arrow')
+        elif MY_OS == 'dar':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
                                  accelerator='Ctrl+Shift+Up')
