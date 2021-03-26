@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.13'
+__version__ = '0.9.14'
 
 import glob
 import random
@@ -403,10 +403,10 @@ class PassModeler:
         self.share.tkdata['pp_plus_len'].set(len(phraseplus))
         self.share.tkdata['phrase_short'].set(phraseshort)
         self.share.tkdata['pp_short_len'].set(len(phraseshort))
-        self.share.tkdata['pw_any'].set(passcode1)
-        self.share.tkdata['pw_any_len'].set(len(passcode1))
-        self.share.tkdata['pw_some'].set(passcode2)
-        self.share.tkdata['pw_some_len'].set(len(passcode2))
+        self.share.tkdata['pc_any'].set(passcode1)
+        self.share.tkdata['pc_any_len'].set(len(passcode1))
+        self.share.tkdata['pc_some'].set(passcode2)
+        self.share.tkdata['pc_some_len'].set(len(passcode2))
 
         # Finally, set H values for each pass-string and configure results.
         self.set_entropy(numwords, numchars)
@@ -441,9 +441,9 @@ class PassModeler:
             self.share.tkdata['pp_raw_h'].get() + h_add3)
         h_some = int(numwords * log(len(self.listdata['short_list'])) / log(2))
         self.share.tkdata['pp_short_h'].set(h_some + h_add3)
-        self.share.tkdata['pw_any_h'].set(
+        self.share.tkdata['pc_any_h'].set(
             int(numchars * log(len(self.strdata['all_char'])) / log(2)))
-        self.share.tkdata['pw_some_h'].set(
+        self.share.tkdata['pc_some_h'].set(
             int(numchars * log(len(self.strdata['some_char'])) / log(2)))
 
     def config_results(self) -> None:
@@ -456,8 +456,8 @@ class PassModeler:
         self.share.pp_raw_show.config(  fg=self.share.pass_fg)
         self.share.pp_plus_show.config( fg=self.share.pass_fg)
         self.share.pp_short_show.config(fg=self.share.pass_fg)
-        self.share.pw_any_show.config(  fg=self.share.pass_fg)
-        self.share.pw_some_show.config( fg=self.share.pass_fg)
+        self.share.pc_any_show.config(  fg=self.share.pass_fg)
+        self.share.pc_some_show.config( fg=self.share.pass_fg)
 
         # Need to indicate when passphrases exceeds length of result field,
         #   then reset to default when pass-string length is shortened.
@@ -488,11 +488,11 @@ class PassModeler:
         # Need to also indicate long passcodes.
         passcode_len = int(self.share.numchars_entry.get())
         if passcode_len > W:
-            self.share.pw_any_show.config(fg=self.share.long_fg)
-            self.share.pw_some_show.config(fg=self.share.long_fg)
+            self.share.pc_any_show.config(fg=self.share.long_fg)
+            self.share.pc_some_show.config(fg=self.share.long_fg)
         elif passcode_len <= W:
-            self.share.pw_any_show.config(fg=self.share.pass_fg)
-            self.share.pw_some_show.config(fg=self.share.pass_fg)
+            self.share.pc_any_show.config(fg=self.share.pass_fg)
+            self.share.pc_some_show.config(fg=self.share.pass_fg)
 
         # Allow user to resize window for long strings.
         # Full-time resizing only for Windows. Resizing non-Windows at start-up
@@ -513,6 +513,12 @@ class PassModeler:
         Restore original word and character lists with default values.
         Call get_words() to restore full word lists.
         """
+        self.share.tkdata['pc_any'].set('')
+        self.share.tkdata['pc_any_len'].set(0)
+        self.share.tkdata['pc_any_h'].set(0)
+        self.share.tkdata['pc_some'].set('')
+        self.share.tkdata['pc_some_len'].set(0)
+        self.share.tkdata['pc_some_h'].set(0)
         self.share.exclude_entry.delete(0, 'end')
         self.share.tkdata['excluded'].set('')
 
@@ -575,12 +581,12 @@ class PassViewer(tk.Frame):
             'phrase_raw'  : tk.StringVar(),
             'phrase_plus' : tk.StringVar(),
             'phrase_short': tk.StringVar(),
-            'pw_any_len'  : tk.IntVar(),
-            'pw_some_len' : tk.IntVar(),
-            'pw_any_h'    : tk.IntVar(),
-            'pw_some_h'   : tk.IntVar(),
-            'pw_any'      : tk.StringVar(),
-            'pw_some'     : tk.StringVar(),
+            'pc_any_len'  : tk.IntVar(),
+            'pc_some_len' : tk.IntVar(),
+            'pc_any_h'    : tk.IntVar(),
+            'pc_some_h'   : tk.IntVar(),
+            'pc_any'      : tk.StringVar(),
+            'pc_some'     : tk.StringVar(),
             'excluded'    : tk.StringVar(),
         }
 
@@ -676,7 +682,7 @@ class PassViewer(tk.Frame):
         self.generate_btn = ttk.Button()
 
         # Passcode section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pw_section_head = tk.Label(text='Passcodes', font=('default', 12),
+        self.pc_section_head = tk.Label(text='Passcodes', font=('default', 12),
                                         fg=self.pass_bg, bg=self.master_bg)
 
         self.numchars_label = tk.Label(text='# characters', fg=self.pass_bg,
@@ -688,36 +694,36 @@ class PassViewer(tk.Frame):
                                          fg=self.master_fg, bg=self.master_bg)
         # MacOS needs a larger font and altered spacing
         if MY_OS == 'dar':
-            self.pw_section_head.config(font=('default', 16))
+            self.pc_section_head.config(font=('default', 16))
             self.l_and_h_header2.config(text='H       L')
 
-        self.pw_any_head = tk.Label(   text="Any characters", fg=self.master_fg,
+        self.pc_any_head = tk.Label(   text="Any characters", fg=self.master_fg,
                                        bg=self.master_bg)
-        self.pw_some_head = tk.Label(  text="More likely usable characters",
+        self.pc_some_head = tk.Label(  text="More likely usable characters",
                                        fg=self.master_fg, bg=self.master_bg)
 
-        self.share.tkdata['pw_any_len'].set(0)
-        self.share.tkdata['pw_some_len'].set(0)
-        self.pw_any_len_lbl =  tk.Label(self.result_frame2, width=3,
+        self.share.tkdata['pc_any_len'].set(0)
+        self.share.tkdata['pc_some_len'].set(0)
+        self.pc_any_len_lbl =  tk.Label(self.result_frame2, width=3,
                                         textvariable=self.share.tkdata[
-                                            'pw_any_len'])
-        self.pw_some_len_lbl = tk.Label(self.result_frame2, width=3,
-                                        textvariable=self.share.tkdata['pw_some_len'])
-        self.share.tkdata['pw_any_h'].set(0)
-        self.share.tkdata['pw_some_h'].set(0)
-        self.pw_any_h_lbl =    tk.Label(self.result_frame2, width=3,
-                                        textvariable=self.share.tkdata['pw_any_h'])
-        self.pw_some_h_lbl =   tk.Label(self.result_frame2, width=3,
-                                        textvariable=self.share.tkdata['pw_some_h'])
+                                            'pc_any_len'])
+        self.pc_some_len_lbl = tk.Label(self.result_frame2, width=3,
+                                        textvariable=self.share.tkdata['pc_some_len'])
+        self.share.tkdata['pc_any_h'].set(0)
+        self.share.tkdata['pc_some_h'].set(0)
+        self.pc_any_h_lbl =    tk.Label(self.result_frame2, width=3,
+                                        textvariable=self.share.tkdata['pc_any_h'])
+        self.pc_some_h_lbl =   tk.Label(self.result_frame2, width=3,
+                                        textvariable=self.share.tkdata['pc_some_h'])
 
-        self.share.tkdata['pw_any'].set(self.share.stubresult)
-        self.share.tkdata['pw_some'].set(self.share.stubresult)
-        self.share.pw_any_show = tk.Entry(self.result_frame2,
-                                          textvariable=self.share.tkdata['pw_any'],
+        self.share.tkdata['pc_any'].set(self.share.stubresult)
+        self.share.tkdata['pc_some'].set(self.share.stubresult)
+        self.share.pc_any_show = tk.Entry(self.result_frame2,
+                                          textvariable=self.share.tkdata['pc_any'],
                                           width=W, font=self.share.result_font,
                                           fg=self.stubpass_fg, bg=self.pass_bg)
-        self.share.pw_some_show = tk.Entry(self.result_frame2,
-                                           textvariable=self.share.tkdata['pw_some'],
+        self.share.pc_some_show = tk.Entry(self.result_frame2,
+                                           textvariable=self.share.tkdata['pc_some'],
                                            width=W, font=self.share.result_font,
                                            fg=self.stubpass_fg, bg=self.pass_bg)
         # End passcode section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -790,14 +796,14 @@ class PassViewer(tk.Frame):
             self.share.pp_raw_show.bind('<Button-3>', RightClickCmds)
             self.share.pp_plus_show.bind('<Button-3>', RightClickCmds)
             self.share.pp_short_show.bind('<Button-3>', RightClickCmds)
-            self.share.pw_any_show.bind('<Button-3>', RightClickCmds)
-            self.share.pw_some_show.bind('<Button-3>', RightClickCmds)
+            self.share.pc_any_show.bind('<Button-3>', RightClickCmds)
+            self.share.pc_some_show.bind('<Button-3>', RightClickCmds)
         elif MY_OS == 'dar':
             self.share.pp_raw_show.bind('<Button-2>', RightClickCmds)
             self.share.pp_plus_show.bind('<Button-2>', RightClickCmds)
             self.share.pp_short_show.bind('<Button-2>', RightClickCmds)
-            self.share.pw_any_show.bind('<Button-2>', RightClickCmds)
-            self.share.pw_some_show.bind('<Button-2>', RightClickCmds)
+            self.share.pc_any_show.bind('<Button-2>', RightClickCmds)
+            self.share.pc_some_show.bind('<Button-2>', RightClickCmds)
 
         # Create menu instance and add pull-down menus
         menubar = tk.Menu(self.master)
@@ -953,7 +959,7 @@ class PassViewer(tk.Frame):
             self.generate_btn.grid(padx=(0, 0))
 
         # Passcode widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pw_section_head.grid( column=0, row=5, pady=(12, 6), padx=(10, 5),
+        self.pc_section_head.grid( column=0, row=5, pady=(12, 6), padx=(10, 5),
                                    sticky=tk.W)
 
         self.numchars_label.grid( column=0, row=6, pady=0, padx=(10, 5),
@@ -966,18 +972,18 @@ class PassViewer(tk.Frame):
 
         self.result_frame2.grid(    column=1, row=7, padx=(5, 10),
                                     columnspan=3, rowspan=2, sticky=tk.NSEW)
-        self.pw_any_head.grid(      column=0, row=7, pady=(6, 0), padx=(10, 0),
+        self.pc_any_head.grid(      column=0, row=7, pady=(6, 0), padx=(10, 0),
                                     sticky=tk.E)
-        self.pw_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
-        self.pw_any_len_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
-        self.share.pw_any_show.grid(column=3, row=7, pady=(6, 3), padx=5,
+        self.pc_any_h_lbl.grid(     column=1, row=7, pady=(6, 3), padx=(5, 0))
+        self.pc_any_len_lbl.grid(   column=2, row=7, pady=(6, 3), padx=(5, 0))
+        self.share.pc_any_show.grid(column=3, row=7, pady=(6, 3), padx=5,
                                     columnspan=2, sticky=tk.EW)
 
-        self.pw_some_head.grid(      column=0, row=8, pady=(0, 6), padx=(10, 0),
+        self.pc_some_head.grid(      column=0, row=8, pady=(0, 6), padx=(10, 0),
                                      sticky=tk.E)
-        self.pw_some_h_lbl.grid(     column=1, row=8, pady=3, padx=(5, 0))
-        self.pw_some_len_lbl.grid(   column=2, row=8, pady=3, padx=(5, 0))
-        self.share.pw_some_show.grid(column=3, row=8, pady=6, padx=5,
+        self.pc_some_h_lbl.grid(     column=1, row=8, pady=3, padx=(5, 0))
+        self.pc_some_len_lbl.grid(   column=2, row=8, pady=3, padx=(5, 0))
+        self.share.pc_some_show.grid(column=3, row=8, pady=6, padx=5,
                                      columnspan=2, sticky=tk.EW)
 
         # Excluded character widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
