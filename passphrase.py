@@ -1261,11 +1261,11 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         os_width = 62
         if MY_OS in 'lin, win':
             explainwin.bind('<Button-3>', RightClickCmds)
-            explainwin.bind('<Control-w>', lambda: close_toplevel(explainwin))
+            explainwin.bind('<Control-w>', lambda q: close_toplevel(explainwin))
         if MY_OS == 'dar':
             os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
-            explainwin.bind('<Command-w>', lambda: close_toplevel(explainwin))
+            explainwin.bind('<Command-w>', lambda q: close_toplevel(explainwin))
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
@@ -1318,11 +1318,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
         if MY_OS in 'lin, win':
             os_width = 68
             aboutwin.bind('<Button-3>', RightClickCmds)
-            aboutwin.bind('<Control-w>', lambda: close_toplevel(aboutwin))
+            aboutwin.bind('<Control-w>', lambda q: close_toplevel(aboutwin))
         elif MY_OS == 'dar':
             os_width = 60
             aboutwin.bind('<Button-2>', RightClickCmds)
-            aboutwin.bind('<Command-w>', lambda: close_toplevel(aboutwin))
+            aboutwin.bind('<Command-w>', lambda q: close_toplevel(aboutwin))
 
         abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
                            bg=random_bkg(), fg='grey95',
@@ -1364,11 +1364,11 @@ space entered between characters will also do a reset.
         if MY_OS in 'lin, win':
             os_width = 48
             exclwin.bind('<Button-3>', RightClickCmds)
-            exclwin.bind('<Control-w>', lambda: close_toplevel(exclwin))
+            exclwin.bind('<Control-w>', lambda q: close_toplevel(exclwin))
         elif MY_OS == 'dar':
             os_width = 42
             exclwin.bind('<Button-2>', RightClickCmds)
-            exclwin.bind('<Command-w>', lambda: close_toplevel(exclwin))
+            exclwin.bind('<Command-w>', lambda q: close_toplevel(exclwin))
 
         num_lines = msg.count('\n')
         excltext = tk.Text(exclwin, width=os_width, height=num_lines + 1,
