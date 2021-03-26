@@ -111,6 +111,9 @@ class RightClickCmds:
         right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
 
         right_click_menu.add_command(
+            label='Select all',
+            command=lambda: self.right_click_edit(event, 'SelectAll'))
+        right_click_menu.add_command(
             label='Copy',
             command=lambda: self.right_click_edit(event, 'Copy'))
         right_click_menu.add_command(
@@ -119,9 +122,7 @@ class RightClickCmds:
         right_click_menu.add_command(
             label='Cut',
             command=lambda: self.right_click_edit(event, 'Cut'))
-        right_click_menu.add_command(
-            label='Select all',
-            command=lambda: self.right_click_edit(event, 'SelectAll'))
+
         # Need to suppress 'Close window' option for master (app) window,
         #   which does not have .!toplevel instances.
         #   Show only for Toplevel windows and their children.
