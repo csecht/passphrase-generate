@@ -76,8 +76,12 @@ def quit_gui() -> None:
     sys.exit(0)
 
 
-def close_window(topwindow):
-    """Close named toplevel window that has focus."""
+def close_window(topwindow) -> None:
+    """Close named toplevel window that has focus.
+    Called from command/control W keybinding.
+
+    :param topwindow: the tk.Toplevel() widget name.
+    """
     topwindow.destroy()
 
 
@@ -85,7 +89,7 @@ def random_bkg() -> str:
     """Selects a random color; intended for Toplevel window backgrounds
     with a white or light grey foreground.
 
-    :return: A color name, as used in the tkinter color chart:
+    :returns: A color name, as used in the tkinter color chart:
     http://www.science.smith.edu/dftwiki/index.php/Color_Charts_for_TKinter
     :rtype: str
     """
