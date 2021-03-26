@@ -76,7 +76,7 @@ def quit_gui() -> None:
     sys.exit(0)
 
 
-def close_window(topwindow) -> None:
+def close_toplevel(topwindow) -> None:
     """Close named toplevel window that has focus.
     Called from command/control W keybinding.
 
@@ -1143,10 +1143,10 @@ class PassFyi:
 
         if MY_OS in 'lin, win':
             scratchwin.bind('<Button-3>', RightClickCmds)
-            scratchwin.bind('<Control-w>', lambda q: close_window(scratchwin))
+            scratchwin.bind('<Control-w>', lambda q: close_toplevel(scratchwin))
         elif MY_OS == 'dar':
             scratchwin.bind('<Button-2>', RightClickCmds)
-            scratchwin.bind('<Command-w>', lambda q: close_window(scratchwin))
+            scratchwin.bind('<Command-w>', lambda q: close_toplevel(scratchwin))
 
         # Need to specify Control-a for Linux b/c in tkinter windows that key
         #   is bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -1236,11 +1236,11 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         os_width = 62
         if MY_OS in 'lin, win':
             explainwin.bind('<Button-3>', RightClickCmds)
-            explainwin.bind('<Control-w>', lambda q: close_window(explainwin))
+            explainwin.bind('<Control-w>', lambda q: close_toplevel(explainwin))
         if MY_OS == 'dar':
             os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
-            explainwin.bind('<Command-w>', lambda q: close_window(explainwin))
+            explainwin.bind('<Command-w>', lambda q: close_toplevel(explainwin))
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
@@ -1293,11 +1293,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
         if MY_OS in 'lin, win':
             os_width = 68
             aboutwin.bind('<Button-3>', RightClickCmds)
-            aboutwin.bind('<Control-w>', lambda q: close_window(aboutwin))
+            aboutwin.bind('<Control-w>', lambda q: close_toplevel(aboutwin))
         elif MY_OS == 'dar':
             os_width = 60
             aboutwin.bind('<Button-2>', RightClickCmds)
-            aboutwin.bind('<Command-w>', lambda q: close_window(aboutwin))
+            aboutwin.bind('<Command-w>', lambda q: close_toplevel(aboutwin))
 
         abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
                            bg=random_bkg(), fg='grey95',
@@ -1339,11 +1339,11 @@ space entered between characters will also do a reset.
         if MY_OS in 'lin, win':
             os_width = 48
             exclwin.bind('<Button-3>', RightClickCmds)
-            exclwin.bind('<Control-w>', lambda q: close_window(exclwin))
+            exclwin.bind('<Control-w>', lambda q: close_toplevel(exclwin))
         elif MY_OS == 'dar':
             os_width = 42
             exclwin.bind('<Button-2>', RightClickCmds)
-            exclwin.bind('<Command-w>', lambda q: close_window(exclwin))
+            exclwin.bind('<Command-w>', lambda q: close_toplevel(exclwin))
 
         num_lines = msg.count('\n')
         excltext = tk.Text(exclwin, width=os_width, height=num_lines + 1,
