@@ -1101,7 +1101,8 @@ class PassFyi:
         scratchwin = tk.Toplevel()
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
-        # TODO: MacOS, F1 in any Toplevel inserts a "?"/unknown character, F2 does not.
+        # TODO: MacOS, F1 (shrinkfont()) in any Toplevel inserts a "?" Unicode
+        #  F704 character in the text at the cursor; F2 does not.
         scratchwin.bind('<F1>', lambda q: self.share.growfont())
         scratchwin.bind('<F2>', lambda q: self.share.shrinkfont())
 
@@ -1135,7 +1136,7 @@ class PassFyi:
 
         :param selection: User selected wordlist name.
         :param wordcount: Length of full selected wordlist list.
-        :return: An text window notice with current wordlist data.
+        :returns: An text window notice with current wordlist data.
         """
 
         explanation = (
@@ -1327,7 +1328,7 @@ class PassFonts:
         self.share = share
 
     def grow_font(self):
-        """Make the font 2 points bigger"""
+        """Make the font size larger"""
         size = self.share.text_font['size']
         if size < 32:
             self.share.text_font.configure(size=size + 1)
@@ -1336,7 +1337,7 @@ class PassFonts:
             self.share.result_font.configure(size=size2 + 1)
 
     def shrink_font(self):
-        """Make the font 2 points smaller"""
+        """Make the font size smaller"""
         size = self.share.text_font['size']
         if size > 6:
             self.share.text_font.configure(size=size - 1)
