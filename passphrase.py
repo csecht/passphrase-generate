@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.12'
+__version__ = '0.9.13'
 
 import glob
 import random
@@ -810,7 +810,7 @@ class PassViewer(tk.Frame):
             native_cmdkey = 'Command'
 
         file = tk.Menu(self.master, tearoff=0)
-        menubar.add_cascade(label='File', menu=file)
+        menubar.add_cascade(label='Passphrase', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
                          accelerator='Ctrl+G')
         file.add_command(label='Reset', command=self.share.reset,
@@ -821,11 +821,15 @@ class PassViewer(tk.Frame):
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
-                         #   so add Ctrl+Q to show something in the File menu.
+                         #   so add Ctrl+Q to show something in the Passphrase menu.
                          accelerator='Ctrl+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Edit', menu=edit)
+        edit.add_command(label='Select all',
+                         command=lambda: app.focus_get().event_generate(
+                             '<<SelectAll>>'),
+                         accelerator=f'{native_cmdkey}+A')
         edit.add_command(label='Copy',
                          command=lambda: app.focus_get().event_generate(
                              '<<Copy>>'), accelerator=f'{native_cmdkey}+C')
@@ -835,9 +839,6 @@ class PassViewer(tk.Frame):
         edit.add_command(label='Cut',
                          command=lambda: app.focus_get().event_generate(
                              '<<Cut>>'), accelerator=f'{native_cmdkey}+X')
-        edit.add_command(label='Select all',
-                         command=lambda: app.focus_get().event_generate(
-                             '<<SelectAll>>'), accelerator=f'{native_cmdkey}+A')
 
         view = tk.Menu(self.master, tearoff=0)
         fontsize = tk.Menu(self.master, tearoff=0)
@@ -859,7 +860,7 @@ class PassViewer(tk.Frame):
         tips.add_command(label='F1 & F2 keys change font size.')
         tips.add_command(label='Mouse right-click does stuff!')
         tips.add_command(label='Return/Enter key also Generates!')
-        tips.add_command(label='Menu File>Open.. opens a scratch pad.')
+        tips.add_command(label='Menu Passphrase>Open.. opens a scratch pad.')
         tips.add_command(label=f'Long results (L > {W}) turn blue.')
         tips.add_command(label='Esc key exits the program.')
 
@@ -1044,7 +1045,7 @@ class PassController(tk.Tk):
         PassModeler(share=self).reset_exclusions()
 
     def scratch(self):
-        """Is called from the Viewer File menu or key binding.
+        """Is called from the Viewer Passphrase menu or key binding.
         """
         PassFyi(share=self).scratchpad()
 
@@ -1086,7 +1087,7 @@ class PassFyi:
     def scratchpad(self) -> None:
         """
         A text window for user to temporarily save results.
-        Is called from File menu or keybinding.
+        Is called from Passphrase menu or keybinding.
         """
         # Separator dashes from https://coolsymbol.com/line-symbols.html.
         instruction = (
@@ -1154,10 +1155,10 @@ f'     From the current selected wordlist, {selection},\n'
 f'     there are {wordcount} words available to construct passphrases.\n'
 """
 Passphrases and passcodes (pass-strings) are made by clicking the
-Generate! button, or pressing Enter or Ctrl-G, or from the File pull-
-down menu on the menu bar. The result you want can be cut and pasted
-using standard keyboard commands, or right-clicking, or using Edit from
-the menu bar.\n
+Generate! button, or pressing Enter or Ctrl-G, or from the Passphrase
+pull-down menu on the menu bar. The result you want can be cut and 
+pasted using standard keyboard commands, or right-clicking, or using
+Edit from the menu bar.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passcodes. Words with excluded letters are
 not available to use. Multiple windows can remain open to compare
