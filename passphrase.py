@@ -549,10 +549,10 @@ class PassViewer(tk.Frame):
         # Colors and fonts:
         # self.master_fg =    'LightCyan2'  # Used for row headers.
         # self.master_bg =    'SkyBlue4'  # Also used for some labels.
-        self.master_fg =    'grey90'  # Used for row headers.
-        self.master_bg =    'LightSteelBlue4'  # Also used for some labels.
-        self.dataframe_bg = 'grey40'  # Also background for data labels.
-        self.stubpass_fg = 'grey60'  # For initial pass-string stub.
+        self.master_fg =     'grey90'  # Used for row headers.
+        self.master_bg =     'LightSteelBlue4'  # Also used for some labels.
+        self.dataframe_bg =  'grey40'  # Also background for data labels.
+        self.stubpass_fg =   'grey60'  # For initial pass-string stub.
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.share.long_fg = 'blue'  # Long pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
@@ -610,7 +610,7 @@ class PassViewer(tk.Frame):
         self.numwords_label = tk.Label(text='# words',
                                        fg=self.pass_bg, bg=self.master_bg)
         self.share.numwords_entry = tk.Entry(width=2)
-        # Use 5 words as default passphrase length.
+        # Use 4 words as default passphrase length.
         self.share.numwords_entry.insert(0, '4')
 
         self.l_and_h_header =  tk.Label(text=' H      L', width=10,
