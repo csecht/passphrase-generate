@@ -68,6 +68,7 @@ W = 52  # Default width of the results display fields.
 
 
 # Functions used by passphrase, but not part of MVC structure %%%%%%%%%%%%%%%%%
+# pylint: disable=unused-argument
 def quit_gui(event=None) -> None:
     """Safe and informative exit from the program.
     """
@@ -1065,6 +1066,7 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).get_words()
 
+    #pylint: disable=unused-argument
     def makepass(self, event=None) -> None:
         """
         Is called from the Viewer with "Generate" widgets and key
@@ -1095,17 +1097,20 @@ class PassController(tk.Tk):
         """
         PassFyi(share=self).exclude_msg()
 
+    #pylint: disable=unused-argument
     def reset(self, event=None) -> None:
         """
         Is called only in response to reset button in exclude section.
         """
         PassModeler(share=self).reset_exclusions()
 
+    #pylint: disable=unused-argument
     def growfont(self, event=None):
         """Is called from keybinding or View menu.
         """
         PassFonts(share=self).grow_font()
 
+    #pylint: disable=unused-argument
     def shrinkfont(self, event=None):
         """Is called from keybinding or View menu.
         """
@@ -1119,6 +1124,7 @@ class PassFyi:
     def __init__(self, share):
         self.share = share
 
+    #pylint: disable=unused-argument
     def scratchpad(self, event=None) -> None:
         """
         A text window for user to temporarily save results.
@@ -1366,6 +1372,7 @@ class PassFonts:
     def __init__(self, share):
         self.share = share
 
+    #pylint: disable=unused-argument
     def grow_font(self, event=None):
         """Make the font size larger"""
         size = self.share.text_font['size']
@@ -1375,6 +1382,7 @@ class PassFonts:
         if size < 32:
             self.share.result_font.configure(size=size2 + 1)
 
+    #pylint: disable=unused-argument
     def shrink_font(self, event=None):
         """Make the font size smaller"""
         size = self.share.text_font['size']
