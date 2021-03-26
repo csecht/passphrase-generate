@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.18'
+__version__ = '0.9.19'
 
 import glob
 import random
@@ -76,9 +76,9 @@ def quit_gui(event=None) -> None:
     sys.exit(0)
 
 
-def close_toplevel(topwindow, event=None) -> None:
+def close_toplevel(topwindow) -> None:
     """Close named toplevel window that has focus.
-    Called from command/control W keybinding.
+    Called from Command-W or Control-W keybinding.
 
     :param topwindow: the tk.Toplevel() widget name.
     """
@@ -504,20 +504,6 @@ class PassModeler:
             self.share.pc_any_show.config(fg=self.share.pass_fg)
             self.share.pc_some_show.config(fg=self.share.pass_fg)
 
-        # Allow user to resize window for long strings.
-        # Full-time resizing only for Windows. Resizing non-Windows at start-up
-        #   is possible, but not after Generate! when length is "normal".
-        # TODO: Figure out why .resizable() causes noticeable window redraw in Windows.
-        # Comment out to allow default full-tim window resize on all OS.
-        # if MY_OS != 'win':
-        #     app.resizable(0, 0)
-        #     if passphrase_len > _w or passcode_len > W:
-        #         app.resizable(width=True, height=False)
-        #     # Need to reset window to default size and state for shorter strings.
-        #     if passphrase_len <= _w and passcode_len <= W:
-        #         app.update_idletasks()
-        #         app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
-
     def reset_exclusions(self, event=None) -> None:
         """
         Restore original word and character lists with default values.
@@ -777,7 +763,7 @@ class PassViewer(tk.Frame):
         #    shift when PassModeler.config_results() is called b/c different
         #    from app position.
         self.master.geometry('+120+100')
-        # Need to get original/default window size to restore after size change.
+        # Need original/default window size to restore geometry after size change.
         self.master.update_idletasks()
         self.share.app_winwide = self.master.winfo_width()
         self.share.app_winhigh = self.master.winfo_height()
@@ -883,9 +869,16 @@ class PassViewer(tk.Frame):
         menubar.add_cascade(label='View', menu=view)
         view.add_cascade(label='Font size', menu=fontsize)
         fontsize.add_command(label='Bigger font', command=self.share.growfont,
-                             accelerator='Shift-Control-Up')
+                             accelerator='Ctrl+Shift+Up-arrow')
         fontsize.add_command(label='Smaller font', command=self.share.shrinkfont,
-                             accelerator='Shift-Control-Down')
+                             accelerator='Ctrl+Shift+Down-arrow')
+        if MY_OS == 'dar':
+            fontsize.add_command(label='Bigger font',
+                                 command=self.share.growfont,
+                                 accelerator='Ctrl+Shift+Up')
+            fontsize.add_command(label='Smaller font',
+                                 command=self.share.shrinkfont,
+                                 accelerator='Ctrl+Shift+Down')
 
         help_menu = tk.Menu(self.master, tearoff=0)
         tips = tk.Menu(self.master, tearoff=0)
@@ -1227,8 +1220,8 @@ equivalent to bits of entropy. For more information see:
       https://en.wikipedia.org/wiki/Password_strength
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
-Font size can be changed with the Shift-Control-Up and Shift-Control-Up
-     arrow keys or from the menu bar.
+Font size can be changed with Shift+Ctrl+Up-arrow, Shift+Ctrl+Down-arrow
+     keys or from the menu bar.
 Mouse right-click opens edit options in results and pop-up windows.
 """
 f'Pass-string color is BLUE when it is longer than {W} characters;\n'
@@ -1244,11 +1237,11 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         os_width = 62
         if MY_OS in 'lin, win':
             explainwin.bind('<Button-3>', RightClickCmds)
-            explainwin.bind('<Control-w>', lambda q: close_toplevel(explainwin))
+            explainwin.bind('<Control-w>', lambda: close_toplevel(explainwin))
         if MY_OS == 'dar':
             os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
-            explainwin.bind('<Command-w>', lambda q: close_toplevel(explainwin))
+            explainwin.bind('<Command-w>', lambda: close_toplevel(explainwin))
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
@@ -1301,11 +1294,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
         if MY_OS in 'lin, win':
             os_width = 68
             aboutwin.bind('<Button-3>', RightClickCmds)
-            aboutwin.bind('<Control-w>', lambda q: close_toplevel(aboutwin))
+            aboutwin.bind('<Control-w>', lambda: close_toplevel(aboutwin))
         elif MY_OS == 'dar':
             os_width = 60
             aboutwin.bind('<Button-2>', RightClickCmds)
-            aboutwin.bind('<Command-w>', lambda q: close_toplevel(aboutwin))
+            aboutwin.bind('<Command-w>', lambda: close_toplevel(aboutwin))
 
         abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
                            bg=random_bkg(), fg='grey95',
@@ -1347,11 +1340,11 @@ space entered between characters will also do a reset.
         if MY_OS in 'lin, win':
             os_width = 48
             exclwin.bind('<Button-3>', RightClickCmds)
-            exclwin.bind('<Control-w>', lambda q: close_toplevel(exclwin))
+            exclwin.bind('<Control-w>', lambda: close_toplevel(exclwin))
         elif MY_OS == 'dar':
             os_width = 42
             exclwin.bind('<Button-2>', RightClickCmds)
-            exclwin.bind('<Command-w>', lambda q: close_toplevel(exclwin))
+            exclwin.bind('<Command-w>', lambda: close_toplevel(exclwin))
 
         num_lines = msg.count('\n')
         excltext = tk.Text(exclwin, width=os_width, height=num_lines + 1,
