@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.11'
+__version__ = '0.9.12'
 
 import glob
 import random
@@ -74,6 +74,10 @@ def quit_gui() -> None:
     print('\n  *** User has quit the program. Exiting...\n')
     app.destroy()
     sys.exit(0)
+
+
+def close_window(topwindow):
+    topwindow.destroy()
 
 
 def random_bkg() -> str:
@@ -1100,10 +1104,13 @@ class PassFyi:
         # TODO: MacOS, F1 in any Toplevel inserts a "?"/unknown character, F2 does not.
         scratchwin.bind('<F1>', lambda q: self.share.growfont())
         scratchwin.bind('<F2>', lambda q: self.share.shrinkfont())
+
         if MY_OS in 'lin, win':
             scratchwin.bind('<Button-3>', RightClickCmds)
+            scratchwin.bind('<Control-w>', lambda q: close_window(scratchwin))
         elif MY_OS == 'dar':
             scratchwin.bind('<Button-2>', RightClickCmds)
+            scratchwin.bind('<Command-w>', lambda q: close_window(scratchwin))
 
         # Need to specify Control-a for Linux b/c in tkinter windows that key
         #   is bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -1192,9 +1199,11 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         os_width = 62
         if MY_OS in 'lin, win':
             explainwin.bind('<Button-3>', RightClickCmds)
+            explainwin.bind('<Control-w>', lambda q: close_window(explainwin))
         if MY_OS == 'dar':
             os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
+            explainwin.bind('<Command-w>', lambda q: close_window(explainwin))
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
@@ -1205,7 +1214,6 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         # If need to prevent all key actions:
         # explaintext.bind("<Key>", lambda e: "break")
-
 
     def about(self) -> None:
         """Basic information about the script; called from GUI Help menu.
@@ -1247,9 +1255,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
         if MY_OS in 'lin, win':
             os_width = 68
             aboutwin.bind('<Button-3>', RightClickCmds)
+            aboutwin.bind('<Control-w>', lambda q: close_window(aboutwin))
         elif MY_OS == 'dar':
             os_width = 60
             aboutwin.bind('<Button-2>', RightClickCmds)
+            aboutwin.bind('<Command-w>', lambda q: close_window(aboutwin))
 
         abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
                            bg=random_bkg(), fg='grey95',
@@ -1290,9 +1300,11 @@ space entered between characters will also do a reset.
         if MY_OS in 'lin, win':
             os_width = 48
             exclwin.bind('<Button-3>', RightClickCmds)
+            exclwin.bind('<Control-w>', lambda q: close_window(exclwin))
         elif MY_OS == 'dar':
             os_width = 42
             exclwin.bind('<Button-2>', RightClickCmds)
+            exclwin.bind('<Command-w>', lambda q: close_window(exclwin))
 
         num_lines = msg.count('\n')
         excltext = tk.Text(exclwin, width=os_width, height=num_lines + 1,
