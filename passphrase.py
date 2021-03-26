@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.17'
+__version__ = '0.9.18'
 
 import glob
 import random
@@ -68,7 +68,7 @@ W = 52  # Default width of the results display fields.
 
 
 # Functions used by passphrase, but not part of MVC structure %%%%%%%%%%%%%%%%%
-def quit_gui() -> None:
+def quit_gui(event=None) -> None:
     """Safe and informative exit from the program.
     """
     print('\n  *** User has quit the program. Exiting...\n')
@@ -76,7 +76,7 @@ def quit_gui() -> None:
     sys.exit(0)
 
 
-def close_toplevel(topwindow) -> None:
+def close_toplevel(topwindow, event=None) -> None:
     """Close named toplevel window that has focus.
     Called from command/control W keybinding.
 
@@ -109,7 +109,7 @@ class RightClickCmds:
     """
     Right-click pop-up option to edit text or close window;
     call as a Button-2 or Button-3 binding in Text or window
-    that needs the function.
+    that needs the commands.
     """
     # Based on: https://stackoverflow.com/questions/57701023/
     def __init__(self, event):
@@ -127,6 +127,11 @@ class RightClickCmds:
         right_click_menu.add_command(
             label='Cut',
             command=lambda: self.right_click_edit(event, 'Cut'))
+        right_click_menu.add(tk.SEPARATOR)
+        right_click_menu.add_command(label='Bigger font',
+                                     command=app.growfont)
+        right_click_menu.add_command(label='Smaller font',
+                                     command=app.shrinkfont)
 
         # Need to suppress 'Close window' option for master (app) window,
         #   which does not have .!toplevel instances.
@@ -323,7 +328,7 @@ class PassModeler:
         #   length.
         self.share.tkdata['available'].set(len(longlist))
 
-    def make_pass(self) -> None:
+    def make_pass(self, event=None) -> None:
         """
         Generate and set random pass-strings.
         Called through Controller from keybinding, menu, or button.
@@ -513,7 +518,7 @@ class PassModeler:
         #         app.update_idletasks()
         #         app.geometry(f'{self.share.app_winwide}x{self.share.app_winhigh}')
 
-    def reset_exclusions(self) -> None:
+    def reset_exclusions(self, event=None) -> None:
         """
         Restore original word and character lists with default values.
         Call get_words() to restore full word lists.
@@ -795,14 +800,19 @@ class PassViewer(tk.Frame):
         self.result_frame2.rowconfigure(7, weight=1)
         self.result_frame2.rowconfigure(8, weight=1)
 
-        self.master.bind('<Escape>', lambda q: quit_gui())
-        self.master.bind('<Control-q>', lambda q: quit_gui())
-        self.master.bind('<Control-g>', lambda q: self.share.makepass())
-        self.master.bind('<Return>', lambda q: self.share.makepass())
-        self.master.bind('<Control-o>', lambda q: self.share.scratch())
-        self.master.bind('<Control-r>', lambda q: self.share.reset())
-        self.master.bind('<F1>', lambda q: self.share.growfont())
-        self.master.bind('<F2>', lambda q: self.share.shrinkfont())
+        self.master.bind('<Escape>', quit_gui)
+        self.master.bind('<Control-q>', quit_gui)
+        self.master.bind('<Control-g>', self.share.makepass)
+        self.master.bind('<Return>', self.share.makepass)
+        self.master.bind('<Control-o>', self.share.scratch)
+        self.master.bind('<Control-r>', self.share.reset)
+        self.master.bind('<Shift-Control-Up>', self.share.growfont)
+        self.master.bind('<Shift-Control-Down>', self.share.shrinkfont)
+        if MY_OS == 'dar':
+            self.master.bind('<Command-q>', quit_gui)
+            self.master.bind('<Command-g>', self.share.makepass)
+            self.master.bind('<Command-o>', self.share.scratch)
+            self.master.bind('<Command-r>', self.share.reset)
 
         # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -831,51 +841,51 @@ class PassViewer(tk.Frame):
         self.master.config(menu=menubar)
 
         # Need to show the system's native key binding the as menu accelerator.
-        native_cmdkey = ''
+        native_accelkey = ''
         if MY_OS in 'lin, win':
-            native_cmdkey = 'Ctrl'
+            native_accelkey = 'Ctrl'
         elif MY_OS == 'dar':
-            native_cmdkey = 'Command'
+            native_accelkey = 'Command'
 
         file = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Passphrase', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
-                         accelerator='Ctrl+G')
+                         accelerator=f'{native_accelkey}+G')
         file.add_command(label='Reset', command=self.share.reset,
-                         accelerator='Ctrl+R')
+                         accelerator=f'{native_accelkey}+R')
         file.add_command(label='Open a scratch pad', command=self.share.scratch,
-                         accelerator='Ctrl+O')
+                         accelerator=f'{native_accelkey}+O')
         file.add(tk.SEPARATOR)
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
                          #   so add Ctrl+Q to show something in the Passphrase menu.
-                         accelerator='Ctrl+Q')
+                         accelerator=f'{native_accelkey}+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Edit', menu=edit)
         edit.add_command(label='Select all',
                          command=lambda: app.focus_get().event_generate(
                              '<<SelectAll>>'),
-                         accelerator=f'{native_cmdkey}+A')
+                         accelerator=f'{native_accelkey}+A')
         edit.add_command(label='Copy',
                          command=lambda: app.focus_get().event_generate(
-                             '<<Copy>>'), accelerator=f'{native_cmdkey}+C')
+                             '<<Copy>>'), accelerator=f'{native_accelkey}+C')
         edit.add_command(label='Paste',
                          command=lambda: app.focus_get().event_generate(
-                             '<<Paste>>'), accelerator=f'{native_cmdkey}+V')
+                             '<<Paste>>'), accelerator=f'{native_accelkey}+V')
         edit.add_command(label='Cut',
                          command=lambda: app.focus_get().event_generate(
-                             '<<Cut>>'), accelerator=f'{native_cmdkey}+X')
+                             '<<Cut>>'), accelerator=f'{native_accelkey}+X')
 
         view = tk.Menu(self.master, tearoff=0)
         fontsize = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='View', menu=view)
         view.add_cascade(label='Font size', menu=fontsize)
         fontsize.add_command(label='Bigger font', command=self.share.growfont,
-                             accelerator='F1')
+                             accelerator='Shift-Control-Up')
         fontsize.add_command(label='Smaller font', command=self.share.shrinkfont,
-                             accelerator='F2')
+                             accelerator='Shift-Control-Down')
 
         help_menu = tk.Menu(self.master, tearoff=0)
         tips = tk.Menu(self.master, tearoff=0)
@@ -885,7 +895,6 @@ class PassViewer(tk.Frame):
                               command=self.share.explain)
         help_menu.add_command(label='About',
                               command=self.share.about)
-        tips.add_command(label='F1 & F2 keys change font size.')
         tips.add_command(label='Mouse right-click does stuff!')
         tips.add_command(label='Return/Enter key also Generates!')
         tips.add_command(label='Menu Passphrase>Open.. opens a scratch pad.')
@@ -1063,7 +1072,7 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).get_words()
 
-    def makepass(self) -> None:
+    def makepass(self, event=None) -> None:
         """
         Is called from the Viewer with "Generate" widgets and key
         bindings. make_pass() creates random pass-strings, which then
@@ -1071,13 +1080,7 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).make_pass()
 
-    def reset(self) -> None:
-        """
-        Is called only in response to reset button in exclude section.
-        """
-        PassModeler(share=self).reset_exclusions()
-
-    def scratch(self):
+    def scratch(self, event=None):
         """Is called from the Viewer Passphrase menu or key binding.
         """
         PassFyi(share=self).scratchpad()
@@ -1099,12 +1102,18 @@ class PassController(tk.Tk):
         """
         PassFyi(share=self).exclude_msg()
 
-    def growfont(self):
+    def reset(self, event=None) -> None:
+        """
+        Is called only in response to reset button in exclude section.
+        """
+        PassModeler(share=self).reset_exclusions()
+
+    def growfont(self, event=None):
         """Is called from keybinding or View menu.
         """
         PassFonts(share=self).grow_font()
 
-    def shrinkfont(self):
+    def shrinkfont(self, event=None):
         """Is called from keybinding or View menu.
         """
         PassFonts(share=self).shrink_font()
@@ -1117,7 +1126,7 @@ class PassFyi:
     def __init__(self, share):
         self.share = share
 
-    def scratchpad(self) -> None:
+    def scratchpad(self, event=None) -> None:
         """
         A text window for user to temporarily save results.
         Is called from Passphrase menu or keybinding.
@@ -1136,10 +1145,8 @@ class PassFyi:
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
         scratchwin.focus_set()
-        # TODO: MacOS, F1 (shrinkfont()) in any Toplevel inserts a "?" Unicode
-        #  F704 character in the text at the cursor; F2 does not.
-        scratchwin.bind('<F1>', lambda q: self.share.growfont())
-        scratchwin.bind('<F2>', lambda q: self.share.shrinkfont())
+        scratchwin.bind('<Shift-Control-Up>', self.share.growfont)
+        scratchwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
 
         if MY_OS in 'lin, win':
             scratchwin.bind('<Button-3>', RightClickCmds)
@@ -1220,7 +1227,8 @@ equivalent to bits of entropy. For more information see:
       https://en.wikipedia.org/wiki/Password_strength
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
-Font size can be changed with the F1 and F2 keys or from the menu bar.
+Font size can be changed with the Shift-Control-Up and Shift-Control-Up
+     arrow keys or from the menu bar.
 Mouse right-click opens edit options in results and pop-up windows.
 """
 f'Pass-string color is BLUE when it is longer than {W} characters;\n'
@@ -1230,8 +1238,8 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         explainwin.title('A word about words and characters')
         explainwin.minsize(595, 200)
         explainwin.focus_set()
-        explainwin.bind('<F1>', lambda q: self.share.growfont())
-        explainwin.bind('<F2>', lambda q: self.share.shrinkfont())
+        explainwin.bind('<Shift-Control-Up>', self.share.growfont)
+        explainwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
 
         os_width = 62
         if MY_OS in 'lin, win':
@@ -1286,8 +1294,8 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin.title('About Passphrase')
         aboutwin.minsize(400, 200)
         aboutwin.focus_set()
-        aboutwin.bind('<F1>', lambda q: self.share.growfont())
-        aboutwin.bind('<F2>', lambda q: self.share.shrinkfont())
+        aboutwin.bind('<Shift-Control-Up>', self.share.growfont)
+        aboutwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
 
         os_width = 0
         if MY_OS in 'lin, win':
@@ -1332,8 +1340,8 @@ space entered between characters will also do a reset.
         exclwin.title('Exclude from what?')
         exclwin.minsize(300, 100)
         exclwin.focus_set()
-        exclwin.bind('<F1>', lambda q: self.share.growfont())
-        exclwin.bind('<F2>', lambda q: self.share.shrinkfont())
+        exclwin.bind('<Shift-Control-Up>', self.share.growfont)
+        exclwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
 
         os_width = 0
         if MY_OS in 'lin, win':
@@ -1365,7 +1373,7 @@ class PassFonts:
     def __init__(self, share):
         self.share = share
 
-    def grow_font(self):
+    def grow_font(self, event=None):
         """Make the font size larger"""
         size = self.share.text_font['size']
         if size < 32:
@@ -1374,7 +1382,7 @@ class PassFonts:
         if size < 32:
             self.share.result_font.configure(size=size2 + 1)
 
-    def shrink_font(self):
+    def shrink_font(self, event=None):
         """Make the font size smaller"""
         size = self.share.text_font['size']
         if size > 6:
