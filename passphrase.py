@@ -144,8 +144,7 @@ class RightClickCmds:
             right_click_menu.add(tk.SEPARATOR)
             right_click_menu.add_command(
                 label='Close window',
-                # pylint: disable=unnecessary-lambda
-                command=lambda: self.close_window())
+                command=lambda: close_toplevel(app.focus_get()))
 
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
@@ -157,39 +156,6 @@ class RightClickCmds:
         https://www.tcl.tk/man/tcl8.6/TkCmd/event.htm#M7
         """
         event.widget.event_generate(f'<<{command}>>')
-
-    @staticmethod
-    def close_window():
-        """Close the Toplevel window where mouse has right-clicked.
-        """
-        # Based on https://stackoverflow.com/questions/66384144/
-        # Need to cover all cases when the focus is on the toplevel window,
-        #  or on a child of that window, i.e. .!text or .!frame.
-        # There are many children in app and any toplevel window will be
-        #   listed at or toward the end, so read children list in reverse
-        #   Stop loop when the focus toplevel parent is found to prevent all
-        #   toplevel windows from closing.
-        for widget in reversed(app.winfo_children()):
-            # pylint: disable=no-else-break
-            if widget == app.focus_get():
-                widget.destroy()
-                break
-            elif '.!text' in str(app.focus_get()):
-                parent = str(app.focus_get())[:-6]
-                if parent in str(widget):
-                    widget.destroy()
-                    break
-            elif '.!frame' in str(app.focus_get()):
-                parent = str(app.focus_get())[:-7]
-                if parent in str(widget):
-                    widget.destroy()
-                    break
-
-        # This closes ALL open Toplevel windows. Use as command?
-        # for widget in app.winfo_children():
-        #     if isinstance(widget, tk.Toplevel):
-        #         widget.destroy()
-
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1124,6 +1090,8 @@ class PassController(tk.Tk):
     #pylint: disable=unused-argument
     def growfont(self, event=None):
         """Is called from keybinding or View menu.
+
+        :type event: direct call from binding
         """
         PassFonts(share=self).grow_font()
 
@@ -1223,7 +1191,7 @@ Edit from the menu bar.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passcodes. Words with excluded letters are
 not available to use. Multiple windows can remain open to compare
-counts among different wordlists and exclusions.  (continued.........)\n
+counts among different wordlists and exclusions.  (more........)\n
 Optional wordfiles were derived from texts obtained from these sites:
       https://www.gutenberg.org
       https://www.archives.gov/founding-docs/constitution-transcript
