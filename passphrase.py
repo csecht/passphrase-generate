@@ -82,7 +82,7 @@ def quit_gui(event=None) -> None:
 
 def close_toplevel(topwindow) -> None:
     """Close named toplevel window that has focus.
-    Called from Command-W or Control-W keybinding.
+    Called from Command-W or Control-W keybinding or right-click menu.
 
     :param topwindow: the tk.Toplevel() widget name.
     """
@@ -779,7 +779,7 @@ class PassViewer(tk.Frame):
         if MY_OS in 'lin':
             def select_all():
                 app.focus_get().event_generate('<<SelectAll>>')
-            self.master.bind('<Control-a>', lambda q: select_all())
+            self.master.bind('<Control-a>', lambda _: select_all())
 
         # Need to specify OS-specific right-click mouse button only in results
         #   fields of master window.
@@ -1054,6 +1054,7 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).make_pass()
 
+    #pylint: disable=unused-argument
     def scratch(self, event=None):
         """Is called from the Viewer Passphrase menu or key binding.
 
@@ -1138,17 +1139,17 @@ class PassFyi:
 
         if MY_OS in 'lin, win':
             scratchwin.bind('<Button-3>', RightClickCmds)
-            scratchwin.bind('<Control-w>', lambda q: close_toplevel(scratchwin))
+            scratchwin.bind('<Control-w>', lambda _: close_toplevel(scratchwin))
         elif MY_OS == 'dar':
             scratchwin.bind('<Button-2>', RightClickCmds)
-            scratchwin.bind('<Command-w>', lambda q: close_toplevel(scratchwin))
+            scratchwin.bind('<Command-w>', lambda _: close_toplevel(scratchwin))
 
         # Need to specify Control-a for Linux b/c in tkinter windows that key
         #   is bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
             def select_all():
                 app.focus_get().event_generate('<<SelectAll>>')
-            scratchwin.bind('<Control-a>', lambda q: select_all())
+            scratchwin.bind('<Control-a>', lambda _: select_all())
 
         scratchtxt = tk.Text(scratchwin, width=75,
                              background='grey85', foreground='grey5',
@@ -1232,11 +1233,11 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         os_width = 62
         if MY_OS in 'lin, win':
             explainwin.bind('<Button-3>', RightClickCmds)
-            explainwin.bind('<Control-w>', lambda q: close_toplevel(explainwin))
+            explainwin.bind('<Control-w>', lambda _: close_toplevel(explainwin))
         if MY_OS == 'dar':
             os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
-            explainwin.bind('<Command-w>', lambda q: close_toplevel(explainwin))
+            explainwin.bind('<Command-w>', lambda _: close_toplevel(explainwin))
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
@@ -1289,11 +1290,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
         if MY_OS in 'lin, win':
             os_width = 68
             aboutwin.bind('<Button-3>', RightClickCmds)
-            aboutwin.bind('<Control-w>', lambda q: close_toplevel(aboutwin))
+            aboutwin.bind('<Control-w>', lambda _: close_toplevel(aboutwin))
         elif MY_OS == 'dar':
             os_width = 60
             aboutwin.bind('<Button-2>', RightClickCmds)
-            aboutwin.bind('<Command-w>', lambda q: close_toplevel(aboutwin))
+            aboutwin.bind('<Command-w>', lambda _: close_toplevel(aboutwin))
 
         abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
                            bg=random_bkg(), fg='grey95',
@@ -1324,33 +1325,33 @@ The Reset button (or Ctrl+R) removes all exclusions. A
 space entered between characters will also do a reset.
 """
 )
-        exclwin = tk.Toplevel()
-        exclwin.title('Exclude from what?')
-        exclwin.minsize(300, 100)
-        exclwin.focus_set()
-        exclwin.bind('<Shift-Control-Up>', self.share.growfont)
-        exclwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
+        excludewin = tk.Toplevel()
+        excludewin.title('Exclude from what?')
+        excludewin.minsize(300, 100)
+        excludewin.focus_set()
+        excludewin.bind('<Shift-Control-Up>', self.share.growfont)
+        excludewin.bind('<Shift-Control-Down>', self.share.shrinkfont)
 
         os_width = 0
         if MY_OS in 'lin, win':
             os_width = 48
-            exclwin.bind('<Button-3>', RightClickCmds)
-            exclwin.bind('<Control-w>', lambda q: close_toplevel(exclwin))
+            excludewin.bind('<Button-3>', RightClickCmds)
+            excludewin.bind('<Control-w>', lambda _: close_toplevel(excludewin))
         elif MY_OS == 'dar':
             os_width = 42
-            exclwin.bind('<Button-2>', RightClickCmds)
-            exclwin.bind('<Command-w>', lambda q: close_toplevel(exclwin))
+            excludewin.bind('<Button-2>', RightClickCmds)
+            excludewin.bind('<Command-w>', lambda _: close_toplevel(excludewin))
 
         num_lines = msg.count('\n')
-        excltext = tk.Text(exclwin, width=os_width, height=num_lines + 1,
-                           bg='grey40', fg='grey95',
-                           relief='groove', borderwidth=8,
-                           padx=20, pady=10, wrap=tk.WORD,
-                           font=self.share.text_font)
-        excltext.insert(1.0, msg)
-        excltext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        excludetext = tk.Text(excludewin, width=os_width, height=num_lines + 1,
+                              bg='grey40', fg='grey95',
+                              relief='groove', borderwidth=8,
+                              padx=20, pady=10, wrap=tk.WORD,
+                              font=self.share.text_font)
+        excludetext.insert(1.0, msg)
+        excludetext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         # If need to prevent all key actions:
-        # excltext.bind("<Key>", lambda e: "break")
+        # excludetext.bind("<Key>", lambda e: "break")
 
 
 class PassFonts:
