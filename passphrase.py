@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.15'
+__version__ = '0.9.16'
 
 import glob
 import random
@@ -77,6 +77,7 @@ def quit_gui() -> None:
 
 
 def close_window(topwindow):
+    """Close named toplevel window that has focus."""
     topwindow.destroy()
 
 
@@ -738,6 +739,7 @@ class PassViewer(tk.Frame):
                                        fg=self.master_fg, bg=self.master_bg)
         self.excluded_show =  tk.Label(textvariable=self.share.tkdata['excluded'],
                                        fg='orange', bg=self.master_bg)
+        self.quit_button = ttk.Button()
         # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         self.config_master()
@@ -891,6 +893,9 @@ class PassViewer(tk.Frame):
         self.exclude_info_b.configure(style="G.TButton", text="?",
                                       width=0,
                                       command=self.share.excludemsg)
+        self.quit_button.configure(   style="G.TButton", text='Quit',
+                                      width=0,
+                                      command=quit_gui)
 
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
@@ -997,9 +1002,11 @@ class PassViewer(tk.Frame):
 
         self.excluded_head.grid(column=0, row=10, pady=(0, 8), padx=(5, 0),
                                 sticky=tk.E)
-        self.reset_button.grid( column=0, row=10, pady=(0, 18), padx=(20, 0),
+        self.reset_button.grid( column=0, row=10, pady=(0, 15), padx=(20, 0),
                                 sticky=tk.W)
         self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
+        self.quit_button.grid(  column=3, row=10, pady=(0, 15), padx=(0, 15),
+                                sticky=tk.E)
 
         # Need to adjust padding for MacOS b/c of different spacing.
         if MY_OS == 'dar':
@@ -1164,7 +1171,7 @@ f'     there are {wordcount} words available to construct passphrases.\n'
 """
 Passphrases and passcodes (pass-strings) are made by clicking the
 Generate! button, or pressing Enter or Ctrl-G, or from the Passphrase
-pull-down menu on the menu bar. The result you want can be cut and 
+pull-down menu on the menu bar. The result you want can be cut and
 pasted using standard keyboard commands, or right-clicking, or using
 Edit from the menu bar.\n
 There is an option to exclude any character or string of characters
