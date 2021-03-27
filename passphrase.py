@@ -80,8 +80,13 @@ def quit_gui(event=None) -> None:
     sys.exit(0)
 
 
-def toplevel_binding(topwindow):
-    """Keybindings for the named toplevel window."""
+def toplevel_bindings(topwindow: tk.Toplevel) -> None:
+    """
+    Keybindings and button bindings for the named Toplevel window.
+
+    :param topwindow: Name of the Toplevel window
+    :type topwindow: tk.Toplevel
+    """
     topwindow.bind('<Shift-Control-Up>', app.growfont)
     topwindow.bind('<Shift-Control-Down>', app.shrinkfont)
 
@@ -94,7 +99,7 @@ def toplevel_binding(topwindow):
 
 
 def close_toplevel(event=None) -> None:
-    """Close named toplevel window that has focus.
+    """Close the toplevel window that has focus.
     Called from Command-W or Control-W keybinding or right-click menu.
     """
     # Based on https://stackoverflow.com/questions/66384144/
@@ -1164,7 +1169,7 @@ class PassFyi:
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
         scratchwin.focus_set()
-        toplevel_binding(scratchwin)
+        toplevel_bindings(scratchwin)
 
         scratchtxt = tk.Text(scratchwin, width=75,
                              background='grey85', foreground='grey5',
@@ -1242,7 +1247,7 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         explainwin.title('A word about words and characters')
         explainwin.minsize(595, 200)
         explainwin.focus_set()
-        toplevel_binding(explainwin)
+        toplevel_bindings(explainwin)
 
         os_width = 0
         if MY_OS in 'lin, win':
@@ -1294,7 +1299,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin.title('About Passphrase')
         aboutwin.minsize(400, 200)
         aboutwin.focus_set()
-        toplevel_binding(aboutwin)
+        toplevel_bindings(aboutwin)
 
 
         os_width = 0
@@ -1336,7 +1341,7 @@ space entered between characters will also do a reset.
         excludewin.title('Exclude from what?')
         excludewin.minsize(300, 100)
         excludewin.focus_set()
-        toplevel_binding(excludewin)
+        toplevel_bindings(excludewin)
 
         os_width = 0
         if MY_OS in 'lin, win':
