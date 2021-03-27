@@ -73,7 +73,7 @@ def quit_gui(event=None) -> None:
     """Safe and informative exit from the program.
 
     :param event: Needed for keybindings.
-    :type event: direct call from binding.
+    :type event: Direct call from keybindings.
     """
     print('\n  *** User has quit the program. Exiting...\n')
     app.destroy()
@@ -87,6 +87,7 @@ def toplevel_bindings(topwindow: tk.Toplevel) -> None:
     :param topwindow: Name of the Toplevel window
     :type topwindow: tk.Toplevel
     """
+    # These bindings are direct calls to Controller methods, but outside of MVC.
     topwindow.bind('<Shift-Control-Up>', app.growfont)
     topwindow.bind('<Shift-Control-Down>', app.shrinkfont)
 
@@ -284,7 +285,6 @@ class PassModeler:
         # Need to have default .get() in combobox be the 1st available wordlist.
         self.share.choose_wordlist.current(0)
 
-    # pylint: disable=unused-argument
     def get_words(self) -> None:
         """
         Populate lists with words to randomize in make_pass(); needs to
@@ -1054,10 +1054,10 @@ class PassController(tk.Tk):
 
     #pylint: disable=unused-argument
     def getwords(self, *args):
-        """Is called from the Viewer __init__.
+        """
         Populate lists with words to randomize in make_pass().
 
-        :param args: Needed for keybindings
+        :param args: Needed for call from Combobox virtual event binding.
         """
         PassModeler(share=self).get_words()
 
@@ -1068,7 +1068,7 @@ class PassController(tk.Tk):
         bindings. make_pass() creates random pass-strings, which then
         calls set_entropy() and config_results().
 
-        :param args: Needed for keybindings
+        :param args: Needed for call from keybinding.
         """
         PassModeler(share=self).make_pass()
 
