@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.19'
+__version__ = '0.9.20'
 
 import glob
 import random
@@ -80,13 +80,32 @@ def quit_gui(event=None) -> None:
     sys.exit(0)
 
 
-def close_toplevel(topwindow) -> None:
+def close_toplevel() -> None:
     """Close named toplevel window that has focus.
     Called from Command-W or Control-W keybinding or right-click menu.
-
-    :param topwindow: the tk.Toplevel() widget name.
     """
-    topwindow.destroy()
+    # Based on https://stackoverflow.com/questions/66384144/
+    # Need to cover all cases when the focus is on the toplevel window,
+    #  or on a child of that window, i.e. .!text or .!frame.
+    # There are many children in app and any toplevel window will be
+    #   listed at or toward the end, so read children list in reverse
+    #   Stop loop when the focus toplevel parent is found to prevent all
+    #   toplevel windows from closing.
+    for widget in reversed(app.winfo_children()):
+        # pylint: disable=no-else-break
+        if widget == app.focus_get():
+            widget.destroy()
+            break
+        elif '.!text' in str(app.focus_get()):
+            parent = str(app.focus_get())[:-6]
+            if parent in str(widget):
+                widget.destroy()
+                break
+        elif '.!frame' in str(app.focus_get()):
+            parent = str(app.focus_get())[:-7]
+            if parent in str(widget):
+                widget.destroy()
+                break
 
 
 def random_bkg() -> str:
@@ -142,11 +161,10 @@ class RightClickCmds:
         #   Show only for Toplevel windows and their children.
         if '.!toplevel' in str(app.focus_get()):
             right_click_menu.add(tk.SEPARATOR)
-            right_click_menu.add_command(
-                label='Close window',
-                command=lambda: close_toplevel(app.focus_get()))
+            right_click_menu.add_command(label='Close window',
+                                         command=close_toplevel)
 
-        right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
+            right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
     def right_click_edit(event, command):
@@ -157,7 +175,34 @@ class RightClickCmds:
         """
         event.widget.event_generate(f'<<{command}>>')
 
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    @staticmethod
+    def close_window():
+        """Close the Toplevel window where mouse has right-clicked.
+        """
+        # Based on https://stackoverflow.com/questions/66384144/
+        # Need to cover all cases when the focus is on the toplevel window,
+        #  or on a child of that window, i.e. .!text or .!frame.
+        # There are many children in app and any toplevel window will be
+        #   listed at or toward the end, so read children list in reverse
+        #   Stop loop when the focus toplevel parent is found to prevent all
+        #   toplevel windows from closing.
+        for widget in reversed(app.winfo_children()):
+            # pylint: disable=no-else-break
+            if widget == app.focus_get():
+                widget.destroy()
+                break
+            elif '.!text' in str(app.focus_get()):
+                parent = str(app.focus_get())[:-6]
+                if parent in str(widget):
+                    widget.destroy()
+                    break
+            elif '.!frame' in str(app.focus_get()):
+                parent = str(app.focus_get())[:-7]
+                if parent in str(widget):
+                    widget.destroy()
+                    break
+
+# END of non-MVC functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 # MVC Classes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -779,7 +824,7 @@ class PassViewer(tk.Frame):
         if MY_OS in 'lin':
             def select_all():
                 app.focus_get().event_generate('<<SelectAll>>')
-            self.master.bind('<Control-a>', lambda _: select_all())
+            self.master.bind_all('<Control-a>', lambda _: select_all())
 
         # Need to specify OS-specific right-click mouse button only in results
         #   fields of master window.
@@ -1139,17 +1184,10 @@ class PassFyi:
 
         if MY_OS in 'lin, win':
             scratchwin.bind('<Button-3>', RightClickCmds)
-            scratchwin.bind('<Control-w>', lambda _: close_toplevel(scratchwin))
+            scratchwin.bind('<Control-w>', close_toplevel)
         elif MY_OS == 'dar':
             scratchwin.bind('<Button-2>', RightClickCmds)
-            scratchwin.bind('<Command-w>', lambda _: close_toplevel(scratchwin))
-
-        # Need to specify Control-a for Linux b/c in tkinter windows that key
-        #   is bound to <<LineStart>>, not <<SelectAll>>, for some reason?
-        if MY_OS in 'lin':
-            def select_all():
-                app.focus_get().event_generate('<<SelectAll>>')
-            scratchwin.bind('<Control-a>', lambda _: select_all())
+            scratchwin.bind('<Command-w>', close_toplevel)
 
         scratchtxt = tk.Text(scratchwin, width=75,
                              background='grey85', foreground='grey5',
@@ -1233,11 +1271,11 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         os_width = 62
         if MY_OS in 'lin, win':
             explainwin.bind('<Button-3>', RightClickCmds)
-            explainwin.bind('<Control-w>', lambda _: close_toplevel(explainwin))
+            explainwin.bind('<Control-w>', close_toplevel)
         if MY_OS == 'dar':
             os_width = 55
             explainwin.bind('<Button-2>', RightClickCmds)
-            explainwin.bind('<Command-w>', lambda _: close_toplevel(explainwin))
+            explainwin.bind('<Command-w>', close_toplevel)
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
@@ -1247,7 +1285,7 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         explaintext.insert(1.0, explanation)
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         # If need to prevent all key actions:
-        # explaintext.bind("<Key>", lambda e: "break")
+        # explaintext.bind("<Key>", lambda _: "break")
 
     def about(self) -> None:
         """Basic information about the script; called from GUI Help menu.
@@ -1290,11 +1328,11 @@ along with this program. If not, see https://www.gnu.org/licenses/
         if MY_OS in 'lin, win':
             os_width = 68
             aboutwin.bind('<Button-3>', RightClickCmds)
-            aboutwin.bind('<Control-w>', lambda _: close_toplevel(aboutwin))
+            aboutwin.bind('<Control-w>', close_toplevel)
         elif MY_OS == 'dar':
             os_width = 60
             aboutwin.bind('<Button-2>', RightClickCmds)
-            aboutwin.bind('<Command-w>', lambda _: close_toplevel(aboutwin))
+            aboutwin.bind('<Command-w>', close_toplevel)
 
         abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
                            bg=random_bkg(), fg='grey95',
@@ -1305,7 +1343,7 @@ along with this program. If not, see https://www.gnu.org/licenses/
         abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         # If need to prevent all key actions:
-        # abouttxt.bind("<Key>", lambda e: "break")
+        # abouttxt.bind("<Key>", lambda _: "break")
 
     def exclude_msg(self) -> None:
         """A pop-up describing how to use excluded characters.
@@ -1336,11 +1374,11 @@ space entered between characters will also do a reset.
         if MY_OS in 'lin, win':
             os_width = 48
             excludewin.bind('<Button-3>', RightClickCmds)
-            excludewin.bind('<Control-w>', lambda _: close_toplevel(excludewin))
+            excludewin.bind('<Control-w>', close_toplevel)
         elif MY_OS == 'dar':
             os_width = 42
             excludewin.bind('<Button-2>', RightClickCmds)
-            excludewin.bind('<Command-w>', lambda _: close_toplevel(excludewin))
+            excludewin.bind('<Command-w>', close_toplevel)
 
         num_lines = msg.count('\n')
         excludetext = tk.Text(excludewin, width=os_width, height=num_lines + 1,
@@ -1351,7 +1389,7 @@ space entered between characters will also do a reset.
         excludetext.insert(1.0, msg)
         excludetext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         # If need to prevent all key actions:
-        # excludetext.bind("<Key>", lambda e: "break")
+        # excludetext.bind("<Key>", lambda _: "break")
 
 
 class PassFonts:
