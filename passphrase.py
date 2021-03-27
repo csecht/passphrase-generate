@@ -1055,6 +1055,7 @@ class PassController(tk.Tk):
     #pylint: disable=unused-argument
     def getwords(self, *args):
         """
+        Is called from the Viewer __init__ and Combobox binding.
         Populate lists with words to randomize in make_pass().
 
         :param args: Needed for call from Combobox virtual event binding.
@@ -1063,9 +1064,8 @@ class PassController(tk.Tk):
 
     #pylint: disable=unused-argument
     def makepass(self, *args) -> None:
-        """
-        Is called from the Viewer with "Generate" widgets and key
-        bindings. make_pass() creates random pass-strings, which then
+        """Is called via "Generate" key, button, menu.
+        make_pass() creates random pass-strings, which then
         calls set_entropy() and config_results().
 
         :param args: Needed for call from keybinding.
@@ -1088,19 +1088,19 @@ class PassController(tk.Tk):
         PassFyi(share=self).explain(self.choose_wordlist.get(), self.longlist_len)
 
     def about(self):
-        """Is called only from Viewer Help menu.
+        """Is called from Viewer Help menu.
         """
         PassFyi(share=self).about()
 
     def excludemsg(self):
-        """Is called only from the Viewer "?" button in exclude section.
+        """Is called from the Viewer "?" button in exclude section.
         """
         PassFyi(share=self).exclude_msg()
 
     #pylint: disable=unused-argument
     def reset(self, *args) -> None:
         """
-        Is called only in response to reset button in exclude section.
+        Resets all results and exclusions. Called from key, button, menu.
 
         :param args: Needed for keybindings
         """
@@ -1167,7 +1167,7 @@ class PassFyi:
 
         :param selection: User selected wordlist name.
         :param wordcount: Length of full selected wordlist list.
-        :returns: An text window notice with current wordlist data.
+        :return: An text window notice with current wordlist data.
         """
 
         explanation = (
