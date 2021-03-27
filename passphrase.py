@@ -72,7 +72,7 @@ W = 52  # Default width of the results display fields.
 def quit_gui(event=None) -> None:
     """Safe and informative exit from the program.
 
-    :param event: optional
+    :param event: Needed for keybindings.
     :type event: direct call from binding.
     """
     print('\n  *** User has quit the program. Exiting...\n')
@@ -99,8 +99,11 @@ def toplevel_bindings(topwindow: tk.Toplevel) -> None:
 
 
 def close_toplevel(event=None) -> None:
-    """Close the toplevel window that has focus.
+    """
+    Close the toplevel window that has focus.
     Called from Command-W or Control-W keybinding or right-click menu.
+
+    :param event: Needed for keybindings.
     """
     # Based on https://stackoverflow.com/questions/66384144/
     # Need to cover all cases when the focus is on the toplevel window,
@@ -282,12 +285,10 @@ class PassModeler:
         self.share.choose_wordlist.current(0)
 
     # pylint: disable=unused-argument
-    def get_words(self, *args) -> None:
+    def get_words(self) -> None:
         """
         Populate lists with words to randomize in make_pass(); needs to
         run at start and each time a new wordlist is selected by user.
-
-        :param args: a virtual event call from choose_wordlist Combobox.
         """
 
         # Need to reset excluded characters and prior pass-strings when a new
