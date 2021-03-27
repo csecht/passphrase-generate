@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.20'
+__version__ = '0.9.21'
 
 import glob
 import random
@@ -783,6 +783,8 @@ class PassViewer(tk.Frame):
         self.master.bind('<Control-q>', quit_gui)
         self.master.bind('<Control-g>', self.share.makepass)
         self.master.bind('<Return>', self.share.makepass)
+        # Keypad Enter key, https://www.tcl.tk/man/tcl8.4/TkCmd/keysyms.htm
+        self.master.bind('<Key-0xff8d>', self.share.makepass)
         self.master.bind('<Control-o>', self.share.scratch)
         self.master.bind('<Control-r>', self.share.reset)
         self.master.bind('<Shift-Control-Up>', self.share.growfont)
