@@ -334,13 +334,11 @@ class PassModeler:
         #   length.
         self.share.tkdata['available'].set(len(longlist))
 
-    def make_pass(self, event=None) -> None:
+    def make_pass(self) -> None:
         """
         Generate and set random pass-strings.
         Called through Controller from keybinding, menu, or button.
         Calls set_entropy() and config_results().
-
-        :type event: direct call from binding
         """
 
         # Need to correct invalid user entries for number of words & characters.
@@ -512,12 +510,10 @@ class PassModeler:
             self.share.pc_any_show.config(fg=self.share.pass_fg)
             self.share.pc_some_show.config(fg=self.share.pass_fg)
 
-    def reset_exclusions(self, event=None) -> None:
+    def reset_exclusions(self):
         """
         Restore original word and character lists with default values.
         Call get_words() to restore full word lists.
-
-        :type event: direct call from binding
         """
         self.share.tkdata['pc_any'].set('')
         self.share.tkdata['pc_any_len'].set(0)
@@ -536,6 +532,8 @@ class PassModeler:
         self.strdata['some_char'] = ascii_letters + digits + SYMBOLS
 
         self.get_words()
+
+        return 'break'
 
 
 class PassViewer(tk.Frame):
@@ -1058,26 +1056,26 @@ class PassController(tk.Tk):
         """Is called from the Viewer __init__.
         Populate lists with words to randomize in make_pass().
 
-        :param args: a virtual event call from choose_wordlist Combobox.
+        :param args: Needed for keybindings
         """
         PassModeler(share=self).get_words()
 
     #pylint: disable=unused-argument
-    def makepass(self, event=None) -> None:
+    def makepass(self, *args) -> None:
         """
         Is called from the Viewer with "Generate" widgets and key
         bindings. make_pass() creates random pass-strings, which then
         calls set_entropy() and config_results().
 
-        :type event: direct call from binding
+        :param args: Needed for keybindings
         """
         PassModeler(share=self).make_pass()
 
     #pylint: disable=unused-argument
-    def scratch(self, event=None):
+    def scratch(self, *args):
         """Is called from the Viewer Passphrase menu or key binding.
 
-        :type event: direct call from binding
+        :param args: Needed for keybindings
         """
         PassFyi(share=self).scratchpad()
 
@@ -1099,27 +1097,21 @@ class PassController(tk.Tk):
         PassFyi(share=self).exclude_msg()
 
     #pylint: disable=unused-argument
-    def reset(self, event=None) -> None:
+    def reset(self, *args) -> None:
         """
         Is called only in response to reset button in exclude section.
 
-        :type event: direct call from binding
+        :param args: Needed for keybindings
         """
         PassModeler(share=self).reset_exclusions()
 
-    #pylint: disable=unused-argument
-    def growfont(self, event=None):
+    def growfont(self):
         """Is called from keybinding or View menu.
-
-        :type event: direct call from binding
         """
         PassFonts(share=self).grow_font()
 
-    #pylint: disable=unused-argument
-    def shrinkfont(self, event=None):
+    def shrinkfont(self):
         """Is called from keybinding or View menu.
-
-        :type event: direct call from binding
         """
         PassFonts(share=self).shrink_font()
 
@@ -1131,13 +1123,10 @@ class PassFyi:
     def __init__(self, share):
         self.share = share
 
-    #pylint: disable=unused-argument
-    def scratchpad(self, event=None) -> None:
+    def scratchpad(self) -> None:
         """
         A text window for user to temporarily save results.
         Is called from Passphrase menu or keybinding.
-
-        :type event: direct call from binding
         """
         # Separator dashes from https://coolsymbol.com/line-symbols.html.
         instruction = (
@@ -1285,7 +1274,6 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin.focus_set()
         toplevel_bindings(aboutwin)
 
-
         os_width = 0
         if MY_OS in 'lin, win':
             os_width = 68
@@ -1353,11 +1341,8 @@ class PassFonts:
     def __init__(self, share):
         self.share = share
 
-    #pylint: disable=unused-argument
-    def grow_font(self, event=None):
+    def grow_font(self):
         """ Make the font size larger.
-
-        :type event: direct call from binding
         """
         size = self.share.text_font['size']
         if size < 32:
@@ -1366,11 +1351,8 @@ class PassFonts:
         if size < 32:
             self.share.result_font.configure(size=size2 + 1)
 
-    #pylint: disable=unused-argument
-    def shrink_font(self, event=None):
+    def shrink_font(self):
         """ Make the font size smaller.
-
-        :type event: direct call from binding
         """
         size = self.share.text_font['size']
         if size > 6:
