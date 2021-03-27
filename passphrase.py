@@ -164,7 +164,7 @@ class RightClickCmds:
             right_click_menu.add_command(label='Close window',
                                          command=close_toplevel)
 
-            right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
+        right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
     @staticmethod
     def right_click_edit(event, command):
@@ -174,33 +174,6 @@ class RightClickCmds:
         https://www.tcl.tk/man/tcl8.6/TkCmd/event.htm#M7
         """
         event.widget.event_generate(f'<<{command}>>')
-
-    @staticmethod
-    def close_window():
-        """Close the Toplevel window where mouse has right-clicked.
-        """
-        # Based on https://stackoverflow.com/questions/66384144/
-        # Need to cover all cases when the focus is on the toplevel window,
-        #  or on a child of that window, i.e. .!text or .!frame.
-        # There are many children in app and any toplevel window will be
-        #   listed at or toward the end, so read children list in reverse
-        #   Stop loop when the focus toplevel parent is found to prevent all
-        #   toplevel windows from closing.
-        for widget in reversed(app.winfo_children()):
-            # pylint: disable=no-else-break
-            if widget == app.focus_get():
-                widget.destroy()
-                break
-            elif '.!text' in str(app.focus_get()):
-                parent = str(app.focus_get())[:-6]
-                if parent in str(widget):
-                    widget.destroy()
-                    break
-            elif '.!frame' in str(app.focus_get()):
-                parent = str(app.focus_get())[:-7]
-                if parent in str(widget):
-                    widget.destroy()
-                    break
 
 # END of non-MVC functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
