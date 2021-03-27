@@ -1106,13 +1106,19 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).reset_exclusions()
 
-    def growfont(self):
+    #pylint: disable=unused-argument
+    def growfont(self, *args):
         """Is called from keybinding or View menu.
+
+        :param args: Needed for keybindings
         """
         PassFonts(share=self).grow_font()
 
-    def shrinkfont(self):
+    #pylint: disable=unused-argument
+    def shrinkfont(self, *args):
         """Is called from keybinding or View menu.
+
+        :param args: Needed for keybindings
         """
         PassFonts(share=self).shrink_font()
 
