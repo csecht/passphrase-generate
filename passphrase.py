@@ -641,33 +641,26 @@ class PassViewer(tk.Frame):
         self.share.tkdata['pp_short_h'].set(0)
         self.pp_raw_h_lbl = tk.Label(self.result_frame1, width=3,
                                      fg=self.master_fg, bg=self.dataframe_bg,
-                                     textvariable=self.share.tkdata[
-                                         'pp_raw_h'])
+                                     textvariable=self.share.tkdata['pp_raw_h'])
         self.pp_plus_h_lbl = tk.Label(self.result_frame1, width=3,
                                       fg=self.master_fg, bg=self.dataframe_bg,
-                                      textvariable=self.share.tkdata[
-                                          'pp_plus_h'])
+                                      textvariable=self.share.tkdata['pp_plus_h'])
         self.pp_short_h_lbl = tk.Label(self.result_frame1, width=3,
-                                       fg=self.master_fg,
-                                       bg=self.dataframe_bg,
-                                       textvariable=self.share.tkdata[
-                                           'pp_short_h'])
+                                       fg=self.master_fg, bg=self.dataframe_bg,
+                                       textvariable=self.share.tkdata['pp_short_h'])
 
         self.share.tkdata['pp_raw_len'].set(0)
         self.share.tkdata['pp_plus_len'].set(0)
         self.share.tkdata['pp_short_len'].set(0)
-        self.pp_raw_len_lbl =   tk.Label(self.result_frame1, width=3,
-                                         fg=self.master_fg, bg=self.dataframe_bg,
-                                         textvariable=self.share.tkdata[
-                                             'pp_raw_len'])
-        self.pp_plus_len_lbl =  tk.Label(self.result_frame1, width=3,
-                                         fg=self.master_fg, bg=self.dataframe_bg,
-                                         textvariable=self.share.tkdata[
-                                             'pp_plus_len'])
+        self.pp_raw_len_lbl = tk.Label(self.result_frame1, width=3,
+                                       fg=self.master_fg, bg=self.dataframe_bg,
+                                       textvariable=self.share.tkdata['pp_raw_len'])
+        self.pp_plus_len_lbl = tk.Label(self.result_frame1, width=3,
+                                        fg=self.master_fg, bg=self.dataframe_bg,
+                                        textvariable=self.share.tkdata['pp_plus_len'])
         self.pp_short_len_lbl = tk.Label(self.result_frame1, width=3,
                                          fg=self.master_fg, bg=self.dataframe_bg,
-                                         textvariable=self.share.tkdata[
-                                             'pp_short_len'])
+                                         textvariable=self.share.tkdata['pp_short_len'])
 
         self.share.tkdata['phrase_raw'].set(self.share.stubresult)
         self.share.tkdata['phrase_plus'].set(self.share.stubresult)
@@ -675,19 +668,16 @@ class PassViewer(tk.Frame):
         # Results are displayed as Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
         self.share.pp_raw_show = tk.Entry(self.result_frame1, width=W,
-                                          textvariable=self.share.tkdata[
-                                              'phrase_raw'],
                                           fg=self.stubpass_fg, bg=self.pass_bg,
+                                          textvariable=self.share.tkdata['phrase_raw'],
                                           font=self.share.result_font)
         self.share.pp_plus_show = tk.Entry(self.result_frame1, width=W,
-                                           textvariable=self.share.tkdata[
-                                               'phrase_plus'],
                                            fg=self.stubpass_fg, bg=self.pass_bg,
+                                           textvariable=self.share.tkdata['phrase_plus'],
                                            font=self.share.result_font)
         self.share.pp_short_show = tk.Entry(self.result_frame1, width=W,
-                                            textvariable=self.share.tkdata[
-                                                'phrase_short'],
                                             fg=self.stubpass_fg, bg=self.pass_bg,
+                                            textvariable=self.share.tkdata['phrase_short'],
                                             font=self.share.result_font)
         # End passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -697,8 +687,8 @@ class PassViewer(tk.Frame):
         self.pc_section_head = tk.Label(text='Passcodes', font=('default', 12),
                                         fg=self.pass_bg, bg=self.master_bg)
 
-        self.numchars_label = tk.Label(text='# characters', fg=self.pass_bg,
-                                       bg=self.master_bg)
+        self.numchars_label = tk.Label(text='# characters',
+                                       fg=self.pass_bg, bg=self.master_bg)
         self.share.numchars_entry = tk.Entry(width=3)
         self.share.numchars_entry.insert(0, 0)
 
@@ -709,8 +699,8 @@ class PassViewer(tk.Frame):
             self.pc_section_head.config(font=('default', 16))
             self.l_and_h_header2.config(text='H       L')
 
-        self.pc_any_head = tk.Label(   text="Any characters", fg=self.master_fg,
-                                       bg=self.master_bg)
+        self.pc_any_head = tk.Label(   text="Any characters",
+                                       fg=self.master_fg, bg=self.master_bg)
         self.pc_some_head = tk.Label(  text="More likely usable characters",
                                        fg=self.master_fg, bg=self.master_bg)
 
@@ -718,33 +708,27 @@ class PassViewer(tk.Frame):
         self.share.tkdata['pc_some_len'].set(0)
         self.pc_any_len_lbl =  tk.Label(self.result_frame2, width=3,
                                         fg=self.master_fg, bg=self.dataframe_bg,
-                                        textvariable=self.share.tkdata[
-                                            'pc_any_len'])
+                                        textvariable=self.share.tkdata['pc_any_len'])
         self.pc_some_len_lbl = tk.Label(self.result_frame2, width=3,
                                         fg=self.master_fg, bg=self.dataframe_bg,
-                                        textvariable=self.share.tkdata[
-                                            'pc_some_len'])
+                                        textvariable=self.share.tkdata['pc_some_len'])
         self.share.tkdata['pc_any_h'].set(0)
         self.share.tkdata['pc_some_h'].set(0)
         self.pc_any_h_lbl =    tk.Label(self.result_frame2, width=3,
                                         fg=self.master_fg, bg=self.dataframe_bg,
-                                        textvariable=self.share.tkdata[
-                                            'pc_any_h'])
+                                        textvariable=self.share.tkdata['pc_any_h'])
         self.pc_some_h_lbl =   tk.Label(self.result_frame2, width=3,
                                         fg=self.master_fg, bg=self.dataframe_bg,
-                                        textvariable=self.share.tkdata[
-                                            'pc_some_h'])
+                                        textvariable=self.share.tkdata['pc_some_h'])
 
         self.share.tkdata['pc_any'].set(self.share.stubresult)
         self.share.tkdata['pc_some'].set(self.share.stubresult)
         self.share.pc_any_show = tk.Entry(self.result_frame2,
-                                          textvariable=self.share.tkdata[
-                                              'pc_any'],
+                                          textvariable=self.share.tkdata['pc_any'],
                                           width=W, font=self.share.result_font,
                                           fg=self.stubpass_fg, bg=self.pass_bg)
         self.share.pc_some_show = tk.Entry(self.result_frame2,
-                                           textvariable=self.share.tkdata[
-                                               'pc_some'],
+                                           textvariable=self.share.tkdata['pc_some'],
                                            width=W, font=self.share.result_font,
                                            fg=self.stubpass_fg, bg=self.pass_bg)
         # End passcode section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
