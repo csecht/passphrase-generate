@@ -80,7 +80,20 @@ def quit_gui(event=None) -> None:
     sys.exit(0)
 
 
-def close_toplevel() -> None:
+def toplevel_binding(topwindow):
+    """Keybindings for the named toplevel window."""
+    topwindow.bind('<Shift-Control-Up>', app.growfont)
+    topwindow.bind('<Shift-Control-Down>', app.shrinkfont)
+
+    if MY_OS in 'lin, win':
+        topwindow.bind('<Button-3>', RightClickCmds)
+        topwindow.bind('<Control-w>', close_toplevel)
+    elif MY_OS == 'dar':
+        topwindow.bind('<Button-2>', RightClickCmds)
+        topwindow.bind('<Command-w>', close_toplevel)
+
+
+def close_toplevel(event=None) -> None:
     """Close named toplevel window that has focus.
     Called from Command-W or Control-W keybinding or right-click menu.
     """
@@ -1057,7 +1070,6 @@ class PassController(tk.Tk):
         Populate lists with words to randomize in make_pass().
 
         :param args: a virtual event call from choose_wordlist Combobox.
-        :type event: direct call from binding
         """
         PassModeler(share=self).get_words()
 
@@ -1152,15 +1164,7 @@ class PassFyi:
         scratchwin.title('Scratch Pad')
         scratchwin.minsize(300, 250)
         scratchwin.focus_set()
-        scratchwin.bind('<Shift-Control-Up>', self.share.growfont)
-        scratchwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
-
-        if MY_OS in 'lin, win':
-            scratchwin.bind('<Button-3>', RightClickCmds)
-            scratchwin.bind('<Control-w>', close_toplevel)
-        elif MY_OS == 'dar':
-            scratchwin.bind('<Button-2>', RightClickCmds)
-            scratchwin.bind('<Command-w>', close_toplevel)
+        toplevel_binding(scratchwin)
 
         scratchtxt = tk.Text(scratchwin, width=75,
                              background='grey85', foreground='grey5',
@@ -1238,17 +1242,13 @@ f'Pass-string color is BLUE when it is longer than {W} characters;\n'
         explainwin.title('A word about words and characters')
         explainwin.minsize(595, 200)
         explainwin.focus_set()
-        explainwin.bind('<Shift-Control-Up>', self.share.growfont)
-        explainwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
+        toplevel_binding(explainwin)
 
-        os_width = 62
+        os_width = 0
         if MY_OS in 'lin, win':
-            explainwin.bind('<Button-3>', RightClickCmds)
-            explainwin.bind('<Control-w>', close_toplevel)
-        if MY_OS == 'dar':
+            os_width = 62
+        elif MY_OS == 'dar':
             os_width = 55
-            explainwin.bind('<Button-2>', RightClickCmds)
-            explainwin.bind('<Command-w>', close_toplevel)
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
@@ -1294,18 +1294,14 @@ along with this program. If not, see https://www.gnu.org/licenses/
         aboutwin.title('About Passphrase')
         aboutwin.minsize(400, 200)
         aboutwin.focus_set()
-        aboutwin.bind('<Shift-Control-Up>', self.share.growfont)
-        aboutwin.bind('<Shift-Control-Down>', self.share.shrinkfont)
+        toplevel_binding(aboutwin)
+
 
         os_width = 0
         if MY_OS in 'lin, win':
             os_width = 68
-            aboutwin.bind('<Button-3>', RightClickCmds)
-            aboutwin.bind('<Control-w>', close_toplevel)
         elif MY_OS == 'dar':
             os_width = 60
-            aboutwin.bind('<Button-2>', RightClickCmds)
-            aboutwin.bind('<Command-w>', close_toplevel)
 
         abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
                            bg=random_bkg(), fg='grey95',
@@ -1340,18 +1336,13 @@ space entered between characters will also do a reset.
         excludewin.title('Exclude from what?')
         excludewin.minsize(300, 100)
         excludewin.focus_set()
-        excludewin.bind('<Shift-Control-Up>', self.share.growfont)
-        excludewin.bind('<Shift-Control-Down>', self.share.shrinkfont)
+        toplevel_binding(excludewin)
 
         os_width = 0
         if MY_OS in 'lin, win':
             os_width = 48
-            excludewin.bind('<Button-3>', RightClickCmds)
-            excludewin.bind('<Control-w>', close_toplevel)
         elif MY_OS == 'dar':
             os_width = 42
-            excludewin.bind('<Button-2>', RightClickCmds)
-            excludewin.bind('<Command-w>', close_toplevel)
 
         num_lines = msg.count('\n')
         excludetext = tk.Text(excludewin, width=os_width, height=num_lines + 1,
