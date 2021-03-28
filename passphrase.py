@@ -850,11 +850,11 @@ class PassViewer(tk.Frame):
                          command=lambda: app.focus_get().event_generate('<<Copy>>'),
                          accelerator=f'{os_accelerator}+C')
         edit.add_command(label='Paste',
-                         command=lambda: app.focus_get().event_generate('<<Paste>>')
-                         , accelerator=f'{os_accelerator}+V')
+                         command=lambda: app.focus_get().event_generate('<<Paste>>'),
+                         accelerator=f'{os_accelerator}+V')
         edit.add_command(label='Cut',
-                         command=lambda: app.focus_get().event_generate('<<Cut>>')
-                         , accelerator=f'{os_accelerator}+X')
+                         command=lambda: app.focus_get().event_generate('<<Cut>>'),
+                         accelerator=f'{os_accelerator}+X')
 
         view = tk.Menu(self.master, tearoff=0)
         fontsize = tk.Menu(self.master, tearoff=0)
@@ -862,7 +862,7 @@ class PassViewer(tk.Frame):
         view.add_cascade(label='Font size', menu=fontsize)
         # MacOS substitutes in appropriate key symbols for accelerators;
         #   Linux and Windows just use the literal strings.
-        if MY_OS in 'lin, dar':
+        if MY_OS in 'lin, win':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
                                  accelerator='Ctrl+=(plus)')
