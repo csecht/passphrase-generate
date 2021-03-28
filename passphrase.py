@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.22'
+__version__ = '0.9.23'
 
 import glob
 import random
@@ -88,9 +88,7 @@ def toplevel_bindings(topwindow: tk.Toplevel) -> None:
     :type topwindow: tk.Toplevel
     """
     # These bindings are direct calls to Controller methods, but outside of MVC.
-    topwindow.bind('<Shift-Control-Up>', app.growfont)
-    topwindow.bind('<Shift-Control-Down>', app.shrinkfont)
-
+    # Don't replace with bind_all() b/c not suitable for master window.
     if MY_OS in 'lin, win':
         topwindow.bind('<Button-3>', RightClickCmds)
         topwindow.bind('<Control-w>', close_toplevel)
@@ -779,16 +777,21 @@ class PassViewer(tk.Frame):
         self.result_frame2.rowconfigure(7, weight=1)
         self.result_frame2.rowconfigure(8, weight=1)
 
+        # Set up universal and OS-specific keybindings and menus
         self.master.bind_all('<Escape>', quit_gui)
-        self.master.bind('<Control-q>', quit_gui)
-        self.master.bind('<Control-g>', self.share.makepass)
         self.master.bind('<Return>', self.share.makepass)
         self.master.bind('<KP_Enter>', self.share.makepass)
-        self.master.bind('<Control-o>', self.share.scratch)
-        self.master.bind('<Control-r>', self.share.reset)
-        self.master.bind('<Shift-Control-Up>', self.share.growfont)
-        self.master.bind('<Shift-Control-Down>', self.share.shrinkfont)
-        if MY_OS == 'dar':
+
+        if MY_OS in 'lin, win':
+            self.master.bind_all('<Control-equal>', self.share.growfont)
+            self.master.bind_all('<Control-minus>', self.share.shrinkfont)
+            self.master.bind('<Control-q>', quit_gui)
+            self.master.bind('<Control-g>', self.share.makepass)
+            self.master.bind('<Control-o>', self.share.scratch)
+            self.master.bind('<Control-r>', self.share.reset)
+        elif MY_OS == 'dar':
+            self.master.bind_all('<Command-equal>', self.share.growfont)
+            self.master.bind_all('<Command-minus>', self.share.shrinkfont)
             self.master.bind('<Command-q>', quit_gui)
             self.master.bind('<Command-g>', self.share.makepass)
             self.master.bind('<Command-o>', self.share.scratch)
@@ -801,8 +804,8 @@ class PassViewer(tk.Frame):
                 app.focus_get().event_generate('<<SelectAll>>')
             self.master.bind_all('<Control-a>', lambda _: select_all())
 
-        # Need to specify OS-specific right-click mouse button only in passstring
-        #   fields of master window.
+        # Need to specify OS-specific right-click mouse button only in
+        #    passstring fields of master window
         right_button = ''
         if MY_OS in 'lin, win':
             right_button = '<Button-3>'
@@ -818,62 +821,61 @@ class PassViewer(tk.Frame):
         menubar = tk.Menu(self.master)
         self.master.config(menu=menubar)
 
-        # Need to show the system's native key binding the as menu accelerator.
-        native_ctrlkey = ''
+        os_accelerator = ''
         if MY_OS in 'lin, win':
-            native_ctrlkey = 'Ctrl'
+            os_accelerator = 'Ctrl'
         elif MY_OS == 'dar':
-            native_ctrlkey = 'Command'
-
+            os_accelerator = 'Command'
         file = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Passphrase', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
-                         accelerator=f'{native_ctrlkey}+G')
+                         accelerator=f'{os_accelerator}+G')
         file.add_command(label='Reset', command=self.share.reset,
-                         accelerator=f'{native_ctrlkey}+R')
+                         accelerator=f'{os_accelerator}+R')
         file.add_command(label='Open a scratch pad', command=self.share.scratch,
-                         accelerator=f'{native_ctrlkey}+O')
+                         accelerator=f'{os_accelerator}+O')
         file.add(tk.SEPARATOR)
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
                          #   so add Ctrl+Q to show something in the Passphrase menu.
-                         accelerator=f'{native_ctrlkey}+Q')
+                         accelerator=f'{os_accelerator}+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Edit', menu=edit)
         edit.add_command(label='Select all',
-                         command=lambda: app.focus_get().event_generate(
-                             '<<SelectAll>>'),
-                         accelerator=f'{native_ctrlkey}+A')
+                         command=lambda: app.focus_get().event_generate('<<SelectAll>>'),
+                         accelerator=f'{os_accelerator}+A')
         edit.add_command(label='Copy',
-                         command=lambda: app.focus_get().event_generate(
-                             '<<Copy>>'), accelerator=f'{native_ctrlkey}+C')
+                         command=lambda: app.focus_get().event_generate('<<Copy>>'),
+                         accelerator=f'{os_accelerator}+C')
         edit.add_command(label='Paste',
-                         command=lambda: app.focus_get().event_generate(
-                             '<<Paste>>'), accelerator=f'{native_ctrlkey}+V')
+                         command=lambda: app.focus_get().event_generate('<<Paste>>')
+                         , accelerator=f'{os_accelerator}+V')
         edit.add_command(label='Cut',
-                         command=lambda: app.focus_get().event_generate(
-                             '<<Cut>>'), accelerator=f'{native_ctrlkey}+X')
+                         command=lambda: app.focus_get().event_generate('<<Cut>>')
+                         , accelerator=f'{os_accelerator}+X')
 
         view = tk.Menu(self.master, tearoff=0)
         fontsize = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='View', menu=view)
         view.add_cascade(label='Font size', menu=fontsize)
-        if MY_OS in 'lin, win':
+        # MacOS substitutes in appropriate key symbols for accelerators;
+        #   Linux and Windows just use the literal strings.
+        if MY_OS in 'lin, dar':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
-                                 accelerator='Ctrl+Shift+Up-arrow')
+                                 accelerator='Ctrl+=(plus)')
             fontsize.add_command(label='Smaller font',
                                  command=self.share.shrinkfont,
-                                 accelerator='Ctrl+Shift+Down-arrow')
+                                 accelerator='Ctrl+-(minus)')
         elif MY_OS == 'dar':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
-                                 accelerator='Ctrl+Shift+Up')
+                                 accelerator='Ctrl+=')
             fontsize.add_command(label='Smaller font',
                                  command=self.share.shrinkfont,
-                                 accelerator='Ctrl+Shift+Down')
+                                 accelerator='Ctrl+-')
 
         help_menu = tk.Menu(self.master, tearoff=0)
         tips = tk.Menu(self.master, tearoff=0)
