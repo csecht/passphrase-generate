@@ -757,9 +757,9 @@ class PassViewer(tk.Frame):
         #    from app position.
         self.master.geometry('+120+100')
         # Need original/default window size to restore geometry after size change.
-        self.master.update_idletasks()
-        self.share.app_winwide = self.master.winfo_width()
-        self.share.app_winhigh = self.master.winfo_height()
+        # self.master.update_idletasks()
+        # self.share.app_winwide = self.master.winfo_width()
+        # self.share.app_winhigh = self.master.winfo_height()
 
     def config_master(self) -> None:
         """Set up main window configuration, keybindings, & menus.
