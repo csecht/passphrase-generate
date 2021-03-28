@@ -782,20 +782,17 @@ class PassViewer(tk.Frame):
         self.master.bind('<Return>', self.share.makepass)
         self.master.bind('<KP_Enter>', self.share.makepass)
 
+        cmdkey = ''
         if MY_OS in 'lin, win':
-            self.master.bind_all('<Control-equal>', self.share.growfont)
-            self.master.bind_all('<Control-minus>', self.share.shrinkfont)
-            self.master.bind('<Control-q>', quit_gui)
-            self.master.bind('<Control-g>', self.share.makepass)
-            self.master.bind('<Control-o>', self.share.scratch)
-            self.master.bind('<Control-r>', self.share.reset)
+            cmdkey = 'Control'
         elif MY_OS == 'dar':
-            self.master.bind_all('<Command-equal>', self.share.growfont)
-            self.master.bind_all('<Command-minus>', self.share.shrinkfont)
-            self.master.bind('<Command-q>', quit_gui)
-            self.master.bind('<Command-g>', self.share.makepass)
-            self.master.bind('<Command-o>', self.share.scratch)
-            self.master.bind('<Command-r>', self.share.reset)
+            cmdkey = 'Command'
+        self.master.bind_all(f'<{f"{cmdkey}"}-equal>', self.share.growfont)
+        self.master.bind_all(f'<{f"{cmdkey}"}-minus>', self.share.shrinkfont)
+        self.master.bind(f'<{f"{cmdkey}"}-q>', quit_gui)
+        self.master.bind(f'<{f"{cmdkey}"}-g>', self.share.makepass)
+        self.master.bind(f'<{f"{cmdkey}"}-o>', self.share.scratch)
+        self.master.bind(f'<{f"{cmdkey}"}-r>', self.share.reset)
 
         # Need to specify Ctrl-A for Linux b/c in tkinter that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -838,7 +835,6 @@ class PassViewer(tk.Frame):
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
-                         #   so add Ctrl+Q to show something in the Passphrase menu.
                          accelerator=f'{os_accelerator}+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
