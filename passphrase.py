@@ -801,62 +801,60 @@ class PassViewer(tk.Frame):
                 app.focus_get().event_generate('<<SelectAll>>')
             self.master.bind_all('<Control-a>', lambda _: select_all())
 
-        # Need to specify OS-specific right-click mouse button only in results
+        # Need to specify OS-specific right-click mouse button only in passstring
         #   fields of master window.
+        right_button = ''
         if MY_OS in 'lin, win':
-            self.share.pp_raw_show.bind('<Button-3>', RightClickCmds)
-            self.share.pp_plus_show.bind('<Button-3>', RightClickCmds)
-            self.share.pp_short_show.bind('<Button-3>', RightClickCmds)
-            self.share.pc_any_show.bind('<Button-3>', RightClickCmds)
-            self.share.pc_some_show.bind('<Button-3>', RightClickCmds)
+            right_button = '<Button-3>'
         elif MY_OS == 'dar':
-            self.share.pp_raw_show.bind('<Button-2>', RightClickCmds)
-            self.share.pp_plus_show.bind('<Button-2>', RightClickCmds)
-            self.share.pp_short_show.bind('<Button-2>', RightClickCmds)
-            self.share.pc_any_show.bind('<Button-2>', RightClickCmds)
-            self.share.pc_some_show.bind('<Button-2>', RightClickCmds)
+            right_button = '<Button-2>'
+        self.share.pp_raw_show.bind(f'{right_button}', RightClickCmds)
+        self.share.pp_plus_show.bind(f'{right_button}', RightClickCmds)
+        self.share.pp_short_show.bind(f'{right_button}', RightClickCmds)
+        self.share.pc_any_show.bind(f'{right_button}', RightClickCmds)
+        self.share.pc_some_show.bind(f'{right_button}', RightClickCmds)
 
         # Create menu instance and add pull-down menus
         menubar = tk.Menu(self.master)
         self.master.config(menu=menubar)
 
         # Need to show the system's native key binding the as menu accelerator.
-        native_accelkey = ''
+        native_ctrlkey = ''
         if MY_OS in 'lin, win':
-            native_accelkey = 'Ctrl'
+            native_ctrlkey = 'Ctrl'
         elif MY_OS == 'dar':
-            native_accelkey = 'Command'
+            native_ctrlkey = 'Command'
 
         file = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Passphrase', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
-                         accelerator=f'{native_accelkey}+G')
+                         accelerator=f'{native_ctrlkey}+G')
         file.add_command(label='Reset', command=self.share.reset,
-                         accelerator=f'{native_accelkey}+R')
+                         accelerator=f'{native_ctrlkey}+R')
         file.add_command(label='Open a scratch pad', command=self.share.scratch,
-                         accelerator=f'{native_accelkey}+O')
+                         accelerator=f'{native_ctrlkey}+O')
         file.add(tk.SEPARATOR)
         file.add_command(label='Quit', command=quit_gui,
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
                          #   so add Ctrl+Q to show something in the Passphrase menu.
-                         accelerator=f'{native_accelkey}+Q')
+                         accelerator=f'{native_ctrlkey}+Q')
 
         edit = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Edit', menu=edit)
         edit.add_command(label='Select all',
                          command=lambda: app.focus_get().event_generate(
                              '<<SelectAll>>'),
-                         accelerator=f'{native_accelkey}+A')
+                         accelerator=f'{native_ctrlkey}+A')
         edit.add_command(label='Copy',
                          command=lambda: app.focus_get().event_generate(
-                             '<<Copy>>'), accelerator=f'{native_accelkey}+C')
+                             '<<Copy>>'), accelerator=f'{native_ctrlkey}+C')
         edit.add_command(label='Paste',
                          command=lambda: app.focus_get().event_generate(
-                             '<<Paste>>'), accelerator=f'{native_accelkey}+V')
+                             '<<Paste>>'), accelerator=f'{native_ctrlkey}+V')
         edit.add_command(label='Cut',
                          command=lambda: app.focus_get().event_generate(
-                             '<<Cut>>'), accelerator=f'{native_accelkey}+X')
+                             '<<Cut>>'), accelerator=f'{native_ctrlkey}+X')
 
         view = tk.Menu(self.master, tearoff=0)
         fontsize = tk.Menu(self.master, tearoff=0)
@@ -898,20 +896,20 @@ class PassViewer(tk.Frame):
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
         style = ttk.Style()
-        style.map("G.TButton",
+        style.map("My.TButton",
                   foreground=[('active', self.share.pass_fg)],
                   background=[('pressed', self.dataframe_bg),
                               ('active', self.pass_bg)])
-        self.generate_btn.configure(  style="G.TButton", text='Generate!',
+        self.generate_btn.configure(  style="My.TButton", text='Generate!',
                                       command=self.share.makepass)
         self.generate_btn.focus()
-        self.reset_button.configure(  style="G.TButton", text='Reset',
+        self.reset_button.configure(  style="My.TButton", text='Reset',
                                       width=0,
                                       command=self.share.reset)
-        self.exclude_info_b.configure(style="G.TButton", text="?",
+        self.exclude_info_b.configure(style="My.TButton", text="?",
                                       width=0,
                                       command=self.share.excludemsg)
-        self.quit_button.configure(   style="G.TButton", text='Quit',
+        self.quit_button.configure(   style="My.TButton", text='Quit',
                                       width=0,
                                       command=quit_gui)
 
