@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.21'
+__version__ = '0.9.22'
 
 import glob
 import random
@@ -779,12 +779,11 @@ class PassViewer(tk.Frame):
         self.result_frame2.rowconfigure(7, weight=1)
         self.result_frame2.rowconfigure(8, weight=1)
 
-        self.master.bind('<Escape>', quit_gui)
+        self.master.bind_all('<Escape>', quit_gui)
         self.master.bind('<Control-q>', quit_gui)
         self.master.bind('<Control-g>', self.share.makepass)
         self.master.bind('<Return>', self.share.makepass)
-        # Keypad Enter key, https://www.tcl.tk/man/tcl8.4/TkCmd/keysyms.htm
-        self.master.bind('<Key-0xff8d>', self.share.makepass)
+        self.master.bind('<KP_Enter>', self.share.makepass)
         self.master.bind('<Control-o>', self.share.scratch)
         self.master.bind('<Control-r>', self.share.reset)
         self.master.bind('<Shift-Control-Up>', self.share.growfont)
@@ -795,7 +794,7 @@ class PassViewer(tk.Frame):
             self.master.bind('<Command-o>', self.share.scratch)
             self.master.bind('<Command-r>', self.share.reset)
 
-        # Need to specify Ctrl-A for Linux b/c in tkinter windows that key is
+        # Need to specify Ctrl-A for Linux b/c in tkinter that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
         if MY_OS in 'lin':
             def select_all():
@@ -890,7 +889,7 @@ class PassViewer(tk.Frame):
         tips.add_command(label='Return/Enter key also Generates!')
         tips.add_command(label='Menu Passphrase>Open.. opens a scratch pad.')
         tips.add_command(label=f'Long results (L > {W}) turn blue.')
-        tips.add_command(label='Esc key exits the program.')
+        tips.add_command(label='Esc key exits program from any window.')
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
