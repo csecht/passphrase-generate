@@ -1217,11 +1217,10 @@ equivalent to bits of entropy. For more information see:
       https://en.wikipedia.org/wiki/Password_strength
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
 
-Font size can be changed with Shift+Ctrl+Up-arrow, Shift+Ctrl+Down-arrow
-     keys or from the menu bar.
-Mouse right-click opens edit options in results and pop-up windows.
+----------------
+Mouse right-click opens text tools for results and pop-up windows.
 """
-f'Pass-string color is BLUE when it is longer than {W} characters;\n'
+f'Pass-string color turns BLUE when it is longer than {W} characters;\n'
 '    so try dragging the window wider to see the full result.\n'
 )
         explainwin = tk.Toplevel()
