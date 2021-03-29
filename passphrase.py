@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.23'
+__version__ = '0.9.24'
 
 import glob
 import random
@@ -762,6 +762,7 @@ class PassViewer(tk.Frame):
     def config_master(self) -> None:
         """Set up main window configuration, keybindings, & menus.
         """
+
         self.config(bg=self.master_bg)
 
         # Need fields to stretch with window drag size and for the master
@@ -855,7 +856,9 @@ class PassViewer(tk.Frame):
         view = tk.Menu(self.master, tearoff=0)
         fontsize = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='View', menu=view)
-        view.add_cascade(label='Font size', menu=fontsize)
+        view.add_command(label='Font color changes?',
+                         command=self.share.fontcolor)
+        view.add_cascade(label='Font size...', menu=fontsize)
         # MacOS substitutes in appropriate key symbols for accelerators;
         #   Linux and Windows just use the literal strings.
         if MY_OS in 'lin, win':
@@ -876,7 +879,7 @@ class PassViewer(tk.Frame):
         help_menu = tk.Menu(self.master, tearoff=0)
         tips = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Help', menu=help_menu)
-        help_menu.add_cascade(label='Tips', menu=tips)
+        help_menu.add_cascade(label='Tips...', menu=tips)
         help_menu.add_command(label="What's going on here?",
                               command=self.share.explain)
         help_menu.add_command(label='About',
@@ -1037,6 +1040,23 @@ class PassController(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        # Need to fix window size to prevent an annoying window redraw each time
+        #   font size changes the width of the result Entry() widgets and Frame().
+        # Pixels here are set to fit a 52 character width Entry() and are
+        #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
+        # Need also to adjust max. font size in PassFonts to prevent undesired
+        #   squishing of other widgets in the window.
+        # TODO: Find way to auto-adjust OS-specific min/max size.
+        if MY_OS == 'lin':
+            self.minsize(830, 410)
+            self.maxsize(830, 410)
+        elif MY_OS == 'win':
+            self.minsize(702, 410)
+            self.maxsize(702, 410)
+        elif MY_OS == 'dar':
+            self.minsize(745, 410)
+            self.maxsize(745, 410)
+
         # pylint: disable=assignment-from-no-return
         container = tk.Frame(self).grid(sticky=tk.NSEW)
         PassViewer(master=container, share=self)
@@ -1083,6 +1103,11 @@ class PassController(tk.Tk):
         to the pop-up window.
         """
         PassFyi(share=self).explain(self.choose_wordlist.get(), self.longlist_len)
+
+    def fontcolor(self):
+        """Is called from Viewer Help menu.
+        """
+        PassFyi(share=self).font_color()
 
     def about(self):
         """Is called from Viewer Help menu.
@@ -1212,12 +1237,7 @@ equivalent to bits of entropy. For more information see:
       https://explainxkcd.com/wiki/index.php/936:_Password_Strength
       https://en.wikipedia.org/wiki/Password_strength
       https://en.wikipedia.org/wiki/Entropy_(information_theory)
-
-----------------
-Mouse right-click opens text tools for results and pop-up windows.
 """
-f'Pass-string color turns BLUE when it is longer than {W} characters;\n'
-'    so try dragging the window wider to see the full result.\n'
 )
         explainwin = tk.Toplevel()
         explainwin.title('A word about words and characters')
@@ -1241,10 +1261,39 @@ f'Pass-string color turns BLUE when it is longer than {W} characters;\n'
         # If need to prevent all key actions:
         # explaintext.bind("<Key>", lambda _: "break")
 
+    def font_color(self) -> None:
+        """Explain why the pass-string font changes color.
+        """
+        why = (
+            'Pass-string color will turn BLUE when it is longer than\n'
+            f'{W} characters and cannot all fit into the result field.\n'
+            'To see the entire result, you can:\n'
+            '    decrease font size (right-click or menu View > Font size...)\n'
+            '    or copy & paste the result into the scratch pad.'
+        )
+        num_lines = why.count('\n')
+        colorwin = tk.Toplevel()
+        colorwin.title('Why does result change color?')
+        colorwin.minsize(250, 150)
+        colorwin.focus_set()
+        toplevel_bindings(colorwin)
+
+        os_width = 0
+        if MY_OS in 'lin, win':
+            os_width = 52
+        elif MY_OS == 'dar':
+            os_width = 48
+
+        colortext = tk.Text(colorwin, width=os_width, height=num_lines,
+                            bg='grey40', fg='grey95',
+                            relief='groove', borderwidth=8,
+                            padx=20, pady=10, wrap=tk.WORD,
+                            font=self.share.text_font)
+        colortext.insert(1.0, why)
+        colortext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+
     def about(self) -> None:
         """Basic information about the script; called from GUI Help menu.
-
-        :return: Information window.
         """
         # msg separator dashes from https://coolsymbol.com/line-symbols.html.
         boilerplate = (
@@ -1283,16 +1332,16 @@ along with this program. If not, see https://www.gnu.org/licenses/
         elif MY_OS == 'dar':
             os_width = 60
 
-        abouttxt = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
-                           bg=random_bkg(), fg='grey95',
-                           relief='groove', borderwidth=8,
-                           padx=30, pady=10, wrap=tk.WORD,
-                           font=self.share.text_font)
-        abouttxt.insert(1.0, boilerplate + __version__)
-        abouttxt.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        abouttext = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
+                            bg=random_bkg(), fg='grey95',
+                            relief='groove', borderwidth=8,
+                            padx=30, pady=10, wrap=tk.WORD,
+                            font=self.share.text_font)
+        abouttext.insert(1.0, boilerplate + __version__)
+        abouttext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         # If need to prevent all key actions:
-        # abouttxt.bind("<Key>", lambda _: "break")
+        # abouttext.bind("<Key>", lambda _: "break")
 
     def exclude_msg(self) -> None:
         """A pop-up describing how to use excluded characters.
@@ -1348,10 +1397,10 @@ class PassFonts:
         """ Make the font size larger.
         """
         size = self.share.text_font['size']
-        if size < 32:
+        if size < 20:
             self.share.text_font.configure(size=size + 1)
         size2 = self.share.result_font['size']
-        if size < 32:
+        if size < 20:
             self.share.result_font.configure(size=size2 + 1)
 
     def shrink_font(self):
@@ -1368,5 +1417,4 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    app.minsize(650, 410)
     app.mainloop()
