@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.24'
+__version__ = '0.9.25'
 
 import glob
 import random
@@ -1393,24 +1393,31 @@ class PassFonts:
     def __init__(self, share):
         self.share = share
 
+        if MY_OS in 'lin, win':
+            self.sizemax = 20
+            self.sizemin = 6
+        elif MY_OS == 'dar':
+            self.sizemax = 24
+            self.sizemin = 8
+
     def grow_font(self):
         """ Make the font size larger.
         """
         size = self.share.text_font['size']
-        if size < 20:
+        if size < self.sizemax:
             self.share.text_font.configure(size=size + 1)
         size2 = self.share.result_font['size']
-        if size < 20:
+        if size < self.sizemax:
             self.share.result_font.configure(size=size2 + 1)
 
     def shrink_font(self):
         """ Make the font size smaller.
         """
         size = self.share.text_font['size']
-        if size > 6:
+        if size > self.sizemin:
             self.share.text_font.configure(size=size - 1)
         size2 = self.share.result_font['size']
-        if size > 6:
+        if size > self.sizemin:
             self.share.result_font.configure(size=size2 - 1)
 
 
