@@ -536,8 +536,6 @@ class PassModeler:
 
         self.get_words()
 
-        return 'break'
-
 
 class PassViewer(tk.Frame):
     """
