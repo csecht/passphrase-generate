@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.25'
+__version__ = '0.9.26'
 
 import glob
 import random
@@ -558,19 +558,14 @@ class PassViewer(tk.Frame):
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
 
         # Need to define as font.Font to configure in PassFonts().
-        # For results Entry fields, need to use Courier family because
-        #   TKFixedFont does not monospace symbol characters.
         # MacOS needs larger default fonts for easier readability.
-        # 'default' is not a named font, therefore uses system default.
-        if MY_OS == 'lin':
-            self.share.text_font = tk.font.Font(font='TkDefaultFont')
-            self.share.result_font = tk.font.Font(font='Courier')
-        elif MY_OS == 'win':
-            self.share.text_font = tk.font.Font(font='TkDefaultFont')
-            self.share.result_font = tk.font.Font(family='Courier', size=10)
+        # Linux: TkFixedFont default size=10, but size=12 fits W=52 cell.
+        self.share.text_font = tk.font.Font(font='TkTextFont')
+        self.share.result_font = tk.font.Font(font='TkFixedFont')
+        if MY_OS in 'lin, win':
+            self.share.result_font.configure(size=12)
         elif MY_OS == 'dar':
-            self.share.text_font = tk.font.Font(family='default', size=14)
-            self.share.result_font = tk.font.Font(family='Courier', size=14)
+            self.share.result_font.configure(size=16)
 
         self.share.stubresult = 'Result can be copied and pasted.'
 
@@ -1046,8 +1041,6 @@ class PassController(tk.Tk):
         #   font size changes the width of the result Entry() widgets and Frame().
         # Pixels here are set to fit a 52 character width Entry() and are
         #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
-        # Need also to adjust max. font size in PassFonts to prevent undesired
-        #   squishing of other widgets in the window.
         # TODO: Find way to auto-adjust OS-specific min/max size.
         if MY_OS == 'lin':
             self.minsize(830, 410)
@@ -1396,11 +1389,11 @@ class PassFonts:
         self.share = share
 
         if MY_OS in 'lin, win':
+            self.sizemax = 16
+            self.sizemin = 4
+        elif MY_OS == 'dar':
             self.sizemax = 20
             self.sizemin = 6
-        elif MY_OS == 'dar':
-            self.sizemax = 24
-            self.sizemin = 8
 
     def grow_font(self):
         """ Make the font size larger.
