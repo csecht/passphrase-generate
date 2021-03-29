@@ -565,7 +565,7 @@ class PassViewer(tk.Frame):
         if MY_OS in 'lin, win':
             self.share.result_font.configure(size=12)
         elif MY_OS == 'dar':
-            self.share.result_font.configure(size=16)
+            self.share.result_font.configure(size=13)
 
         self.share.stubresult = 'Result can be copied and pasted.'
 
@@ -1392,8 +1392,8 @@ class PassFonts:
             self.sizemax = 16
             self.sizemin = 4
         elif MY_OS == 'dar':
-            self.sizemax = 20
-            self.sizemin = 6
+            self.sizemax = 17
+            self.sizemin = 7
 
     def grow_font(self):
         """ Make the font size larger.
