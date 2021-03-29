@@ -402,6 +402,10 @@ class PassModeler:
         passcode2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
                             _ in range(numchars))
 
+        # NOTE: if all char of strdata[] are excluded, then cannot generate pass-strings
+        #  because raises IndexError: Cannot choose from an empty sequence. Fix? Warn?
+        #  As it is, for example, cannot exclude all digits. If IndexError, call reset()?
+
         # Randomly select 1 of each symbol to append; length not user-specified.
         addsymbol = "".join(VERY_RANDOM.choice(self.strdata['symbols']) for _ in range(1))
         addnum = "".join(VERY_RANDOM.choice(self.strdata['digi']) for _ in range(1))
