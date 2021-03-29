@@ -864,17 +864,17 @@ class PassViewer(tk.Frame):
         if MY_OS in 'lin, win':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
-                                 accelerator='Ctrl+=(plus)')
+                                 accelerator=f'{os_accelerator}+=(plus)')
             fontsize.add_command(label='Smaller font',
                                  command=self.share.shrinkfont,
-                                 accelerator='Ctrl+-(minus)')
+                                 accelerator=f'{os_accelerator}+-(minus)')
         elif MY_OS == 'dar':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
-                                 accelerator='Ctrl+=')
+                                 accelerator=f'{os_accelerator}+=')
             fontsize.add_command(label='Smaller font',
                                  command=self.share.shrinkfont,
-                                 accelerator='Ctrl+-')
+                                 accelerator=f'{os_accelerator}+-')
 
         help_menu = tk.Menu(self.master, tearoff=0)
         tips = tk.Menu(self.master, tearoff=0)
