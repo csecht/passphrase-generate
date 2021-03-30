@@ -1402,9 +1402,11 @@ class PassFonts:
             self.sizemin = 7
 
     def set_fonts(self):
-        # Need to define as font.Font to configure in PassFonts().
-        # MacOS needs larger default fonts for easier readability.
-        # Linux: TkFixedFont default size=10, but size=12 fits W=52 cell.
+        """ Establish default cross-OS Tk fonts and sizes at start-up.
+        """
+        # Need to define as font.Font to configure().
+        # Different OS need different size for best readability and to fit in
+        #  in the passcode W=52 field.
         self.share.text_font = tk.font.Font(font='TkTextFont')
         self.share.result_font = tk.font.Font(font='TkFixedFont')
         if MY_OS == 'lin':
