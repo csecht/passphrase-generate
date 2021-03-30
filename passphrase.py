@@ -548,8 +548,8 @@ class PassViewer(tk.Frame):
         self.share = share
 
         # Need to set up default fonts and sizes for all windows.
-        # All control methods in PassController are named as oneword
-        #    and refer to a MVC Class method of same name in snake_case.
+        # All control methods in PassController are named as oneword()
+        #    and refer to a MVC Class method of same name in snake_case().
         self.share.setfonts()
 
         # Font colors used in main (app) window:
