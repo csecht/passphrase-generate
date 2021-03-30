@@ -1263,11 +1263,12 @@ equivalent to bits of entropy. For more information see:
         """Explain why the pass-string font changes color.
         """
         why = (
-            'Pass-string color will turn BLUE when it is longer than\n'
-            f'{W} characters and cannot all fit into the result field.\n'
+            'Pass-string color will turn BLUE when it is longer than what\n'
+            f'   can fit into the result field.\n'
             'To see the entire result, you can:\n'
-            '    decrease font size (right-click or menu View > Font size...)\n'
-            '    or copy & paste the result into the scratch pad.'
+            '    decrease font size (right-click or menu View -> Font size...)\n'
+            '    or copy & paste the result into the scratch pad\n'
+            '    (menu Passphrase -> Open a scratch pad.)'
         )
         num_lines = why.count('\n')
         colorwin = tk.Toplevel()
