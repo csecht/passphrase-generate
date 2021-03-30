@@ -562,7 +562,6 @@ class PassViewer(tk.Frame):
         # Linux: TkFixedFont default size=10, but size=12 fits W=52 cell.
         self.share.text_font = tk.font.Font(font='TkTextFont')
         self.share.result_font = tk.font.Font(font='TkFixedFont')
-        print(self.share.result_font.actual())
         if MY_OS == 'lin':
             self.share.result_font.configure(size=12)
         if MY_OS == 'win':
