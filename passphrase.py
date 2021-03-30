@@ -362,7 +362,7 @@ class PassModeler:
         # Do not accept entries with space between characters.
         # Need to reset to default values if user deletes the prior entry.
         if ' ' in unused or len(unused) == 0:
-            self.reset_exclusions()
+            self.reset()
 
         if len(unused) > 0:
             self.listdata['word_list'] = [
@@ -513,9 +513,10 @@ class PassModeler:
             self.share.pc_any_show.config(fg=self.share.pass_fg)
             self.share.pc_some_show.config(fg=self.share.pass_fg)
 
-    def reset_exclusions(self):
+    def reset(self):
         """
         Restore original word and character lists with default values.
+        Removes exclusions and current passphrase and passcode results.
         Call get_words() to restore full word lists.
         """
         self.share.tkdata['pc_any'].set('')
@@ -547,8 +548,8 @@ class PassViewer(tk.Frame):
         self.share = share
 
         # Need to set up default fonts and sizes for all windows.
-        # All control methods in PassController are named as lowercaseoneword
-        #    and refer to a MVC Class method of same name in camel case.
+        # All control methods in PassController are named as oneword
+        #    and refer to a MVC Class method of same name in snake_case.
         self.share.setfonts()
 
         # Font colors used in main (app) window:
@@ -1139,7 +1140,7 @@ class PassController(tk.Tk):
 
         :param args: Needed for keybindings
         """
-        PassModeler(share=self).reset_exclusions()
+        PassModeler(share=self).reset()
 
 
 class PassFyi:
