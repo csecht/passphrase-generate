@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.26'
+__version__ = '0.9.27'
 
 import glob
 import random
@@ -546,7 +546,12 @@ class PassViewer(tk.Frame):
         super().__init__(master)
         self.share = share
 
-        # Colors and fonts:
+        # Need to set up default fonts and sizes for all windows.
+        # All control methods in PassController are named as lowercaseoneword
+        #    and refer to a MVC Class method of same name in camel case.
+        self.share.setfonts()
+
+        # Font colors used in main (app) window:
         # self.master_fg =    'LightCyan2'  # Used for row headers.
         # self.master_bg =    'SkyBlue4'  # Also used for some labels.
         self.master_fg =     'grey90'  # Used for row headers.
@@ -556,18 +561,6 @@ class PassViewer(tk.Frame):
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.share.long_fg = 'blue'  # Long pass-string font color.
         self.pass_bg =       'khaki2'  # Background of pass-string results cells.
-
-        # Need to define as font.Font to configure in PassFonts().
-        # MacOS needs larger default fonts for easier readability.
-        # Linux: TkFixedFont default size=10, but size=12 fits W=52 cell.
-        self.share.text_font = tk.font.Font(font='TkTextFont')
-        self.share.result_font = tk.font.Font(font='TkFixedFont')
-        if MY_OS == 'lin':
-            self.share.result_font.configure(size=12)
-        if MY_OS == 'win':
-            self.share.result_font.configure(size=10)
-        elif MY_OS == 'dar':
-            self.share.result_font.configure(size=13)
 
         self.share.stubresult = 'Result can be copied and pasted.'
 
@@ -791,7 +784,7 @@ class PassViewer(tk.Frame):
         self.master.bind_all(f'<{f"{cmdkey}"}-minus>', self.share.shrinkfont)
         self.master.bind(f'<{f"{cmdkey}"}-q>', quit_gui)
         self.master.bind(f'<{f"{cmdkey}"}-g>', self.share.makepass)
-        self.master.bind(f'<{f"{cmdkey}"}-o>', self.share.scratch)
+        self.master.bind(f'<{f"{cmdkey}"}-o>', self.share.scratchpad)
         self.master.bind(f'<{f"{cmdkey}"}-r>', self.share.reset)
 
         # Need to specify Ctrl-A for Linux b/c in tkinter that key is
@@ -829,7 +822,7 @@ class PassViewer(tk.Frame):
                          accelerator=f'{os_accelerator}+G')
         file.add_command(label='Reset', command=self.share.reset,
                          accelerator=f'{os_accelerator}+R')
-        file.add_command(label='Open a scratch pad', command=self.share.scratch,
+        file.add_command(label='Open a scratch pad', command=self.share.scratchpad,
                          accelerator=f'{os_accelerator}+O')
         file.add(tk.SEPARATOR)
         file.add_command(label='Quit', command=quit_gui,
@@ -1058,6 +1051,29 @@ class PassController(tk.Tk):
         container = tk.Frame(self).grid(sticky=tk.NSEW)
         PassViewer(master=container, share=self)
 
+    def setfonts(self):
+        """
+        Is called from the Viewer __init__, which should be the only
+        call to set_fonts(). Established default font styles and sizes.
+        """
+        PassFonts(share=self).set_fonts()
+
+    #pylint: disable=unused-argument
+    def growfont(self, *args):
+        """Is called from keybinding or View menu.
+
+        :param args: Needed for keybindings
+        """
+        PassFonts(share=self).grow_font()
+
+    #pylint: disable=unused-argument
+    def shrinkfont(self, *args):
+        """Is called from keybinding or View menu.
+
+        :param args: Needed for keybindings
+        """
+        PassFonts(share=self).shrink_font()
+
     def checkfiles(self):
         """
         Is called from the Viewer __init__, which should be the only
@@ -1087,12 +1103,12 @@ class PassController(tk.Tk):
         PassModeler(share=self).make_pass()
 
     #pylint: disable=unused-argument
-    def scratch(self, *args):
+    def scratchpad(self, *args):
         """Is called from the Viewer Passphrase menu or key binding.
 
         :param args: Needed for keybindings
         """
-        PassFyi(share=self).scratchpad()
+        PassFyi(share=self).scratch_pad()
 
     def explain(self):
         """
@@ -1125,22 +1141,6 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).reset_exclusions()
 
-    #pylint: disable=unused-argument
-    def growfont(self, *args):
-        """Is called from keybinding or View menu.
-
-        :param args: Needed for keybindings
-        """
-        PassFonts(share=self).grow_font()
-
-    #pylint: disable=unused-argument
-    def shrinkfont(self, *args):
-        """Is called from keybinding or View menu.
-
-        :param args: Needed for keybindings
-        """
-        PassFonts(share=self).shrink_font()
-
 
 class PassFyi:
     """
@@ -1149,7 +1149,7 @@ class PassFyi:
     def __init__(self, share):
         self.share = share
 
-    def scratchpad(self) -> None:
+    def scratch_pad(self) -> None:
         """
         A text window for user to temporarily save results.
         Is called from Passphrase menu or keybinding.
@@ -1399,6 +1399,19 @@ class PassFonts:
         elif MY_OS == 'dar':
             self.sizemax = 17
             self.sizemin = 7
+
+    def set_fonts(self):
+        # Need to define as font.Font to configure in PassFonts().
+        # MacOS needs larger default fonts for easier readability.
+        # Linux: TkFixedFont default size=10, but size=12 fits W=52 cell.
+        self.share.text_font = tk.font.Font(font='TkTextFont')
+        self.share.result_font = tk.font.Font(font='TkFixedFont')
+        if MY_OS == 'lin':
+            self.share.result_font.configure(size=12)
+        if MY_OS == 'win':
+            self.share.result_font.configure(size=10)
+        elif MY_OS == 'dar':
+            self.share.result_font.configure(size=13)
 
     def grow_font(self):
         """ Make the font size larger.
