@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.28'
+__version__ = '0.9.29'
 
 import glob
 import random
@@ -175,6 +175,8 @@ class RightClickCmds:
                                      command=app.growfont)
         right_click_menu.add_command(label='Smaller font',
                                      command=app.shrinkfont)
+        right_click_menu.add_command(label='Default size',
+                                     command=app.defaultfontsize)
 
         # Need to suppress 'Close window' option for master (app) window,
         #   which does not have .!toplevel instances.
@@ -868,6 +870,8 @@ class PassViewer(tk.Frame):
             fontsize.add_command(label='Smaller font',
                                  command=self.share.shrinkfont,
                                  accelerator=f'{os_accelerator}+-')
+        fontsize.add_command(label='Default size',
+                             command=self.share.defaultfontsize)
 
         help_menu = tk.Menu(self.master, tearoff=0)
         tips = tk.Menu(self.master, tearoff=0)
@@ -880,7 +884,7 @@ class PassViewer(tk.Frame):
         tips.add_command(label='Mouse right-click does stuff!')
         tips.add_command(label='Return/Enter key also Generates!')
         tips.add_command(label='Menu Passphrase>Open.. opens a scratch pad.')
-        tips.add_command(label=f'Long results (L > {W}) turn blue.')
+        tips.add_command(label='Long results may turn blue.')
         tips.add_command(label='Esc key exits program from any window.')
 
     def config_buttons(self) -> None:
@@ -1076,6 +1080,12 @@ class PassController(tk.Tk):
         :param args: Needed for keybindings
         """
         PassFonts(share=self).shrink_font()
+
+    def defaultfontsize(self):
+        """
+        Called from config_master() menu to reset font sizes to default.
+        """
+        PassFonts(share=self).default_font_size()
 
     def checkfiles(self):
         """
@@ -1411,13 +1421,21 @@ class PassFonts:
         # Different OS need different size for best readability and to fit in
         #  in the passcode W=52 field.
         self.share.text_font = tk.font.Font(font='TkTextFont')
-        self.share.result_font = tk.font.Font(font='TkFixedFont')
+        self.share.result_font = tk.font.Font(font='TkFixedFont') \
+
+        # get font info from self.share.text_font.actual()
         if MY_OS == 'lin':
             self.share.result_font.configure(size=11)
+            self.share.default_txt_font = 10
+            self.share.default_res_font = 11
         if MY_OS == 'win':
             self.share.result_font.configure(size=10)
+            self.share.default_txt_font = 11
+            self.share.default_res_font = 10
         elif MY_OS == 'dar':
             self.share.result_font.configure(size=13)
+            self.share.default_txt_font = 12
+            self.share.default_res_font = 13
 
     def grow_font(self):
         """ Make the font size larger.
@@ -1438,6 +1456,12 @@ class PassFonts:
         size2 = self.share.result_font['size']
         if size > self.sizemin:
             self.share.result_font.configure(size=size2 - 1)
+
+    def default_font_size(self):
+        """ The default font size on startup. Used to reset to default.
+        """
+        self.share.text_font.config(size=self.share.default_txt_font)
+        self.share.result_font.config(size=self.share.default_res_font)
 
 
 if __name__ == "__main__":
