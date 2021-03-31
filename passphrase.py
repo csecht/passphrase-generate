@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.30'
+__version__ = '0.9.31'
 
 import glob
 import random
@@ -738,6 +738,9 @@ class PassViewer(tk.Frame):
         self.quit_button = ttk.Button()
         # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        self.share.compliment_txt = tk.Label(fg='orange', bg=self.master_bg,
+                                             relief='flat', border=0)
+
         self.config_master()
         self.config_buttons()
         self.grid_all()
@@ -877,15 +880,17 @@ class PassViewer(tk.Frame):
         tips = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Help', menu=help_menu)
         help_menu.add_cascade(label='Tips...', menu=tips)
-        help_menu.add_command(label="What's going on here?",
-                              command=self.share.explain)
-        help_menu.add_command(label='About',
-                              command=self.share.about)
         tips.add_command(label='Mouse right-click does stuff!')
         tips.add_command(label='Return/Enter key also Generates!')
         tips.add_command(label='Menu Passphrase>Open.. opens a scratch pad.')
         tips.add_command(label='Long results may turn blue.')
         tips.add_command(label='Esc key exits program from any window.')
+        help_menu.add_command(label="What's going on here?",
+                              command=self.share.explain)
+        help_menu.add_command(label='About',
+                              command=self.share.about)
+        help_menu.add_command(label="I need a compliment",
+                              command=self.compliment)
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -910,6 +915,52 @@ class PassViewer(tk.Frame):
         self.quit_button.configure(   style="My.TButton", text='Quit',
                                       width=0,
                                       command=quit_gui)
+
+    def compliment(self) -> None:
+        """
+         A silly diversion; used with the 'compliment' GUI menu item.
+
+        :return: Transient label to make one smile.
+        """
+        comp = ["Hey there good lookin'!",
+                'You are the smartest person I know.', 'I like your hair.',
+                'You have such a nice smile.', 'Smart move!',
+                'Blue is your color.', 'Good choice!',
+                "That's very kind of you.", "Stop! You're making me blush.",
+                'I just love what you did.', 'How witty you are!', 'Awesome!',
+                'Your tastes are impeccable.', "You're incredible!",
+                'You are so talented!', "I wish I'd thought of that.",
+                'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
+                'You are an inspiration to us all.', "That's so funny!",
+                'Show me how you do that.', 'You look great!',
+                'You sound great!', 'You smell nice.', 'Great job!',
+                'You are a role model.', 'I wish more people were like you.',
+                'We appreciate what you did.', 'I hear people look up to you.',
+                'You are a really good dancer.',
+                'When you speak, people listen.', 'You are a superb person.',
+                'You rock!', 'You nailed it!', 'That was really well done.',
+                'You are amazing!', 'We need more folks like you around here.',
+                'Excuse me, are you a model?', 'What a lovely laugh you have.',
+                "I'm jealous of your ability.", 'Thank you so much!',
+                'This would not be possible without you.', 'Way to go! Yay!',
+                'Did you make that? I love it!', 'You are the best!',
+                'I like what you did.', 'Whoa. Have you been working out?',
+                "We can't thank you enough.", 'No, really, you have done enough.',
+                "That's a good look for you.", 'I could not have done it better.',
+                "I can't think of anything to say. Sorry.", 'Congratulations!',
+                "Well, THAT's impressive.", 'I hear that you are the one.',
+                'You excel at everything.', 'Your voice is very soothing.',
+                'Is it true what people say?', 'The word is, you got it!',
+                'The Nobel Committee has been trying to reach you.',
+                "The Academy has been trying to reach you.",
+                'What makes you so successful?',
+                "I've always looked up to you."]
+        praise = random.choice(comp)
+        self.share.compliment_txt.config(text=praise)
+
+        def refresh():
+            self.share.compliment_txt.config(text="")
+        self.share.compliment_txt.after(2468, refresh)
 
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
@@ -1013,6 +1064,9 @@ class PassViewer(tk.Frame):
                                  sticky=tk.E)
         self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(10, 0),
                                  sticky=tk.W)
+
+        self.share.compliment_txt.grid(column=2, columnspan=2, row=9,
+                                       pady=(20, 5), padx=(50, 5), sticky=tk.W)
 
         self.excluded_head.grid(column=0, row=10, pady=(0, 8), padx=(5, 0),
                                 sticky=tk.E)
