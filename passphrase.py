@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.27'
+__version__ = '0.9.28'
 
 import glob
 import random
@@ -911,7 +911,7 @@ class PassViewer(tk.Frame):
         """Grid all tkinter widgets.
         """
         # This self.grid fills out the inherited tk.Frame, padding gives border.
-        # Padding depends on app.minsize/maxsize in if __name__ == "__main__"
+        # Padding depends on app.minsize/maxsize in PassController
         # Frame background color, self.master_bg, is set in config_master().
         self.grid(column=0, row=0, sticky=tk.NSEW, rowspan=12, columnspan=4,
                   padx=3, pady=3)
@@ -1039,8 +1039,10 @@ class PassController(tk.Tk):
         #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
         # TODO: Find way to auto-adjust OS-specific min/max size.
         if MY_OS == 'lin':
-            self.minsize(830, 410)
-            self.maxsize(830, 410)
+            # self.minsize(830, 410)  # <for default font size=12, W=52
+            # self.maxsize(830, 410)
+            self.minsize(780, 410)  # <for default font size=11, W=52
+            self.maxsize(780, 410)
         elif MY_OS == 'win':
             self.minsize(702, 410)
             self.maxsize(702, 410)
@@ -1411,7 +1413,7 @@ class PassFonts:
         self.share.text_font = tk.font.Font(font='TkTextFont')
         self.share.result_font = tk.font.Font(font='TkFixedFont')
         if MY_OS == 'lin':
-            self.share.result_font.configure(size=12)
+            self.share.result_font.configure(size=11)
         if MY_OS == 'win':
             self.share.result_font.configure(size=10)
         elif MY_OS == 'dar':
