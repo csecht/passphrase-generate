@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.29'
+__version__ = '0.9.30'
 
 import glob
 import random
@@ -1411,8 +1411,8 @@ class PassFonts:
             self.sizemax = 15
             self.sizemin = 6
         elif MY_OS == 'dar':
-            self.sizemax = 17
-            self.sizemin = 7
+            self.sizemax = 20
+            self.sizemin = 9
 
     def set_fonts(self):
         """ Establish default cross-OS Tk fonts and sizes at start-up.
@@ -1422,7 +1422,7 @@ class PassFonts:
         #  in the passcode W=52 field.
         self.share.text_font = tk.font.Font(font='TkTextFont')
         self.share.result_font = tk.font.Font(font='TkFixedFont')
-        print( self.share.result_font.actual())
+
         # get font info from self.share.text_font.actual()
         if MY_OS == 'lin':
             self.share.result_font.configure(size=11)
