@@ -917,8 +917,7 @@ class PassViewer(tk.Frame):
                                       command=quit_gui)
 
     def compliment(self) -> None:
-        """
-         A silly diversion; used with the 'compliment' GUI menu item.
+        """A silly diversion; called from Help menu.
 
         :return: Transient label to make one smile.
         """
@@ -960,7 +959,7 @@ class PassViewer(tk.Frame):
 
         def refresh():
             self.share.compliment_txt.config(text="")
-        self.share.compliment_txt.after(2468, refresh)
+        self.share.compliment_txt.after(2222, refresh)
 
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
