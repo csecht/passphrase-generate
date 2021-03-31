@@ -1421,8 +1421,8 @@ class PassFonts:
         # Different OS need different size for best readability and to fit in
         #  in the passcode W=52 field.
         self.share.text_font = tk.font.Font(font='TkTextFont')
-        self.share.result_font = tk.font.Font(font='TkFixedFont') \
-
+        self.share.result_font = tk.font.Font(font='TkFixedFont')
+        print( self.share.result_font.actual())
         # get font info from self.share.text_font.actual()
         if MY_OS == 'lin':
             self.share.result_font.configure(size=11)
@@ -1433,8 +1433,9 @@ class PassFonts:
             self.share.default_txt_font = 11
             self.share.default_res_font = 10
         elif MY_OS == 'dar':
+            self.share.text_font.configure(size=14)
             self.share.result_font.configure(size=13)
-            self.share.default_txt_font = 12
+            self.share.default_txt_font = 14
             self.share.default_res_font = 13
 
     def grow_font(self):
