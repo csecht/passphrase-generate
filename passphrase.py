@@ -1484,7 +1484,7 @@ space entered between characters will also do a reset.
             'You rock!', 'You nailed it!', 'That was really well done.',
             'You are amazing!', 'We need more folks like you around here.',
             'Excuse me, are you a model?', 'What a lovely laugh you have.',
-            "I'm jealous of your ability.", "You're the stuff of legends."
+            "I'm jealous of your ability.", "You're the stuff of legends.",
             'This would not be possible without you.', 'Way to go! Yay!',
             'Did you make that? I love it!', 'You are the best!',
             'I like what you did.', 'Whoa. Have you been working out?',
