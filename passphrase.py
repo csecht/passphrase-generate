@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.31'
+__version__ = '0.9.32'
 
 import glob
 import random
@@ -883,14 +883,14 @@ class PassViewer(tk.Frame):
         tips.add_command(label='Mouse right-click does stuff!')
         tips.add_command(label='Return/Enter key also Generates!')
         tips.add_command(label='Menu Passphrase>Open.. opens a scratch pad.')
-        tips.add_command(label='Long results may turn blue.')
+        tips.add_command(label='Very long results may turn blue.')
         tips.add_command(label='Esc key exits program from any window.')
         help_menu.add_command(label="What's going on here?",
                               command=self.share.explain)
         help_menu.add_command(label='About',
                               command=self.share.about)
         help_menu.add_command(label="I need a compliment",
-                              command=self.compliment)
+                              command=self.share.comp)
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -916,50 +916,50 @@ class PassViewer(tk.Frame):
                                       width=0,
                                       command=quit_gui)
 
-    def compliment(self) -> None:
-        """A silly diversion; called from Help menu.
-
-        :return: Transient label to make one smile.
-        """
-        comp = ["Hey there good lookin'!", 'I wish we had met sooner.',
-                'You are the smartest person I know.', 'I like your hair.',
-                'You have such a nice smile.', 'Smart move!',
-                'Blue is your color.', 'Good choice!',
-                "That's very kind of you.", "Stop! You're making me blush.",
-                'I just love what you did.', 'How witty you are!', 'Awesome!',
-                'Your tastes are impeccable.', "You're incredible!",
-                'You are so talented!', "I wish I'd thought of that.",
-                'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
-                'You are an inspiration to us all.', "That's so funny!",
-                'Show me how you do that.', "I've always looked up to you.",
-                'You sound great!', 'You smell nice.', 'Great job!',
-                'You are a role model.', 'I wish more people were like you.',
-                'We appreciate what you did.', 'I hear people look up to you.',
-                'You are a really good dancer.', 'What makes you so successful?',
-                'When you speak, people listen.', 'You are a superb person.',
-                'You rock!', 'You nailed it!', 'That was really well done.',
-                'You are amazing!', 'We need more folks like you around here.',
-                'Excuse me, are you a model?', 'What a lovely laugh you have.',
-                "I'm jealous of your ability.", "You're the stuff of legends."
-                'This would not be possible without you.', 'Way to go! Yay!',
-                'Did you make that? I love it!', 'You are the best!',
-                'I like what you did.', 'Whoa. Have you been working out?',
-                "We can't thank you enough.", 'No, really, you have done enough.',
-                "That's a good look for you.", 'I could not have done it better.',
-                "I can't think of anything to say. Sorry.", 'Congratulations!',
-                "Well, THAT's impressive.", 'I hear that you are the one.',
-                'You excel at everything.', 'Your voice is very soothing.',
-                'Is it true what people say?', 'The word is, you got it!',
-                'The Nobel Committee has been trying to reach you.',
-                'The Academy is asking for your CV.', 'You look great!',
-                'The President seeks your council.', 'Thank you so much!',
-                ]
-        praise = random.choice(comp)
-        self.share.compliment_txt.config(text=praise)
-
-        def refresh():
-            self.share.compliment_txt.config(text="")
-        self.share.compliment_txt.after(2222, refresh)
+    # def compliment(self) -> None:
+    #     """A silly diversion; called from Help menu.
+    #
+    #     :return: Transient label to make one smile.
+    #     """
+    #     comp = ["Hey there good lookin'!", 'I wish we had met sooner.',
+    #             'You are the smartest person I know.', 'I like your hair.',
+    #             'You have such a nice smile.', 'Smart move!',
+    #             'Blue is your color.', 'Good choice!',
+    #             "That's very kind of you.", "Stop! You're making me blush.",
+    #             'I just love what you did.', 'How witty you are!', 'Awesome!',
+    #             'Your tastes are impeccable.', "You're incredible!",
+    #             'You are so talented!', "I wish I'd thought of that.",
+    #             'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
+    #             'You are an inspiration to us all.', "That's so funny!",
+    #             'Show me how you do that.', "I've always looked up to you.",
+    #             'You sound great!', 'You smell nice.', 'Great job!',
+    #             'You are a role model.', 'I wish more people were like you.',
+    #             'We appreciate what you did.', 'I hear people look up to you.',
+    #             'You are a really good dancer.', 'What makes you so successful?',
+    #             'When you speak, people listen.', 'You are a superb person.',
+    #             'You rock!', 'You nailed it!', 'That was really well done.',
+    #             'You are amazing!', 'We need more folks like you around here.',
+    #             'Excuse me, are you a model?', 'What a lovely laugh you have.',
+    #             "I'm jealous of your ability.", "You're the stuff of legends."
+    #             'This would not be possible without you.', 'Way to go! Yay!',
+    #             'Did you make that? I love it!', 'You are the best!',
+    #             'I like what you did.', 'Whoa. Have you been working out?',
+    #             "We can't thank you enough.", 'No, really, you have done enough.',
+    #             "That's a good look for you.", 'I could not have done it better.',
+    #             "I can't think of anything to say. Sorry.", 'Congratulations!',
+    #             "Well, THAT's impressive.", 'I hear that you are the one.',
+    #             'You excel at everything.', 'Your voice is very soothing.',
+    #             'Is it true what people say?', 'The word is, you got it!',
+    #             'The Nobel Committee has been trying to reach you.',
+    #             'The Academy is asking for your CV.', 'You look great!',
+    #             'The President seeks your council.', 'Thank you so much!',
+    #             ]
+    #     praise = random.choice(comp)
+    #     self.share.compliment_txt.config(text=praise)
+    #
+    #     def refresh():
+    #         self.share.compliment_txt.config(text="")
+    #     self.share.compliment_txt.after(2222, refresh)
 
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
@@ -972,8 +972,8 @@ class PassViewer(tk.Frame):
 
         # %%%%%%%%%%%%%%%%%%%%%%%% sorted by row number %%%%%%%%%%%%%%%%%%%%%%%
         # Passphrase widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pp_section_head.grid(      column=0, row=0, pady=(10, 5), padx=(10, 5),
-                                        sticky=tk.W)
+        self.pp_section_head.grid(      column=0, row=0, pady=(10, 5),
+                                        padx=(10, 5), sticky=tk.W)
         self.share.choose_wordlist.grid(column=1, row=0, pady=(10, 5), padx=5,
                                         columnspan=2, sticky=tk.W)
         self.share.available_head.grid( column=3, row=0, pady=(10, 0),
@@ -1064,9 +1064,6 @@ class PassViewer(tk.Frame):
         self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(10, 0),
                                  sticky=tk.W)
 
-        self.share.compliment_txt.grid(column=2, columnspan=2, row=9,
-                                       pady=(20, 5), padx=(50, 5), sticky=tk.W)
-
         self.excluded_head.grid(column=0, row=10, pady=(0, 8), padx=(5, 0),
                                 sticky=tk.E)
         self.reset_button.grid( column=0, row=10, pady=(0, 15), padx=(20, 0),
@@ -1074,6 +1071,8 @@ class PassViewer(tk.Frame):
         self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
         self.quit_button.grid(  column=3, row=10, pady=(0, 15), padx=(0, 15),
                                 sticky=tk.E)
+        self.share.compliment_txt.grid(row=10, column=2, columnspan=2,
+                                       pady=(0, 15), padx=(25, 5), sticky=tk.W)
 
         # Need to adjust padding for MacOS b/c of different spacing.
         if MY_OS == 'dar':
@@ -1206,6 +1205,11 @@ class PassController(tk.Tk):
         :param args: Needed for keybindings
         """
         PassModeler(share=self).reset()
+
+    def comp(self) -> None:
+        """Is called from Help menu. A silly diversion.
+        """
+        PassFyi(share=self).compliment()
 
 
 class PassFyi:
@@ -1447,6 +1451,51 @@ space entered between characters will also do a reset.
         excludetext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         # If need to prevent all key actions:
         # excludetext.bind("<Key>", lambda _: "break")
+
+    def compliment(self) -> None:
+        """A silly diversion; called from Help menu.
+
+        :return: Transient label to make one smile.
+        """
+        compliments = ["Hey there good lookin'!", 'I wish we had met sooner.',
+                'You are the smartest person I know.', 'I like your hair.',
+                'You have such a nice smile.', 'Smart move!',
+                'Blue is your color.', 'Good choice!',
+                "That's very kind of you.", "Stop! You're making me blush.",
+                'I just love what you did.', 'How witty you are!', 'Awesome!',
+                'Your tastes are impeccable.', "You're incredible!",
+                'You are so talented!', "I wish I'd thought of that.",
+                'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
+                'You are an inspiration to us all.', "That's so funny!",
+                'Show me how you do that.', "I've always looked up to you.",
+                'You sound great!', 'You smell nice.', 'Great job!',
+                'You are a role model.', 'I wish more people were like you.',
+                'We appreciate what you did.', 'I hear people look up to you.',
+                'You are a really good dancer.', 'What makes you so successful?',
+                'When you speak, people listen.', 'You are a superb person.',
+                'You rock!', 'You nailed it!', 'That was really well done.',
+                'You are amazing!', 'We need more folks like you around here.',
+                'Excuse me, are you a model?', 'What a lovely laugh you have.',
+                "I'm jealous of your ability.", "You're the stuff of legends."
+                'This would not be possible without you.', 'Way to go! Yay!',
+                'Did you make that? I love it!', 'You are the best!',
+                'I like what you did.', 'Whoa. Have you been working out?',
+                "We can't thank you enough.", 'No, really, you have done enough.',
+                "That's a good look for you.", 'I could not have done it better.',
+                "I can't think of anything to say. Sorry.", 'Congratulations!',
+                "Well, THAT's impressive.", 'I hear that you are the one.',
+                'You excel at everything.', 'Your voice is very soothing.',
+                'Is it true what people say?', 'The word is, you got it!',
+                'The Nobel Committee has been trying to reach you.',
+                'The Academy is asking for your CV.', 'You look great!',
+                'The President seeks your council.', 'Thank you so much!',
+                ]
+        praise = random.choice(compliments)
+        self.share.compliment_txt.config(text=praise)
+
+        def refresh():
+            self.share.compliment_txt.config(text="")
+        self.share.compliment_txt.after(2222, refresh)
 
 
 class PassFonts:
