@@ -538,6 +538,7 @@ class PassModeler:
         self.strdata['some_char'] = ascii_letters + digits + SYMBOLS
 
         self.get_words()
+        app.update_idletasks()
 
 
 class PassViewer(tk.Frame):
@@ -1503,6 +1504,7 @@ space entered between characters will also do a reset.
 
         def refresh():
             self.share.compliment_txt.config(text="")
+            app.update_idletasks()
         self.share.compliment_txt.after(2222, refresh)
 
 
