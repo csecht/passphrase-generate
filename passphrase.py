@@ -921,7 +921,7 @@ class PassViewer(tk.Frame):
 
         :return: Transient label to make one smile.
         """
-        comp = ["Hey there good lookin'!", 'I wish we had met sooner.'
+        comp = ["Hey there good lookin'!", 'I wish we had met sooner.',
                 'You are the smartest person I know.', 'I like your hair.',
                 'You have such a nice smile.', 'Smart move!',
                 'Blue is your color.', 'Good choice!',
@@ -1329,7 +1329,7 @@ equivalent to bits of entropy. For more information see:
         """
         why = (
             'Pass-string color will turn BLUE when it is longer than what\n'
-            f'   can fit into the result field.\n'
+            '    can fit into the result field.\n'
             'To see the entire result, you can:\n'
             '    decrease font size (right-click or menu View -> Font size...)\n'
             '    or copy & paste the result into the scratch pad\n'
