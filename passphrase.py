@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.32'
+__version__ = '0.9.33'
 
 import glob
 import random
@@ -1228,9 +1228,10 @@ class PassFyi:
         instruction = (
             'Paste here passphrases or passcodes that you are thinking of'
             ' using. You can then compare them, test typing them out, etc.'
-            ' and see whether any work for you.\nAnything you paste or edit here'
-            ' is GONE when this window is closed, so save what you want to keep'
-            ' somewhere else.\n'
+            ' and see whether any work for you.\nWindow can be dragged'
+            ' larger if things do not fit.\nAnything you paste or edit here'
+            ' is GONE when this window is closed, so save what you want to'
+            ' keep somewhere else.\n'
             '────────────────────────────────────────\n\n'
         )
 
@@ -1532,7 +1533,7 @@ class PassFonts:
             self.share.default_res_font = 11
         if MY_OS == 'win':
             self.share.result_font.configure(size=10)
-            self.share.default_txt_font = 11
+            self.share.default_txt_font = 10
             self.share.default_res_font = 10
         elif MY_OS == 'dar':
             self.share.text_font.configure(size=14)
