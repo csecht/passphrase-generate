@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.33'
+__version__ = '0.9.34'
 
 import glob
 import random
@@ -792,6 +792,7 @@ class PassViewer(tk.Frame):
         self.master.bind(f'<{f"{cmdkey}"}-g>', self.share.makepass)
         self.master.bind(f'<{f"{cmdkey}"}-o>', self.share.scratchpad)
         self.master.bind(f'<{f"{cmdkey}"}-r>', self.share.reset)
+        self.master.bind('<Shift-Control-C>', self.share.complimentme)
 
         # Need to specify Ctrl-A for Linux b/c in tkinter that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -890,7 +891,7 @@ class PassViewer(tk.Frame):
         help_menu.add_command(label='About',
                               command=self.share.about)
         help_menu.add_command(label="I need a compliment",
-                              command=self.share.comp)
+                              command=self.share.complimentme)
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
@@ -1021,10 +1022,12 @@ class PassViewer(tk.Frame):
         # Need to pad and span to center the button between two results frames.
         #   ...with different x padding to keep it aligned in different platforms.
         self.generate_btn.grid(    column=3, row=5, rowspan=2, pady=(10, 5),
-                                   padx=(65, 0), sticky=tk.W)
-        if MY_OS == 'win':
+                                   sticky=tk.W)
+        if MY_OS == 'lin':
+            self.generate_btn.grid(padx=(40, 0))
+        elif MY_OS == 'win':
             self.generate_btn.grid(padx=(30, 0))
-        if MY_OS == 'dar':
+        elif MY_OS == 'dar':
             self.generate_btn.grid(padx=(0, 0))
 
         # Passcode widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1071,6 +1074,7 @@ class PassViewer(tk.Frame):
         self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
         self.quit_button.grid(  column=3, row=10, pady=(0, 15), padx=(0, 15),
                                 sticky=tk.E)
+
         self.share.compliment_txt.grid(row=10, column=2, columnspan=2,
                                        pady=(0, 15), padx=(25, 5), sticky=tk.W)
 
@@ -1206,10 +1210,12 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).reset()
 
-    def comp(self) -> None:
+    def complimentme(self, *args) -> None:
         """Is called from Help menu. A silly diversion.
+
+        :param args: Needed for keybinding
         """
-        PassFyi(share=self).compliment()
+        PassFyi(share=self).compliment_me()
 
 
 class PassFyi:
@@ -1453,44 +1459,45 @@ space entered between characters will also do a reset.
         # If need to prevent all key actions:
         # excludetext.bind("<Key>", lambda _: "break")
 
-    def compliment(self) -> None:
+    def compliment_me(self) -> None:
         """A silly diversion; called from Help menu.
 
         :return: Transient label to make one smile.
         """
-        compliments = ["Hey there good lookin'!", 'I wish we had met sooner.',
-                'You are the smartest person I know.', 'I like your hair.',
-                'You have such a nice smile.', 'Smart move!',
-                'Blue is your color.', 'Good choice!',
-                "That's very kind of you.", "Stop! You're making me blush.",
-                'I just love what you did.', 'How witty you are!', 'Awesome!',
-                'Your tastes are impeccable.', "You're incredible!",
-                'You are so talented!', "I wish I'd thought of that.",
-                'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
-                'You are an inspiration to us all.', "That's so funny!",
-                'Show me how you do that.', "I've always looked up to you.",
-                'You sound great!', 'You smell nice.', 'Great job!',
-                'You are a role model.', 'I wish more people were like you.',
-                'We appreciate what you did.', 'I hear people look up to you.',
-                'You are a really good dancer.', 'What makes you so successful?',
-                'When you speak, people listen.', 'You are a superb person.',
-                'You rock!', 'You nailed it!', 'That was really well done.',
-                'You are amazing!', 'We need more folks like you around here.',
-                'Excuse me, are you a model?', 'What a lovely laugh you have.',
-                "I'm jealous of your ability.", "You're the stuff of legends."
-                'This would not be possible without you.', 'Way to go! Yay!',
-                'Did you make that? I love it!', 'You are the best!',
-                'I like what you did.', 'Whoa. Have you been working out?',
-                "We can't thank you enough.", 'No, really, you have done enough.',
-                "That's a good look for you.", 'I could not have done it better.',
-                "I can't think of anything to say. Sorry.", 'Congratulations!',
-                "Well, THAT's impressive.", 'I hear that you are the one.',
-                'You excel at everything.', 'Your voice is very soothing.',
-                'Is it true what people say?', 'The word is, you got it!',
-                'The Nobel Committee has been trying to reach you.',
-                'The Academy is asking for your CV.', 'You look great!',
-                'The President seeks your council.', 'Thank you so much!',
-                ]
+        compliments = [
+            "Hey there good lookin'!", 'I wish we had met sooner.',
+            'You are the smartest person I know.', 'I like your hair.',
+            'You have such a nice smile.', 'Smart move!',
+            'Blue is your color.', 'Good choice!',
+            "That's very kind of you.", "Stop! You're making me blush.",
+            'I just love what you did.', 'How witty you are!', 'Awesome!',
+            'Your tastes are impeccable.', "You're incredible!",
+            'You are so talented!', "I wish I'd thought of that.",
+            'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
+            'You are an inspiration to us all.', "That's so funny!",
+            'Show me how you do that.', "I've always looked up to you.",
+            'You sound great!', 'You smell nice.', 'Great job!',
+            'You are a role model.', 'I wish more people were like you.',
+            'We appreciate what you did.', 'I hear people look up to you.',
+            'You are a really good dancer.', 'What makes you so successful?',
+            'When you speak, people listen.', 'You are a superb person.',
+            'You rock!', 'You nailed it!', 'That was really well done.',
+            'You are amazing!', 'We need more folks like you around here.',
+            'Excuse me, are you a model?', 'What a lovely laugh you have.',
+            "I'm jealous of your ability.", "You're the stuff of legends."
+            'This would not be possible without you.', 'Way to go! Yay!',
+            'Did you make that? I love it!', 'You are the best!',
+            'I like what you did.', 'Whoa. Have you been working out?',
+            "We can't thank you enough.", 'No, really, you have done enough.',
+            "That's a good look for you.", 'I could not have done it better.',
+            "I can't think of anything to say. Sorry.", 'Congratulations!',
+            "Well, THAT's impressive.", 'I hear that you are the one.',
+            'You excel at everything.', 'Your voice is very soothing.',
+            'Is it true what people say?', 'The word is, you got it!',
+            'The Nobel Committee has been trying to reach you.',
+            'The Academy is asking for your CV.', 'You look great!',
+            'The President seeks your council.', 'Thank you so much!',
+        ]
         praise = random.choice(compliments)
         self.share.compliment_txt.config(text=praise)
 
