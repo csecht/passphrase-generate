@@ -921,7 +921,7 @@ class PassViewer(tk.Frame):
 
         :return: Transient label to make one smile.
         """
-        comp = ["Hey there good lookin'!",
+        comp = ["Hey there good lookin'!", 'I wish we had met sooner.'
                 'You are the smartest person I know.', 'I like your hair.',
                 'You have such a nice smile.', 'Smart move!',
                 'Blue is your color.', 'Good choice!',
@@ -931,16 +931,16 @@ class PassViewer(tk.Frame):
                 'You are so talented!', "I wish I'd thought of that.",
                 'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
                 'You are an inspiration to us all.', "That's so funny!",
-                'Show me how you do that.', 'You look great!',
+                'Show me how you do that.', "I've always looked up to you.",
                 'You sound great!', 'You smell nice.', 'Great job!',
                 'You are a role model.', 'I wish more people were like you.',
                 'We appreciate what you did.', 'I hear people look up to you.',
-                'You are a really good dancer.',
+                'You are a really good dancer.', 'What makes you so successful?',
                 'When you speak, people listen.', 'You are a superb person.',
                 'You rock!', 'You nailed it!', 'That was really well done.',
                 'You are amazing!', 'We need more folks like you around here.',
                 'Excuse me, are you a model?', 'What a lovely laugh you have.',
-                "I'm jealous of your ability.", 'Thank you so much!',
+                "I'm jealous of your ability.", "You're the stuff of legends."
                 'This would not be possible without you.', 'Way to go! Yay!',
                 'Did you make that? I love it!', 'You are the best!',
                 'I like what you did.', 'Whoa. Have you been working out?',
@@ -951,9 +951,9 @@ class PassViewer(tk.Frame):
                 'You excel at everything.', 'Your voice is very soothing.',
                 'Is it true what people say?', 'The word is, you got it!',
                 'The Nobel Committee has been trying to reach you.',
-                "The Academy has been trying to reach you.",
-                'What makes you so successful?',
-                "I've always looked up to you."]
+                'The Academy is asking for your CV.', 'You look great!',
+                'The President seeks your council.', 'Thank you so much!',
+                ]
         praise = random.choice(comp)
         self.share.compliment_txt.config(text=praise)
 
