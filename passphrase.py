@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.34'
+__version__ = '0.9.35'
 
 import glob
 import random
@@ -538,6 +538,7 @@ class PassModeler:
         self.strdata['some_char'] = ascii_letters + digits + SYMBOLS
 
         self.get_words()
+        app.update_idletasks()
 
 
 class PassViewer(tk.Frame):
@@ -1484,7 +1485,7 @@ space entered between characters will also do a reset.
             'You rock!', 'You nailed it!', 'That was really well done.',
             'You are amazing!', 'We need more folks like you around here.',
             'Excuse me, are you a model?', 'What a lovely laugh you have.',
-            "I'm jealous of your ability.", "You're the stuff of legends."
+            "I'm jealous of your ability.", "You're the stuff of legends.",
             'This would not be possible without you.', 'Way to go! Yay!',
             'Did you make that? I love it!', 'You are the best!',
             'I like what you did.', 'Whoa. Have you been working out?',
@@ -1503,6 +1504,7 @@ space entered between characters will also do a reset.
 
         def refresh():
             self.share.compliment_txt.config(text="")
+            app.update_idletasks()
         self.share.compliment_txt.after(2222, refresh)
 
 
