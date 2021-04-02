@@ -1076,7 +1076,7 @@ class PassViewer(tk.Frame):
                                 sticky=tk.E)
 
         self.share.compliment_txt.grid(row=10, column=2, columnspan=2,
-                                       pady=(0, 15), padx=(25, 5), sticky=tk.W)
+                                       pady=(0, 15), padx=5, sticky=tk.W)
 
         # Need to adjust padding for MacOS b/c of different spacing.
         if MY_OS == 'dar':
