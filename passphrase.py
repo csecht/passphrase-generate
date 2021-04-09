@@ -918,51 +918,6 @@ class PassViewer(tk.Frame):
                                       width=0,
                                       command=quit_gui)
 
-    # def compliment(self) -> None:
-    #     """A silly diversion; called from Help menu.
-    #
-    #     :return: Transient label to make one smile.
-    #     """
-    #     comp = ["Hey there good lookin'!", 'I wish we had met sooner.',
-    #             'You are the smartest person I know.', 'I like your hair.',
-    #             'You have such a nice smile.', 'Smart move!',
-    #             'Blue is your color.', 'Good choice!',
-    #             "That's very kind of you.", "Stop! You're making me blush.",
-    #             'I just love what you did.', 'How witty you are!', 'Awesome!',
-    #             'Your tastes are impeccable.', "You're incredible!",
-    #             'You are so talented!', "I wish I'd thought of that.",
-    #             'This is fun!', 'Get back to work.', 'Nice!', 'You saved me.',
-    #             'You are an inspiration to us all.', "That's so funny!",
-    #             'Show me how you do that.', "I've always looked up to you.",
-    #             'You sound great!', 'You smell nice.', 'Great job!',
-    #             'You are a role model.', 'I wish more people were like you.',
-    #             'We appreciate what you did.', 'I hear people look up to you.',
-    #             'You are a really good dancer.', 'What makes you so successful?',
-    #             'When you speak, people listen.', 'You are a superb person.',
-    #             'You rock!', 'You nailed it!', 'That was really well done.',
-    #             'You are amazing!', 'We need more folks like you around here.',
-    #             'Excuse me, are you a model?', 'What a lovely laugh you have.',
-    #             "I'm jealous of your ability.", "You're the stuff of legends."
-    #             'This would not be possible without you.', 'Way to go! Yay!',
-    #             'Did you make that? I love it!', 'You are the best!',
-    #             'I like what you did.', 'Whoa. Have you been working out?',
-    #             "We can't thank you enough.", 'No, really, you have done enough.',
-    #             "That's a good look for you.", 'I could not have done it better.',
-    #             "I can't think of anything to say. Sorry.", 'Congratulations!',
-    #             "Well, THAT's impressive.", 'I hear that you are the one.',
-    #             'You excel at everything.', 'Your voice is very soothing.',
-    #             'Is it true what people say?', 'The word is, you got it!',
-    #             'The Nobel Committee has been trying to reach you.',
-    #             'The Academy is asking for your CV.', 'You look great!',
-    #             'The President seeks your council.', 'Thank you so much!',
-    #             ]
-    #     praise = random.choice(comp)
-    #     self.share.compliment_txt.config(text=praise)
-    #
-    #     def refresh():
-    #         self.share.compliment_txt.config(text="")
-    #     self.share.compliment_txt.after(2222, refresh)
-
     def grid_all(self) -> None:
         """Grid all tkinter widgets.
         """
