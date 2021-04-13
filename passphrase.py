@@ -1237,10 +1237,10 @@ f'     From the current selected wordlist, {selection},\n'
 f'     there are {wordcount} words available to construct passphrases.\n'
 """
 Passphrases and passcodes (pass-strings) are made by clicking the
-Generate! button, or pressing Enter or Ctrl-G, or from the Passphrase
-pull-down menu on the menu bar. The result you want can be cut and
-pasted using standard keyboard commands, or right-clicking, or using
-Edit from the menu bar.\n
+Generate! button, or pressing Enter, Return, or Ctrl-G, or selecting
+from the Passphrase pull-down menu on the menu bar. The result you
+want can be cut and pasted using standard keyboard commands, or 
+right-clicking, or using Edit from the menu bar.\n
 There is an option to exclude any character or string of characters
 from passphrase words and passcodes. Words with excluded letters are
 not available to use. Multiple windows can remain open to compare
