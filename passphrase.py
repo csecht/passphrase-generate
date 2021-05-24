@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.35'
+__version__ = '0.9.37'
 
 import glob
 import random
@@ -41,6 +41,8 @@ try:
 except (ImportError, ModuleNotFoundError) as error:
     print('Passphrase.py requires tkinter, which is included with Python 3.7+'
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
+          '\nDownloads available from python.org'
+          '\nOn Linux-Ubuntu you may need: sudo apt install python3-tk'
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 if sys.version_info < (3, 6):
@@ -883,16 +885,18 @@ class PassViewer(tk.Frame):
         menubar.add_cascade(label='Help', menu=help_menu)
         help_menu.add_cascade(label='Tips...', menu=tips)
         tips.add_command(label='Mouse right-click does stuff!')
-        tips.add_command(label='Return/Enter key also Generates!')
+        tips.add_command(label='   ...So do common keyboard commands.')
+        tips.add_command(label='Return/Enter key also Generates.')
         tips.add_command(label='Menu Passphrase>Open.. opens a scratch pad.')
-        tips.add_command(label='Very long results may turn blue.')
+        tips.add_command(label='Very long results may be in blue font.')
         tips.add_command(label='Esc key exits program from any window.')
         help_menu.add_command(label="What's going on here?",
                               command=self.share.explain)
         help_menu.add_command(label='About',
                               command=self.share.about)
         help_menu.add_command(label="I need a compliment",
-                              command=self.share.complimentme)
+                              command=self.share.complimentme,
+                              accelerator=f'{os_accelerator}+Shift+C')
 
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
