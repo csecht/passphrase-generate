@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.38'
+__version__ = '0.9.39'
 
 import glob
 import random
@@ -898,9 +898,10 @@ class PassViewer(tk.Frame):
                               command=self.share.explain)
         help_menu.add_command(label='About',
                               command=self.share.about)
+        # Need Ctrl+Shift+C for all OS b/c Command-Shift-C is a MacOS default for color palette.
         help_menu.add_command(label="I need a compliment",
                               command=self.share.complimentme,
-                              accelerator=f'{os_accelerator}+Shift+C')
+                              accelerator=f'Ctrl+Shift+C')
     
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
