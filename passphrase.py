@@ -120,6 +120,7 @@ def toplevel_bindings(topwindow: tk.Toplevel) -> None:
         topwindow.bind('<Command-w>', close_toplevel)
 
 
+# pylint: disable=unused-argument
 def close_toplevel(event=None) -> None:
     """
     Close the toplevel window that has focus.
@@ -1062,8 +1063,8 @@ class PassController(tk.Tk):
 
         # Need to fix window size to prevent an annoying window redraw each time
         #   font size changes the width of the result Entry() widgets and Frame().
-        # Pixels here are set to fit a 52 character width Entry() and are
-        #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
+        # Pixels here are set to fit a 52 character width, W, Entry() and are
+        #   OS-specific. (Var constant W = 52 is arbitrary, but I like it.)
         # TODO: Find way to auto-adjust OS-specific min/max size.
         if MY_OS == 'lin':
             # self.minsize(830, 410)  # <for default font size=12, W=52
@@ -1177,6 +1178,7 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).reset()
 
+    # pylint: disable=unused-argument
     def complimentme(self, *args) -> None:
         """Is called from Help menu. A silly diversion.
 
