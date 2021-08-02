@@ -1,0 +1,2 @@
+Do not rename move or this wordlists folder from its parent location;
+it must reside in the same folder as the passphrase.py application file.
