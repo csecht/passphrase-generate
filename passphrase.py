@@ -842,7 +842,7 @@ class PassViewer(tk.Frame):
                          accelerator=f'{os_accelerator}+O')
         file.add(tk.SEPARATOR)
         file.add_command(label='Quit', command=quit_gui,
-                         # MacOS doesn't recognize 'Command+Q' as an accelerator
+                         # MacOS doesn't display the 'Command+Q' accelerator
                          #   b/c can't override that system's native Command+Q,
                          accelerator=f'{os_accelerator}+Q')
 
@@ -865,7 +865,7 @@ class PassViewer(tk.Frame):
         fontsize = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='View', menu=view)
         view.add_command(label='Font color changes?',
-                         command=self.share.fontcolor)
+                         command=self.share.explaincolorchange)
         view.add_cascade(label='Font size...', menu=fontsize)
         # MacOS substitutes in appropriate key symbols for accelerators;
         #   Linux and Windows just use the literal strings.
@@ -1154,10 +1154,10 @@ class PassController(tk.Tk):
         """
         PassFyi(share=self).explain(self.choose_wordlist.get(), self.longlist_len)
 
-    def fontcolor(self):
+    def explaincolorchange(self):
         """Is called from Viewer Help menu.
         """
-        PassFyi(share=self).font_color()
+        PassFyi(share=self).explain_color_change()
 
     def about(self):
         """Is called from Viewer Help menu.
@@ -1305,7 +1305,7 @@ equivalent to bits of entropy. For more information see:
         # If need to prevent all key actions:
         # explaintext.bind("<Key>", lambda _: "break")
 
-    def font_color(self) -> None:
+    def explain_color_change(self) -> None:
         """Explain why the pass-string font changes color.
         """
         why = (
