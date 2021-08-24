@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 """
-A passphrase and passcode generator using MVC architecture, which is
-structured in three main classes of Model, View, and Controller; based
-on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
+A passphrase.py and its stand-alone, Passphrase, generate random
+passphrases and passcodes of user-determined length from several
+optional wordlists. It uses a MVC architecture (inspired by
+on Brian Oakley post;  https://stackoverflow.com/questions/32864610/)
 
     Copyright (C) 2021 C.S. Echt
 
@@ -20,8 +21,15 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     You should have received a copy of the GNU General Public License
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
-
-__version__ = '0.9.39'
+__author__ = 'cecht'
+__copyright__ = 'Copyright (C) 2021 C. Echt'
+__license__ = 'GNU General Public License'
+__version__ = '0.9.40'
+__program_name__ = 'passphrase.py'
+__project_url__ = 'https://github.com/csecht/passphrase-generate'
+__maintainer__ = 'cecht'
+__docformat__ = 'reStructuredText'
+__status__ = 'Development Status :: 4 - BETA'
 
 import glob
 import random
@@ -53,7 +61,7 @@ if sys.version_info < (3, 6):
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 
-PROJ_URL = 'github.com/csecht/passphrase-generate'
+PROJ_URL = 'https://github.com/csecht/passphrase-generate'
 
 SYMBOLS = "~!@#$%^&*_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
@@ -768,7 +776,7 @@ class PassViewer(tk.Frame):
     def config_master(self) -> None:
         """Set up main window configuration, keybindings, & menus.
         """
-
+        # Need to color in the entire parent Frame.
         self.config(bg=self.master_bg)
 
         # Need fields to stretch with window drag size and for the master
@@ -1079,7 +1087,7 @@ class PassController(tk.Tk):
             self.maxsize(745, 410)
 
         # pylint: disable=assignment-from-no-return
-        container = tk.Frame(self).grid(sticky=tk.NSEW)
+        container = tk.Frame(self).grid()
         PassViewer(master=container, share=self)
 
     def setfonts(self):
@@ -1338,55 +1346,41 @@ equivalent to bits of entropy. For more information see:
         colortext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
     def about(self) -> None:
-        """Basic information about the script; called from GUI Help menu.
         """
-        # msg separator dashes from https://coolsymbol.com/line-symbols.html.
-        boilerplate = (
-            """
-passphrase.py and Passphrase generate random passphrases and passcodes.
-"""
-            f'Download the most recent version from: {PROJ_URL}'
-            """
-──────────────────────────────────
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.\n
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details.\n
-You should have received a copy of the GNU General Public License
-along with this program. If not, see https://www.gnu.org/licenses/
-──────────────────────────────────\n
-                   Author:     cecht
-                   Copyright: Copyright (C) 2021 C.S. Echt
-                   Development Status: 4 - Beta
-                   Version:    """  # __version__ is inserted here.
-        )
-        num_lines = boilerplate.count('\n')
+        Basic information for passphrase.py and Passphrase.
+        Toplevel window called only from Help menu.
+        """
         aboutwin = tk.Toplevel()
-        aboutwin.title('About Passphrase')
         aboutwin.minsize(400, 200)
+        aboutwin.title('About Passphrase')
         aboutwin.focus_set()
         toplevel_bindings(aboutwin)
-
         os_width = 0
         if MY_OS in 'lin, win':
             os_width = 68
         elif MY_OS == 'dar':
             os_width = 60
 
-        abouttext = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
+        colour = ['SkyBlue4', 'DarkSeaGreen4', 'DarkGoldenrod4', 'DarkOrange4',
+                  'grey40', 'blue4', 'navy', 'DeepSkyBlue4', 'dark slate grey',
+                  'dark olive green', 'grey2', 'grey25', 'DodgerBlue4',
+                  'DarkOrchid4']
+        bkg = random.choice(colour)
+        num_doc_lines = __doc__.count('\n') + 2
+        abouttext = tk.Text(aboutwin, width=os_width, height=num_doc_lines + 7,
                             bg=random_bkg(), fg='grey95',
                             relief='groove', borderwidth=8,
                             padx=30, pady=10, wrap=tk.WORD,
                             font=self.share.text_font)
-        abouttext.insert(1.0, boilerplate + __version__)
+        abouttext.insert('1.0', f'{__doc__}\n'
+                        f'Author ______ {__author__}\n'
+                        f'Copyright ___ {__copyright__}\n'
+                        f'License _____ {__license__}\n'
+                        f'Maintainer __ {__maintainer__}\n'
+                        f'URL _________ {__project_url__}\n'
+                        f'Version _____ {__version__}\n'
+                        f'Status ______ {__status__}\n')
         abouttext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-
-        # If need to prevent all key actions:
-        # abouttext.bind("<Key>", lambda _: "break")
 
     def exclude_msg(self) -> None:
         """A pop-up describing how to use excluded characters.
