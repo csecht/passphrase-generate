@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.39'
+__version__ = '0.9.40'
 
 import glob
 import random
@@ -770,6 +770,8 @@ class PassViewer(tk.Frame):
 
         self.config(bg=self.master_bg)
 
+        ttk.Style().theme_use('alt')
+
         # Need fields to stretch with window drag size and for the master
         #   frame to properly fill the app window.
         self.master.columnconfigure(3, weight=1)
@@ -1064,7 +1066,6 @@ class PassController(tk.Tk):
         #   font size changes the width of the result Entry() widgets and Frame().
         # Pixels here are set to fit a 52 character width Entry() and are
         #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
-        # TODO: Find way to auto-adjust OS-specific min/max size.
         if MY_OS == 'lin':
             # self.minsize(830, 410)  # <for default font size=12, W=52
             # self.maxsize(830, 410)
