@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.39'
+__version__ = '0.9.40'
 
 import glob
 import random
@@ -769,6 +769,9 @@ class PassViewer(tk.Frame):
         """
 
         self.config(bg=self.master_bg)
+
+        if MY_OS == 'dar':
+            ttk.Style().theme_use('alt')
 
         # Need fields to stretch with window drag size and for the master
         #   frame to properly fill the app window.
