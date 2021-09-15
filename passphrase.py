@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.40'
+__version__ = '0.9.41'
 
 import glob
 import random
@@ -400,23 +400,35 @@ class PassModeler:
                 self.share.tkdata['excluded'].set(self.strdata['all_unused'])
 
         # Build pass-strings.
-        passphrase = "".join(VERY_RANDOM.choice(self.listdata['word_list']) for
-                             _ in range(numwords))
-        shortphrase = "".join(VERY_RANDOM.choice(self.listdata['short_list']) for
-                              _ in range(numwords))
-        passcode1 = "".join(VERY_RANDOM.choice(self.strdata['all_char']) for
-                            _ in range(numchars))
-        passcode2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
-                            _ in range(numchars))
-
-        # NOTE: if all char of strdata[] are excluded, then cannot generate pass-strings
-        #  because raises IndexError: Cannot choose from an empty sequence. Fix? Warn?
-        #  As it is, for example, cannot exclude all digits. If IndexError, call reset()?
-
-        # Randomly select 1 of each symbol to append; length not user-specified.
-        addsymbol = "".join(VERY_RANDOM.choice(self.strdata['symbols']) for _ in range(1))
-        addnum = "".join(VERY_RANDOM.choice(self.strdata['digi']) for _ in range(1))
-        addcaps = "".join(VERY_RANDOM.choice(self.strdata['caps']) for _ in range(1))
+        passphrase = ""
+        shortphrase = ""
+        passcode1 = ""
+        passcode2 = ""
+        addsymbol = ""
+        addnum = ""
+        addcaps = ""
+        # If all char of strdata[] are excluded, then cannot generate pass-strings
+        #  because raises "IndexError: Cannot choose from an empty sequence."
+        #  For example, cannot exclude all digits.
+        try:
+            passphrase = "".join(VERY_RANDOM.choice(self.listdata['word_list']) for
+                                 _ in range(numwords))
+            shortphrase = "".join(VERY_RANDOM.choice(self.listdata['short_list']) for
+                                  _ in range(numwords))
+            passcode1 = "".join(VERY_RANDOM.choice(self.strdata['all_char']) for
+                                _ in range(numchars))
+            passcode2 = "".join(VERY_RANDOM.choice(self.strdata['some_char']) for
+                                _ in range(numchars))
+            # Randomly select 1 of each symbol to append; length not user-specified.
+            addsymbol = "".join(VERY_RANDOM.choice(self.strdata['symbols']) for _ in range(1))
+            addnum = "".join(VERY_RANDOM.choice(self.strdata['digi']) for _ in range(1))
+            addcaps = "".join(VERY_RANDOM.choice(self.strdata['caps']) for _ in range(1))
+        except (IndexError):
+            messagebox.showerror(title='Exceeded exclusion limit',
+                message='Uh oh!',
+                detail='No characters of one of the required types are left to exclude.'
+                       ' Try again with fewer exclusions. Time to exit...')
+            quit_gui()
 
         # Build passphrase alternatives.
         phraseplus = passphrase + addsymbol + addnum + addcaps
