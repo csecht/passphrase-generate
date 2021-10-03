@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.41'
+__version__ = '0.9.42'
 
 import glob
 import random
@@ -97,9 +97,19 @@ def random_bkg() -> str:
               'DarkSeaGreen4', 'DeepSkyBlue4', 'DodgerBlue4',
               'firebrick4', 'grey2', 'grey25', 'grey40',
               'MediumOrchid4', 'MediumPurple4', 'navy',
-              'OrangeRed4', 'purple4', 'saddle brown',
+              'OrangeRed4', '#2e2e89', 'saddle brown',
               'SkyBlue4'
               ]
+    # Deuteranopia simulated colors.
+    # colour = ['blue4', '#646430', ''#444450';,
+    #           '#727207', '#5c5c00', '#393989',
+    #           '#80806a', '#46468e', '#39398d',
+    #           '#3f3f17', 'grey2', 'grey25', 'grey40',
+    #           '#4d4d89', '#4e4e8a', 'navy',
+    #           '#474700', '#2e2e89', '#5c5c11',
+    #           '#63638c'
+    #           ]
+
     return random.choice(colour)
 
 
@@ -574,8 +584,6 @@ class PassViewer(tk.Frame):
         self.share.setfonts()
 
         # Font colors used in main (app) window:
-        # self.master_fg =    'LightCyan2'  # Used for row headers.
-        # self.master_bg =    'SkyBlue4'  # Also used for some labels.
         self.master_fg = 'grey90'  # Used for row headers.
         self.master_bg = 'LightSteelBlue4'  # Also used for some labels.
         self.dataframe_bg = 'grey40'  # Also background for data labels.
@@ -583,6 +591,14 @@ class PassViewer(tk.Frame):
         self.share.pass_fg = 'brown4'  # Pass-string font color.
         self.share.long_fg = 'blue'  # Long pass-string font color.
         self.pass_bg = 'khaki2'  # Background of pass-string results cells.
+        # --------------- deuteranopia simulated colors  ---------------
+        # self.master_fg = 'grey90'  # Used for row headers.
+        # self.master_bg = '#77778b'  # Also used for some labels.
+        # self.dataframe_bg = 'grey40'  # Also background for data labels.
+        # self.stubpass_fg = 'grey60'  # For initial pass-string stub.
+        # self.share.pass_fg = '#454520'  # Pass-string font color.
+        # self.share.long_fg = 'blue'  # Long pass-string font color.
+        # self.pass_bg = '#e9e985'  # Background of pass-string results cells.
 
         self.share.stubresult = 'Result can be copied and pasted.'
 
@@ -753,12 +769,15 @@ class PassViewer(tk.Frame):
         self.excluded_head = tk.Label(text='Currently excluded:',
                                       fg=self.master_fg, bg=self.master_bg)
         self.excluded_show = tk.Label(textvariable=self.share.tkdata['excluded'],
-                                      fg='orange', bg=self.master_bg)
+                                      # fg='orange', bg=self.master_bg)
+                                      fg='#c3c300', bg=self.master_bg) # deuteranopia sim
+
         self.quit_button = ttk.Button()
         # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        self.share.compliment_txt = tk.Label(fg='orange', bg=self.master_bg,
-                                             relief='flat', border=0)
+        self.share.compliment_txt = tk.Label(relief='flat', border=0,
+                                             # fg='orange', bg=self.master_bg)
+                                             fg='#c3c300', bg=self.master_bg)  # deuteranopia sim
 
         self.config_master()
         self.config_buttons()
