@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.42'
+__version__ = '0.9.43'
 
 import glob
 import random
@@ -585,7 +585,7 @@ class PassViewer(tk.Frame):
 
         # Font colors used in main (app) window:
         self.master_fg = 'grey90'  # Used for row headers.
-        self.master_bg = 'LightSteelBlue4'  # Also used for some labels.
+        self.master_bg = 'SkyBlue4'  # Also used for some labels.
         self.dataframe_bg = 'grey40'  # Also background for data labels.
         self.stubpass_fg = 'grey60'  # For initial pass-string stub.
         self.share.pass_fg = 'brown4'  # Pass-string font color.
@@ -593,7 +593,7 @@ class PassViewer(tk.Frame):
         self.pass_bg = 'khaki2'  # Background of pass-string results cells.
         # --------------- deuteranopia simulated colors  ---------------
         # self.master_fg = 'grey90'  # Used for row headers.
-        # self.master_bg = '#77778b'  # Also used for some labels.
+        # self.master_bg = '#63638c'  # Also used for some labels.
         # self.dataframe_bg = 'grey40'  # Also background for data labels.
         # self.stubpass_fg = 'grey60'  # For initial pass-string stub.
         # self.share.pass_fg = '#454520'  # Pass-string font color.
