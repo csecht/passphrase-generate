@@ -39,7 +39,7 @@ try:
     from tkinter import messagebox
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
-    print('Passphrase.py requires tkinter, which is included with some Python 3.7+'
+    print('Passphrase requires tkinter, which is included with some Python 3.7+'
           '\ndistributions, such as from Active State.'
           '\nInstall 3.7+ or re-install Python and include Tk/Tcl.'
           '\nDownloads available from python.org'
@@ -97,7 +97,7 @@ def random_bkg() -> str:
               'DarkSeaGreen4', 'DeepSkyBlue4', 'DodgerBlue4',
               'firebrick4', 'grey2', 'grey25', 'grey40',
               'MediumOrchid4', 'MediumPurple4', 'navy',
-              'OrangeRed4', '#2e2e89', 'saddle brown',
+              'OrangeRed4', 'purple4', 'saddle brown',
               'SkyBlue4'
               ]
     # Deuteranopia simulated colors.
