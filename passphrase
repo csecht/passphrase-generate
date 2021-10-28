@@ -21,7 +21,7 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
 
-__version__ = '0.9.43'
+__version__ = '0.9.44'
 
 import glob
 import random
@@ -605,21 +605,21 @@ class PassViewer(tk.Frame):
         # All data variables that are passed(shared) between Modeler and Viewer.
         self.share.tkdata = {
             'available': tk.IntVar(),
-            'pp_raw_len': tk.IntVar(),
-            'pp_plus_len': tk.IntVar(),
-            'pp_short_len': tk.IntVar(),
-            'pp_raw_h': tk.IntVar(),
-            'pp_plus_h': tk.IntVar(),
-            'pp_short_h': tk.IntVar(),
-            'phrase_raw': tk.StringVar(),
-            'phrase_plus': tk.StringVar(),
-            'phrase_short': tk.StringVar(),
-            'pc_any_len': tk.IntVar(),
-            'pc_some_len': tk.IntVar(),
-            'pc_any_h': tk.IntVar(),
-            'pc_some_h': tk.IntVar(),
-            'pc_any': tk.StringVar(),
-            'pc_some': tk.StringVar(),
+            'pp_raw_h': tk.IntVar(value=0),
+            'pp_plus_h': tk.IntVar(value=0),
+            'pp_short_h': tk.IntVar(value=0),
+            'pp_raw_len': tk.IntVar(value=0),
+            'pp_plus_len': tk.IntVar(value=0),
+            'pp_short_len': tk.IntVar(value=0),
+            'phrase_raw': tk.StringVar(value=self.share.stubresult),
+            'phrase_plus': tk.StringVar(value=self.share.stubresult),
+            'phrase_short': tk.StringVar(value=self.share.stubresult),
+            'pc_any_len': tk.IntVar(value=0),
+            'pc_some_len': tk.IntVar(value=0),
+            'pc_any_h': tk.IntVar(value=0),
+            'pc_some_h': tk.IntVar(value=0),
+            'pc_any': tk.StringVar(value=self.share.stubresult),
+            'pc_some': tk.StringVar(value=self.share.stubresult),
             'excluded': tk.StringVar(),
         }
 
@@ -663,9 +663,6 @@ class PassViewer(tk.Frame):
         self.pp_short_head = tk.Label(text="...words less than 7 letters",
                                       fg=self.master_fg, bg=self.master_bg)
 
-        self.share.tkdata['pp_raw_h'].set(0)
-        self.share.tkdata['pp_plus_h'].set(0)
-        self.share.tkdata['pp_short_h'].set(0)
         self.pp_raw_h_lbl = tk.Label(self.result_frame1, width=3,
                                      fg=self.master_fg, bg=self.dataframe_bg,
                                      textvariable=self.share.tkdata['pp_raw_h'])
@@ -676,9 +673,6 @@ class PassViewer(tk.Frame):
                                        fg=self.master_fg, bg=self.dataframe_bg,
                                        textvariable=self.share.tkdata['pp_short_h'])
 
-        self.share.tkdata['pp_raw_len'].set(0)
-        self.share.tkdata['pp_plus_len'].set(0)
-        self.share.tkdata['pp_short_len'].set(0)
         self.pp_raw_len_lbl = tk.Label(self.result_frame1, width=3,
                                        fg=self.master_fg, bg=self.dataframe_bg,
                                        textvariable=self.share.tkdata['pp_raw_len'])
@@ -689,9 +683,6 @@ class PassViewer(tk.Frame):
                                          fg=self.master_fg, bg=self.dataframe_bg,
                                          textvariable=self.share.tkdata['pp_short_len'])
 
-        self.share.tkdata['phrase_raw'].set(self.share.stubresult)
-        self.share.tkdata['phrase_plus'].set(self.share.stubresult)
-        self.share.tkdata['phrase_short'].set(self.share.stubresult)
         # Results are displayed as Entry() instead of Text() b/c
         # textvariable is easier to code than .insert(). Otherwise, identical.
         self.share.pp_raw_show = tk.Entry(self.result_frame1, width=W,
@@ -707,8 +698,6 @@ class PassViewer(tk.Frame):
                                             textvariable=self.share.tkdata['phrase_short'],
                                             font=self.share.result_font)
         # End passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-        self.generate_btn = ttk.Button()
 
         # Passcode section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.pc_section_head = tk.Label(text='Passcodes', font=('default', 12),
@@ -731,16 +720,13 @@ class PassViewer(tk.Frame):
         self.pc_some_head = tk.Label(text="More likely usable characters",
                                      fg=self.master_fg, bg=self.master_bg)
 
-        self.share.tkdata['pc_any_len'].set(0)
-        self.share.tkdata['pc_some_len'].set(0)
         self.pc_any_len_lbl = tk.Label(self.result_frame2, width=3,
                                        fg=self.master_fg, bg=self.dataframe_bg,
                                        textvariable=self.share.tkdata['pc_any_len'])
         self.pc_some_len_lbl = tk.Label(self.result_frame2, width=3,
                                         fg=self.master_fg, bg=self.dataframe_bg,
                                         textvariable=self.share.tkdata['pc_some_len'])
-        self.share.tkdata['pc_any_h'].set(0)
-        self.share.tkdata['pc_some_h'].set(0)
+
         self.pc_any_h_lbl = tk.Label(self.result_frame2, width=3,
                                      fg=self.master_fg, bg=self.dataframe_bg,
                                      textvariable=self.share.tkdata['pc_any_h'])
@@ -748,8 +734,6 @@ class PassViewer(tk.Frame):
                                       fg=self.master_fg, bg=self.dataframe_bg,
                                       textvariable=self.share.tkdata['pc_some_h'])
 
-        self.share.tkdata['pc_any'].set(self.share.stubresult)
-        self.share.tkdata['pc_some'].set(self.share.stubresult)
         self.share.pc_any_show = tk.Entry(self.result_frame2,
                                           textvariable=self.share.tkdata['pc_any'],
                                           width=W, font=self.share.result_font,
@@ -764,25 +748,19 @@ class PassViewer(tk.Frame):
         self.exclude_head = tk.Label(text='Exclude character(s)',
                                      fg=self.pass_bg, bg=self.master_bg)
         self.share.exclude_entry = tk.Entry(width=2)
-        self.exclude_info_b = ttk.Button()
-        self.reset_button = ttk.Button()
         self.excluded_head = tk.Label(text='Currently excluded:',
                                       fg=self.master_fg, bg=self.master_bg)
         self.excluded_show = tk.Label(textvariable=self.share.tkdata['excluded'],
-                                      # fg='orange', bg=self.master_bg)
-                                      fg='#c3c300', bg=self.master_bg) # deuteranopia sim
+                                      fg='orange', bg=self.master_bg)
 
-        self.quit_button = ttk.Button()
         # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         self.share.compliment_txt = tk.Label(relief='flat', border=0,
-                                             # fg='orange', bg=self.master_bg)
-                                             fg='#c3c300', bg=self.master_bg)  # deuteranopia sim
+                                             fg='orange', bg=self.master_bg)
 
         self.config_master()
         self.config_buttons()
         self.grid_all()
-
         self.share.checkfiles()
         self.share.getwords()
 
@@ -790,10 +768,7 @@ class PassViewer(tk.Frame):
         #    shift when PassModeler.config_results() is called b/c different
         #    from app position.
         self.master.geometry('+120+100')
-        # Need original/default window size to restore geometry after size change.
-        # self.master.update_idletasks()
-        # self.share.app_winwide = self.master.winfo_width()
-        # self.share.app_winhigh = self.master.winfo_height()
+
 
     def config_master(self) -> None:
         """Set up main window configuration, keybindings, & menus.
@@ -944,6 +919,11 @@ class PassViewer(tk.Frame):
         # There are problems of tk.Button text showing up on MacOS, so ttk.
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
+        self.generate_btn = ttk.Button()
+        self.exclude_info_b = ttk.Button()
+        self.reset_button = ttk.Button()
+        self.quit_button = ttk.Button()
+
         style = ttk.Style()
         style.map("My.TButton",
                   foreground=[('active', self.share.pass_fg)],
