@@ -47,7 +47,7 @@ except (ImportError, ModuleNotFoundError) as error:
           f'\nSee also: https://tkdocs.com/tutorial/install.html \n{error}')
 
 if sys.version_info < (3, 6):
-    print('passphrase.py requires at least Python 3.6.')
+    print('passphrase requires at least Python 3.6.')
     sys.exit(1)
 
 MY_OS = sys.platform[:3]
@@ -1375,7 +1375,7 @@ equivalent to bits of entropy. For more information see:
         # msg separator dashes from https://coolsymbol.com/line-symbols.html.
         boilerplate = (
             """
-passphrase.py and Passphrase generate random passphrases and passcodes.
+passphrase and Passphrase generate random passphrases and passcodes.
 """
             f'Download the most recent version from: {PROJ_URL}'
             """

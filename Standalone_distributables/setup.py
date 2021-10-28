@@ -9,7 +9,7 @@ MacOS command:
 Windows command:
     python setup.py py2exe
 
-For all systems, the wordlists folder and the passphrase.py file from the
+For all systems, the wordlists folder and the passphrase file from the
 passphrase-generate repository must be in the parent folder where this is executed.
 
 You will also need to install one of these programs:
@@ -31,8 +31,8 @@ for files in os.listdir('/Users/path/to/passphrase-generate-master/wordlists/'):
         DATA_FILES.append(f2)
 
 setup(
-    app=['passphrase.py'],  # comment out for Windows
-    # windows=['passphrase.py,],  # uncomment for Windows
+    app=['passphrase'],  # comment out for Windows
+    # windows=['passphrase,],  # uncomment for Windows
     data_files=DATA_FILES,
     name='Passphrase',
     version='0.0.0',
