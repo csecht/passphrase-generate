@@ -1563,4 +1563,6 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
+    img = tk.PhotoImage(file='images/passphrase_icon512.png')
+    app.wm_iconphoto(True, img)
     app.mainloop()
