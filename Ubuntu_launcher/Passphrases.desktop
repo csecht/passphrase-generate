@@ -2,8 +2,8 @@
 [Desktop Entry]
 VERSION=1.0
 Encoding=UTF-8
-Exec=python3 /home/<you the user>/passphrase-generate-master/passphrase.py
-Path=/home/<you the user>/passphrase-generate-master/
+Exec=python3 /home/yourusername/passphrase-generate-master/passphrase.py
+Path=/home/yourusername/passphrase-generate-master/
 Categories=Utility;Application;
 Terminal=false
 Type=Application

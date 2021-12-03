@@ -32,7 +32,7 @@ For **Linux** or **MacOS**, the `wordlists` directory also needs to be in the pa
 
 ### Stand-alone versions (no Python installation needed!)
 #### Passphrase.app - MacOS
-A **MacOS** standalone of passphrase. Download an extract the GitHub distribution package as outlined above. Inside passphrase-generate-master/Standalone_distributables folder is `Passphrase_mac.app.zip`. Unzip that (just double click and follow the prompts) to install the `Passphrase.app`, which you can place where you like. Alternatively, the distributable app can  be downloaded directly from https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase_mac.app.zip. `Passphrase.app` was created with `py2app` from https://pypi.org/project/py2app/
+A **MacOS** standalone of passphrase. Download an extract the GitHub distribution package as outlined above. Inside passphrase-generate-master/Standalone_distributables folder is `Passphrase.dmg`. Mount that disk image (just double click and follow the prompts) to install the `Passphrase.app`, which you can place where you like. Alternatively, the disk image can  be downloaded directly from https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase.dmg. `Passphrase.app` was created with `py2app` from https://pypi.org/project/py2app/
 
 The first time you try to open the app, however, you will get a message saying it can't be opened. Click "Cancel", go into System Preferences > Security & Privacy, click the "Open anyway" button, then "Open". It does not open initially because it was not downloaded from the Apple Store or from a recognized Apple developer. 
 

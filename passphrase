@@ -20,8 +20,16 @@ on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
     You should have received a copy of the GNU General Public License
     along with this program. If not, see https://www.gnu.org/licenses/.
 """
-
-__version__ = '0.10.0'
+__author__ = 'cecht'
+__copyright__ = 'Copyright (C) 2021 C.S. Echt'
+__license__ = 'GNU General Public License'
+__program_name__ = 'passphrase'
+__version__ = '0.10.1'
+__dev_environment__ = "Python 3.8 - 3.9"
+__project_url__ = 'github.com/csecht/passphrase-generate'
+__maintainer__ = 'cecht'
+__docformat__ = 'Markdown'
+__status__ = 'Development Status :: 2 - Beta'
 
 import glob
 import random
@@ -53,34 +61,33 @@ if sys.version_info < (3, 6):
 MY_OS = sys.platform[:3]
 # MY_OS = 'win'  # TESTING
 
-PROJ_URL = 'github.com/csecht/passphrase-generate'
-
 SYMBOLS = "~!@#$%^&*_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
-
-SYSDICT_PATH = Path('/usr/share/dict/words')
 
 VERY_RANDOM = random.Random(random.random())
 # VERY_RANDOM = random.Random(time.time())  # Use epoch timestamp seed.
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
-
-# Note: The optional wordlist files are referenced in PassModeler().
-WORDDIR = './wordlists/'
 
 W = 52  # Default width of the results display fields.
 
 
 # Functions used by passphrase, but not part of MVC structure %%%%%%%%%%%%%%%%%
 # pylint: disable=unused-argument
-def quit_gui(event=None) -> None:
+def quit_gui(*keybind):
     """Safe and informative exit from the program.
 
-    :param event: Needed for keybindings.
-    :type event: Direct call from keybindings.
+    :param keybind: Needed for keybindings.
+    :type keybind: Direct call from keybindings.
     """
     print('\n  *** User has quit the program. Exiting...\n')
-    app.destroy()
-    sys.exit(0)
+    try:
+        app.update_idletasks()
+        app.after(200)
+        app.destroy()
+    # pylint: disable=broad-except
+    except Exception:
+        sys.exit(0)
+    return keybind
 
 
 def random_bkg() -> str:
@@ -130,12 +137,12 @@ def toplevel_bindings(topwindow: tk.Toplevel) -> None:
         topwindow.bind('<Command-w>', close_toplevel)
 
 
-def close_toplevel(event=None) -> None:
+def close_toplevel(*keybind) -> None:
     """
     Close the toplevel window that has focus.
     Called from Command-W or Control-W keybinding or right-click menu.
 
-    :param event: event=None is needed for keybindings.
+    :param keybind: Needed for keybindings.
     """
     # Based on https://stackoverflow.com/questions/66384144/
     # Need to cover all cases when the focus is on any toplevel window,
@@ -159,6 +166,30 @@ def close_toplevel(event=None) -> None:
             if parent in str(widget):
                 widget.destroy()
                 break
+
+
+def valid_path_to(relative_path: str) -> Path:
+    """
+    Get absolute path to files and directories.
+    _MEIPASS var is used by distribution programs from
+    PyInstaller --onefile; e.g. for images dir.
+
+    :param relative_path: File or dir name path, as string.
+    :return: Absolute path as pathlib Path object.
+    """
+    # Modified from: https://stackoverflow.com/questions/7674790/
+    #    bundling-data-files-with-pyinstaller-onefile and PyInstaller manual.
+    if getattr(sys, 'frozen', False):  # hasattr(sys, '_MEIPASS'):
+        base_path = getattr(sys, '_MEIPASS', Path(Path(__file__).resolve()).parent)
+        return Path(base_path) / relative_path
+    else:
+        return Path(relative_path).resolve()
+
+
+# Note: The optional wordlist files are referenced in PassModeler().
+WORDDIR = valid_path_to('wordlists')
+# System dictionary path is needed only for Linux and macOS, not Windows.
+SYSDICT_PATH = Path('/usr/share/dict/words').resolve()
 
 
 class RightClickCmds:
@@ -202,15 +233,14 @@ class RightClickCmds:
 
         right_click_menu.tk_popup(event.x_root + 10, event.y_root + 15)
 
-    @staticmethod
-    def right_click_edit(event, command):
+    @classmethod
+    def right_click_edit(cls, event, command):
         """
         Sets menu command to the selected predefined virtual event.
         Event is a unifying binding across multiple platforms.
         https://www.tcl.tk/man/tcl8.6/TkCmd/event.htm#M7
         """
         event.widget.event_generate(f'<<{command}>>')
-
 
 # END of non-MVC functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -238,12 +268,12 @@ class PassModeler:
 
         self.share.word_files = {
             'System dictionary': SYSDICT_PATH,
-            'EFF long wordlist': WORDDIR + 'eff_large_wordlist.txt',
-            'US Constitution': WORDDIR + 'usconst_wordlist.txt',
-            'Don Quijote': WORDDIR + 'don_quijote_wordlist.txt',
-            'Frankenstein': WORDDIR + 'frankenstein_wordlist.txt',
-            'Les Miserables': WORDDIR + 'les_miserables.txt',
-            '此開卷第 Story of the Stone': WORDDIR + 'red_chamber_wordlist.txt'
+            'EFF long wordlist': WORDDIR / 'eff_large_wordlist.txt',
+            'US Constitution': WORDDIR / 'usconst_wordlist.txt',
+            'Don Quijote': WORDDIR / 'don_quijote_wordlist.txt',
+            'Frankenstein': WORDDIR / 'frankenstein_wordlist.txt',
+            'Les Miserables': WORDDIR / 'les_miserables.txt',
+            '此開卷第 Story of the Stone': WORDDIR / 'red_chamber_wordlist.txt'
         }
 
     def check_files(self) -> None:
@@ -265,9 +295,9 @@ class PassModeler:
                    '(*_wordlist.txt). Wordlist files should be\n'
                    'in a folder called "wordlists" included\n'
                    'with the repository downloaded from:\n'
-                   f'{PROJ_URL}\nWill exit program now...')
+                   f'{__project_url__}\nWill exit program now...')
 
-        wordfile_list = glob.glob(WORDDIR + '*_wordlist.txt')
+        wordfile_list = glob.glob(str(WORDDIR / '*_wordlist.txt'))
         # This covers platforms with and w/o system dictionary.
         if Path.is_file(SYSDICT_PATH) is False:
             if len(wordfile_list) == 0:
@@ -290,7 +320,7 @@ class PassModeler:
                       'Wordlist files should be in a folder\n'
                       'called "wordlists" included with\n'
                       'the repository downloaded from:\n'
-                      f'{PROJ_URL}\n'
+                      f'{__project_url__}\n'
                       'Using system dictionary words...\n')
             self.share.choose_wordlist.config(state='disabled')
             # print(notice)
@@ -433,8 +463,9 @@ class PassModeler:
             addsymbol = "".join(VERY_RANDOM.choice(self.strdata['symbols']) for _ in range(1))
             addnum = "".join(VERY_RANDOM.choice(self.strdata['digi']) for _ in range(1))
             addcaps = "".join(VERY_RANDOM.choice(self.strdata['caps']) for _ in range(1))
-        except (IndexError):
-            messagebox.showerror(title='Exceeded exclusion limit',
+        except IndexError:
+            messagebox.showerror(
+                title='Exceeded exclusion limit',
                 message='Uh oh!',
                 detail='No characters of one of the required types are left to exclude.'
                        ' Try again with fewer exclusions. Time to exit...')
@@ -769,7 +800,6 @@ class PassViewer(tk.Frame):
         #    from app position.
         self.master.geometry('+120+100')
 
-
     def config_master(self) -> None:
         """Set up main window configuration, keybindings, & menus.
         """
@@ -916,7 +946,7 @@ class PassViewer(tk.Frame):
     def config_buttons(self) -> None:
         """Set up all buttons used in master window.
         """
-        # There are problems of tk.Button text showing up on MacOS, so ttk.
+        # There are problems of tk.Button text showing up on MacOS, so use ttk.
         # Explicit styles are needed for buttons to show properly on MacOS.
         #  ... even then, background and pressed colors won't be recognized.
         self.generate_btn = ttk.Button()
@@ -1058,7 +1088,7 @@ class PassViewer(tk.Frame):
         self.share.compliment_txt.grid(row=10, column=2, columnspan=2,
                                        pady=(0, 15), padx=5, sticky=tk.W)
 
-        # Need to adjust padding for MacOS b/c of different spacing.
+        # Need to adjust padding for MacOS b/c of different font spacing.
         if MY_OS == 'dar':
             self.exclude_head.grid(padx=(13, 0))
             self.reset_button.grid(columnspan=2, padx=(20, 0))
@@ -1078,7 +1108,6 @@ class PassController(tk.Tk):
         #   font size changes the width of the result Entry() widgets and Frame().
         # Pixels here are set to fit a 52 character width Entry() and are
         #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
-        # TODO: Find way to auto-adjust OS-specific min/max size.
         if MY_OS == 'lin':
             # self.minsize(830, 410)  # <for default font size=12, W=52
             # self.maxsize(830, 410)
@@ -1103,18 +1132,18 @@ class PassController(tk.Tk):
         PassFonts(share=self).set_fonts()
 
     # pylint: disable=unused-argument
-    def growfont(self, *args):
+    def growfont(self, *keybind):
         """Is called from keybinding or View menu.
 
-        :param args: Needed for keybindings
+        :param keybind: Needed for keybindings
         """
         PassFonts(share=self).grow_font()
 
     # pylint: disable=unused-argument
-    def shrinkfont(self, *args):
+    def shrinkfont(self, *keybind):
         """Is called from keybinding or View menu.
 
-        :param args: Needed for keybindings
+        :param keybind: Needed for keybindings
         """
         PassFonts(share=self).shrink_font()
 
@@ -1153,10 +1182,10 @@ class PassController(tk.Tk):
         PassModeler(share=self).make_pass()
 
     # pylint: disable=unused-argument
-    def scratchpad(self, *args):
+    def scratchpad(self, *keybind):
         """Is called from the Viewer Passphrase menu or key binding.
 
-        :param args: Needed for keybindings
+        :param keybind: Needed for keybindings
         """
         PassFyi(share=self).scratch_pad()
 
@@ -1183,18 +1212,18 @@ class PassController(tk.Tk):
         PassFyi(share=self).exclude_msg()
 
     # pylint: disable=unused-argument
-    def reset(self, *args) -> None:
+    def reset(self, *keybind) -> None:
         """
         Resets all results and exclusions. Called from key, button, menu.
 
-        :param args: Needed for keybindings
+        :param keybind: Needed for keybindings
         """
         PassModeler(share=self).reset()
 
-    def complimentme(self, *args) -> None:
+    def complimentme(self, *keybind) -> None:
         """Is called from Help menu. A silly diversion.
 
-        :param args: Needed for keybinding
+        :param keybind: Needed for keybinding
         """
         PassFyi(share=self).compliment_me()
 
@@ -1349,52 +1378,34 @@ equivalent to bits of entropy. For more information see:
         colortext.insert(1.0, why)
         colortext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-    def about(self) -> None:
+    @staticmethod
+    def about() -> None:
         """Basic information about the script; called from GUI Help menu.
         """
-        # msg separator dashes from https://coolsymbol.com/line-symbols.html.
-        boilerplate = (
-            """
-passphrase and Passphrase generate random passphrases and passcodes.
-"""
-            f'Download the most recent version from: {PROJ_URL}'
-            """
-──────────────────────────────────
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.\n
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU General Public License for more details.\n
-You should have received a copy of the GNU General Public License
-along with this program. If not, see https://www.gnu.org/licenses/
-──────────────────────────────────\n
-                   Author:     cecht
-                   Copyright: Copyright (C) 2021 C.S. Echt
-                   Development Status: 4 - Beta
-                   Version:    """  # __version__ is inserted here.
-        )
-        num_lines = boilerplate.count('\n')
+        num_lines = __doc__.count('\n') + 2
         aboutwin = tk.Toplevel()
         aboutwin.title('About Passphrase')
         aboutwin.minsize(400, 200)
         aboutwin.focus_set()
         toplevel_bindings(aboutwin)
 
-        os_width = 0
-        if MY_OS in 'lin, win':
-            os_width = 68
-        elif MY_OS == 'dar':
-            os_width = 60
-
-        abouttext = tk.Text(aboutwin, width=os_width, height=num_lines + 2,
+        abouttext = tk.Text(aboutwin, width=74, height=num_lines + 8,
                             bg=random_bkg(), fg='grey95',
                             relief='groove', borderwidth=8,
                             padx=30, pady=10, wrap=tk.WORD,
-                            font=self.share.text_font)
-        abouttext.insert(1.0, boilerplate + __version__)
+                            # font=self.share.text_font
+                            font='TkFixedFont'
+                            )
+        abouttext.insert(1.0,
+                         f'{__doc__}\n'
+                         f'{"Author:".ljust(13)}{__author__}\n'
+                         f'{"License:".ljust(13)}{__license__}\n'
+                         f'{"Program:".ljust(13)}{__program_name__}\n'
+                         f'{"Version:".ljust(13)}{__version__}\n'
+                         f'{"Dev. Env.:".ljust(13)}{__dev_environment__}\n'
+                         f'{"URL:".ljust(13)}{__project_url__}\n'
+                         f'{"Maintainer:".ljust(13)}{__maintainer__}\n'
+                         f'{"Status:".ljust(13)}{__status__}\n')
         abouttext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         # If need to prevent all key actions:
@@ -1563,6 +1574,6 @@ class PassFonts:
 if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
-    img = tk.PhotoImage(file='images/passphrase_icon512.png')
+    img = tk.PhotoImage(file=valid_path_to('images/passphrase_icon512.png'))
     app.wm_iconphoto(True, img)
     app.mainloop()
