@@ -41,10 +41,9 @@ from typing import Dict, List, Any
 
 try:
     import tkinter as tk
-    import tkinter.ttk as ttk
     # pylint: disable=unused-import
     import tkinter.font
-    from tkinter import messagebox
+    from tkinter import messagebox, ttk
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
     print('Passphrase requires tkinter, which is included with some Python 3.7+'
@@ -59,7 +58,6 @@ if sys.version_info < (3, 6):
     sys.exit(1)
 
 MY_OS = sys.platform[:3]
-# MY_OS = 'win'  # TESTING
 
 SYMBOLS = "~!@#$%^&*_-+="
 # SYMBOLS = "~!@#$%^&*()_-+={}[]<>?"
@@ -182,8 +180,7 @@ def valid_path_to(relative_path: str) -> Path:
     if getattr(sys, 'frozen', False):  # hasattr(sys, '_MEIPASS'):
         base_path = getattr(sys, '_MEIPASS', Path(Path(__file__).resolve()).parent)
         return Path(base_path) / relative_path
-    else:
-        return Path(relative_path).resolve()
+    return Path(relative_path).resolve()
 
 
 # Note: The optional wordlist files are referenced in PassModeler().
