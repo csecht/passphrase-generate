@@ -45,7 +45,12 @@ A **Windows** standalone of passphrase. Download an extract the GitHub distribut
 
 You will likely first need to permit Windows to open it: from the pop-up warning, click on "more info", then follow the prompts to open the program. The executable file can be placed anywhere. 
 
-Passphrases.exe was created with with PyInstaller available from https://pypi.org/project/pyinstaller/ . 
+Passphrases.exe was created with PyInstaller available from https://pypi.org/project/pyinstaller/ . 
+
+### Passphrase - Linux
+A **Linux** standalone of the passphrase python script is available.  Download and extract the GitHub distribution package as outlined above. Inside passphrase-generate-master/Standalone_distributables folder is `Passphrase_linux.zip`. Alternatively, the archived program can be downloaded directly from https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase_linux.zip . Extract the archive and move the Passphrase executable file to a convenient location; double-click to launch. You may need to change its permissions to allow it to launch.
+
+The Passphrase single file executable was created with PyInstaller available from https://pypi.org/project/pyinstaller/
 
 ## Wordlist sources:
 Optional wordlists were derived from texts obtained from these sites:
@@ -59,7 +64,7 @@ The `parser` script from https://github.com/csecht/make_wordlist was used to cre
 The program places no limits on the length of pass-strings, though your system memory might. The window can be dragged to view longer results up to a limit; results exceeding that limit can still be copied and pasted.
 
 ## Known issues:
-In MacOS, using F1 to increase font size in any pop-up window inserts a "?"/unknown character in the text when cursor in in the text field. 
+In MacOS, using F1 to increase font size in any pop-up window inserts a "?"/unknown character in the text when cursor in the text field. 
 
 ## Development plans:
 - Use Windows system dictionary
