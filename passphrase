@@ -24,7 +24,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.10.1'
+__version__ = '0.10.2'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -80,7 +80,7 @@ def quit_gui(*keybind):
     print('\n  *** User has quit the program. Exiting...\n')
     try:
         app.update_idletasks()
-        app.after(200)
+        app.after(100)
         app.destroy()
     # pylint: disable=broad-except
     except Exception:
@@ -602,9 +602,12 @@ class PassViewer(tk.Frame):
     through the Controller class. All GUI widgets go here.
     """
 
-    def __init__(self, master, share):
-        super().__init__(master)
+    def __init__(self, share):
+        super().__init__()
         self.share = share
+        # Note that self.master is an internal attribute and refers to the
+        #   PassController() Tk top window. Outside of PassViewer(),
+        #   use app. to refer to the CountController() Tk object.
 
         # Need to set up default fonts and sizes for all windows.
         # All control methods in PassController are named as oneword()
@@ -679,9 +682,9 @@ class PassViewer(tk.Frame):
             self.pp_section_head.config(font=('default', 16))
             self.l_and_h_header.config(text='H       L')
 
-        self.result_frame1 = tk.Frame(master, borderwidth=3, relief='sunken',
+        self.result_frame1 = tk.Frame(self.master, borderwidth=3, relief='sunken',
                                       background=self.dataframe_bg)
-        self.result_frame2 = tk.Frame(master, borderwidth=3, relief='sunken',
+        self.result_frame2 = tk.Frame(self.master, borderwidth=3, relief='sunken',
                                       background=self.dataframe_bg)
 
         self.pp_raw_head = tk.Label(text="Any words from list",
@@ -1117,9 +1120,8 @@ class PassController(tk.Tk):
             self.minsize(745, 410)
             self.maxsize(745, 410)
 
-        # pylint: disable=assignment-from-no-return
-        container = tk.Frame(self).grid(sticky=tk.NSEW)
-        PassViewer(master=container, share=self)
+        self.winfo_toplevel()  # Also works: tk.Frame().grid()
+        PassViewer(share=self)
 
     def setfonts(self):
         """
