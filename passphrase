@@ -1120,8 +1120,15 @@ class PassController(tk.Tk):
             self.minsize(745, 410)
             self.maxsize(745, 410)
 
-        self.winfo_toplevel()  # Also works: tk.Frame().grid()
+        self.winfo_toplevel()
         PassViewer(share=self)
+        # NOTE: Instead of self.winfo_toplevel(), can use tk.Frame().grid().
+        # It creates a tkinter.Frame object as the first child widget, but
+        #   it makes no difference to function or layout.
+        # Using winfo_toplevel() first creates the __main__.PassViewer child,
+        #   without any enclosing Frame.
+        # In neither case is it necessary to name the child as a master
+        #    parameter to call PassViewer() b/c self.master is implicit.
 
     def setfonts(self):
         """
