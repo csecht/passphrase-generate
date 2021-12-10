@@ -2,8 +2,9 @@
 
 """
 A passphrase and passcode generator using MVC architecture, which is
-structured in three main classes of Model, View, and Controller; based
-on posts by Brian Oakley;  https://stackoverflow.com/questions/32864610/
+structured in three main classes of Model, View, and Controller;
+modified from posts by Brian Oakley at
+https://stackoverflow.com/questions/32864610/
 
     Copyright (C) 2021 C.S. Echt
 
@@ -1122,13 +1123,6 @@ class PassController(tk.Tk):
 
         self.winfo_toplevel()
         PassViewer(share=self)
-        # NOTE: Instead of self.winfo_toplevel(), can use tk.Frame().grid().
-        # It creates a tkinter.Frame object as the first child widget, but
-        #   it makes no difference to function or layout.
-        # Using winfo_toplevel() first creates the __main__.PassViewer child,
-        #   without any enclosing Frame.
-        # In neither case is it necessary to name the child as a master
-        #    parameter to call PassViewer() b/c self.master is implicit.
 
     def setfonts(self):
         """
