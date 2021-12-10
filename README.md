@@ -32,13 +32,13 @@ For **Linux** or **MacOS**, the `wordlists` directory also needs to be in the pa
 
 ## Stand-alone versions (no Python installation needed!)
 ### Passphrase.app - MacOS
-A **MacOS** standalone of passphrase. Download an extract the GitHub distribution package as outlined above. Inside passphrase-generate-master/Standalone_distributables folder is `Passphrase.dmg`. Mount that disk image (just double click and follow the prompts) to install the `Passphrase.app`, which you can place where you like. Alternatively, the disk image can  be downloaded directly from https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase.dmg.
+A **MacOS** standalone of passphrase. Download an extract the GitHub distribution package as outlined above. Inside passphrase-generate-master/Standalone_distributables folder is Passphrase_mac.dmg. Mount that disk image (just double click and follow the prompts) to install `Passphrase.app`, which you can place where you like. Alternatively, the disk image can  be downloaded directly from https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrase_mac.dmg.
 
 The first time you try to open the app, however, you will get a message saying it can't be opened. Click "Cancel", go into System Preferences > Security & Privacy, click the "Open anyway" button, then "Open". It does not open initially because it was not downloaded from the Apple Store or from a recognized Apple developer. 
 
 The process of opening apps from unrecognized Apple developers can be somewhat streamlined by re-establishing (as of MacOS Sierra) the "Allow apps downloaded from: Anywhere" option in Security & Preferences. Do this with the following command line in the Terminal: `sudo spctl --master-disable`. Using the Finder 'Open' command directly on the unzipped app in its folder, can also somewhat reduce the hassle of navigating through System Preferences; once that is done, then any alias to the app should work smoothly. With any of these "fixes", you will, initially and appropriately, be prompted by the MacOS Gatekeeper to open the app.
 
-Passphrase.app was created with py2app from https://pypi.org/project/py2app/ .
+Passphrase.app was created with PyInstaller from https://pypi.org/project/pyinstaller/
 
 ### Passphrase.exe - Windows
 A **Windows** standalone of passphrase. Download an extract the GitHub distribution package as outlined above. Inside the `passphrase-generate-master/Standalone_distributables` folder is `Passphrases_win.zip`, an archive of the Passphrases.exe program. This distributable file can be downloaded directly from  https://github.com/csecht/passphrase-generate/raw/master/Standalone_distributables/Passphrases_win.zip. Select Extract All for that ZIP file. The .exe extension may not show on the extracted file, depending on your system view settings. Double-click Passphrases.exe to launch. 
