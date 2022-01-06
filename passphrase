@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.10.2'
+__version__ = '0.11.0'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -259,7 +259,9 @@ class PassModeler:
         'all_unused': ''
     }
 
-    listdata: Dict[str, List[Any]] = {'word_list': [], 'short_list': []}
+    listdata: Dict[str, List[Any]] = {
+        'word_list': [], 'short_list': [], 'lower_list': []
+    }
 
     def __init__(self, share):
         self.share = share
@@ -365,18 +367,30 @@ class PassModeler:
         # NOTE that all wordfiles were constructed with parser.py from
         # https://github.com/csecht/make_wordlist, and so contain only words
         # of 3 or more characters.
-        longlist = self.listdata['word_list'] = [
-            word for word in all_words if word.isalpha()]
-        self.listdata['short_list'] = [
-            word for word in longlist if len(word) < 7]
+        if self.share.tkdata['no_caps'].get():
+            longlist = self.listdata['word_list'] = [
+                _w for _w in all_words if _w.isalpha() and _w[0].islower()]
+            self.listdata['short_list'] = [
+                _w for _w in longlist if len(_w) < 7]
+            self.listdata['lower_list'] = [
+                _w for _w in longlist if _w[0].islower()]
+        else:
+            longlist = self.listdata['word_list'] = [
+                _w for _w in all_words if _w.isalpha()]
+            self.listdata['short_list'] = [
+                _w for _w in longlist if len(_w) < 7]
 
         # This is used as a PassFyi.explain() parameter, which is called
         #   only from the PassViewer.config_master Help menu. It is redefined
         #   in make_pass() if user excludes characters from passphrases.
-        self.share.longlist_len = len(longlist)
         # This is used for live updates in the main window of selected wordlist
         #   length.
-        self.share.tkdata['available'].set(len(longlist))
+        if self.share.tkdata['no_caps'].get():
+            self.share.longlist_len = len(self.listdata['lower_list'])
+            self.share.tkdata['available'].set(len(self.listdata['lower_list']))
+        else:
+            self.share.longlist_len = len(longlist)
+            self.share.tkdata['available'].set(len(longlist))
 
     def make_pass(self) -> None:
         """
@@ -414,6 +428,8 @@ class PassModeler:
                 _w for _w in self.listdata['word_list'] if unused not in _w]
             self.listdata['short_list'] = [
                 _w for _w in self.listdata['short_list'] if unused not in _w]
+            self.listdata['lower_list'] = [
+                _w for _w in self.listdata['lower_list'] if unused not in _w]
             self.strdata['symbols'] = [
                 _s for _s in self.strdata['symbols'] if unused not in _s]
             self.strdata['digi'] = [
@@ -427,9 +443,13 @@ class PassModeler:
 
             # Display # of currently available words (in two different places).
             #   Used as arg in explain()
-            self.share.longlist_len = len(self.listdata['word_list'])
             #   Used for live update in main window via share.available_show
-            self.share.tkdata['available'].set(self.share.longlist_len)
+            if self.share.tkdata['no_caps'].get():
+                self.share.longlist_len = len(self.listdata['lower_list'])
+                self.share.tkdata['available'].set(len(self.listdata['lower_list']))
+            else:
+                self.share.longlist_len = len(self.listdata['word_list'])
+                self.share.tkdata['available'].set(len(self.listdata['word_list']))
 
             # Display all currently excluded characters,
             #   but not if already excluded.
@@ -512,8 +532,12 @@ class PassModeler:
         #   the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_pstrings().
         # Need to display H as integer, not float.
-        self.share.tkdata['pp_raw_h'].set(
-            int(numwords * log(len(self.listdata['word_list'])) / log(2)))
+        if self.share.tkdata['no_caps'].get():
+            self.share.tkdata['pp_raw_h'].set(
+                int(numwords * log(len(self.listdata['lower_list'])) / log(2)))
+        else:
+            self.share.tkdata['pp_raw_h'].set(
+                int(numwords * log(len(self.listdata['word_list'])) / log(2)))
         self.share.tkdata['pp_plus_h'].set(
             self.share.tkdata['pp_raw_h'].get() + h_add3)
         h_some = int(numwords * log(len(self.listdata['short_list'])) / log(2))
@@ -652,7 +676,8 @@ class PassViewer(tk.Frame):
             'pc_some_h': tk.IntVar(value=0),
             'pc_any': tk.StringVar(value=self.share.stubresult),
             'pc_some': tk.StringVar(value=self.share.stubresult),
-            'excluded': tk.StringVar(),
+            'no_caps': tk.BooleanVar(),
+            'excluded': tk.StringVar()
         }
 
         # Passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -785,6 +810,11 @@ class PassViewer(tk.Frame):
         self.excluded_show = tk.Label(textvariable=self.share.tkdata['excluded'],
                                       fg='orange', bg=self.master_bg)
 
+        self.no_caps_head = tk.Label(text='No capitalized words',
+                                     fg=self.pass_bg, bg=self.master_bg)
+        self.share.no_caps = tk.Checkbutton(variable=self.share.tkdata['no_caps'],
+                                            bg=self.master_bg)
+
         # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         self.share.compliment_txt = tk.Label(relief='flat', border=0,
@@ -799,7 +829,7 @@ class PassViewer(tk.Frame):
         # Need to set window position here (not in config_master),so it doesn't
         #    shift when PassModeler.config_results() is called b/c different
         #    from app position.
-        self.master.geometry('+120+100')
+        # self.master.geometry('+120+100')
 
     def config_master(self) -> None:
         """Set up main window configuration, keybindings, & menus.
@@ -1070,23 +1100,28 @@ class PassViewer(tk.Frame):
                                      columnspan=2, sticky=tk.EW)
 
         # Excluded character widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.exclude_head.grid(column=0, row=9, pady=(20, 0), padx=(17, 0),
+        self.no_caps_head.grid(column=0, row=9,  pady=(15, 0), padx=(17, 0),
                                sticky=tk.W)
-        self.share.exclude_entry.grid(
-            column=0, row=9, pady=(20, 5), padx=(0, 15),
-            sticky=tk.E)
-        self.exclude_info_b.grid(column=1, row=9, pady=(20, 5), padx=(10, 0),
+        self.share.no_caps.grid(column=0, row=9,  pady=(15, 0), padx=(0, 13),
+                                sticky=tk.E)
+
+        self.exclude_head.grid(column=0, row=10, pady=(5, 0), padx=(17, 0),
+                               sticky=tk.W)
+        self.share.exclude_entry.grid(column=0, row=10, pady=(5, 5), padx=(0, 15),
+                                      sticky=tk.E)
+        self.exclude_info_b.grid(column=1, row=10, pady=(5, 5), padx=(10, 0),
                                  sticky=tk.W)
 
-        self.excluded_head.grid(column=0, row=10, pady=(0, 8), padx=(5, 0),
+        self.excluded_head.grid(column=0, row=11, pady=(0, 8), padx=(5, 0),
                                 sticky=tk.E)
-        self.reset_button.grid(column=0, row=10, pady=(0, 15), padx=(20, 0),
+        self.reset_button.grid(column=0, row=11, pady=(0, 15), padx=(20, 0),
                                sticky=tk.W)
-        self.excluded_show.grid(column=1, row=10, pady=(0, 8), sticky=tk.W)
-        self.quit_button.grid(column=3, row=10, pady=(0, 15), padx=(0, 15),
+        self.excluded_show.grid(column=1, row=11, pady=(0, 8), sticky=tk.W)
+
+        self.quit_button.grid(column=3, row=11, pady=(0, 15), padx=(0, 15),
                               sticky=tk.E)
 
-        self.share.compliment_txt.grid(row=10, column=2, columnspan=2,
+        self.share.compliment_txt.grid(row=11, column=2, columnspan=2,
                                        pady=(0, 15), padx=5, sticky=tk.W)
 
         # Need to adjust padding for MacOS b/c of different font spacing.
@@ -1110,16 +1145,16 @@ class PassController(tk.Tk):
         # Pixels here are set to fit a 52 character width Entry() and are
         #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
         if MY_OS == 'lin':
-            # self.minsize(830, 410)  # <for default font size=12, W=52
-            # self.maxsize(830, 410)
-            self.minsize(780, 410)  # <for default font size=11, W=52
-            self.maxsize(780, 410)
+            # self.minsize(830, 430)  # <for default font size=12, W=52
+            # self.maxsize(830, 430)
+            self.minsize(780, 430)  # <for default font size=11, W=52
+            self.maxsize(780, 430)
         elif MY_OS == 'win':
-            self.minsize(702, 410)
-            self.maxsize(702, 410)
+            self.minsize(702, 430)
+            self.maxsize(702, 430)
         elif MY_OS == 'dar':
-            self.minsize(745, 410)
-            self.maxsize(745, 410)
+            self.minsize(745, 430)
+            self.maxsize(745, 403)
 
         self.winfo_toplevel()
         PassViewer(share=self)
