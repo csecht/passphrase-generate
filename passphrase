@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.11.0'
+__version__ = '0.11.1'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -275,7 +275,7 @@ class PassModeler:
             'Les Miserables': WORDDIR / 'les_miserables.txt',
             '此開卷第 Story of the Stone': WORDDIR / 'red_chamber_wordlist.txt'
         }
-
+        self.all_words = set()
     def check_files(self) -> None:
         """
         Confirm whether required files are present, exit if not.
@@ -359,7 +359,10 @@ class PassModeler:
         # Need read_text(encoding) so Windows can read all wordlist fonts.
         choice = self.share.choose_wordlist.get()
         wordfile = self.share.word_files[choice]
-        all_words = set(Path(wordfile).read_text(encoding='utf-8').split())
+        # all_words is also needed in make_pass to handle no_caps <-> caps
+        #   transitions.
+        self.share.all_words = set(
+            Path(wordfile).read_text(encoding='utf-8').split())
 
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
@@ -369,27 +372,22 @@ class PassModeler:
         # of 3 or more characters.
         if self.share.tkdata['no_caps'].get():
             longlist = self.listdata['word_list'] = [
-                _w for _w in all_words if _w.isalpha() and _w[0].islower()]
+                _w for _w in self.share.all_words if _w.isalpha() and _w[0].islower()]
             self.listdata['short_list'] = [
                 _w for _w in longlist if len(_w) < 7]
             self.listdata['lower_list'] = [
                 _w for _w in longlist if _w[0].islower()]
         else:
             longlist = self.listdata['word_list'] = [
-                _w for _w in all_words if _w.isalpha()]
+                _w for _w in self.share.all_words if _w.isalpha()]
             self.listdata['short_list'] = [
                 _w for _w in longlist if len(_w) < 7]
 
-        # This is used as a PassFyi.explain() parameter, which is called
-        #   only from the PassViewer.config_master Help menu. It is redefined
-        #   in make_pass() if user excludes characters from passphrases.
         # This is used for live updates in the main window of selected wordlist
-        #   length.
+        #   length. New word count appears once "Generate" calls here.
         if self.share.tkdata['no_caps'].get():
-            self.share.longlist_len = len(self.listdata['lower_list'])
             self.share.tkdata['available'].set(len(self.listdata['lower_list']))
         else:
-            self.share.longlist_len = len(longlist)
             self.share.tkdata['available'].set(len(longlist))
 
     def make_pass(self) -> None:
@@ -423,13 +421,13 @@ class PassModeler:
         if ' ' in unused or len(unused) == 0:
             self.reset()
 
-        if len(unused) > 0:
+        def remove_excluded():
             self.listdata['word_list'] = [
                 _w for _w in self.listdata['word_list'] if unused not in _w]
             self.listdata['short_list'] = [
                 _w for _w in self.listdata['short_list'] if unused not in _w]
-            self.listdata['lower_list'] = [
-                _w for _w in self.listdata['lower_list'] if unused not in _w]
+            # self.listdata['lower_list'] = [
+            #     _w for _w in self.listdata['lower_list'] if unused not in _w]
             self.strdata['symbols'] = [
                 _s for _s in self.strdata['symbols'] if unused not in _s]
             self.strdata['digi'] = [
@@ -441,21 +439,30 @@ class PassModeler:
             self.strdata['some_char'] = [
                 _ch for _ch in self.strdata['some_char'] if unused not in _ch]
 
+        if len(unused) > 0:
+            remove_excluded()
+
             # Display # of currently available words (in two different places).
-            #   Used as arg in explain()
-            #   Used for live update in main window via share.available_show
+            #   Used as arg in explain() and update in main window via
+            #   share.available_show.
+            # When switch Checkbox from no_caps to caps, need to repopulate
+            #   full 'word_list' so exclusions can be reapplied and correctly
+            #   counted as 'available'.
             if self.share.tkdata['no_caps'].get():
-                self.share.longlist_len = len(self.listdata['lower_list'])
+                self.listdata['lower_list'] = [
+                    _w for _w in self.listdata['lower_list'] if unused not in _w]
                 self.share.tkdata['available'].set(len(self.listdata['lower_list']))
             else:
-                self.share.longlist_len = len(self.listdata['word_list'])
+                self.listdata['word_list'] = [
+                    _w for _w in self.share.all_words if _w.isalpha()]
+                remove_excluded()
                 self.share.tkdata['available'].set(len(self.listdata['word_list']))
 
-            # Display all currently excluded characters,
-            #   but not if already excluded.
+            # Display all currently excluded unique characters.
             if unused not in self.strdata['all_unused'] and ' ' not in unused:
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
                 self.share.tkdata['excluded'].set(self.strdata['all_unused'])
+
 
         # Build pass-strings.
         passphrase = ""
