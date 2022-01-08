@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.11.2'
+__version__ = '0.11.3'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -260,7 +260,7 @@ class PassModeler:
     }
 
     listdata: Dict[str, List[Any]] = {
-        'word_list': [], 'short_list': [], 'lower_list': []
+        'word_list': [], 'short_list': []
     }
 
     def __init__(self, share):
@@ -408,31 +408,29 @@ class PassModeler:
         numchars = int(self.share.numchars_entry.get())
 
         # Need to filter words and strings containing characters to be excluded.
-        unused = self.share.exclude_entry.get().strip()
+        excluded = self.share.exclude_entry.get().strip()
         # Do not accept entries with space between characters.
         # Need to reset to default values if user deletes the prior entry.
-        if ' ' in unused or len(unused) == 0:
+        if ' ' in excluded or len(excluded) == 0:
             self.reset()
 
         def remove_excluded():
             self.listdata['word_list'] = [
-                _w for _w in self.listdata['word_list'] if unused not in _w]
+                _w for _w in self.listdata['word_list'] if excluded not in _w]
             self.listdata['short_list'] = [
-                _w for _w in self.listdata['short_list'] if unused not in _w]
-            # self.listdata['lower_list'] = [
-            #     _w for _w in self.listdata['lower_list'] if unused not in _w]
+                _w for _w in self.listdata['short_list'] if excluded not in _w]
             self.strdata['symbols'] = [
-                _s for _s in self.strdata['symbols'] if unused not in _s]
+                _s for _s in self.strdata['symbols'] if excluded not in _s]
             self.strdata['digi'] = [
-                _d for _d in self.strdata['digi'] if unused not in _d]
+                _d for _d in self.strdata['digi'] if excluded not in _d]
             self.strdata['caps'] = [
-                _uc for _uc in self.strdata['caps'] if unused not in _uc]
+                _uc for _uc in self.strdata['caps'] if excluded not in _uc]
             self.strdata['all_char'] = [
-                _ch for _ch in self.strdata['all_char'] if unused not in _ch]
+                _ch for _ch in self.strdata['all_char'] if excluded not in _ch]
             self.strdata['some_char'] = [
-                _ch for _ch in self.strdata['some_char'] if unused not in _ch]
+                _ch for _ch in self.strdata['some_char'] if excluded not in _ch]
 
-        if len(unused) > 0:
+        if len(excluded) > 0:
             remove_excluded()
 
             # When switch Checkbox from no_caps to caps, need to repopulate
@@ -456,10 +454,9 @@ class PassModeler:
             self.share.tkdata['available'].set(len(self.listdata['word_list']))
 
             # Display all unique currently excluded characters.
-            if unused not in self.strdata['all_unused'] and ' ' not in unused:
-                self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + unused
+            if excluded not in self.strdata['all_unused'] and ' ' not in excluded:
+                self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + excluded
                 self.share.tkdata['excluded'].set(self.strdata['all_unused'])
-
 
         # Build pass-strings.
         passphrase = ""
@@ -568,16 +565,16 @@ class PassModeler:
 
         # Need a special case for wider Chinese characters; 34 equivalent to 52
         #    Use 64% to generalize in case W changes.
-        _w = W
+        results_width = W
         if self.share.choose_wordlist.get() == '此開卷第 Story of the Stone' \
                 and passphrase_len > W * 0.64:
-            _w = W * 0.64
+            results_width = W * 0.64
 
-        if passphrase_len > _w:
+        if passphrase_len > results_width:
             self.share.pp_raw_show.config(fg=self.share.long_fg)
             self.share.pp_plus_show.config(fg=self.share.long_fg)
             self.share.pp_short_show.config(fg=self.share.long_fg)
-        elif passphrase_len <= _w:
+        elif passphrase_len <= results_width:
             self.share.pp_raw_show.config(fg=self.share.pass_fg)
             self.share.pp_plus_show.config(fg=self.share.pass_fg)
             self.share.pp_short_show.config(fg=self.share.pass_fg)
@@ -813,8 +810,8 @@ class PassViewer(tk.Frame):
 
         self.no_caps_head = tk.Label(text='No capitalized words',
                                      fg=self.pass_bg, bg=self.master_bg)
-        self.share.no_caps = tk.Checkbutton(variable=self.share.tkdata['no_caps'],
-                                            bg=self.master_bg)
+        self.no_caps = tk.Checkbutton(variable=self.share.tkdata['no_caps'],
+                                      bg=self.master_bg)
 
         # End exclude character section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -826,11 +823,6 @@ class PassViewer(tk.Frame):
         self.grid_all()
         self.share.checkfiles()
         self.share.getwords()
-
-        # Need to set window position here (not in config_master),so it doesn't
-        #    shift when PassModeler.config_results() is called b/c different
-        #    from app position.
-        # self.master.geometry('+120+100')
 
     def config_master(self) -> None:
         """Set up main window configuration, keybindings, & menus.
@@ -1103,8 +1095,8 @@ class PassViewer(tk.Frame):
         # Excluded character widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         self.no_caps_head.grid(column=0, row=9,  pady=(15, 0), padx=(17, 0),
                                sticky=tk.W)
-        self.share.no_caps.grid(column=0, row=9,  pady=(15, 0), padx=(0, 13),
-                                sticky=tk.E)
+        self.no_caps.grid(column=0, row=9,  pady=(15, 0), padx=(0, 13),
+                          sticky=tk.E)
 
         self.exclude_head.grid(column=0, row=10, pady=(5, 0), padx=(17, 0),
                                sticky=tk.W)
