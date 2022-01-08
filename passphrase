@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.11.4'
+__version__ = '0.11.5'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -72,7 +72,7 @@ W = 52  # Default width of the results display fields.
 
 # Functions used by passphrase, but not part of MVC structure %%%%%%%%%%%%%%%%%
 # pylint: disable=unused-argument
-def quit_gui(*keybind):
+def quit_gui(keybind=None):
     """Safe and informative exit from the program.
 
     :param keybind: Needed for keybindings.
@@ -136,7 +136,7 @@ def toplevel_bindings(topwindow: tk.Toplevel) -> None:
         topwindow.bind('<Command-w>', close_toplevel)
 
 
-def close_toplevel(*keybind) -> None:
+def close_toplevel(keybind=None) -> None:
     """
     Close the toplevel window that has focus.
     Called from Command-W or Control-W keybinding or right-click menu.
@@ -1157,7 +1157,7 @@ class PassController(tk.Tk):
         PassFonts(share=self).set_fonts()
 
     # pylint: disable=unused-argument
-    def growfont(self, *keybind):
+    def growfont(self, keybind=None):
         """Is called from keybinding or View menu.
 
         :param keybind: Needed for keybindings
@@ -1165,7 +1165,7 @@ class PassController(tk.Tk):
         PassFonts(share=self).grow_font()
 
     # pylint: disable=unused-argument
-    def shrinkfont(self, *keybind):
+    def shrinkfont(self, keybind=None):
         """Is called from keybinding or View menu.
 
         :param keybind: Needed for keybindings
@@ -1197,17 +1197,17 @@ class PassController(tk.Tk):
         PassModeler(share=self).get_words()
 
     # pylint: disable=unused-argument
-    def makepass(self, *args) -> None:
+    def makepass(self, keybind=None) -> None:
         """Is called via "Generate" key, button, menu.
         make_pass() creates random pass-strings, which then
         calls set_entropy() and config_results().
 
-        :param args: Needed for call from keybinding.
+        :param keybind: Needed for call from keybinding.
         """
         PassModeler(share=self).make_pass()
 
     # pylint: disable=unused-argument
-    def scratchpad(self, *keybind):
+    def scratchpad(self, keybind=None):
         """Is called from the Viewer Passphrase menu or key binding.
 
         :param keybind: Needed for keybindings
@@ -1238,7 +1238,7 @@ class PassController(tk.Tk):
         PassFyi(share=self).exclude_msg()
 
     # pylint: disable=unused-argument
-    def reset(self, *keybind) -> None:
+    def reset(self, keybind=None) -> None:
         """
         Resets all results and exclusions. Called from key, button, menu.
 
@@ -1246,7 +1246,7 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).reset()
 
-    def complimentme(self, *keybind) -> None:
+    def complimentme(self, keybind=None) -> None:
         """Is called from Help menu. A silly diversion.
 
         :param keybind: Needed for keybinding
