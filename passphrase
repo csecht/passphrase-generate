@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.11.3'
+__version__ = '0.11.4'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -407,10 +407,9 @@ class PassModeler:
             self.share.numchars_entry.insert(0, '0')
         numchars = int(self.share.numchars_entry.get())
 
-        # Need to filter words and strings containing characters to be excluded.
+        # Do not accept entries with space between characters, and.
+        #   need to reset to default values if user deletes the prior entry.
         excluded = self.share.exclude_entry.get().strip()
-        # Do not accept entries with space between characters.
-        # Need to reset to default values if user deletes the prior entry.
         if ' ' in excluded or len(excluded) == 0:
             self.reset()
 
@@ -429,34 +428,32 @@ class PassModeler:
                 _ch for _ch in self.strdata['all_char'] if excluded not in _ch]
             self.strdata['some_char'] = [
                 _ch for _ch in self.strdata['some_char'] if excluded not in _ch]
+            # Need to display # of currently available words in two places.
+            #   'available' is used as param in PassController.explain() and
+            #   the self.share.available_show Label in main window.
+            self.share.tkdata['available'].set(len(self.listdata['word_list']))
 
+        # Need to filter words and strings containing characters to be excluded.
+        #   When switching Checkbox from no_caps to caps, need to restore the
+        #   full 'word_list' so exclusions can be reapplied. This redefines
+        #   'word_list' and 'short_list' from get_words().
         if len(excluded) > 0:
-            remove_excluded()
-
-            # When switch Checkbox from no_caps to caps, need to repopulate
-            #   full 'word_list' so exclusions can be reapplied and correctly
-            #   counted as 'available'. This is a redefinition of 'word_list'
-            #   and 'short_list' from get_words().
             if self.share.tkdata['no_caps'].get():
                 working_list = self.listdata['word_list'] = [
                     _w for _w in self.listdata['word_list'] if _w[0].islower()]
+                remove_excluded()
             else:
                 working_list = self.listdata['word_list'] = [
                     _w for _w in self.share.all_words if _w.isalpha()]
+                self.listdata['short_list'] = [_w for _w in working_list if len(_w) < 7]
                 remove_excluded()
-
-            self.listdata['short_list'] = [_w for _w in working_list if len(_w) < 7]
-
-            # Display # of currently available words in two different places.
-            #   'available' is used as param in PassController.explain() and
-            #   to update # available words in main window in the
-            #   self.share.available_show label.
-            self.share.tkdata['available'].set(len(self.listdata['word_list']))
 
             # Display all unique currently excluded characters.
             if excluded not in self.strdata['all_unused'] and ' ' not in excluded:
                 self.strdata['all_unused'] = self.strdata['all_unused'] + ' ' + excluded
                 self.share.tkdata['excluded'].set(self.strdata['all_unused'])
+        else:
+            self.share.tkdata['available'].set(len(self.listdata['word_list']))
 
         # Build pass-strings.
         passphrase = ""
@@ -466,9 +463,9 @@ class PassModeler:
         addsymbol = ""
         addnum = ""
         addcaps = ""
-        # If all char of strdata[] are excluded, then cannot generate pass-strings
-        #  because raises "IndexError: Cannot choose from an empty sequence."
-        #  For example, cannot exclude all digits.
+        # If all char are excluded, then cannot generate pass-strings
+        #   because raises "IndexError: Cannot choose from an empty sequence.";
+        #   for example, cannot exclude all digits.
         try:
             passphrase = "".join(VERY_RANDOM.choice(self.listdata['word_list']) for
                                  _ in range(numwords))
