@@ -5,7 +5,7 @@ Python GUI scripts and cross-platform executables to easily make secure passphra
 
 A potential problem with some on-line passcode and passphrase generators is that they are on-line. Here is something that can be run locally and privately either as a standalone program on **Windows** and **MacOS** or as a Python script from a Terminal window in **Windows**, **MacOS**, or **Linux**. 
 
-Words and character strings are randomized with Python's Random class using a random seed: random.Random(random.random()). For more information, see https://docsthon.org/3/library/random.html#random.random
+Words and character strings are randomized with Python's Random class using a random seed: random.Random(random.random()). For more information, see https://docs.python.org/3/library/random.html
 
 The different pass-strings generated provide options for compliance with a range of website and application requirements. 
 Suggestions for improvement are welcome, especially ideas to access the system dictionary on Windows.
