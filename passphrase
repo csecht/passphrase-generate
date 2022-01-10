@@ -245,8 +245,9 @@ class RightClickCmds:
 
 # MVC Classes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 class PassModeler:
-    """The modeler crunches input from Viewer, then sends results back, via
-    shared 'share' objects that are handled through the Controller class.
+    """
+    Set up lists of words and characters, randomize subsets to construct
+    pass-strings, then calculate their length and entropy for display.
     """
     # Need Class variables here so they aren't reset in __init__ each time
     #   make_pass() is called.
@@ -618,8 +619,8 @@ class PassModeler:
 
 class PassViewer(tk.Frame):
     """
-    The Viewer communicates with Modeler via 'share' objects handled
-    through the Controller class. All GUI widgets go here.
+    Set up all GUI widgets and display results from Modeler in the main
+    window.
     """
 
     def __init__(self, share):
