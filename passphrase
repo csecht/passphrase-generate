@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.11.5'
+__version__ = '0.11.6'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -299,7 +299,7 @@ class PassModeler:
 
         wordfile_list = glob.glob(str(WORDDIR / '*_wordlist.txt'))
         # This covers platforms with and w/o system dictionary.
-        if Path.is_file(SYSDICT_PATH) is False:
+        if not Path.is_file(SYSDICT_PATH):
             if len(wordfile_list) == 0:
                 print(fnf_msg)
                 messagebox.showinfo(title='Files not found', detail=fnf_msg)
@@ -315,7 +315,7 @@ class PassModeler:
                 all_lists.remove('System dictionary')
                 self.share.choose_wordlist['values'] = all_lists
 
-        elif Path.is_file(SYSDICT_PATH) is True and len(wordfile_list) == 0:
+        elif Path.is_file(SYSDICT_PATH) and len(wordfile_list) == 0:
             notice = ('Oops! Optional wordlists are missing.\n'
                       'Wordlist files should be in a folder\n'
                       'called "wordlists" included with\n'
@@ -394,7 +394,7 @@ class PassModeler:
         numwords = self.share.numwords_entry.get().strip()
         if numwords == '':
             self.share.numwords_entry.insert(0, '0')
-        elif numwords.isdigit() is False:
+        elif not numwords.isdigit():
             self.share.numwords_entry.delete(0, 'end')
             self.share.numwords_entry.insert(0, '0')
         numwords = int(self.share.numwords_entry.get())
@@ -402,7 +402,7 @@ class PassModeler:
         numchars = self.share.numchars_entry.get().strip()
         if numchars == '':
             self.share.numchars_entry.insert(0, '0')
-        if numchars.isdigit() is False:
+        if not numchars.isdigit():
             self.share.numchars_entry.delete(0, 'end')
             self.share.numchars_entry.insert(0, '0')
         numchars = int(self.share.numchars_entry.get())
