@@ -58,7 +58,13 @@ Optional wordlists were derived from texts obtained from these sites:
 - https://www.archives.gov/founding-docs/constitution-transcript
 - https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt
 
-The `parser` script from https://github.com/csecht/make_wordlist was used to create the custom wordlists used here. That repository also includes source text files for these wordlists.
+The `parse_wordlist` script from https://github.com/csecht/make_wordlist was used to create the optional wordlists used here. That repository also includes source text files for the wordlists:
+- Don Quixote, by Cervantes (Spanish)
+- EFF large wordlist (English)
+- Frankenstein, or The Modern Prometheus, by Shelly (English)
+- Les Misérables, by Hugo (French)
+- The Story of the Stone, or 红楼梦, by 曹雪芹 (Chinese)
+- United States Constitution (English)
 
 ## Tips:
 The program places no limits on the length of pass-strings, though your system memory might. The window can be dragged to view longer results up to a limit; results exceeding that limit can still be copied and pasted.
