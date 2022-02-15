@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.11.6'
+__version__ = '0.11.7'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -368,7 +368,7 @@ class PassModeler:
         # Need to remove words having the possessive form ('s) b/c they
         #   duplicate many nouns in an English system dictionary.
         #   isalpha() also removes hyphenated words; EFF large wordlist has 4.
-        # NOTE that all wordfiles were constructed with parser.py from
+        # NOTE that all wordfiles were constructed with parse_wordlist script from
         # https://github.com/csecht/make_wordlist, and so contain only words
         # of 3 or more characters.
         if self.share.tkdata['no_caps'].get():
@@ -1334,7 +1334,7 @@ Optional wordfiles were derived from texts obtained from these sites:
 Although the EFF list contains 7776 selected words, only 7772 are used
 here because hyphenated words are excluded from all wordlists.\n
 Words with less than 3 letters are not used in any wordlist.\n
-All wordlists except EFF were made with parser.py from the Project at
+All wordlists except EFF were made with parse_wordlist from the Project
 https://github.com/csecht/make_wordlist\n
 To accommodate some passcode requirements, a choice is provided that
 adds three characters : 1 symbol, 1 number, and 1 upper case letter.
