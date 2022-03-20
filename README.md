@@ -28,7 +28,7 @@ The passphrase script is generally launched from a Terminal command line. Runnin
 For **Windows**, the folder, `wordlists`, included in this distribution, must be kept in the passphrase-generate-master folder. Launch a Terminal window opened from the passphrases-master folder and enter the command ```python3 passphrase``` or ```python passphrase``` or ```py passphrase```, depending on your system environment. 
 
 For **Linux** or **MacOS**, the `wordlists` directory also needs to be in the passphrases-master folder, but its use for generating passphrases is optional. The default source for words is your system dictionary. Launch the script from a Terminal window opened within the passphrases-master folder using the command 
-```python3 ./passphrase``` or ```./passphrase```  On **MacOS**, a Python Launcher is bundled with some Python installations and can be configured to run passphrase by double-clicking on it.
+```python3 passphrase``` or ```./passphrase```  On **MacOS**, a Python Launcher is bundled with some Python installations and can be configured to run passphrase by double-clicking on it.
 
 ## Stand-alone versions (no Python installation needed!)
 ### Passphrase.app - MacOS
