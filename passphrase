@@ -25,7 +25,7 @@ __author__ = 'cecht'
 __copyright__ = 'Copyright (C) 2021 C.S. Echt'
 __license__ = 'GNU General Public License'
 __program_name__ = 'passphrase'
-__version__ = '0.11.7'
+__version__ = '0.11.8'
 __dev_environment__ = "Python 3.8 - 3.9"
 __project_url__ = 'github.com/csecht/passphrase-generate'
 __maintainer__ = 'cecht'
@@ -78,16 +78,17 @@ def quit_gui(keybind=None):
     :param keybind: Needed for keybindings.
     :type keybind: Direct call from keybindings.
     """
-    print('\n  *** User has quit the program. Exiting...\n')
+    print('\n  *** User has quit the program. Exiting...\n'
+          '  *** Clipboard contents have been cleared.')
     try:
         app.update_idletasks()
         app.after(100)
         app.destroy()
     # pylint: disable=broad-except
-    except Exception:
+    except Exception as unk:
+        print('An unknown error occured:', unk)
         sys.exit(0)
     return keybind
-
 
 def random_bkg() -> str:
     """Selects a random color; intended for Toplevel window backgrounds
@@ -1574,22 +1575,22 @@ class PassFonts:
     def grow_font(self):
         """ Make the font size larger.
         """
-        size = self.share.text_font['size']
-        if size < self.sizemax:
-            self.share.text_font.configure(size=size + 1)
-        size2 = self.share.result_font['size']
-        if size < self.sizemax:
-            self.share.result_font.configure(size=size2 + 1)
+        tsize = self.share.text_font['size']
+        if tsize < self.sizemax:
+            self.share.text_font.configure(size=tsize + 1)
+        rsize = self.share.result_font['size']
+        if rsize < self.sizemax:
+            self.share.result_font.configure(size=rsize + 1)
 
     def shrink_font(self):
         """ Make the font size smaller.
         """
-        size = self.share.text_font['size']
-        if size > self.sizemin:
-            self.share.text_font.configure(size=size - 1)
-        size2 = self.share.result_font['size']
-        if size > self.sizemin:
-            self.share.result_font.configure(size=size2 - 1)
+        tsize = self.share.text_font['size']
+        if tsize > self.sizemin:
+            self.share.text_font.configure(size=tsize - 1)
+        rsize = self.share.result_font['size']
+        if rsize > self.sizemin:
+            self.share.result_font.configure(size=rsize - 1)
 
     def default_font_size(self):
         """ The default font size on startup. Used to reset to default.
@@ -1603,4 +1604,5 @@ if __name__ == "__main__":
     app.title("Passphrase Generator")
     img = tk.PhotoImage(file=valid_path_to('images/passphrase_icon512.png'))
     app.wm_iconphoto(True, img)
+    app.clipboard_clear()
     app.mainloop()
