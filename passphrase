@@ -44,16 +44,6 @@ class PassModeler:
     pass-strings, then calculate their length and entropy for display.
     """
 
-    __slots__ = (
-        # __main__ attributes:
-        'app',
-        # plot_utils local module attributes:
-        'MY_OS', 'WORDDIR', 'SYSDICT_PATH',
-        'SYMBOLS', 'very_random', 'W', 'string_data', 'list_data',
-        # instance attributes:
-        'share', 'word_files',
-    )
-
     def __init__(self, share):
         self.share = share
 
@@ -413,28 +403,6 @@ class PassViewer(tk.Frame):
     Set up all GUI widgets and display results from Modeler in the main
     window.
     """
-    __slots__ = (
-        # __main__ attributes:
-        'app',
-        # plot_utils local module attributes:
-        'MY_OS', 'WORDDIR', 'SYSDICT_PATH',
-        'SYMBOLS', 'very_random', 'W', 'string_data', 'list_data',
-        # Instance attributes:
-        'share', 'master_fg', 'master_bg', 'dataframe_bg', 'stubpass_fg',
-        'pass_fg', 'long_fg', 'pass_bg', 'stubresult', 'tkdata',
-        'choose_wordlist', 'available_head', 'available_show',
-        'numwords_label', 'numwords_entry', 'l_and_h_header',
-        'pp_section_head', 'result_frame1', 'result_frame2', 'pp_raw_head',
-        'pp_plus_head', 'pp_short_head', 'pp_raw_h_lbl', 'pp_plus_h_lbl',
-        'pp_short_h_lbl', 'pp_raw_len_lbl', 'pp_plus_len_lbl',
-        'pp_short_len_lbl', 'pp_raw_show', 'pp_plus_show', 'pp_short_show',
-        'pc_section_head', 'numchars_label', 'numchars_entry',
-        'l_and_h_header2', 'pc_any_head', 'pc_some_head', 'pc_any_len_lb',
-        'pc_some_len_lbl', 'pc_any_h_lbl', 'pc_some_h_lbl', 'pc_any_show',
-        'pc_some_show', 'exclude_head', 'exclude_entry', 'excluded_head',
-        'excluded_show', 'no_caps_head', 'no_caps', 'compliment_txt',
-        'generate_btn', 'exclude_info_b', 'reset_button', 'quit_button',
-    )
 
     def __init__(self, share):
         super().__init__()
@@ -941,14 +909,6 @@ class PassController(tk.Tk):
     """
     The Controller through which other MVC Classes can interact.
     """
-    __slots__ = (
-        # __main__ attributes:
-        'app', 'img',
-        # Function attributes:
-        'manage_args',
-        # plot_utils local module attributes:
-        'MY_OS', 'share'
-    )
 
     def __init__(self):
         super().__init__()
@@ -1081,14 +1041,6 @@ class PassFyi:
     """
     Provide pop-up windows to provide usage information and offer help.
     """
-
-    __slots__ = (
-        # __main__ attributes:
-        'app',
-        # plot_utils.__init__ attributes:
-        '__status__', '__copyright__', 'URL', 'LICENSE',
-        # instance attributes:
-        'share')
 
     def __init__(self, share):
         self.share = share
@@ -1362,8 +1314,6 @@ class PassFonts:
     Change MVC font settings. Call with keybindings or menu commands.
     """
 
-    __slots__ = ('share', 'sizemax', 'sizemin')
-
     # font.Font keywords are: family, font, size, weight, underline, overstrike.
     def __init__(self, share):
         self.share = share
@@ -1438,6 +1388,7 @@ def manage_args() -> None:
                         action='store_true',
                         default=False)
     args = parser.parse_args()
+
     if args.about:
         print(__doc__)
         print(f'{"Author:".ljust(13)}', pass_utils.__author__)
