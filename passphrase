@@ -44,7 +44,13 @@ class PassModeler:
     pass-strings, then calculate their length and entropy for display.
     """
 
-    __slots__ = ('share', 'word_files')
+    __slots__ = (
+        # plot_utils local module attributes:
+        'MY_OS', 'WORDDIR', 'SYSDICT_PATH',
+        'SYMBOLS', 'very_random', 'W', 'string_data', 'list_data',
+        # instance attributes:
+        'share', 'word_files',
+    )
 
     def __init__(self, share):
         self.share = share
@@ -930,10 +936,14 @@ class PassController(tk.Tk):
     """
     The Controller through which other MVC Classes can interact.
     """
-    __slots__ = ( # __main__ attributes:
-                 'app', 'img',
-                 # Function attributes:
-                 'manage_args',)
+    __slots__ = (
+        # __main__ attributes:
+        'app', 'img',
+        # Function attributes:
+        'manage_args',
+        # plot_utils local module attributes:
+        'MY_OS',
+    )
 
     def __init__(self):
         super().__init__()
