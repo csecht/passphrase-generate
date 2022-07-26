@@ -45,6 +45,8 @@ class PassModeler:
     """
 
     __slots__ = (
+        # __main__ attributes:
+        'app',
         # plot_utils local module attributes:
         'MY_OS', 'WORDDIR', 'SYSDICT_PATH',
         'SYMBOLS', 'very_random', 'W', 'string_data', 'list_data',
@@ -265,7 +267,8 @@ class PassModeler:
             passcode2 = "".join(cfg.very_random.choice(cfg.string_data['some_char']) for
                                 _ in range(numchars))
             # Randomly select 1 of each symbol to append; length not user-specified.
-            addsymbol = "".join(cfg.very_random.choice(cfg.string_data['symbols']) for _ in range(1))
+            addsymbol = "".join(
+                cfg.very_random.choice(cfg.string_data['symbols']) for _ in range(1))
             addnum = "".join(cfg.very_random.choice(cfg.string_data['digi']) for _ in range(1))
             addcaps = "".join(cfg.very_random.choice(cfg.string_data['caps']) for _ in range(1))
         except IndexError:
@@ -411,6 +414,8 @@ class PassViewer(tk.Frame):
     window.
     """
     __slots__ = (
+        # __main__ attributes:
+        'app',
         # plot_utils local module attributes:
         'MY_OS', 'WORDDIR', 'SYSDICT_PATH',
         'SYMBOLS', 'very_random', 'W', 'string_data', 'list_data',
@@ -421,8 +426,8 @@ class PassViewer(tk.Frame):
         'numwords_label', 'numwords_entry', 'l_and_h_header',
         'pp_section_head', 'result_frame1', 'result_frame2', 'pp_raw_head',
         'pp_plus_head', 'pp_short_head', 'pp_raw_h_lbl', 'pp_plus_h_lbl',
-        'pp_short_h_lbl',  'pp_raw_len_lbl', 'pp_plus_len_lbl',
-        'pp_short_len_lbl', 'pp_raw_show',  'pp_plus_show', 'pp_short_show',
+        'pp_short_h_lbl', 'pp_raw_len_lbl', 'pp_plus_len_lbl',
+        'pp_short_len_lbl', 'pp_raw_show', 'pp_plus_show', 'pp_short_show',
         'pc_section_head', 'numchars_label', 'numchars_entry',
         'l_and_h_header2', 'pc_any_head', 'pc_some_head', 'pc_any_len_lb',
         'pc_some_len_lbl', 'pc_any_h_lbl', 'pc_some_h_lbl', 'pc_any_show',
@@ -942,7 +947,7 @@ class PassController(tk.Tk):
         # Function attributes:
         'manage_args',
         # plot_utils local module attributes:
-        'MY_OS',
+        'MY_OS', 'share'
     )
 
     def __init__(self):
@@ -1077,10 +1082,13 @@ class PassFyi:
     Provide pop-up windows to provide usage information and offer help.
     """
 
-    __slots__ = (# plot_utils.__init__ attributes:
-                 '__status__', '__copyright__', 'URL', 'LICENSE',
-                 # instance attributes:
-                 'share')
+    __slots__ = (
+        # __main__ attributes:
+        'app',
+        # plot_utils.__init__ attributes:
+        '__status__', '__copyright__', 'URL', 'LICENSE',
+        # instance attributes:
+        'share')
 
     def __init__(self, share):
         self.share = share
