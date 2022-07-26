@@ -405,10 +405,10 @@ class PassViewer(tk.Frame):
     window.
     """
     __slots__ = (
-        # plot_utils local module attributes
+        # plot_utils local module attributes:
         'MY_OS', 'WORDDIR', 'SYSDICT_PATH',
         'SYMBOLS', 'very_random', 'W', 'string_data', 'list_data',
-        # Instance attributes
+        # Instance attributes:
         'share', 'master_fg', 'master_bg', 'dataframe_bg', 'stubpass_fg',
         'pass_fg', 'long_fg', 'pass_bg', 'stubresult', 'tkdata',
         'choose_wordlist', 'available_head', 'available_show',
@@ -930,12 +930,10 @@ class PassController(tk.Tk):
     """
     The Controller through which other MVC Classes can interact.
     """
-    __slots__ = (
-        # __main__ attributes
-        'app', 'img',
-        # Function attributes
-        'manage_args',
-    )
+    __slots__ = ( # __main__ attributes:
+                 'app', 'img',
+                 # Function attributes:
+                 'manage_args',)
 
     def __init__(self):
         super().__init__()
@@ -1069,6 +1067,11 @@ class PassFyi:
     Provide pop-up windows to provide usage information and offer help.
     """
 
+    __slots__ = (# plot_utils.__init__ attributes:
+                 '__status__', '__copyright__', 'URL', 'LICENSE',
+                 # instance attributes:
+                 'share')
+
     def __init__(self, share):
         self.share = share
 
@@ -1099,7 +1102,7 @@ class PassFyi:
                              relief='groove', borderwidth=4,
                              padx=10, pady=10, wrap=tk.WORD,
                              font=self.share.text_font)
-        scratchtxt.insert(1.0, instruction)
+        scratchtxt.insert(tk.INSERT, instruction)
         # Center all text in the window
         scratchtxt.tag_add('text1', 1.0, tk.END)
         scratchtxt.tag_configure('text1', justify='center')
@@ -1177,7 +1180,7 @@ equivalent to bits of entropy. For more information see:
                                    relief='groove', borderwidth=8,
                                    padx=30, pady=30, wrap=tk.WORD,
                                    font=self.share.text_font)
-        explaintext.insert(1.0, explanation)
+        explaintext.insert(tk.INSERT, explanation)
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
         # If need to prevent all key actions:
         # explaintext.bind("<Key>", lambda _: "break")
@@ -1211,7 +1214,7 @@ equivalent to bits of entropy. For more information see:
                             relief='groove', borderwidth=8,
                             padx=20, pady=10, wrap=tk.WORD,
                             font=self.share.text_font)
-        colortext.insert(1.0, why)
+        colortext.insert(tk.INSERT, why)
         colortext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
     @staticmethod
@@ -1229,14 +1232,14 @@ equivalent to bits of entropy. For more information see:
                                  bg=utils.random_bkg(), fg='grey95',
                                  relief='groove', borderwidth=8,
                                  padx=30, pady=10, wrap=tk.WORD,
-                                 # font=self.share.text_font
-                                 font='TkFixedFont'
+                                 # No size change with TFF instead of self.share.text_font.
+                                 font='TkFixedFont',
                                  )
-        abouttext.insert(1.0,
+        abouttext.insert(tk.INSERT,
                          f'{__doc__}\n'
                          f'{"Author:".ljust(13)}{pass_utils.__author__}\n'
                          f'{"Version:".ljust(13)}{pass_utils.__version__}\n'
-                         f'{"Status:".ljust(13)}{pass_utils.__dev_status__}\n'
+                         f'{"Status:".ljust(13)}{pass_utils.__status__}\n'
                          f'{"URL:".ljust(13)}{pass_utils.URL}\n'
                          f'{pass_utils.__copyright__}'
                          f'{pass_utils.LICENSE}\n'
@@ -1341,6 +1344,8 @@ class PassFonts:
     Change MVC font settings. Call with keybindings or menu commands.
     """
 
+    __slots__ = ('share', 'sizemax', 'sizemin')
+
     # font.Font keywords are: family, font, size, weight, underline, overstrike.
     def __init__(self, share):
         self.share = share
@@ -1419,7 +1424,7 @@ def manage_args() -> None:
         print(__doc__)
         print(f'{"Author:".ljust(13)}', pass_utils.__author__)
         print(f'{"Version:".ljust(13)}', pass_utils.__version__)
-        print(f'{"Status:".ljust(13)}', pass_utils.__dev_status__)
+        print(f'{"Status:".ljust(13)}', pass_utils.__status__)
         print(f'{"URL:".ljust(13)}', pass_utils.URL)
         print(pass_utils.__copyright__)
         print(pass_utils.LICENSE)
