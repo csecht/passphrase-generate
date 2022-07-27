@@ -15,7 +15,7 @@ import tkinter as tk
 
 import __main__
 
-from . import platform_check as chk
+from pass_utils import platform_check as chk
 
 
 def quit_gui(gui=True, keybind=None) -> None:
