@@ -1,21 +1,46 @@
 """
 Utilties and handlers called from the __main__ script, passphrase.
 Functions:
-quit_gui() -
-random_bkg() -
-toplevel_bindings() -
-close_toplevel() -
-click_cmds() -
+manage_args -
+quit_gui -
+random_bkg -
+toplevel_bindings -
+close_toplevel -
+click_cmds -
 """
 # 'Copyright (C) 2021- 2022 C.S. Echt, under GNU General Public License'
 
+import argparse
 import random
 import sys
 import tkinter as tk
 
 import __main__
 
+import pass_utils
 from pass_utils import platform_check as chk
+
+
+def manage_args() -> None:
+    """Allow handling of common command line arguments.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--about',
+                        help='Provides description, version, GNU license',
+                        action='store_true',
+                        default=False)
+    args = parser.parse_args()
+
+    if args.about:
+        print(__main__.__doc__)
+        print(f'{"Author:".ljust(13)}', pass_utils.__author__)
+        print(f'{"Version:".ljust(13)}', pass_utils.__version__)
+        print(f'{"Status:".ljust(13)}', pass_utils.__status__)
+        print(f'{"URL:".ljust(13)}', pass_utils.URL)
+        print(pass_utils.__copyright__)
+        print(pass_utils.LICENSE)
+        print()
+        quit_gui(gui=False)
 
 
 def quit_gui(gui=True, keybind=None) -> None:

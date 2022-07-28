@@ -9,7 +9,6 @@ https://stackoverflow.com/questions/32864610/
 # 'Copyright (C) 2021- 2022 C.S. Echt, under GNU General Public License'
 
 # Standard library imports
-import argparse
 import glob
 import random
 from math import log
@@ -752,10 +751,6 @@ class PassViewer(tk.Frame):
         # # There are problems of tk.Button text showing up on MacOS, so use ttk.
         # # Explicit styles are needed for buttons to show properly on MacOS.
         # #  ... even then, background and pressed colors won't be recognized.
-        # self.generate_btn = ttk.Button()
-        # self.exclude_info_b = ttk.Button()
-        # self.reset_button = ttk.Button()
-        # self.quit_button = ttk.Button()
 
         style = ttk.Style()
         style.map("My.TButton",
@@ -916,7 +911,7 @@ class PassController(tk.Tk):
         # Need to fix window size to prevent an annoying window redraw each time
         #   font size changes the width of the result Entry() widgets and Frame().
         # Pixels here are set to fit a 52 character width Entry() and are
-        #   OS-specific. (Constant W = 52 is arbitrary, but I like it.)
+        #   OS-specific. (Constant cfg.W = 52 is arbitrary, but I like it.)
         if chk.MY_OS == 'lin':
             # self.minsize(830, 430)  # <for default font size=12, W=52
             # self.maxsize(830, 430)
@@ -1379,33 +1374,11 @@ class PassFonts:
         self.share.result_font.config(size=self.share.default_res_font)
 
 
-def manage_args() -> None:
-    """Allow handling of common command line arguments.
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--about',
-                        help='Provides description, version, GNU license',
-                        action='store_true',
-                        default=False)
-    args = parser.parse_args()
-
-    if args.about:
-        print(__doc__)
-        print(f'{"Author:".ljust(13)}', pass_utils.__author__)
-        print(f'{"Version:".ljust(13)}', pass_utils.__version__)
-        print(f'{"Status:".ljust(13)}', pass_utils.__status__)
-        print(f'{"URL:".ljust(13)}', pass_utils.URL)
-        print(pass_utils.__copyright__)
-        print(pass_utils.LICENSE)
-        print()
-        utils.quit_gui(gui=False)
-
-
 if __name__ == "__main__":
     # System platform and version checks are run in tk_utils __init__.py
     #   Program exits if checks fail.
 
-    manage_args()
+    utils.manage_args()
 
     app = PassController()
     app.title("Passphrase Generator")
