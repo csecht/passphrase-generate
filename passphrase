@@ -608,7 +608,7 @@ class PassViewer(tk.Frame):
 
         self.config(bg=self.master_bg)
 
-        if chk.MY_OS == 'dar':
+        if chk.MY_OS in 'dar, win':
             ttk.Style().theme_use('alt')
 
         # Need fields to stretch with window drag size and for the master
@@ -794,7 +794,7 @@ class PassViewer(tk.Frame):
                                            padx=(130, 0), sticky=tk.W)
         elif chk.MY_OS == 'win':
             self.share.available_show.grid(column=3, row=0, pady=(10, 0),
-                                           padx=(117, 0), sticky=tk.W)
+                                           padx=(225, 0), sticky=tk.W)
         elif chk.MY_OS == 'dar':
             self.share.available_show.grid(column=3, row=0, pady=(10, 0),
                                            padx=(124, 0), sticky=tk.W)
@@ -918,8 +918,8 @@ class PassController(tk.Tk):
             self.minsize(780, 430)  # <for default font size=11, W=52
             self.maxsize(780, 430)
         elif chk.MY_OS == 'win':
-            self.minsize(702, 430)
-            self.maxsize(702, 430)
+            self.minsize(1200, 645)
+            self.maxsize(1200, 645)
         elif chk.MY_OS == 'dar':
             # self.minsize(745, 430)
             self.maxsize(745, 403)
