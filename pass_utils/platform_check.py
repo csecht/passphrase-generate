@@ -15,10 +15,3 @@ def check_platform():
         print(f'Platform <{sys.platform}> is not supported.\n'
               'Windows, Linux, and MacOS (darwin) are supported.')
         sys.exit(1)
-
-    # Need to account for scaling in Windows.
-    if MY_OS == 'win':
-        import ctypes
-        ctypes.windll.user32.SetProcessDPIAware()
-
-
