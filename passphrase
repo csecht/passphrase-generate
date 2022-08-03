@@ -658,11 +658,16 @@ class PassViewer(tk.Frame):
             right_button = '<Button-3>'
         elif chk.MY_OS == 'dar':
             right_button = '<Button-2>'
-        self.share.pp_raw_show.bind(f'{right_button}', utils.click_cmds)
-        self.share.pp_plus_show.bind(f'{right_button}', utils.click_cmds)
-        self.share.pp_short_show.bind(f'{right_button}', utils.click_cmds)
-        self.share.pc_any_show.bind(f'{right_button}', utils.click_cmds)
-        self.share.pc_some_show.bind(f'{right_button}', utils.click_cmds)
+        self.share.pp_raw_show.bind(
+            f'{right_button}', lambda _: utils.click_cmds(app))
+        self.share.pp_plus_show.bind(
+            f'{right_button}', lambda _: utils.click_cmds(app))
+        self.share.pp_short_show.bind(
+            f'{right_button}', lambda _: utils.click_cmds(app))
+        self.share.pc_any_show.bind(
+            f'{right_button}', lambda _: utils.click_cmds(app))
+        self.share.pc_some_show.bind(
+            f'{right_button}', lambda _: utils.click_cmds(app))
 
         # Create menu instance and add pull-down menus
         menubar = tk.Menu(self.master)

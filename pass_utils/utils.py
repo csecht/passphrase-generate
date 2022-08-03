@@ -101,7 +101,7 @@ def random_bkg() -> str:
     return random.choice(colour)
 
 
-def toplevel_bindings(mainloop: tk.Tk, topwindow: tk.Toplevel) -> None:
+def toplevel_bindings(mainloop: tk, topwindow: tk.Toplevel) -> None:
     """
     Keybindings and button bindings for the named Toplevel window.
 
@@ -112,10 +112,10 @@ def toplevel_bindings(mainloop: tk.Tk, topwindow: tk.Toplevel) -> None:
 
     # Don't replace with bind_all() b/c not suitable for master window.
     if chk.MY_OS in 'lin, win':
-        topwindow.bind('<Button-3>', click_cmds)
+        topwindow.bind('<Button-3>', lambda _: click_cmds(mainloop))
         topwindow.bind('<Control-w>', lambda _: close_toplevel(mainloop))
     elif chk.MY_OS == 'dar':
-        topwindow.bind('<Button-2>', click_cmds)
+        topwindow.bind('<Button-2>', lambda _: click_cmds(mainloop))
         topwindow.bind('<Command-w>', lambda _: close_toplevel(mainloop))
 
 
@@ -153,8 +153,9 @@ def close_toplevel(mainloop: tk.Tk, keybind=None) -> None:
     return keybind
 
 
-def click_cmds(tk_event: tk.Event) -> None:
-    """An event handler for custom mouse click events."""
+def click_cmds(mainloop) -> None:
+    """An event handler for custom mouse click events.
+    """
 
     def right_click(command: str):
         """
@@ -167,7 +168,7 @@ def click_cmds(tk_event: tk.Event) -> None:
 
         # event_generate generates a Tk window event.
         #   See https://www.tcl.tk/man/tcl8.6/TkCmd/event.htm#M7
-        tk_event.widget.event_generate(f'<<{command}>>')
+        mainloop.focus_get().event_generate(f'<<{command}>>')
 
     right_click_menu = tk.Menu(None, tearoff=0, takefocus=0)
 
@@ -185,18 +186,19 @@ def click_cmds(tk_event: tk.Event) -> None:
         command=lambda: right_click('Cut'))
     right_click_menu.add(tk.SEPARATOR)
     right_click_menu.add_command(label='Bigger font',
-                                 command=__main__.app.growfont)
+                                 command=mainloop.growfont)
     right_click_menu.add_command(label='Smaller font',
-                                 command=__main__.app.shrinkfont)
+                                 command=mainloop.shrinkfont)
     right_click_menu.add_command(label='Default size',
-                                 command=__main__.app.defaultfontsize)
+                                 command=mainloop.defaultfontsize)
 
     # Need to suppress 'Close window' option for master (app) window,
     #   which does not have .!toplevel instances.
     #   Show it only for Toplevel windows and their children.
-    if '.!toplevel' in str(__main__.app.focus_get()):
+    if '.!toplevel' in str(mainloop.focus_get()):
         right_click_menu.add(tk.SEPARATOR)
         right_click_menu.add_command(label='Close window',
-                                     command=lambda: close_toplevel(__main__.app))
+                                     command=lambda: close_toplevel(mainloop))
 
-    right_click_menu.tk_popup(tk_event.x_root + 10, tk_event.y_root + 15)
+    right_click_menu.tk_popup(mainloop.winfo_pointerx(), mainloop.winfo_pointery())
+
