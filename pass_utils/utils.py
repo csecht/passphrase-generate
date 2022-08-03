@@ -1,12 +1,12 @@
 """
-Utilties and handlers called from the __main__ script, passphrase.
+Housekeeping utilities and handlers.
 Functions:
-manage_args -
-quit_gui -
-random_bkg -
-toplevel_bindings -
-close_toplevel -
-click_cmds -
+manage_args - Handles command line arguments.
+quit_gui - Safe and informative exit from the program.
+random_bkg - Returns one of twenty random colors.
+toplevel_bindings - Key and button bindings for a Toplevel window.
+close_toplevel - local; Close the Toplevel window that has focus.
+click_cmds - An event handler for custom mouse click commands.
 """
 # 'Copyright (C) 2021- 2022 C.S. Echt, under GNU General Public License'
 
@@ -80,14 +80,14 @@ def random_bkg() -> str:
     :rtype: str
     """
 
-    colour = ['blue4', 'dark olive green', 'dark slate grey',
+    colour = ('blue4', 'dark olive green', 'dark slate grey',
               'DarkGoldenrod4', 'DarkOrange4', 'DarkOrchid4',
               'DarkSeaGreen4', 'DeepSkyBlue4', 'DodgerBlue4',
               'firebrick4', 'grey2', 'grey25', 'grey40',
               'MediumOrchid4', 'MediumPurple4', 'navy',
               'OrangeRed4', 'purple4', 'saddle brown',
               'SkyBlue4'
-              ]
+              )
     # Deuteranopia simulated colors.
     # colour = ['blue4', '#646430', ''#444450';,
     #           '#727207', '#5c5c00', '#393989',
