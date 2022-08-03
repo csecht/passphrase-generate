@@ -10,13 +10,14 @@ click_cmds -
 """
 # 'Copyright (C) 2021- 2022 C.S. Echt, under GNU General Public License'
 
+# Standard library imports:
 import argparse
 import random
 import sys
 import tkinter as tk
 
+# Local program imports:
 import __main__
-
 import pass_utils
 from pass_utils import platform_check as chk
 
@@ -40,12 +41,13 @@ def manage_args() -> None:
         print(pass_utils.__copyright__)
         print(pass_utils.LICENSE)
         print()
-        quit_gui(gui=False)
+        sys.exit(0)
 
 
-def quit_gui(gui=True, keybind=None) -> None:
+def quit_gui(mainloop: tk.Tk, gui=True, keybind=None) -> None:
     """Safe and informative exit from the program.
 
+    :param mainloop: The main tk.Tk() window running the mainloop.
     :param gui: boolean flag for whether call is from gui or commandline
                 argument.
     :param keybind: Needed for keybindings.
@@ -56,9 +58,9 @@ def quit_gui(gui=True, keybind=None) -> None:
               '  *** Clipboard contents have been cleared.')
 
         try:
-            __main__.app.update_idletasks()
-            __main__.app.after(100)
-            __main__.app.destroy()
+            mainloop.update_idletasks()
+            mainloop.after(100)
+            mainloop.destroy()
         # pylint: disable=broad-except
         except Exception as unk:
             print('An unknown error occurred:', unk)
@@ -99,29 +101,32 @@ def random_bkg() -> str:
     return random.choice(colour)
 
 
-def toplevel_bindings(topwindow: tk.Toplevel) -> None:
+def toplevel_bindings(mainloop: tk.Tk, topwindow: tk.Toplevel) -> None:
     """
     Keybindings and button bindings for the named Toplevel window.
 
-    :param topwindow: Name of the Toplevel window
-    :type topwindow: tk.Toplevel
+    :param mainloop: The main tk.Tk() window running the mainloop. Used
+        as a passthrough to close_toplevel().
+    :param topwindow: Name of the Toplevel window to bind
     """
 
     # Don't replace with bind_all() b/c not suitable for master window.
     if chk.MY_OS in 'lin, win':
         topwindow.bind('<Button-3>', click_cmds)
-        topwindow.bind('<Control-w>', close_toplevel)
+        topwindow.bind('<Control-w>', lambda _: close_toplevel(mainloop))
     elif chk.MY_OS == 'dar':
         topwindow.bind('<Button-2>', click_cmds)
-        topwindow.bind('<Command-w>', close_toplevel)
+        topwindow.bind('<Command-w>', lambda _: close_toplevel(mainloop))
 
 
-def close_toplevel(keybind=None) -> None:
+def close_toplevel(mainloop: tk.Tk, keybind=None) -> None:
     """
     Close the toplevel window that has focus.
-    Called from Command-W or Control-W keybinding or right-click menu.
+    Called locally from other utils.py functions.
+    Used for Command-W or Control-W keybinding or right-click menu.
 
-    :param keybind: Used for keybindings.
+    :param mainloop: The main tk.Tk() window running the mainloop.
+    :param keybind: Implicit bind() events.
     """
     # Based on https://stackoverflow.com/questions/66384144/
     # Need to cover all cases when the focus is on any toplevel window,
@@ -130,18 +135,18 @@ def close_toplevel(keybind=None) -> None:
     #   listed at or toward the end, so read children list in reverse
     #   Break loop when the focus toplevel parent is found to prevent all
     #   toplevel windows from closing.
-    for widget in reversed(__main__.app.winfo_children()):
+    for widget in reversed(mainloop.winfo_children()):
         # pylint: disable=no-else-break
-        if widget == __main__.app.focus_get():
+        if widget == mainloop.focus_get():
             widget.destroy()
             break
-        elif '.!text' in str(__main__.app.focus_get()):
-            parent = str(__main__.app.focus_get())[:-6]
+        elif '.!text' in str(mainloop.focus_get()):
+            parent = str(mainloop.focus_get())[:-6]
             if parent in str(widget):
                 widget.destroy()
                 break
-        elif '.!frame' in str(__main__.app.focus_get()):
-            parent = str(__main__.app.focus_get())[:-7]
+        elif '.!frame' in str(mainloop.focus_get()):
+            parent = str(mainloop.focus_get())[:-7]
             if parent in str(widget):
                 widget.destroy()
                 break
@@ -192,6 +197,6 @@ def click_cmds(tk_event: tk.Event) -> None:
     if '.!toplevel' in str(__main__.app.focus_get()):
         right_click_menu.add(tk.SEPARATOR)
         right_click_menu.add_command(label='Close window',
-                                     command=close_toplevel)
+                                     command=lambda: close_toplevel(__main__.app))
 
     right_click_menu.tk_popup(tk_event.x_root + 10, tk_event.y_root + 15)
