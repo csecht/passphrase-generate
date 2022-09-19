@@ -17,9 +17,26 @@ import sys
 import tkinter as tk
 
 # Local program imports:
-import __main__
+# Used with the --about option to access __doc__ in main and
+#  plot_utils __init__.py constants and dunders.
+from __main__ import __doc__
 import pass_utils
+
 from pass_utils import platform_check as chk
+
+
+def about_text() -> str:
+    """
+    Informational text for --about execution argument and GUI About cmd.
+    """
+
+    return (f'{__doc__}\n'
+            f'{"Author:".ljust(13)}{pass_utils.__author__}\n'
+            f'{"Version:".ljust(13)}{pass_utils.__version__}\n'
+            f'{"Status:".ljust(13)}{pass_utils.__status__}\n'
+            f'{"URL:".ljust(13)}{pass_utils.URL}\n'
+            f'{pass_utils.__copyright__}'
+            f'{pass_utils.LICENSE}\n')
 
 
 def manage_args() -> None:
@@ -33,13 +50,9 @@ def manage_args() -> None:
     args = parser.parse_args()
 
     if args.about:
-        print(__main__.__doc__)
-        print(f'{"Author:".ljust(13)}', pass_utils.__author__)
-        print(f'{"Version:".ljust(13)}', pass_utils.__version__)
-        print(f'{"Status:".ljust(13)}', pass_utils.__status__)
-        print(f'{"URL:".ljust(13)}', pass_utils.URL)
-        print(pass_utils.__copyright__)
-        print(pass_utils.LICENSE)
+        print('====================== ABOUT START ====================')
+        print(about_text())
+        print('====================== ABOUT END ====================')
         print()
         sys.exit(0)
 

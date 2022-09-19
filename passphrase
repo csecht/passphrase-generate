@@ -417,7 +417,7 @@ class PassViewer(tk.Frame):
 
         # Font colors used in main (app) window:
         self.master_fg = 'grey90'  # Used for row headers.
-        self.master_bg = 'SkyBlue4'  # Also used for some labels.
+        self.master_bg = 'RoyalBlue4'  # Also used for some labels.
         self.dataframe_bg = 'grey40'  # Also background for data labels.
         self.stubpass_fg = 'grey60'  # For initial pass-string stub.
         self.share.pass_fg = 'brown4'  # Pass-string font color.
@@ -1197,20 +1197,14 @@ equivalent to bits of entropy. For more information see:
         utils.toplevel_bindings(mainloop=app, topwindow=aboutwin)
 
         abouttext = ScrolledText(aboutwin, width=74, height=num_lines + 8,
-                                 bg=utils.random_bkg(), fg='grey95',
+                                 bg='grey25', fg='grey95',
                                  relief='groove', borderwidth=8,
                                  padx=30, pady=10, wrap=tk.WORD,
                                  # No size change with TFF instead of self.share.text_font.
                                  font='TkFixedFont',
                                  )
         abouttext.insert(tk.INSERT,
-                         f'{__doc__}\n'
-                         f'{"Author:".ljust(13)}{pass_utils.__author__}\n'
-                         f'{"Version:".ljust(13)}{pass_utils.__version__}\n'
-                         f'{"Status:".ljust(13)}{pass_utils.__status__}\n'
-                         f'{"URL:".ljust(13)}{pass_utils.URL}\n'
-                         f'{pass_utils.__copyright__}'
-                         f'{pass_utils.LICENSE}\n'
+                         utils.about_text()
                          )
         abouttext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
