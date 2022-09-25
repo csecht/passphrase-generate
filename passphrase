@@ -403,6 +403,23 @@ class PassViewer(tk.Frame):
     window.
     """
 
+    # Using __slots__ for Class attributes will decrease memory usage and
+    #   may increase performance.
+    __slots__ = ('dataframe_bg', 'exclude_head', 'exclude_info_b',
+                 'excluded_head', 'excluded_show', 'generate_btn',
+                 'l_and_h_header', 'l_and_h_header2', 'master_bg',
+                 'master_fg', 'no_caps', 'no_caps_head', 'numchars_label',
+                 'numwords_label', 'pass_bg', 'pc_any_h_lbl',
+                 'pc_any_head', 'pc_any_len_lbl', 'pc_section_head',
+                 'pc_some_h_lbl', 'pc_some_head', 'pc_some_len_lbl',
+                 'pp_plus_h_lbl', 'pp_plus_head', 'pp_plus_len_lbl',
+                 'pp_raw_h_lbl', 'pp_raw_head', 'pp_raw_len_lbl',
+                 'pp_section_head', 'pp_short_h_lbl',
+                 'pp_short_head', 'pp_short_len_lbl',
+                 'quit_button', 'reset_button',
+                 'result_frame1', 'result_frame2', 'share',
+                 'stubpass_fg')
+
     def __init__(self, share):
         super().__init__()
         self.share = share
@@ -411,8 +428,8 @@ class PassViewer(tk.Frame):
         #   use app. to refer to the CountController() Tk object.
 
         # Need to set up default fonts and sizes for all windows.
-        # All control methods in PassController are named as oneword()
-        #    and refer to a MVC Class method of same name in snake_case().
+        # All control methods in PassController are named without underscores
+        #   and refer to the MVC Class method of same name in snake_case.
         self.share.setfonts()
 
         # Font colors used in main (app) window:
@@ -1157,8 +1174,8 @@ equivalent to bits of entropy. For more information see:
         """Explain why the pass-string font changes color.
         """
         why = (
-            'Pass-string font will turn BLUE when it is longer than what\n'
-            '    can fit into the result cell at the default font size.\n'
+            'Results font will turn BLUE when it is longer than what\n'
+            '    can fit into the result cell using the default font size.\n'
             'To see the entire result, you can:\n'
             '    decrease font size (right-click or menu View -> Font size...)\n'
             '    or copy & paste the result into the scratch pad\n'
