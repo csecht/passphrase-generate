@@ -31,10 +31,10 @@ except (ImportError, ModuleNotFoundError) as error:
 
 # Local application imports
 import pass_utils
-from pass_utils import (platform_check as chk,
-                        configurations as cfg,
+from pass_utils import (configurations as cfg,
                         path_check as path,
-                        utils)
+                        utils, vcheck)
+from pass_utils.utils import MY_OS
 
 
 class PassModeler:
@@ -63,10 +63,10 @@ class PassModeler:
         """
 
         all_lists = list(self.share.word_files.keys())
-        if chk.MY_OS in 'lin, dar':
+        if MY_OS in 'lin, dar':
             self.share.choose_wordlist['values'] = all_lists
         # Need to remove 'System dictionary' from Windows usage.
-        elif chk.MY_OS == 'win':
+        elif MY_OS == 'win':
             all_lists.remove('System dictionary')
             self.share.choose_wordlist['values'] = all_lists
 
@@ -85,7 +85,7 @@ class PassModeler:
                 messagebox.showinfo(title='Files not found', detail=fnf_msg)
                 utils.quit_gui(mainloop=app, gui=True)
 
-            if len(wordfile_list) > 0 and chk.MY_OS != 'win':
+            if len(wordfile_list) > 0 and MY_OS != 'win':
                 notice = ('Hmmm. The system dictionary cannot be found.\n'
                           'Using only custom wordlists ...')
                 # print(notice)
@@ -219,14 +219,14 @@ class PassModeler:
         #   'word_list' and 'short_list' from get_words().
         if len(excluded) > 0:
             if self.share.tkdata['no_caps'].get():
-                working_list = cfg.list_data['word_list'] = [
+                cfg.list_data['word_list'] = [
                     _w for _w in cfg.list_data['word_list'] if _w[0].islower()]
-                remove_excluded()
             else:
-                working_list = cfg.list_data['word_list'] = [
+                cfg.list_data['word_list'] = [
                     _w for _w in self.share.all_words if _w.isalpha()]
-                cfg.list_data['short_list'] = [_w for _w in working_list if len(_w) < 7]
-                remove_excluded()
+                cfg.list_data['short_list'] = [
+                    _w for _w in cfg.list_data['word_list'] if len(_w) < 7]
+            remove_excluded()
 
             # Display all unique currently excluded characters.
             if excluded not in cfg.string_data['all_unused'] and ' ' not in excluded:
@@ -255,11 +255,10 @@ class PassModeler:
                                 _ in range(numchars))
             passcode2 = "".join(cfg.very_random.choice(cfg.string_data['some_char']) for
                                 _ in range(numchars))
-            # Randomly select 1 of each symbol to append; length not user-specified.
-            addsymbol = "".join(
-                cfg.very_random.choice(cfg.string_data['symbols']) for _ in range(1))
-            addnum = "".join(cfg.very_random.choice(cfg.string_data['digi']) for _ in range(1))
-            addcaps = "".join(cfg.very_random.choice(cfg.string_data['caps']) for _ in range(1))
+            # Randomly select 1 of each symbol to append.
+            addsymbol = cfg.very_random.choice(cfg.string_data['symbols'])
+            addnum = cfg.very_random.choice(cfg.string_data['digi'])
+            addcaps = cfg.very_random.choice(cfg.string_data['caps'])
         except IndexError:
             messagebox.showerror(
                 title='Exceeded exclusion limit',
@@ -489,7 +488,7 @@ class PassViewer(tk.Frame):
                                         font=('default', 12),
                                         fg=self.pass_bg, bg=self.master_bg)
         # MacOS needs a larger font and altered spacing
-        if chk.MY_OS == 'dar':
+        if MY_OS == 'dar':
             self.pp_section_head.config(font=('default', 16))
             self.l_and_h_header.config(text='H       L')
 
@@ -553,7 +552,7 @@ class PassViewer(tk.Frame):
         self.l_and_h_header2 = tk.Label(text=' H      L', width=10,
                                         fg=self.master_fg, bg=self.master_bg)
         # MacOS needs a larger font and altered spacing
-        if chk.MY_OS == 'dar':
+        if MY_OS == 'dar':
             self.pc_section_head.config(font=('default', 16))
             self.l_and_h_header2.config(text='H       L')
 
@@ -625,7 +624,7 @@ class PassViewer(tk.Frame):
 
         self.config(bg=self.master_bg)
 
-        if chk.MY_OS == 'dar':
+        if MY_OS == 'dar':
             ttk.Style().theme_use('alt')
 
         # Need fields to stretch with window drag size and for the master
@@ -648,9 +647,9 @@ class PassViewer(tk.Frame):
         self.master.bind('<KP_Enter>', self.share.makepass)
 
         cmdkey = ''
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             cmdkey = 'Control'
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             cmdkey = 'Command'
         self.master.bind_all(f'<{f"{cmdkey}"}-equal>', self.share.growfont)
         self.master.bind_all(f'<{f"{cmdkey}"}-minus>', self.share.shrinkfont)
@@ -662,7 +661,7 @@ class PassViewer(tk.Frame):
 
         # Need to specify Ctrl-A for Linux b/c in tkinter that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
-        if chk.MY_OS in 'lin':
+        if MY_OS in 'lin':
             def select_all():
                 app.focus_get().event_generate('<<SelectAll>>')
 
@@ -671,9 +670,9 @@ class PassViewer(tk.Frame):
         # Need to specify OS-specific right-click mouse button only in
         #    passstring fields of master window
         right_button = ''
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             right_button = '<Button-3>'
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             right_button = '<Button-2>'
         self.share.pp_raw_show.bind(
             f'{right_button}', lambda _: utils.click_cmds(app))
@@ -691,9 +690,9 @@ class PassViewer(tk.Frame):
         self.master.config(menu=menubar)
 
         os_accelerator = ''
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             os_accelerator = 'Ctrl'
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             os_accelerator = 'Command'
         file = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Passphrase', menu=file)
@@ -732,14 +731,14 @@ class PassViewer(tk.Frame):
         view.add_cascade(label='Font size...', menu=fontsize)
         # MacOS substitutes in appropriate key symbols for accelerators;
         #   Linux and Windows just use the literal strings.
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
                                  accelerator=f'{os_accelerator}+=(plus)')
             fontsize.add_command(label='Smaller font',
                                  command=self.share.shrinkfont,
                                  accelerator=f'{os_accelerator}+-(minus)')
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             fontsize.add_command(label='Bigger font',
                                  command=self.share.growfont,
                                  accelerator=f'{os_accelerator}+=')
@@ -812,10 +811,10 @@ class PassViewer(tk.Frame):
         self.share.available_head.grid(column=3, row=0, pady=(10, 0),
                                        padx=(5, 0), sticky=tk.W)
         # Need separate Label spacing for each OS:
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             self.share.available_show.grid(column=3, row=0, pady=(10, 0),
                                            padx=(130, 0), sticky=tk.W)
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             self.share.available_show.grid(column=3, row=0, pady=(10, 0),
                                            padx=(124, 0), sticky=tk.W)
 
@@ -852,11 +851,11 @@ class PassViewer(tk.Frame):
         #   ...with different x padding to keep it aligned in different platforms.
         self.generate_btn.grid(column=3, row=5, rowspan=2, pady=(10, 5),
                                sticky=tk.W)
-        if chk.MY_OS == 'lin':
+        if MY_OS == 'lin':
             self.generate_btn.grid(padx=(40, 0))
-        elif chk.MY_OS == 'win':
+        elif MY_OS == 'win':
             self.generate_btn.grid(padx=(30, 0))
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             self.generate_btn.grid(padx=(0, 0))
 
         # Passcode widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -913,7 +912,7 @@ class PassViewer(tk.Frame):
                                        pady=(0, 15), padx=5, sticky=tk.W)
 
         # Need to adjust padding for macOS b/c of different font spacing.
-        if chk.MY_OS == 'dar':
+        if MY_OS == 'dar':
             self.exclude_head.grid(padx=(13, 0))
             self.reset_button.grid(columnspan=2, padx=(20, 0))
             self.excluded_head.grid(columnspan=2, padx=(95, 0), sticky=tk.W)
@@ -932,15 +931,15 @@ class PassController(tk.Tk):
         #   font size changes the width of the result Entry() widgets and Frame().
         # Pixels here are set to fit a 52 character width Entry() and are
         #   OS-specific. (Constant cfg.W = 52 is arbitrary, but I like it.)
-        if chk.MY_OS == 'lin':
+        if MY_OS == 'lin':
             # self.minsize(830, 430)  # <for default font size=12, W=52
             # self.maxsize(830, 430)
             self.minsize(780, 430)  # <for default font size=11, W=52
             self.maxsize(780, 430)
-        elif chk.MY_OS == 'win':
+        elif MY_OS == 'win':
             self.minsize(702, 430)
             self.maxsize(702, 430)
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             # self.minsize(745, 430)
             self.maxsize(745, 403)
 
@@ -1155,9 +1154,9 @@ equivalent to bits of entropy. For more information see:
         utils.toplevel_bindings(mainloop=app, topwindow=explainwin)
 
         os_width = 0
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             os_width = 62
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             os_width = 55
 
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
@@ -1189,9 +1188,9 @@ equivalent to bits of entropy. For more information see:
         utils.toplevel_bindings(mainloop=app, topwindow=colorwin)
 
         os_width = 0
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             os_width = 52
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             os_width = 48
 
         colortext = tk.Text(colorwin, width=os_width, height=num_lines,
@@ -1253,9 +1252,9 @@ space entered between characters will also do a reset.
         utils.toplevel_bindings(mainloop=app, topwindow=excludewin)
 
         os_width = 0
-        if chk.MY_OS in 'lin, win':
+        if MY_OS in 'lin, win':
             os_width = 48
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             os_width = 42
 
         num_lines = msg.count('\n')
@@ -1327,13 +1326,13 @@ class PassFonts:
     def __init__(self, share):
         self.share = share
 
-        if chk.MY_OS == 'lin':
+        if MY_OS == 'lin':
             self.sizemax = 16
             self.sizemin = 4
-        elif chk.MY_OS == 'win':
+        elif MY_OS == 'win':
             self.sizemax = 15
             self.sizemin = 6
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             self.sizemax = 20
             self.sizemin = 9
 
@@ -1347,15 +1346,15 @@ class PassFonts:
         self.share.result_font = tk.font.Font(font='TkFixedFont')
 
         # get font info from self.share.text_font.actual()
-        if chk.MY_OS == 'lin':
+        if MY_OS == 'lin':
             self.share.result_font.configure(size=11)
             self.share.default_txt_font = 10
             self.share.default_res_font = 11
-        if chk.MY_OS == 'win':
+        if MY_OS == 'win':
             self.share.result_font.configure(size=10)
             self.share.default_txt_font = 10
             self.share.default_res_font = 10
-        elif chk.MY_OS == 'dar':
+        elif MY_OS == 'dar':
             self.share.text_font.configure(size=14)
             self.share.result_font.configure(size=13)
             self.share.default_txt_font = 14
@@ -1391,6 +1390,8 @@ class PassFonts:
 if __name__ == "__main__":
     # System platform and version checks are run in tk_utils __init__.py
     #   Program exits if checks fail.
+    utils.check_platform()
+    vcheck.minversion('3.6')
 
     utils.manage_args()
 

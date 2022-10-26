@@ -22,7 +22,7 @@ import tkinter as tk
 from __main__ import __doc__
 import pass_utils
 
-from pass_utils import platform_check as chk
+MY_OS = sys.platform[:3]
 
 
 def about_text() -> str:
@@ -37,6 +37,17 @@ def about_text() -> str:
             f'{"URL:".ljust(13)}{pass_utils.URL}\n'
             f'{pass_utils.__copyright__}'
             f'{pass_utils.LICENSE}\n')
+
+
+def check_platform():
+    """
+    Startup validation of currently supported OS platform.
+    MY_OS constant used in main script.
+    """
+    if MY_OS not in 'lin, win, dar':
+        print(f'Platform <{sys.platform}> is not supported.\n'
+              'Windows, Linux, and MacOS (darwin) are supported.')
+        sys.exit(1)
 
 
 def manage_args() -> None:
@@ -124,10 +135,10 @@ def toplevel_bindings(mainloop: tk, topwindow: tk.Toplevel) -> None:
     """
 
     # Don't replace with bind_all() b/c not suitable for master window.
-    if chk.MY_OS in 'lin, win':
+    if MY_OS in 'lin, win':
         topwindow.bind('<Button-3>', lambda _: click_cmds(mainloop))
         topwindow.bind('<Control-w>', lambda _: close_toplevel(mainloop))
-    elif chk.MY_OS == 'dar':
+    elif MY_OS == 'dar':
         topwindow.bind('<Button-2>', lambda _: click_cmds(mainloop))
         topwindow.bind('<Command-w>', lambda _: close_toplevel(mainloop))
 
