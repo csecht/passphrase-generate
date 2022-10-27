@@ -18,8 +18,8 @@ from string import digits, punctuation, ascii_letters, ascii_uppercase
 # Third party imports (tk may not be included with some Python installations).
 try:
     import tkinter as tk
-    import tkinter.font
-    from tkinter import messagebox, ttk
+    # import tkinter.font
+    from tkinter import messagebox, ttk, font
     from tkinter.scrolledtext import ScrolledText
 except (ImportError, ModuleNotFoundError) as error:
     print('Passphrase requires tkinter, which is included with some Python 3.7+'
@@ -646,11 +646,7 @@ class PassViewer(tk.Frame):
         self.master.bind('<Return>', self.share.makepass)
         self.master.bind('<KP_Enter>', self.share.makepass)
 
-        cmdkey = ''
-        if MY_OS in 'lin, win':
-            cmdkey = 'Control'
-        elif MY_OS == 'dar':
-            cmdkey = 'Command'
+        cmdkey = 'Command' if MY_OS == 'dar' else' Control'  # is 'lin', 'win'.
         self.master.bind_all(f'<{f"{cmdkey}"}-equal>', self.share.growfont)
         self.master.bind_all(f'<{f"{cmdkey}"}-minus>', self.share.shrinkfont)
         self.master.bind(f'<{f"{cmdkey}"}-q>', lambda _: utils.quit_gui(app))
@@ -669,11 +665,7 @@ class PassViewer(tk.Frame):
 
         # Need to specify OS-specific right-click mouse button only in
         #    passstring fields of master window
-        right_button = ''
-        if MY_OS in 'lin, win':
-            right_button = '<Button-3>'
-        elif MY_OS == 'dar':
-            right_button = '<Button-2>'
+        right_button = '<Button-2>' if MY_OS == 'dar' else '<Button-3>'
         self.share.pp_raw_show.bind(
             f'{right_button}', lambda _: utils.click_cmds(app))
         self.share.pp_plus_show.bind(
@@ -689,11 +681,7 @@ class PassViewer(tk.Frame):
         menubar = tk.Menu(self.master)
         self.master.config(menu=menubar)
 
-        os_accelerator = ''
-        if MY_OS in 'lin, win':
-            os_accelerator = 'Ctrl'
-        elif MY_OS == 'dar':
-            os_accelerator = 'Command'
+        os_accelerator = 'Command' if MY_OS == 'dar' else 'Ctrl'
         file = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Passphrase', menu=file)
         file.add_command(label='Generate', command=self.share.makepass,
@@ -811,12 +799,9 @@ class PassViewer(tk.Frame):
         self.share.available_head.grid(column=3, row=0, pady=(10, 0),
                                        padx=(5, 0), sticky=tk.W)
         # Need separate Label spacing for each OS:
-        if MY_OS in 'lin, win':
-            self.share.available_show.grid(column=3, row=0, pady=(10, 0),
-                                           padx=(130, 0), sticky=tk.W)
-        elif MY_OS == 'dar':
-            self.share.available_show.grid(column=3, row=0, pady=(10, 0),
-                                           padx=(124, 0), sticky=tk.W)
+        padx = (124, 0) if MY_OS == 'dar' else (130, 0)  # 'lin' or 'win'.
+        self.share.available_show.grid(column=3, row=0, pady=(10, 0),
+                                       padx=padx, sticky=tk.W)
 
         self.numwords_label.grid(column=0, row=1, padx=(10, 5), sticky=tk.W)
         self.share.numwords_entry.grid(
@@ -849,26 +834,26 @@ class PassViewer(tk.Frame):
 
         # Need to pad and span to center the button between two results frames.
         #   ...with different x padding to keep it aligned in different platforms.
-        self.generate_btn.grid(column=3, row=5, rowspan=2, pady=(10, 5),
-                               sticky=tk.W)
         if MY_OS == 'lin':
-            self.generate_btn.grid(padx=(40, 0))
+            padx = (40, 0)
         elif MY_OS == 'win':
-            self.generate_btn.grid(padx=(30, 0))
-        elif MY_OS == 'dar':
-            self.generate_btn.grid(padx=(0, 0))
+            padx = (30, 0)
+        else:  # is macOS
+            padx = (0, 0)
+
+        self.generate_btn.grid(column=3, row=5, rowspan=2,
+                               padx=padx, pady=(10, 5), sticky=tk.W)
 
         # Passcode widgets %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        self.pc_section_head.grid(column=0, row=5, pady=(12, 6), padx=(10, 5),
-                                  sticky=tk.W)
+        self.pc_section_head.grid(column=0, row=5,
+                                  pady=(12, 6), padx=(10, 5), sticky=tk.W)
 
-        self.numchars_label.grid(column=0, row=6, pady=0, padx=(10, 5),
-                                 sticky=tk.W)
-        self.share.numchars_entry.grid(
-            column=0, row=6, pady=0, padx=(0, 65),
-            sticky=tk.E)
-        self.l_and_h_header2.grid(column=1, row=6, pady=0, padx=0,
-                                  sticky=tk.W)
+        self.numchars_label.grid(column=0, row=6,
+                                 pady=0, padx=(10, 5), sticky=tk.W)
+        self.share.numchars_entry.grid(column=0, row=6,
+                                       pady=0, padx=(0, 65), sticky=tk.E)
+        self.l_and_h_header2.grid(column=1, row=6,
+                                  pady=0, padx=0, sticky=tk.W)
 
         self.result_frame2.grid(column=1, row=7, padx=(5, 10),
                                 columnspan=3, rowspan=2, sticky=tk.NSEW)
@@ -1340,10 +1325,10 @@ class PassFonts:
         """ Establish default cross-OS Tk fonts and sizes at start-up.
         """
         # Need to define as font.Font to configure().
-        # Different OS need different size for best readability and to fit in
+        # Different OS need different size for best readability and to fit
         #  in the passcode W=52 field.
-        self.share.text_font = tk.font.Font(font='TkTextFont')
-        self.share.result_font = tk.font.Font(font='TkFixedFont')
+        self.share.text_font = font.Font(font='TkTextFont')
+        self.share.result_font = font.Font(font='TkFixedFont')
 
         # get font info from self.share.text_font.actual()
         if MY_OS == 'lin':
