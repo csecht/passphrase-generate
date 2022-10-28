@@ -1,6 +1,8 @@
 """
 Housekeeping utilities and handlers.
 Functions:
+about_text - Returns basic information about the program.
+check_platform - Checks for supported OS platform; exits if check fails.
 manage_args - Handles command line arguments.
 quit_gui - Safe and informative exit from the program.
 random_bkg - Returns one of twenty random colors.
