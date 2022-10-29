@@ -463,7 +463,6 @@ class PassViewer(tk.Frame):
         self.pp_section_head = tk.Label()
 
         self.result_frame1 = tk.Frame()
-        self.result_frame2 = tk.Frame()
 
         self.pp_raw_head = tk.Label()
         self.pp_plus_head = tk.Label()
@@ -483,6 +482,8 @@ class PassViewer(tk.Frame):
         # End passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         # Passcode section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        self.result_frame2 = tk.Frame()
+
         self.pc_section_head = tk.Label()
         self.numchars_label = tk.Label()
         self.share.numchars_entry = tk.Entry()
@@ -538,7 +539,7 @@ class PassViewer(tk.Frame):
         # Passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #  Generally sorted by row order.
         self.share.choose_wordlist.configure(state='readonly', width=24)
-        self.share.choose_wordlist.bind('<<ComboboxSelected>>', self.share.getwords)
+        self.share.choose_wordlist.bind('<<ComboboxSelected>>', lambda _: self.share.getwords())
         self.share.available_head.config(text='# available words:',
                                          fg=COLORS['pass_bg'], bg=COLORS['master_bg'])
         self.share.available_show.config(textvariable=self.share.tkdata['available'],
@@ -551,7 +552,7 @@ class PassViewer(tk.Frame):
 
         # MacOS needs a larger font and altered spacing than Linux or Windows.
         if MY_OS == 'dar':
-            p_font = ('systemApplicationFont', 16)
+            p_font = ('TkHeadingFont', 16)
             hl_text = 'H       L'
         else:
             p_font = ('TkHeadingFont', 12)
@@ -700,17 +701,17 @@ class PassViewer(tk.Frame):
         # Set up universal and OS-specific keybindings and menus
         self.master.bind_all('<Escape>', lambda _: utils.quit_gui(app))
 
-        self.master.bind('<Return>', self.share.makepass)
-        self.master.bind('<KP_Enter>', self.share.makepass)
+        self.master.bind('<Return>', lambda _: self.share.makepass())
+        self.master.bind('<KP_Enter>', lambda _: self.share.makepass())
 
-        cmdkey = 'Command' if MY_OS == 'dar' else 'Control'  # is 'lin', 'win'.
-        self.master.bind_all(f'<{f"{cmdkey}"}-equal>', self.share.growfont)
-        self.master.bind_all(f'<{f"{cmdkey}"}-minus>', self.share.shrinkfont)
+        cmdkey = 'Command' if MY_OS == 'dar' else 'Control'  # is 'lin' or 'win'.
+        self.master.bind_all(f'<{f"{cmdkey}"}-equal>', lambda _: self.share.growfont())
+        self.master.bind_all(f'<{f"{cmdkey}"}-minus>', lambda _: self.share.shrinkfont())
         self.master.bind(f'<{f"{cmdkey}"}-q>', lambda _: utils.quit_gui(app))
-        self.master.bind(f'<{f"{cmdkey}"}-g>', self.share.makepass)
-        self.master.bind(f'<{f"{cmdkey}"}-o>', self.share.scratchpad)
-        self.master.bind(f'<{f"{cmdkey}"}-r>', self.share.reset)
-        self.master.bind('<Shift-Control-C>', self.share.complimentme)
+        self.master.bind(f'<{f"{cmdkey}"}-g>', lambda _: self.share.makepass())
+        self.master.bind(f'<{f"{cmdkey}"}-o>', lambda _: self.share.scratchpad())
+        self.master.bind(f'<{f"{cmdkey}"}-r>', lambda _: self.share.reset())
+        self.master.bind('<Shift-Control-C>', lambda _: self.share.complimentme())
 
         # Need to specify Ctrl-A for Linux b/c in tkinter that key is
         #   bound to <<LineStart>>, not <<SelectAll>>, for some reason?
@@ -995,19 +996,13 @@ class PassController(tk.Tk):
         """
         PassFonts(share=self).set_fonts()
 
-    # pylint: disable=unused-argument
-    def growfont(self, keybind=None):
+    def growfont(self):
         """Is called from keybinding or View menu.
-
-        :param keybind: Needed for keybindings
         """
         PassFonts(share=self).grow_font()
 
-    # pylint: disable=unused-argument
-    def shrinkfont(self, keybind=None):
+    def shrinkfont(self):
         """Is called from keybinding or View menu.
-
-        :param keybind: Needed for keybindings
         """
         PassFonts(share=self).shrink_font()
 
@@ -1025,31 +1020,23 @@ class PassController(tk.Tk):
         """
         PassModeler(share=self).check_files()
 
-    # pylint: disable=unused-argument
-    def getwords(self, *args):
+    def getwords(self):
         """
         Is called from the Viewer __init__ and Combobox binding.
         Populate lists with words to randomize in make_pass().
-
-        :param args: Needed for call from Combobox virtual event binding.
         """
         PassModeler(share=self).get_words()
 
-    # pylint: disable=unused-argument
-    def makepass(self, keybind=None) -> None:
-        """Is called via "Generate" key, button, menu.
+    def makepass(self) -> None:
+        """
+        Is called via "Generate" key, button, menu.
         make_pass() creates random pass-strings, which then
         calls set_entropy() and config_results().
-
-        :param keybind: Needed for call from keybinding.
         """
         PassModeler(share=self).make_pass()
 
-    # pylint: disable=unused-argument
-    def scratchpad(self, keybind=None):
+    def scratchpad(self):
         """Is called from the Viewer Passphrase menu or key binding.
-
-        :param keybind: Needed for keybindings
         """
         PassFyi(share=self).scratch_pad()
 
@@ -1076,19 +1063,14 @@ class PassController(tk.Tk):
         """
         PassFyi(share=self).exclude_msg()
 
-    # pylint: disable=unused-argument
-    def reset(self, keybind=None) -> None:
+    def reset(self) -> None:
         """
         Resets all results and exclusions. Called from key, button, menu.
-
-        :param keybind: Needed for keybindings
         """
         PassModeler(share=self).reset()
 
-    def complimentme(self, keybind=None) -> None:
+    def complimentme(self) -> None:
         """Is called from Help menu. A silly diversion.
-
-        :param keybind: Needed for keybinding
         """
         PassFyi(share=self).compliment_me()
 
