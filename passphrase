@@ -1419,6 +1419,8 @@ if __name__ == "__main__":
 
     utils.manage_args()
 
+    print(f'{utils.program_name()} now running...')
+
     app = PassController()
     app.title("Passphrase Generator")
 
