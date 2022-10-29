@@ -17,6 +17,7 @@ SYMBOLS = "~!@#$%^&*_-+="
 
 # Number of characters for evaluating passphrase lengths and
 #   setting pass-string results Entry widget widths.
+# Depends on changes in app window minsize and PassFonts.set_fonts.
 W = 52
 
 STUBRESULT = 'Result can be copied and pasted.'
