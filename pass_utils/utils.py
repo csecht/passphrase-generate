@@ -1,6 +1,8 @@
 """
 Housekeeping utilities and handlers.
 Functions:
+about_text - Returns basic information about the program.
+check_platform - Checks for supported OS platform; exits if check fails.
 manage_args - Handles command line arguments.
 quit_gui - Safe and informative exit from the program.
 random_bkg - Returns one of twenty random colors.
@@ -15,6 +17,7 @@ import argparse
 import random
 import sys
 import tkinter as tk
+from pathlib import Path
 
 # Local program imports:
 # Used with the --about option to access __doc__ in main and
@@ -66,6 +69,17 @@ def manage_args() -> None:
         print('====================== ABOUT END ====================')
         print()
         sys.exit(0)
+
+
+def program_name() -> str:
+    """
+    Extract the main program's file name from the full path.
+
+    Expected use is for printing and Terminal message display.
+
+    :return: Name of the main script file.
+    """
+    return Path(sys.modules['__main__'].__file__).name
 
 
 def quit_gui(mainloop: tk.Tk, gui=True, keybind=None) -> None:
