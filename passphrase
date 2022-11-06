@@ -1419,10 +1419,10 @@ if __name__ == "__main__":
 
     utils.manage_args()
 
-    print(f'{utils.program_name()} now running...')
-
     app = PassController()
     app.title("Passphrase Generator")
+
+    print(f'{Path(__file__).name} is now running...')
 
     try:
         img = tk.PhotoImage(file=path.valid_path_to('images/passphrase_icon512.png'))

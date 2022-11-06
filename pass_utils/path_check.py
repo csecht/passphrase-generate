@@ -2,7 +2,7 @@
 Startup path validation and path-related attributes as constants.
 Is called from pass_utils.__init__.
 Functions: valid_path_to()
-WORDDIR and SYSDICT_PATH are called from main script.
+Constants: WORDDIR and SYSDICT_PATH are called from main script.
 """
 # 'Copyright (C) 2021- 2022 C.S. Echt, under GNU General Public License'
 
@@ -14,7 +14,8 @@ def valid_path_to(relative_path: str) -> Path:
     """
     Get correct path to program's directory/file structure
     depending on whether program invocation is a standalone app or
-    the command line. Works with symlinks.
+    the command line. Works with symlinks. Permits cmd line invocation
+    using any path.
     _MEIPASS var is used by distribution programs from
     PyInstaller --onefile; e.g. for images dir.
 

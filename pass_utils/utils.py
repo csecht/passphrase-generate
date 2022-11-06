@@ -17,7 +17,6 @@ import argparse
 import random
 import sys
 import tkinter as tk
-from pathlib import Path
 
 # Local program imports:
 # Used with the --about option to access __doc__ in main and
@@ -69,17 +68,6 @@ def manage_args() -> None:
         print('====================== ABOUT END ====================')
         print()
         sys.exit(0)
-
-
-def program_name() -> str:
-    """
-    Extract the main program's file name from the full path.
-
-    Expected use is for printing and Terminal message display.
-
-    :return: Name of the main script file.
-    """
-    return Path(sys.modules['__main__'].__file__).name
 
 
 def quit_gui(mainloop: tk.Tk, gui=True, keybind=None) -> None:
@@ -239,4 +227,3 @@ def click_cmds(mainloop) -> None:
                                      command=lambda: close_toplevel(mainloop))
 
     right_click_menu.tk_popup(mainloop.winfo_pointerx(), mainloop.winfo_pointery())
-
