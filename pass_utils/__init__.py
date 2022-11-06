@@ -4,7 +4,7 @@ These constants are used with the --about command line argument or button.
 
 # Development status standards: https://pypi.org/classifiers/
 __author__ = 'Craig S. Echt'
-__version__ = '0.12.10'
+__version__ = '0.12.11'
 __status__ = 'Development Status :: 4 - Beta'
 __copyright__ = 'Copyright (C) 2021- 2022 C.S. Echt, under GNU General Public License'
 
@@ -24,4 +24,3 @@ LICENSE = """
     You should have received a copy of the GNU General Public License
     along with this program (the LICENCE.txt file). If not, see
     https://www.gnu.org/licenses/."""
-

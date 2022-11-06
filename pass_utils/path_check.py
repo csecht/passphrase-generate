@@ -12,19 +12,23 @@ from pathlib import Path
 
 def valid_path_to(relative_path: str) -> Path:
     """
-    Get absolute path to files and directories.
+    Get correct path to program's directory/file structure
+    depending on whether program invocation is a standalone app or
+    the command line. Works with symlinks.
     _MEIPASS var is used by distribution programs from
     PyInstaller --onefile; e.g. for images dir.
 
-    :param relative_path: File or dir name path, as string.
+    :param relative_path: Program's local dir/file name, as string.
     :return: Absolute path as pathlib Path object.
     """
     # Modified from: https://stackoverflow.com/questions/7674790/
     #    bundling-data-files-with-pyinstaller-onefile and PyInstaller manual.
     if getattr(sys, 'frozen', False):  # hasattr(sys, '_MEIPASS'):
         base_path = getattr(sys, '_MEIPASS', Path(Path(__file__).resolve()).parent)
-        return Path(base_path) / relative_path
-    return Path(relative_path).resolve()
+        valid_path = Path(base_path) / relative_path
+    else:
+        valid_path = Path(Path(__file__).parent, f'../{relative_path}').resolve()
+    return valid_path
 
 
 # Note: The optional wordlist files are referenced in PassModeler().

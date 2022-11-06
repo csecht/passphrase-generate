@@ -1424,8 +1424,12 @@ if __name__ == "__main__":
     app = PassController()
     app.title("Passphrase Generator")
 
-    img = tk.PhotoImage(file=path.valid_path_to('images/passphrase_icon512.png'))
-    app.wm_iconphoto(True, img)
+    try:
+        img = tk.PhotoImage(file=path.valid_path_to('images/passphrase_icon512.png'))
+        app.wm_iconphoto(True, img)
+    except tk.TclError as msg:
+        print('Cannot display program icon, so it will be left blank or tk default.')
+        print(f'tk error message: {msg}')
 
     app.clipboard_clear()
 
