@@ -310,9 +310,9 @@ class PassModeler:
         h_add3 = int(h_symbol + h_cap + h_digit)  # H ~= 11
 
         # Calculate information entropy, H = L * log N / log 2, where N is the
-        #   number of possible characters or words and L is the number of characters
-        #   or words in the pass-string. Log can be any base, but needs to be
-        #   the same base in numerator and denominator.
+        #   number of possible characters or words and L is the number of
+        #   characters or words in the pass-string. Log can be any base,
+        #   but needs to be the same base in numerator and denominator.
         # Note that N is corrected for any excluded words from set_pstrings().
         # Need to display H as integer, not float.
         self.share.tkdata['pp_raw_h'].set(
@@ -539,7 +539,8 @@ class PassViewer(tk.Canvas):
         # Passphrase section %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         #  Generally sorted by row order.
         self.share.choose_wordlist.configure(state='readonly', width=24)
-        self.share.choose_wordlist.bind('<<ComboboxSelected>>', lambda _: self.share.getwords())
+        self.share.choose_wordlist.bind('<<ComboboxSelected>>',
+                                        lambda _: self.share.getwords())
         self.share.available_head.config(text='# available words:',
                                          fg=COLORS['pass_bg'], bg=COLORS['master_bg'])
         self.share.available_show.config(textvariable=self.share.tkdata['available'],
@@ -686,7 +687,7 @@ class PassViewer(tk.Canvas):
             ttk.Style().theme_use('alt')
 
         # Need fields to stretch with window drag size and for the master
-        #   frame to properly fill the app window.
+        #   canvas to properly fill the app window.
         self.master.columnconfigure(3, weight=1)
         for _row in range(10):
             self.master.rowconfigure(_row, weight=1)
@@ -742,14 +743,18 @@ class PassViewer(tk.Canvas):
         os_accelerator = 'Command' if MY_OS == 'dar' else 'Ctrl'
         file = tk.Menu(self.master, tearoff=0)
         menubar.add_cascade(label='Passphrase', menu=file)
-        file.add_command(label='Generate', command=self.share.makepass,
+        file.add_command(label='Generate',
+                         command=self.share.makepass,
                          accelerator=f'{os_accelerator}+G')
-        file.add_command(label='Reset', command=self.share.reset,
+        file.add_command(label='Reset',
+                         command=self.share.reset,
                          accelerator=f'{os_accelerator}+R')
-        file.add_command(label='Open a scratch pad', command=self.share.scratchpad,
+        file.add_command(label='Open a scratch pad',
+                         command=self.share.scratchpad,
                          accelerator=f'{os_accelerator}+O')
         file.add(tk.SEPARATOR)
-        file.add_command(label='Quit', command=lambda: utils.quit_gui(app, gui=True),
+        file.add_command(label='Quit',
+                         command=lambda: utils.quit_gui(app, gui=True),
                          # MacOS doesn't recognize 'Command+Q' as an accelerator
                          #   b/c can't override that system's native Command+Q,
                          accelerator=f'{os_accelerator}+Q')
@@ -808,7 +813,8 @@ class PassViewer(tk.Canvas):
                               command=self.share.explain)
         help_menu.add_command(label='About',
                               command=self.share.about)
-        # Need Ctrl+Shift+C for all OS b/c Command-Shift-C is a macOS default for color palette.
+        # Need Ctrl+Shift+C for all OS b/c Command-Shift-C is a macOS
+        #  default for color palette.
         help_menu.add_command(label="I need a compliment",
                               command=self.share.complimentme,
                               accelerator='Ctrl+Shift+C')
@@ -1246,7 +1252,7 @@ equivalent to bits of entropy. For more information see:
                                  bg='grey25', fg='grey95',
                                  relief='groove', borderwidth=8,
                                  padx=30, pady=10, wrap=tk.WORD,
-                                 # No size change with TFF instead of self.share.text_font.
+                                 # No size change with TFF (is with self.share.text_font).
                                  font='TkFixedFont',
                                  )
         abouttext.insert(tk.INSERT,
@@ -1355,6 +1361,9 @@ class PassFonts:
     # font.Font keywords are: family, font, size, weight, underline, overstrike.
     def __init__(self, share):
         self.share = share
+        # Need to define as font.Font to configure().
+        # Different OS need different size for best readability and to fit
+        #  in the passcode W=52 field.
 
         if MY_OS == 'lin':
             self.sizemax = 16
@@ -1375,7 +1384,7 @@ class PassFonts:
         self.share.text_font = font.Font(font='TkTextFont')
         self.share.result_font = font.Font(font='TkFixedFont')
 
-        # get font info from self.share.text_font.actual()
+        # Note: OS font sizes was obtained by: self.share.text_font.actual().
         if MY_OS == 'lin':
             self.share.result_font.configure(size=11)
             self.share.default_txt_font = 10
