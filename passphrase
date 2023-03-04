@@ -401,7 +401,7 @@ class PassModeler:
         app.update_idletasks()
 
 
-class PassViewer(tk.Frame):
+class PassViewer(tk.Canvas):
     """
     Set up GUI widgets and display results from Modeler in the main
     window.
@@ -985,6 +985,12 @@ class PassController(tk.Tk):
         elif MY_OS == 'dar':
             self.minsize(745, 403)
             self.maxsize(745, 403)
+
+        # Need these two instance attributes for explain() method;
+        #  they are assigned values as self.share.tkdata (dict) and
+        #  self.share.choose_wordlist (Combobox) in PassViewer().
+        self.tkdata = None
+        self.choose_wordlist = None
 
         self.winfo_toplevel()
         PassViewer(share=self)
