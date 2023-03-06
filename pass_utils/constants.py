@@ -45,7 +45,7 @@ STRING_DATA = {
     'caps': ascii_uppercase,
     'all_char': ascii_letters + digits + punctuation,
     'some_char': ascii_letters + digits + SYMBOLS,
-    'all_unused': ''
+    'all_unused': ''  # Used as a variable for characters to be excluded.
 }
 
 LIST_DATA = {'word_list': [], 'short_list': []}

@@ -198,21 +198,26 @@ class PassModeler:
         if ' ' in excluded or len(excluded) == 0:
             self.reset()
 
-        def remove_excluded():
-            LIST_DATA['word_list'] = [
-                _w for _w in LIST_DATA['word_list'] if excluded not in _w]
-            LIST_DATA['short_list'] = [
-                _w for _w in LIST_DATA['short_list'] if excluded not in _w]
-            STRING_DATA['symbols'] = [
-                _s for _s in STRING_DATA['symbols'] if excluded not in _s]
-            STRING_DATA['digi'] = [
-                _d for _d in STRING_DATA['digi'] if excluded not in _d]
-            STRING_DATA['caps'] = [
-                _uc for _uc in STRING_DATA['caps'] if excluded not in _uc]
-            STRING_DATA['all_char'] = [
-                _ch for _ch in STRING_DATA['all_char'] if excluded not in _ch]
-            STRING_DATA['some_char'] = [
-                _ch for _ch in STRING_DATA['some_char'] if excluded not in _ch]
+        def remove_excluded(exclude_this):
+            """
+            Update lists of candidate characters by removing characters
+            specified by the user.
+            """
+            for excl in exclude_this.split():
+                LIST_DATA['word_list'] = [
+                    _w for _w in LIST_DATA['word_list'] if excl not in _w]
+                LIST_DATA['short_list'] = [
+                    _w for _w in LIST_DATA['short_list'] if excl not in _w]
+                STRING_DATA['symbols'] = [
+                    _s for _s in STRING_DATA['symbols'] if excl not in _s]
+                STRING_DATA['digi'] = [
+                    _d for _d in STRING_DATA['digi'] if excl not in _d]
+                STRING_DATA['caps'] = [
+                    _uc for _uc in STRING_DATA['caps'] if excl not in _uc]
+                STRING_DATA['all_char'] = [
+                    _ch for _ch in STRING_DATA['all_char'] if excl not in _ch]
+                STRING_DATA['some_char'] = [
+                    _ch for _ch in STRING_DATA['some_char'] if excl not in _ch]
             # Need to display # of currently available words in two places.
             #   'available' is used as param in PassController.explain() and
             #   the self.share.available_show Label in main window.
@@ -231,12 +236,15 @@ class PassModeler:
                     _w for _w in self.share.all_words if _w.isalpha()]
                 LIST_DATA['short_list'] = [
                     _w for _w in LIST_DATA['word_list'] if len(_w) < 7]
-            remove_excluded()
 
             # Display all unique currently excluded characters.
             if excluded not in STRING_DATA['all_unused'] and ' ' not in excluded:
                 STRING_DATA['all_unused'] = STRING_DATA['all_unused'] + ' ' + excluded
                 self.share.tkdata['excluded'].set(STRING_DATA['all_unused'])
+
+            # Remove exclude characters from data lists used to generate
+            #   pass-strings; resets to '' when PassModeler.reset() is called.
+            remove_excluded(STRING_DATA['all_unused'])
         else:
             self.share.tkdata['available'].set(len(LIST_DATA['word_list']))
 
