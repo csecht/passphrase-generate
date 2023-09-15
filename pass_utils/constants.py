@@ -32,6 +32,26 @@ COLORS = {
     'pass_bg': 'khaki2',  # Background of pass-string results cells.
 }
 
+"""
+Colorblind color pallet source:
+  Wong, B. Points of view: Color blindness. Nat Methods 8, 441 (2011).
+  https://doi.org/10.1038/nmeth.1618
+Hex values source: https://www.rgbtohex.net/
+See also: https://matplotlib.org/stable/tutorials/colors/colormaps.html
+"""
+CBLIND_COLOR = {
+    'blue': '#0072B2',
+    'orange': '#E69F00',
+    'sky blue': '#56B4E9',
+    'bluish green': '#009E73',
+    'vermilion': '#D55E00',
+    'reddish purple': '#CC79A7',
+    'yellow': '#F0E442',
+    'black': 'black',
+    'white': 'white',
+}
+
+
 # VERY_RANDOM = random.Random(time.time())  # Use epoch timestamp seed.
 # VERY_RANDOM = random.SystemRandom()   # Use current system's random.
 VERY_RANDOM = random.Random(random.random())
