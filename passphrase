@@ -1170,11 +1170,10 @@ class PassFyi:
         # Separator dashes from https://coolsymbol.com/line-symbols.html.
         instruction = (
             'Paste here passphrases or passcodes that you are thinking of'
-            ' using. You can then compare them, test typing them out, etc.'
-            ' and see whether any work for you.\nWindow can be dragged'
-            ' larger if things do not fit.\nAnything you paste or edit here'
-            ' is GONE when this window is closed, so save what you want to'
-            ' keep somewhere else.\n'
+            ' using. You can then compare them, test typing them out, etc.\n'
+            'This window can be resized.\nAnything you paste or edit here'
+            ' is GONE when the window is closed, so save what you want'
+            ' somewhere else.\n'
             '────────────────────────────────────────\n\n'
         )
 
@@ -1184,12 +1183,15 @@ class PassFyi:
         scratchwin.focus_set()
         utils.toplevel_bindings(mainloop=app, topwindow=scratchwin)
 
+        # Use result_font (tk fixed font) for better discrimination of letters.
         scratchtxt = tk.Text(scratchwin, width=75,
                              background='grey85', foreground='grey5',
                              relief='groove', borderwidth=4,
-                             padx=10, pady=10, wrap=tk.WORD,
-                             font=self.share.text_font)
+                             padx=10, pady=10,
+                             wrap=tk.WORD,
+                             font=self.share.result_font)
         scratchtxt.insert(tk.INSERT, instruction)
+
         # Center all text in the window
         scratchtxt.tag_add('text1', 1.0, tk.END)
         scratchtxt.tag_configure('text1', justify='center')
@@ -1265,7 +1267,8 @@ equivalent to bits of entropy. For more information see:
         explaintext = ScrolledText(explainwin, width=os_width, height=25,
                                    bg='dark slate grey', fg='grey95',
                                    relief='groove', borderwidth=8,
-                                   padx=30, pady=30, wrap=tk.WORD,
+                                   padx=30, pady=30,
+                                   wrap=tk.WORD,
                                    font=self.share.text_font)
         explaintext.insert(tk.INSERT, explanation)
         explaintext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
@@ -1299,7 +1302,8 @@ equivalent to bits of entropy. For more information see:
         colortext = tk.Text(colorwin, width=os_width, height=num_lines,
                             bg='grey40', fg='grey95',
                             relief='groove', borderwidth=8,
-                            padx=20, pady=10, wrap=tk.WORD,
+                            padx=20, pady=10,
+                            wrap=tk.WORD,
                             font=self.share.text_font)
         colortext.insert(tk.INSERT, why)
         colortext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
@@ -1318,7 +1322,8 @@ equivalent to bits of entropy. For more information see:
         abouttext = ScrolledText(aboutwin, width=74, height=num_lines + 8,
                                  bg='grey25', fg='grey95',
                                  relief='groove', borderwidth=8,
-                                 padx=30, pady=10, wrap=tk.WORD,
+                                 padx=30, pady=10,
+                                 wrap=tk.WORD,
                                  # No size change with TFF (is with self.share.text_font).
                                  font='TkFixedFont',
                                  )
@@ -1364,7 +1369,8 @@ space entered between characters will also do a reset.
         excludetext = tk.Text(excludewin, width=os_width, height=num_lines + 1,
                               bg='grey40', fg='grey95',
                               relief='groove', borderwidth=8,
-                              padx=20, pady=10, wrap=tk.WORD,
+                              padx=20, pady=10,
+                              wrap=tk.WORD,
                               font=self.share.text_font)
         excludetext.insert(1.0, exclude_info)
         excludetext.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
