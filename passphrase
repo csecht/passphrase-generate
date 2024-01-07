@@ -532,7 +532,7 @@ class PassViewer(tk.Canvas):
                                          fg=COLORS['pass_bg'], bg=COLORS['master_bg'])
         self.numwords_label.config(text='# words',
                                    fg=COLORS['pass_bg'], bg=COLORS['master_bg'])
-        self.share.numwords_entry.config(width=2)
+        self.share.numwords_entry.config(width=3)
         # Use 4 words as default passphrase length.
         self.share.numwords_entry.insert(0, '4')
 
@@ -565,7 +565,7 @@ class PassViewer(tk.Canvas):
 
         self.numchars_label.config(text='# characters',
                                    fg=COLORS['pass_bg'], bg=COLORS['master_bg'])
-        self.share.numchars_entry.config(width=3)
+        self.share.numchars_entry.config(width=4)
         self.share.numchars_entry.insert(tk.INSERT, '0')
 
         self.l_and_h_header2.config(text=hl_text, width=10,
@@ -846,7 +846,9 @@ class ResultFrame1(tk.Frame):
                     background=COLORS['dataframe_bg'])
 
         for _row in range(3):
-            self.rowconfigure(_row, weight=1)
+            self.rowconfigure(index=_row, weight=1)
+
+        self.columnconfigure(index=2, weight=1)
 
         # Results are shown as Entry() instead of Text() b/c textvariable
         #   is easier to code than .insert(). Otherwise, identical.
@@ -913,6 +915,8 @@ class ResultFrame2(tk.Frame):
 
         for _row in range(2):
             self.rowconfigure(_row, weight=1)
+
+        self.columnconfigure(index=2, weight=1)
 
         # Results are shown as Entry() instead of Text() b/c textvariable
         #   is easier to code than .insert(). Otherwise, identical.
@@ -1449,28 +1453,29 @@ class PassFonts:
             self.sizemin = 9
 
     def set_fonts(self):
-        """ Establish default cross-OS Tk fonts and sizes at start-up.
+        """ Establish default cross-OS fonts and sizes at start-up.
         """
         # Need to define as font.Font to configure().
         # Different OS need different size for best readability and to fit
         #  in the passcode W=52 field.
-        # self.share.text_font = font.Font(font='TkTextFont')
         self.share.text_font = font.Font(font='TkTextFont')
         self.share.result_font = font.Font(font='TkFixedFont')
 
         # Note: OS font sizes was obtained by: self.share.text_font.actual().
         if MY_OS == 'lin':
-            self.share.result_font.configure(size=11)
+            # DejaVu Sans is found on all Linux systems.
+            self.share.result_font.configure(size=11, family='DejaVu Sans')
             self.share.default_txt_font = 10
             self.share.default_res_font = 11
         if MY_OS == 'win':
-            # Segoe UI is the Windows 11 system font.
+            # Segoe UI is the default Windows 10/11 system font.
             self.share.result_font.configure(size=10, family='Segoe UI')
             self.share.default_txt_font = 10
             self.share.default_res_font = 10
         elif MY_OS == 'dar':
             self.share.text_font.configure(size=14)
-            self.share.result_font.configure(size=13)
+            # SF Pro is the default system font on macOS.
+            self.share.result_font.configure(size=13, family='SF Pro')
             self.share.default_txt_font = 14
             self.share.default_res_font = 13
 
