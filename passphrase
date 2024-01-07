@@ -776,7 +776,7 @@ class PassViewer(tk.Canvas):
 
         self.numwords_label.grid(column=0, row=1, padx=(10, 5), sticky=tk.W)
         self.share.numwords_entry.grid(
-            column=0, row=1, padx=(10, 100), sticky=tk.E)
+            column=0, row=1, padx=(10, 90), sticky=tk.E)
         self.l_and_h_header.grid(column=1, row=1, padx=0, sticky=tk.W)
 
         self.pp_raw_head.grid(column=0, row=2, pady=(6, 4), padx=(10, 0),
@@ -875,7 +875,7 @@ class ResultFrame1(tk.Frame):
         self.pp_short_h_lbl = tk.Label(self, **label_param,
                                       textvariable=self.share.tkdata['pp_short_h'])
         self.pp_short_len_lbl = tk.Label(self, **label_param,
-                                         textvariable=self.share.tkdata['pp_short_h'])
+                                         textvariable=self.share.tkdata['pp_short_len'])
         self.share.pp_short_show = tk.Entry(self, **entry_param,
                                             textvariable=self.share.tkdata['phrase_short'])
 
@@ -1169,11 +1169,11 @@ class PassFyi:
         """
         # Separator dashes from https://coolsymbol.com/line-symbols.html.
         instruction = (
-            'Paste here passphrases or passcodes that you are thinking of'
-            ' using. You can then compare them, test typing them out, etc.\n'
-            'This window can be resized.\nAnything you paste or edit here'
-            ' is GONE when the window is closed, so save what you want'
-            ' somewhere else.\n'
+            'Paste here passphrases or passcodes that you are thinking of using.\n'
+            'You can then compare them, test typing them out, etc.\n'
+            'This window can be resized.\n'
+            'Anything you paste or edit here is GONE when the window is closed,\n'
+            ' so save what you want to keep somewhere else.\n'
             '────────────────────────────────────────\n\n'
         )
 
@@ -1202,7 +1202,7 @@ class PassFyi:
 
         :param selection: User selected wordlist name.
         :param wordcount: Length of full selected wordlist list.
-        :return: An text window notice with current wordlist data.
+        :return: A text window notice with current wordlist data.
         """
 
         explanation = (
@@ -1454,6 +1454,7 @@ class PassFonts:
         # Need to define as font.Font to configure().
         # Different OS need different size for best readability and to fit
         #  in the passcode W=52 field.
+        # self.share.text_font = font.Font(font='TkTextFont')
         self.share.text_font = font.Font(font='TkTextFont')
         self.share.result_font = font.Font(font='TkFixedFont')
 
@@ -1463,7 +1464,8 @@ class PassFonts:
             self.share.default_txt_font = 10
             self.share.default_res_font = 11
         if MY_OS == 'win':
-            self.share.result_font.configure(size=10)
+            # Segoe UI is the Windows 11 system font.
+            self.share.result_font.configure(size=10, family='Segoe UI')
             self.share.default_txt_font = 10
             self.share.default_res_font = 10
         elif MY_OS == 'dar':
