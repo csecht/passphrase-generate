@@ -233,8 +233,9 @@ class PassModeler:
             else:
                 LIST_DATA['word_list'] = [
                     _w for _w in self.share.all_words if _w.isalpha()]
-                LIST_DATA['short_list'] = [
-                    _w for _w in LIST_DATA['word_list'] if len(_w) < 7]
+
+            LIST_DATA['short_list'] = [
+                _w for _w in LIST_DATA['word_list'] if len(_w) < 7]
 
             # Display all unique currently excluded characters.
             if excluded not in STRING_DATA['all_unused'] and ' ' not in excluded:
