@@ -156,7 +156,7 @@ class PassModeler:
         # of 3 or more characters.
         # Also, need to ignore case for Chinese wordlist.
         if (self.share.tkdata['no_caps_chkbtn'].get() and
-            self.share.choose_wordlist.get() != '此開卷第 Story of the Stone'):
+                self.share.choose_wordlist.get() != '此開卷第 Story of the Stone'):
             working_list = LIST_DATA['word_list'] = [
                 _w for _w in self.share.all_words if _w.isalpha() and _w[0].islower()]
         else:
@@ -230,7 +230,8 @@ class PassModeler:
         #   full 'word_list' so exclusions can be reapplied. This redefines
         #   'word_list' and 'short_list' from get_words().
         if len(excluded) > 0:
-            if self.share.tkdata['no_caps_chkbtn'].get():
+            if (self.share.tkdata['no_caps_chkbtn'].get() and
+                    self.share.choose_wordlist.get() != '此開卷第 Story of the Stone'):
                 LIST_DATA['word_list'] = [
                     _w for _w in LIST_DATA['word_list'] if _w[0].islower()]
             else:
@@ -582,7 +583,6 @@ class PassViewer(tk.Canvas):
         self.share.compliment_txt.config(relief='flat', border=0,
                                          fg='orange', bg=COLORS['master_bg'])
 
-
     def config_master(self) -> None:
         """Set up main window menus and bindings.
         """
@@ -809,7 +809,7 @@ class PassViewer(tk.Canvas):
                                  pady=0, padx=(10, 5),
                                  sticky=tk.W)
         self.share.numchars_entry.grid(column=0, row=6,
-                                       pady=0, padx=(0, 65),
+                                       pady=0, padx=(0, 55),
                                        sticky=tk.E)
         self.l_and_h_header2.grid(column=1, row=6,
                                   pady=0, padx=0,
@@ -872,12 +872,12 @@ class ResultFrame1(tk.Frame):
         self.pp_plus_h_lbl = tk.Label(self, **label_param,
                                       textvariable=self.share.tkdata['pp_plus_h'])
         self.pp_plus_len_lbl = tk.Label(self, **label_param,
-                                      textvariable=self.share.tkdata['pp_plus_len'])
+                                        textvariable=self.share.tkdata['pp_plus_len'])
         self.share.pp_plus_show = tk.Entry(self, **entry_param,
                                            textvariable=self.share.tkdata['phrase_plus'])
 
         self.pp_short_h_lbl = tk.Label(self, **label_param,
-                                      textvariable=self.share.tkdata['pp_short_h'])
+                                       textvariable=self.share.tkdata['pp_short_h'])
         self.pp_short_len_lbl = tk.Label(self, **label_param,
                                          textvariable=self.share.tkdata['pp_short_len'])
         self.share.pp_short_show = tk.Entry(self, **entry_param,
@@ -890,7 +890,7 @@ class ResultFrame1(tk.Frame):
                                     sticky=tk.EW)
 
         self.pp_plus_h_lbl.grid(column=0, row=1, padx=(5, 0), pady=(2, 2))
-        self.pp_plus_len_lbl.grid(column=1, row=1,padx=(5, 0))
+        self.pp_plus_len_lbl.grid(column=1, row=1, padx=(5, 0))
         self.share.pp_plus_show.grid(column=2, row=1, padx=5,
                                      sticky=tk.EW)
 
@@ -938,7 +938,7 @@ class ResultFrame2(tk.Frame):
                                           textvariable=self.share.tkdata['pc_any'])
 
         self.pc_some_len_lbl = tk.Label(self, **label_param,
-                                     textvariable=self.share.tkdata['pc_some_len'])
+                                        textvariable=self.share.tkdata['pc_some_len'])
         self.pc_some_h_lbl = tk.Label(self, **label_param,
                                       textvariable=self.share.tkdata['pc_some_h'])
         self.share.pc_some_show = tk.Entry(self, **entry_param,
