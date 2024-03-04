@@ -1427,7 +1427,7 @@ space entered between characters will also do a reset.
 
         def refresh():
             self.share.compliment_txt.config(text='')
-            app.update_idletasks()
+            app.update()
 
         self.share.compliment_txt.after(2222, refresh)
 
