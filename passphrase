@@ -1459,27 +1459,27 @@ class PassFonts:
         """
         # Need to define as font.Font to configure().
         # Different OS need different size for best readability and to fit
-        #  in the passcode W=52 field.
-        self.share.text_font = font.Font(font='TkTextFont')
-        self.share.result_font = font.Font(font='TkFixedFont')
+        #  in the passcode W=52 field.family='DejaVu Sans'
 
         # Note: OS font sizes was obtained by: self.share.text_font.actual().
         if MY_OS == 'lin':
             # DejaVu Sans is found on all Linux systems.
-            self.share.result_font.configure(size=11, family='DejaVu Sans')
-            self.share.default_txt_font = 10
-            self.share.default_res_font = 11
-        if MY_OS == 'win':
+            self.share.text_font = font.Font(family='DejaVu Sans', size=10)
+            self.share.result_font = font.Font(family='DejaVu Sans', size=11)
+            self.share.default_txt_font_size = 10
+            self.share.default_res_font_size = 11
+        elif MY_OS == 'win':
             # Segoe UI is the default Windows 10/11 system font.
-            self.share.result_font.configure(size=10, family='Segoe UI')
-            self.share.default_txt_font = 10
-            self.share.default_res_font = 10
-        elif MY_OS == 'dar':
-            self.share.text_font.configure(size=14)
+            self.share.text_font = font.Font(family='Segoe UI', size=10)
+            self.share.result_font = font.Font(family='Segoe UI', size=10)
+            self.share.default_txt_font_size = 10
+            self.share.default_res_font_size = 10
+        else:  # MY_OS is 'dar'
             # SF Pro is the default system font on macOS.
-            self.share.result_font.configure(size=13, family='SF Pro')
-            self.share.default_txt_font = 14
-            self.share.default_res_font = 13
+            self.share.text_font = font.Font(family='SF Pro', size=14)
+            self.share.result_font = font.Font(family='SF Pro', size=13)
+            self.share.default_txt_font_size = 14
+            self.share.default_res_font_size = 13
 
     def grow_font(self):
         """ Make the font size larger.
@@ -1504,8 +1504,8 @@ class PassFonts:
     def default_font_size(self):
         """ The default font size on startup. Used to reset to default.
         """
-        self.share.text_font.config(size=self.share.default_txt_font)
-        self.share.result_font.config(size=self.share.default_res_font)
+        self.share.text_font.config(size=self.share.default_txt_font_size)
+        self.share.result_font.config(size=self.share.default_res_font_size)
 
 
 if __name__ == "__main__":
