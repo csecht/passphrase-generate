@@ -1461,7 +1461,7 @@ class PassFonts:
         # Different OS need different size for best readability and to fit
         #  in the passcode W=52 field.family='DejaVu Sans'
 
-        # Note: OS font sizes was obtained by: self.share.text_font.actual().
+        # Note: OS font size obtained by: self.share.text_font.actual().
         if MY_OS == 'lin':
             # DejaVu Sans is found on all Linux systems.
             self.share.text_font = font.Font(family='DejaVu Sans', size=10)
@@ -1508,15 +1508,18 @@ class PassFonts:
         self.share.result_font.config(size=self.share.default_res_font_size)
 
 
-if __name__ == "__main__":
-    # System platform and version checks are run in tk_utils __init__.py
-    #   Program exits if checks fail.
+def run_checks():
+    """
+    Run checks for system platform, Python version, and other requirements.
+    """
+    # Program exits if checks fail.
     utils.check_platform()
     vcheck.minversion('3.6')
 
     utils.manage_args()
 
-    app = PassController()
+
+def main():
     app.title("Passphrase Generator")
 
     print(f'{Path(__file__).name} is now running...')
@@ -1538,3 +1541,9 @@ if __name__ == "__main__":
         print(f'An error occurred: {unk}')
         print('Program exit with unexpected condition.')
         utils.quit_gui(mainloop=app, gui=True)
+
+if __name__ == "__main__":
+    # Comment out run_checks() to run PyInstaller.
+    run_checks()
+    app = PassController()
+    main()
