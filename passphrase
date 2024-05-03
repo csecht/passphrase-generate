@@ -67,12 +67,10 @@ class PassModeler:
         """
 
         all_lists = list(self.share.word_files.keys())
-        if MY_OS in 'lin, dar':
-            self.share.choose_wordlist['values'] = all_lists
-        # Need to remove 'System dictionary' from Windows usage.
-        elif MY_OS == 'win':
+        # Uncertain how to handle system dictionary on Windows.
+        if MY_OS == 'win':
             all_lists.remove('System dictionary')
-            self.share.choose_wordlist['values'] = all_lists
+        self.share.choose_wordlist['values'] = all_lists
 
         fnf_msg = ('\nHmmm. Cannot locate system dictionary\n'
                    'words nor any custom wordlist files\n'
@@ -83,23 +81,20 @@ class PassModeler:
 
         wordfile_list = glob.glob(str(path.WORDDIR / '*_wordlist.txt'))
         # This covers platforms with and w/o system dictionary.
-        if not Path.is_file(path.SYSDICT_PATH):
-            if len(wordfile_list) == 0:
-                print(fnf_msg)
-                messagebox.showinfo(title='Files not found', detail=fnf_msg)
-                utils.quit_gui(mainloop=app, gui=True)
+        if not Path.is_file(path.SYSDICT_PATH) and len(wordfile_list) == 0:
+            print(fnf_msg)
+            messagebox.showinfo(title='Files not found', detail=fnf_msg)
+            utils.quit_gui(mainloop=app, gui=True)
 
-            if len(wordfile_list) > 0 and MY_OS != 'win':
-                notice = ('Hmmm. The system dictionary cannot be found.\n'
-                          'Using only custom wordlists ...')
-                # print(notice)
-                messagebox.showinfo(title='File not found', detail=notice)
-                # Need to remove 'System dictionary' as an option.
-                all_lists = list(self.share.word_files.keys())
-                all_lists.remove('System dictionary')
-                self.share.choose_wordlist['values'] = all_lists
+        if not Path.is_file(path.SYSDICT_PATH) and len(wordfile_list) > 0 and MY_OS != 'win':
+            notice = ('Hmmm. The system dictionary cannot be found.\n'
+                      'Using only custom wordlists ...')
+            messagebox.showinfo(title='File not found', detail=notice)
+            # Need to remove 'System dictionary' as an option.
+            all_lists.remove('System dictionary')
+            self.share.choose_wordlist['values'] = all_lists
 
-        elif Path.is_file(path.SYSDICT_PATH) and len(wordfile_list) == 0:
+        if Path.is_file(path.SYSDICT_PATH) and len(wordfile_list) == 0:
             notice = ('Oops! Optional wordlists are missing.\n'
                       'Wordlist files should be in a folder\n'
                       'called "wordlists" included with\n'
@@ -107,7 +102,6 @@ class PassModeler:
                       f'{pass_utils.URL}\n'
                       'Using system dictionary words...\n')
             self.share.choose_wordlist.config(state='disabled')
-            # print(notice)
             messagebox.showinfo(title='File not found', detail=notice)
             self.share.choose_wordlist['values'] = ('System dictionary',)
 
@@ -143,8 +137,9 @@ class PassModeler:
         # Need read_text(encoding) so Windows can read all wordlist fonts.
         choice = self.share.choose_wordlist.get()
         wordfile = self.share.word_files[choice]
-        # all_words is also needed in make_pass to handle no_caps_chkbtn <-> caps
-        #   transitions.
+
+        # all_words is also needed in make_pass to handle transitions with
+        #  no_caps_chkbtn <-> caps.
         self.share.all_words = set(
             Path(wordfile).read_text(encoding='utf-8').split())
 
@@ -199,32 +194,6 @@ class PassModeler:
         if ' ' in excluded or len(excluded) == 0:
             self.reset()
 
-        def remove_excluded(exclude_this):
-            """
-            Update lists of candidate characters by removing characters
-            specified by the user.
-            """
-            for excl in exclude_this.split():
-                LIST_DATA['word_list'] = [
-                    _w for _w in LIST_DATA['word_list'] if excl not in _w]
-                LIST_DATA['short_list'] = [
-                    _w for _w in LIST_DATA['short_list'] if excl not in _w]
-                STRING_DATA['symbols'] = [
-                    _s for _s in STRING_DATA['symbols'] if excl not in _s]
-                STRING_DATA['digi'] = [
-                    _d for _d in STRING_DATA['digi'] if excl not in _d]
-                STRING_DATA['caps'] = [
-                    _uc for _uc in STRING_DATA['caps'] if excl not in _uc]
-                STRING_DATA['all_char'] = [
-                    _ch for _ch in STRING_DATA['all_char'] if excl not in _ch]
-                STRING_DATA['some_char'] = [
-                    _ch for _ch in STRING_DATA['some_char'] if excl not in _ch]
-
-            # Need to display # of currently available words in two places.
-            #   'available' is used as param in PassController.explain() and
-            #   the self.share.available_show Label in main window.
-            self.share.tkdata['available'].set(len(LIST_DATA['word_list']))
-
         # Need to filter words and strings containing characters to be excluded.
         #   When switching Checkbox from no_caps_chkbtn to caps, need to restore the
         #   full 'word_list' so exclusions can be reapplied. This redefines
@@ -246,8 +215,30 @@ class PassModeler:
                 STRING_DATA['all_unused'] = STRING_DATA['all_unused'] + ' ' + excluded
                 self.share.tkdata['excluded'].set(STRING_DATA['all_unused'])
 
+            # Need to display # of currently available words in two places.
+            #   'available' is used as param in PassController.explain() and
+            #   the self.share.available_show Label in main window.
             # Remove exclude characters from data lists used to generate
             #   pass-strings; resets to '' when PassModeler.reset() is called.
+            def remove_excluded(exclude_this):
+                for excl in exclude_this.split():
+                    LIST_DATA['word_list'] = [
+                        _w for _w in LIST_DATA['word_list'] if excl not in _w]
+                    LIST_DATA['short_list'] = [
+                        _w for _w in LIST_DATA['short_list'] if excl not in _w]
+                    STRING_DATA['symbols'] = [
+                        _s for _s in STRING_DATA['symbols'] if excl not in _s]
+                    STRING_DATA['digi'] = [
+                        _d for _d in STRING_DATA['digi'] if excl not in _d]
+                    STRING_DATA['caps'] = [
+                        _uc for _uc in STRING_DATA['caps'] if excl not in _uc]
+                    STRING_DATA['all_char'] = [
+                        _ch for _ch in STRING_DATA['all_char'] if excl not in _ch]
+                    STRING_DATA['some_char'] = [
+                        _ch for _ch in STRING_DATA['some_char'] if excl not in _ch]
+
+                self.share.tkdata['available'].set(len(LIST_DATA['word_list']))
+
             remove_excluded(STRING_DATA['all_unused'])
 
         # Build pass-strings.
