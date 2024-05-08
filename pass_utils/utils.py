@@ -17,6 +17,7 @@ import argparse
 import random
 import sys
 import tkinter as tk
+from pathlib import Path
 
 # Local program imports:
 # Used with the --about option to access __doc__ in main and
@@ -68,6 +69,17 @@ def manage_args() -> None:
         print('====================== ABOUT END ====================')
         print()
         sys.exit(0)
+
+def program_name() -> str:
+    """
+    Returns the script name or, if called from a PyInstaller stand-alone,
+    the executable name. Use for setting file paths and naming windows.
+
+    :return: Context-specific name of the main program, as string.
+    """
+    if getattr(sys, 'frozen', False):  # hasattr(sys, '_MEIPASS'):
+        return Path(sys.executable).stem
+    return  Path(sys.modules['__main__'].__file__).stem
 
 
 def quit_gui(mainloop: tk.Tk, gui=True, keybind=None) -> None:
