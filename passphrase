@@ -1412,6 +1412,16 @@ space entered between characters will also do a reset.
             'The Nobel Committee has been trying to reach you.',
             'The Academy is asking for your CV.', 'You look great!',
             'The President seeks your council.', 'Thank you so much!',
+            'What you did takes an incredible amount of courage.',
+            'Your ability to accomplish your goals is impressive.',
+            'You are incredibly talented.',
+            'You are so passionate and full of energy.',
+            'You are the best role model.',
+            'You have an incredible sense of humor.',
+            'You have a beautiful smile.',
+            'You are an excellent problem solver.',
+            'You have a unique sense of style.',
+            'You always know how to put together the perfect outfit.',
         ]
         praise = random.choice(compliments)
         self.share.compliment_txt.config(text=praise)
