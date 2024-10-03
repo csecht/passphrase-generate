@@ -20,9 +20,6 @@ import tkinter as tk
 from pathlib import Path
 
 # Local program imports:
-# Used with the --about option to access __doc__ in main and
-#  plot_utils __init__.py constants and dunders.
-from __main__ import __doc__
 import pass_utils
 
 MY_OS = sys.platform[:3]
@@ -33,7 +30,7 @@ def about_text() -> str:
     Informational text for --about execution argument and GUI About cmd.
     """
 
-    return (f'{__doc__}\n'
+    return (f'{sys.modules["__main__"].__doc__}\n'
             f'{"Author:".ljust(13)}{pass_utils.__author__}\n'
             f'{"Version:".ljust(13)}{pass_utils.__version__}\n'
             f'{"Status:".ljust(13)}{pass_utils.__status__}\n'
