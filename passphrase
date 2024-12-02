@@ -13,6 +13,7 @@ import glob
 import random
 from math import log
 from pathlib import Path
+from signal import signal, SIGINT
 from string import digits, punctuation, ascii_letters, ascii_uppercase
 
 # Third party imports (tk may not be included with some Python installations).
@@ -1534,14 +1535,23 @@ def main():
 
     app.clipboard_clear()
 
-    try:
-        app.mainloop()
-    except KeyboardInterrupt:
-        print('\n*** User quit the program ***\n')
-    except Exception as unk:
-        print(f'An error occurred: {unk}')
-        print('Program exit with unexpected condition.')
-        utils.quit_gui(mainloop=app, gui=True)
+    # Allow user to quit from the Terminal command line using Ctrl-C
+    #  without the delay of waiting for tk event actions.
+    # Source: https://stackoverflow.com/questions/39840815/
+    #   exiting-a-tkinter-app-with-ctrl-c-and-catching-sigint
+    # Keep polling the mainloop to check for the SIGINT signal, Ctrl-C.
+    # Comment out the following statements before mainloop() when using PyInstaller.
+    signal(signalnum=SIGINT,
+           handler=lambda x, y: utils.quit_gui(mainloop=app, gui=True))
+
+    def tk_check(msec):
+        app.after(msec, tk_check, msec)
+
+    poll_ms = 500
+    app.after(poll_ms, tk_check, poll_ms)
+
+    app.mainloop()
+
 
 if __name__ == "__main__":
     # Comment out run_checks() to run PyInstaller.
