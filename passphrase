@@ -1000,7 +1000,7 @@ class ExcludeFrame(tk.Frame):
                                  sticky=tk.W)
         self.no_caps_head.grid(column=0, row=0,
                                pady=(5, 0), padx=(40, 0),
-                               sticky=tk.W)
+                               sticky=tk.EW)
 
         self.exclude_head.grid(column=0, row=1,
                                pady=(0, 0), padx=(5, 0),
