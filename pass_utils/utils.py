@@ -23,7 +23,7 @@ from pathlib import Path
 import pass_utils
 
 MY_OS = sys.platform[:3]
-
+# MY_OS = 'lin' for Linux, 'win' for Windows, 'dar' for macOS
 
 def about_text() -> str:
     """
@@ -48,6 +48,16 @@ def check_platform():
         print(f'Platform <{sys.platform}> is not supported.\n'
               'Windows, Linux, and MacOS (darwin) are supported.')
         sys.exit(1)
+
+    # Dispense with macOS warnings
+    # same as 2> /dev/null in the shell
+    if MY_OS == 'dar':
+        import os
+        with open("/dev/null", "w") as f:
+            os.dup2(f.fileno(), 2)  # suppress stderr
+
+    if MY_OS == 'win':
+        from ctypes import windll
 
 
 def manage_args() -> None:
