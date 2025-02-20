@@ -4,7 +4,7 @@ These constants are used with the --about command line argument or button.
 
 # Development status standards: https://pypi.org/classifiers/
 __author__ = 'Craig S. Echt'
-__version__ = '0.12.23'
+__version__ = '0.12.24'
 __status__ = 'Development Status :: 4 - Beta'
 __copyright__ = 'Copyright (C) 2021- 2023 C.S. Echt, under GNU General Public License'
 
