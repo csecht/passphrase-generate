@@ -58,7 +58,8 @@ class PassModeler:
             'Don Quijote': path.WORDDIR / 'don_quijote_wordlist.txt',
             'Frankenstein': path.WORDDIR / 'frankenstein_wordlist.txt',
             'Les Miserables': path.WORDDIR / 'les_miserables.txt',
-            '此開卷第 Story of the Stone': path.WORDDIR / 'red_chamber_wordlist.txt'
+            '此開卷第 Story of the Stone': path.WORDDIR / 'red_chamber_wordlist.txt',
+            'The Death of Arthur': path.WORDDIR / 'le_morte_darthur_wordlist.txt',
         }
 
     def check_files(self) -> None:

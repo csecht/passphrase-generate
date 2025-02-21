@@ -65,6 +65,7 @@ The `parse_wordlist` script from https://github.com/csecht/make_wordlist was use
 - Les Misérables, by Hugo (French)
 - The Story of the Stone, or 红楼梦, by 曹雪芹 (Chinese)
 - United States Constitution (English)
+- Le Morte d'Arthur, by Malory (English)
 
 ## Tips:
 The program places no limits on the length of pass-strings, though your system memory might. The window can be dragged to view longer results up to a limit; results exceeding that limit can still be copied and pasted.
