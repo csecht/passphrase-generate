@@ -981,10 +981,11 @@ class ExcludeFrame(tk.Frame):
                                      fg=COLORS['pass_bg'], bg=COLORS['master_bg'])
         self.no_caps_chkbtn = tk.Checkbutton(self,
                                              variable=self.share.tkdata['no_caps_chkbtn'],
+                                             command=self.share.getwords,
                                              bg=COLORS['master_bg'])
 
         # There are problems of tk.Button text showing up on macOS, so use ttk.
-        # Explicit styles are needed for buttons to show properly on MacOS.
+        # Explicit styles are needed for buttons to show properly on macOS.
         #  ... even then, background and pressed colors won't be recognized.
         self.reset_button = ttk.Button(self, style="My.TButton",
                                        text='Reset',
