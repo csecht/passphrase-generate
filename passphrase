@@ -166,6 +166,58 @@ class PassModeler:
         #   in the selected wordlist.
         self.share.tkdata['available'].set(len(working_list))
 
+    def set_exclusions(self):
+        """
+        Set up lists of characters to exclude from pass-strings.
+        Is called along with self.make_pass from self.share.makepass().
+        """
+        # Do not accept entries with space between characters, and.
+        #   need to reset to default values if user deletes the prior entry.
+        excluded = self.share.exclude_entry.get().strip()
+        if ' ' in excluded or not excluded:
+            self.reset()
+            return
+
+        # Need to filter words and strings containing characters to be excluded.
+        #   When switching Checkbox from no_caps_chkbtn to caps, need to restore the
+        #   full 'word_list' so exclusions can be reapplied. This redefines
+        #   'word_list' and 'short_list' from get_words().
+        # Don't apply caps filters to Chinese wordlists.
+        if self.share.tkdata[
+            'no_caps_chkbtn'].get() and self.share.choose_wordlist.get() != '此開卷第 Story of the Stone':
+            LIST_DATA['word_list'] = [_w for _w in LIST_DATA['word_list'] if _w[0].islower()]
+        else:
+            LIST_DATA['word_list'] = [_w for _w in self.share.all_words if _w.isalpha()]
+
+        LIST_DATA['short_list'] = [_w for _w in LIST_DATA['word_list'] if len(_w) < 7]
+
+        if excluded not in STRING_DATA['all_unused']:
+            STRING_DATA['all_unused'] += ' ' + excluded
+            self.share.tkdata['excluded'].set(STRING_DATA['all_unused'])
+
+        # Remove exclude characters from data lists that are used to generate
+        #   pass-strings; resets to '' when PassModeler.reset() is called.
+        for excl in STRING_DATA['all_unused'].split():
+            LIST_DATA['word_list'] = [
+                _w for _w in LIST_DATA['word_list'] if excl not in _w]
+            LIST_DATA['short_list'] = [
+                _w for _w in LIST_DATA['short_list'] if excl not in _w]
+            STRING_DATA['symbols'] = [
+                _s for _s in STRING_DATA['symbols'] if excl not in _s]
+            STRING_DATA['digi'] = [
+                _d for _d in STRING_DATA['digi'] if excl not in _d]
+            STRING_DATA['caps'] = [
+                _uc for _uc in STRING_DATA['caps'] if excl not in _uc]
+            STRING_DATA['all_char'] = [
+                _ch for _ch in STRING_DATA['all_char'] if excl not in _ch]
+            STRING_DATA['some_char'] = [
+                _ch for _ch in STRING_DATA['some_char'] if excl not in _ch]
+
+        # Need to display # of currently available words in two places.
+        #   'available' is used as param in PassController.explain() and
+        #   the self.share.available_show Label in main window.
+        self.share.tkdata['available'].set(len(LIST_DATA['word_list']))
+
     def make_pass(self) -> None:
         """
         Generate and set random pass-strings.
@@ -190,58 +242,7 @@ class PassModeler:
             self.share.numchars_entry.insert(0, '0')
         numchars = int(self.share.numchars_entry.get())
 
-        # Do not accept entries with space between characters, and.
-        #   need to reset to default values if user deletes the prior entry.
-        excluded = self.share.exclude_entry.get().strip()
-        if ' ' in excluded or len(excluded) == 0:
-            self.reset()
-
-        # Need to filter words and strings containing characters to be excluded.
-        #   When switching Checkbox from no_caps_chkbtn to caps, need to restore the
-        #   full 'word_list' so exclusions can be reapplied. This redefines
-        #   'word_list' and 'short_list' from get_words().
-        if len(excluded) > 0:
-            if (self.share.tkdata['no_caps_chkbtn'].get() and
-                    self.share.choose_wordlist.get() != '此開卷第 Story of the Stone'):
-                LIST_DATA['word_list'] = [
-                    _w for _w in LIST_DATA['word_list'] if _w[0].islower()]
-            else:
-                LIST_DATA['word_list'] = [
-                    _w for _w in self.share.all_words if _w.isalpha()]
-
-            LIST_DATA['short_list'] = [
-                _w for _w in LIST_DATA['word_list'] if len(_w) < 7]
-
-            # Display all unique currently excluded characters.
-            if excluded not in STRING_DATA['all_unused'] and ' ' not in excluded:
-                STRING_DATA['all_unused'] = STRING_DATA['all_unused'] + ' ' + excluded
-                self.share.tkdata['excluded'].set(STRING_DATA['all_unused'])
-
-            # Need to display # of currently available words in two places.
-            #   'available' is used as param in PassController.explain() and
-            #   the self.share.available_show Label in main window.
-            # Remove exclude characters from data lists used to generate
-            #   pass-strings; resets to '' when PassModeler.reset() is called.
-            def remove_excluded(exclude_this):
-                for excl in exclude_this.split():
-                    LIST_DATA['word_list'] = [
-                        _w for _w in LIST_DATA['word_list'] if excl not in _w]
-                    LIST_DATA['short_list'] = [
-                        _w for _w in LIST_DATA['short_list'] if excl not in _w]
-                    STRING_DATA['symbols'] = [
-                        _s for _s in STRING_DATA['symbols'] if excl not in _s]
-                    STRING_DATA['digi'] = [
-                        _d for _d in STRING_DATA['digi'] if excl not in _d]
-                    STRING_DATA['caps'] = [
-                        _uc for _uc in STRING_DATA['caps'] if excl not in _uc]
-                    STRING_DATA['all_char'] = [
-                        _ch for _ch in STRING_DATA['all_char'] if excl not in _ch]
-                    STRING_DATA['some_char'] = [
-                        _ch for _ch in STRING_DATA['some_char'] if excl not in _ch]
-
-                self.share.tkdata['available'].set(len(LIST_DATA['word_list']))
-
-            remove_excluded(STRING_DATA['all_unused'])
+        # self.set_exclusions()
 
         # Build pass-strings.
         passphrase = ""
@@ -1109,9 +1110,11 @@ class PassController(tk.Tk):
     def makepass(self) -> None:
         """
         Is called via "Generate" key, button, menu.
+        set_exclusions() updates list and string data for excluded characters.
         make_pass() creates random pass-strings, which then
         calls set_entropy() and config_results().
         """
+        PassModeler(share=self).set_exclusions()
         PassModeler(share=self).make_pass()
 
     def scratchpad(self):
