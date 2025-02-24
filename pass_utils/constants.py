@@ -3,7 +3,7 @@ Constants and variables used in main script, passphrase.
 
 SYMBOLS - string of acceptable symbols
 VERY_RANDOM - a random float
-W - default width of the results display fields
+STRING_LENGTH - default width of the results display fields
 STRING_DATA - dictionary of string module constants
 LIST_DATA - dictionary of word lists, populated in main script
 """
@@ -18,7 +18,7 @@ SYMBOLS = "~!@#$%^&*_-+="
 # Number of characters for evaluating passphrase lengths and
 #   setting pass-string results Entry widget widths.
 # Depends on changes in app window minsize and PassFonts.set_fonts.
-W = 52
+STRING_LENGTH = 52
 
 STUBRESULT = 'Result can be copied and pasted.'
 

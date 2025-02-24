@@ -318,7 +318,7 @@ class PassModeler:
         #   number of possible characters or words and L is the number of
         #   characters or words in the pass-string. Log can be any base,
         #   but needs to be the same base in numerator and denominator.
-        # Note that N is corrected for any excluded words from set_pstrings().
+        # Note that N is corrected for any excluded words.
         # Need to display H as integer, not float.
         self.share.tkdata['pp_raw_h'].set(
             int(numwords * log(len(LIST_DATA['word_list'])) / log(2)))
@@ -337,8 +337,7 @@ class PassModeler:
         Configure fonts and display widths in results frames to provide
         a more readable display of results. Called from make_pass().
         """
-        # Change font colors of results from the initial self.passstub_fg.
-        # pass_fg does not change after first call to set_pstrings().
+
         self.share.pp_raw_show.config(fg=COLORS['pass_fg'])
         self.share.pp_extra_show.config(fg=COLORS['pass_fg'])
         self.share.pp_short_show.config(fg=COLORS['pass_fg'])
@@ -351,11 +350,11 @@ class PassModeler:
         passphrase_len = self.share.tkdata['pp_extra_len'].get()
 
         # Need a special case for wider Chinese characters; 34 equivalent to 52
-        #    Use 64% to generalize in case W changes.
-        results_width = const.W
+        #    Use 64% to generalize in case STRING_LENGTH changes.
+        results_width = const.STRING_LENGTH
         if self.share.choose_wordlist.get() == '此開卷第 Story of the Stone' \
-                and passphrase_len > const.W * 0.64:
-            results_width = const.W * 0.64
+                and passphrase_len > const.STRING_LENGTH * 0.64:
+            results_width = const.STRING_LENGTH * 0.64
 
         if passphrase_len > results_width:
             self.share.pp_raw_show.config(fg=COLORS['long_fg'])
@@ -373,10 +372,10 @@ class PassModeler:
 
         # Need to also indicate long passcodes.
         passcode_len = int(self.share.numchars_entry.get())
-        if passcode_len > const.W:
+        if passcode_len > const.STRING_LENGTH:
             self.share.pc_any_show.config(fg=COLORS['long_fg'])
             self.share.pc_some_show.config(fg=COLORS['long_fg'])
-        elif passcode_len <= const.W:
+        elif passcode_len <= const.STRING_LENGTH:
             self.share.pc_any_show.config(fg=COLORS['pass_fg'])
             self.share.pc_some_show.config(fg=COLORS['pass_fg'])
 
@@ -855,7 +854,7 @@ class ResultFrame1(tk.Frame):
         entry_param = dict(font=self.share.result_font,
                            fg=COLORS['stubpass_fg'],
                            bg=COLORS['pass_bg'],
-                           width=const.W)
+                           width=const.STRING_LENGTH)
 
         self.pp_raw_h_lbl = tk.Label(self, **label_param,
                                      textvariable=self.share.tkdata['pp_raw_h'])
@@ -923,7 +922,7 @@ class ResultFrame2(tk.Frame):
         entry_param = dict(font=self.share.result_font,
                            fg=COLORS['stubpass_fg'],
                            bg=COLORS['pass_bg'],
-                           width=const.W)
+                           width=const.STRING_LENGTH)
 
         self.pc_any_len_lbl = tk.Label(self, **label_param,
                                        textvariable=self.share.tkdata['pc_any_len'])
@@ -1052,7 +1051,7 @@ class PassController(tk.Tk):
         # Pixels here are set to fit a 52 character width Entry() and are
         #   OS-specific; 52 is arbitrary, but I like it.
         if MY_OS == 'lin':
-            self.minsize(780, 430)  # <for default font size=11, const.W=52
+            self.minsize(780, 430)  # <for default font size=11, const.STRING_LENGTH=52
             self.maxsize(780, 430)
         elif MY_OS == 'win':
             self.minsize(702, 430)
@@ -1450,7 +1449,7 @@ class PassFonts:
         self.share = share
         # Need to define as font.Font to configure().
         # Different OS need different size for best readability and to fit
-        #  in the passcode W=52 field.
+        #  in the passcode STRING_LENGTH=52 field.
 
         if MY_OS == 'lin':
             self.sizemax = 16
@@ -1467,7 +1466,7 @@ class PassFonts:
         """
         # Need to define as font.Font to configure().
         # Different OS need different size for best readability and to fit
-        #  in the passcode W=52 field.family='DejaVu Sans'
+        #  in the passcode STRING_LENGTH=52 field.family='DejaVu Sans'
 
         # Note: OS font size obtained by: self.share.text_font.actual().
         if MY_OS == 'lin':

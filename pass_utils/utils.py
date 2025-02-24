@@ -168,7 +168,7 @@ def close_toplevel(mainloop: tk.Tk, keybind=None) -> None:
     """
     Close the toplevel window that has focus.
     Called locally from other utils.py functions.
-    Used for Command-W or Control-W keybinding or right-click menu.
+    Used for Command-STRING_LENGTH or Control-STRING_LENGTH keybinding or right-click menu.
 
     :param mainloop: The main tk.Tk() window running the mainloop.
     :param keybind: Implicit bind() events.
