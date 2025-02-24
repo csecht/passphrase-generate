@@ -6,7 +6,7 @@ structured in three main classes of Model, View, and Controller;
 modified from posts by Brian Oakley at
 https://stackoverflow.com/questions/32864610/
 """
-# 'Copyright (C) 2021- 2022 C.S. Echt, under GNU General Public License'
+# 'Copyright (C) 2021- 2024 C.S. Echt, under GNU General Public License'
 
 # Standard library imports
 import glob
